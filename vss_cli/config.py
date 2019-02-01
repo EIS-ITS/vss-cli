@@ -9,6 +9,7 @@ import json
 from base64 import b64decode, b64encode
 import vss_cli.const as const
 from pyvss.manager import VssManager
+from vss_cli import vssconst
 from vss_cli.exceptions import VssCliError
 from pyvss import __version__ as pyvss_version
 
@@ -63,6 +64,22 @@ class Configuration(VssManager):
         if args:
             msg %= args
         click.echo(msg, file=sys.stdout)
+
+    def secho(
+            self, msg: str, *args: Optional[Any],
+            **kwargs
+    ) -> None:
+        """Put content message to stdout with style."""
+        self.slog(msg, *args, **kwargs)
+
+    def slog(  # pylint: disable=no-self-use
+        self, msg: str, *args: Optional[str],
+        **kwargs,
+    ) -> None:  # pylint: disable=no-self-use
+        """Log a message to stdout with style."""
+        if args:
+            msg %= args
+        click.secho(msg, file=sys.stdout, **kwargs)
 
     def vlog(self, msg: str, *args: Optional[str]) -> None:
         """Log a message only if verbose is enabled."""
@@ -171,30 +188,48 @@ class Configuration(VssManager):
                     if not (creds or self.api_token):
                         raise VssCliError(
                             "Invalid endpoint {} configuration. \n "
-                            "Please, run 'vss configure' to add "
+                            "Please, run 'vss-cli configure mk' to add "
                             "endpoint to "
                             "configuration.".format(self.base_endpoint))
                     try:
                         self.whoami()
-                    except VssCliError as ex:
-                        if self.debug:
-                            self.log(str(ex))
-                            self.echo('Generating a new token')
+                        self.vlog('Token validated successfully.')
+                    except Exception as ex:
+                        self.vlog(str(ex))
+                        self.vlog('Generating a new token')
                         self.api_token = self.get_token(self.username,
                                                         self.password)
-                        if self.debug:
-                            self.echo('Token generated successfully')
+                        self.vlog('Token generated successfully')
                         self.write_config_file(new_token=self.api_token)
                         # check for updates
                         # self.check_for_updates()
                         # check for unread messages
-                        # self.check_unread_messages()
+                        self.check_unread_messages()
                     return self.username, self.password, self.api_token
             raise VssCliError("Invalid configuration. "
                               "Please, run "
-                              "'vss configure' to initialize configuration.")
+                              "'vss-cli configure mk' to initialize configuration.")
         except Exception as ex:
             raise VssCliError(str(ex))
+
+    def check_unread_messages(self):
+        try:
+            self.vlog('Checking for unread messages')
+            messages = self.get_user_messages(filter='status,eq,Created',
+                                              per_page=100)
+            n_messages = len(messages)
+            if messages:
+                envelope_str = vssconst.EMOJI_ENVELOPE.decode('utf-8')
+                self.secho(
+                    'You have {0} unread messages {1} '.format(
+                        n_messages, envelope_str), fg='green', nl=False)
+                self.secho('Run ', fg='green', nl=False)
+                self.secho('vss-cli message ls', fg='red', nl=False)
+                self.secho(' to list unread messages.', fg='green')
+            else:
+                self.vlog('No Created messages')
+        except ValueError as ex:
+            _LOGGING.error('Could not check for messages {}'.format(ex))
 
     def write_config_file(self, new_token=None):
         """
@@ -241,9 +276,8 @@ class Configuration(VssManager):
         except IOError as e:
             raise VssCliError('An error occurred writing '
                               'configuration file: {}'.format(e))
-        if self.debug:
-            self.echo(f'Successfully written'
-                      f' configuration file {self.config}')
+        self.vlog(f'Successfully written'
+                  f' configuration file {self.config}')
 
     def configure(self, username, password, endpoint, replace=False):
         self.username = username
