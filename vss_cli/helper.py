@@ -1,11 +1,14 @@
 """Helpers used by Home Assistant CLI (hass-cli)."""
+import re
 import contextlib
 from http.client import HTTPConnection
 import json
 import logging
 import shlex
 from typing import Any, Dict, Generator, List, Optional, Tuple, cast
-import re
+from pygments import highlight
+from pygments.lexers import JsonLexer
+from pygments.formatters import TerminalFormatter
 from vss_cli.config import Configuration
 import vss_cli.const as const
 from tabulate import tabulate
@@ -51,6 +54,7 @@ def raw_format_output(
     no_headers: bool = False,
     table_format: str = 'plain',
     sort_by: Optional[str] = None,
+    single: Optional[str] = None
 ) -> str:
     """Format the raw output."""
     if output == 'auto':
@@ -62,7 +66,12 @@ def raw_format_output(
 
     if output == 'json':
         try:
-            return json.dumps(data, indent=2, sort_keys=False)
+            return highlight(
+                json.dumps(data, indent=2,
+                           sort_keys=False),
+                JsonLexer(),
+                TerminalFormatter()
+            )
         except ValueError:
             return str(data)
     elif output == 'yaml':
@@ -78,22 +87,25 @@ def raw_format_output(
 
         fmt = [(v[0], parse(v[1] if len(v) > 1 else v[0])) for v in columns]
         result = []
-        if no_headers:
-            headers = []  # type: List[str]
+        if single:
+            print(fmt)
         else:
-            headers = [v[0] for v in fmt]
-        for item in data:
-            row = []
-            for fmtpair in fmt:
-                val = [match.value for match in fmtpair[1].find(item)]
-                row.append(", ".join(map(str, val)))
+            if no_headers:
+                headers = []  # type: List[str]
+            else:
+                headers = [v[0] for v in fmt]
+            for item in data:
+                row = []
+                for fmtpair in fmt:
+                    val = [match.value for match in fmtpair[1].find(item)]
+                    row.append(", ".join(map(str, val)))
 
-            result.append(row)
+                result.append(row)
 
-        res = tabulate(
-            result, headers=headers, tablefmt=table_format
-        )  # type: str
-        return res
+            res = tabulate(
+                result, headers=headers, tablefmt=table_format
+            )  # type: str
+            return res
     else:
         raise ValueError(
             "Output Format was {}, expected either 'json' or 'yaml'".format(
@@ -119,6 +131,7 @@ def format_output(
     ctx: Configuration,
     data: List[Dict[str, Any]],
     columns: Optional[List] = None,
+    single: Optional[bool] = False
 ) -> str:
     """Format data to output based on settings in ctx/Context."""
     return raw_format_output(
@@ -128,6 +141,7 @@ def format_output(
         ctx.no_headers,
         ctx.table_format,
         ctx.sort_by,
+        single=single
     )
 
 
@@ -168,8 +182,43 @@ def debug_requests() -> Generator:
     debug_requests_off()
 
 
-def get_hostname_from_url(hostname_regex: str, url: str) -> str:
+def get_hostname_from_url(
+        hostname_regex: str, url: str
+) -> str:
+    """Parse hostname from URL"""
     re_search = re.search(hostname_regex, url)
     _, _hostname = re_search.groups() if re_search else ('', '')
     _host = _hostname.split('.')[0] if _hostname.split('.') else ''
     return _host
+
+
+def capitalize(
+        value: str
+) -> str:
+    """Capitalize string"""
+    return re.sub(
+        r"(\w)([A-Z])", r"\1 \2",
+        value
+    ).title()
+
+def dump_object(
+        obj: Any, _key: str=None, _list: List[str]=None
+) -> None:
+    """Dumps dictionary in kv fmt"""
+    for key, value in obj.items():
+        if isinstance(value, list):
+            for i in value:
+                if isinstance(i, dict):
+                    dump(i, key, _list)
+                else:
+                    _list.append(
+                        const.COLUMNS_TWO_FMT.format(key, i)
+                    )
+        elif not isinstance(value, dict) and not isinstance(value, list):
+            _k = _key + '.' + key
+            _list.append(
+                const.COLUMNS_TWO_FMT.format(
+                    _k, value)
+            )
+        elif key not in ['_links']:
+            dump(value, key, _list)

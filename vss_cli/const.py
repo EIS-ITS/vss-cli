@@ -20,6 +20,8 @@ DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "_~%]+|\\[[a-z0-9\\-._~%!$&'()*+,;" \
                      "=:]+\\])"
 
+COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
+
 COLUMNS_DEFAULT = [('ALL', '*')]
 COLUMNS_VIM = [
     ('UUID', 'uuid'),
@@ -31,7 +33,7 @@ COLUMNS_MOID = [
 ]
 COLUMNS_REQUEST = [
     ('ID', 'id'),
-    ('CREATED_ON', 'created_on'),
-    ('UPDATED_ON', 'updated_on'),
+    ('CREATED', 'created_on'),
+    ('UPDATED', 'updated_on'),
     ('STATUS', 'status')
 ]
