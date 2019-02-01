@@ -84,8 +84,13 @@ def request_mgmt_image_sync_get(ctx, rid):
     columns = ctx.columns or const.COLUMNS_REQUEST
     if not ctx.columns:
         columns.extend(
-            [('DELETED', 'deleted'),
-             ('ADDED', 'added')]
+            [('TYPE', 'type'),
+             ('DELETED', 'deleted'),
+             ('ADDED', 'added'),
+             ('ERRORS', 'message.errors'),
+             ('WARNINGS', 'message.warnings'),
+             ('TASK', 'task_id'),
+             ('USER', 'user.username')]
         )
     click.echo(
         format_output(
@@ -160,3 +165,54 @@ def request_snapshot_mgmt_ls(ctx: Configuration, filter, page,
         click.echo_via_pager(output)
     else:
         click.echo(output)
+
+
+@request_mgmt_snapshot.command('get', help='Snapshot request')
+@click.argument('rid', type=int, required=True)
+@pass_context
+def request_snapshot_mgmt_get(ctx, rid):
+    obj = ctx.get_snapshot_request(rid)
+    columns = ctx.columns or const.COLUMNS_REQUEST
+    if not ctx.columns:
+        columns.extend(
+            const.COLUMNS_REQUEST_SNAP
+        )
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@request_mgmt_snapshot.group('set', help='Update snapshot request')
+@click.argument('rid', type=int, required=True)
+@pass_context
+def request_snapshot_mgmt_set(ctx: Configuration, rid):
+    ctx.rid = rid
+    pass
+
+
+@request_snapshot_mgmt_set.command('duration')
+@click.option('-l', '--lifetime', type=click.IntRange(1, 72),
+              help='Number of hours the snapshot will live.',
+              required=True)
+@pass_context
+def request_snapshot_mgmt_set_duration(ctx: Configuration, lifetime):
+    """Extend snapshot lifetime"""
+    _, obj = ctx.extend_snapshot_request(ctx.rid, lifetime)
+    columns = ctx.columns or const.COLUMNS_REQUEST
+    if not ctx.columns:
+        columns.extend(
+            const.COLUMNS_REQUEST_SNAP
+        )
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
