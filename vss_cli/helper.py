@@ -7,7 +7,7 @@ import logging
 import shlex
 from typing import Any, Dict, Generator, List, Optional, Tuple, cast
 from pygments import highlight
-from pygments.lexers import JsonLexer
+from pygments.lexers import JsonLexer, YamlLexer
 from pygments.formatters import TerminalFormatter
 from vss_cli.config import Configuration
 import vss_cli.const as const
@@ -76,7 +76,14 @@ def raw_format_output(
             return str(data)
     elif output == 'yaml':
         try:
-            return cast(str, yaml.safe_dump(data, default_flow_style=False))
+            return highlight(
+                cast(
+                    str,
+                    yaml.safe_dump(data, default_flow_style=False)
+                ),
+                YamlLexer(),
+                TerminalFormatter()
+            )
         except ValueError:
             return str(data)
     elif output == 'table':

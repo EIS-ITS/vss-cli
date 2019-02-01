@@ -67,3 +67,13 @@ COLUMNS_REQUEST_CHANGE = [
     ('SCHEDULED', 'scheduled_datetime'),
     ('APPROVED', 'approval.approved')
 ]
+COLUMNS_REQUEST_EXPORT = [
+    ('VM NAME', 'vm_name'),
+    ('VM UUID', 'vm_uuid'),
+    ('TRANSFERRED', 'transferred'),
+    ('FILES', 'files[*]'),
+    ('TASK', 'task_id'),
+    ('USER', 'user.username'),
+    ('ERRORS', 'message.errors'),
+    ('WARNINGS', 'message.warnings'),
+]
