@@ -77,3 +77,11 @@ COLUMNS_REQUEST_EXPORT = [
     ('ERRORS', 'message.errors'),
     ('WARNINGS', 'message.warnings'),
 ]
+COLUMNS_REQUEST_FOLDER = [
+    ('ACTION', 'action'),
+    ('MOREF', 'moref'),
+    ('TASK', 'task_id'),
+    ('USER', 'user.username'),
+    ('ERRORS', 'message.errors'),
+    ('WARNINGS', 'message.warnings'),
+]
