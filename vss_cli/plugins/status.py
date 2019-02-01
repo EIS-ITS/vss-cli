@@ -1,7 +1,6 @@
 """Status plugin for VSS CLI (vss-cli)."""
 import click
 from vss_cli.cli import pass_context
-from vss_cli import const
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.sstatus import check_status
