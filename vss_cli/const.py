@@ -33,7 +33,19 @@ COLUMNS_MOID = [
 ]
 COLUMNS_REQUEST = [
     ('ID', 'id'),
+    ('TASK', 'task_id'),
     ('CREATED', 'created_on'),
     ('UPDATED', 'updated_on'),
-    ('STATUS', 'status')
+    ('STATUS', 'status'),
+    ('USER', 'user.username'),
+]
+COLUMNS_REQUEST_SNAP = [
+    ('DESCRIPTION', 'snapshot.description'),
+    ('ID', 'snapshot.snap_id'),
+    ('EXTENSIONS', 'extensions'),
+    ('ACTION', 'action'),
+    ('VM NAME', 'vm_name'),
+    ('VM UUID', 'vm_uuid'),
+    ('ERRORS', 'message.errors'),
+    ('WARNINGS', 'message.warnings')
 ]

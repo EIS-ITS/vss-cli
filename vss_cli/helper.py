@@ -88,7 +88,17 @@ def raw_format_output(
         fmt = [(v[0], parse(v[1] if len(v) > 1 else v[0])) for v in columns]
         result = []
         if single:
-            print(fmt)
+            dat = data[0]
+            for fmtpair in fmt:
+                val = None
+                for match in fmtpair[1].find(dat):
+                    val = match.value
+                    if val:
+                        break
+                line = const.COLUMNS_TWO_FMT.format(fmtpair[0], str(val))
+                result.append(line)
+            res = '\n'.join(result)
+            return res
         else:
             if no_headers:
                 headers = []  # type: List[str]
@@ -201,6 +211,7 @@ def capitalize(
         value
     ).title()
 
+
 def dump_object(
         obj: Any, _key: str=None, _list: List[str]=None
 ) -> None:
@@ -209,7 +220,7 @@ def dump_object(
         if isinstance(value, list):
             for i in value:
                 if isinstance(i, dict):
-                    dump(i, key, _list)
+                    dump_object(i, key, _list)
                 else:
                     _list.append(
                         const.COLUMNS_TWO_FMT.format(key, i)
@@ -221,4 +232,4 @@ def dump_object(
                     _k, value)
             )
         elif key not in ['_links']:
-            dump(value, key, _list)
+            dump_object(value, key, _list)

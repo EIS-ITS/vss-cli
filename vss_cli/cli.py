@@ -182,7 +182,8 @@ def _default_token() -> Optional[str]:
 )
 @click.option(
     '--table-format',
-    default='plain',
+    default='simple',
+    envvar='VSS_TABLE',
     help="Which table format to use.",
     autocompletion=autocompletion.table_formats,
 )

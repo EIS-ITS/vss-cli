@@ -53,7 +53,6 @@ PROJECT_URLS = {
 }
 
 REQUIRES = [
-    'requests==2.21.0',
     'pyyaml>=4.2b1',
     'click==7.0',
     'click-log==0.3.2',
@@ -63,7 +62,8 @@ REQUIRES = [
     'dateparser==0.7.0',
     'click-repl==0.1.6',
     'prompt-toolkit==2.0.8',
-    'Pygments==2.3.1'
+    'Pygments==2.3.1',
+    'pyvss==0.9.27'
 ]
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))
