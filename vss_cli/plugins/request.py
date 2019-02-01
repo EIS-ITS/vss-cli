@@ -216,3 +216,113 @@ def request_snapshot_mgmt_set_duration(ctx: Configuration, lifetime):
             single=True
         )
     )
+
+
+@cli.group('change')
+@pass_context
+def request_mgmt_change(ctx: Configuration):
+    """Manage your virtual machine change requests.
+
+    Updating any virtual machine attribute will produce a virtual machine
+    change request."""
+    pass
+
+
+@request_mgmt_change.command('ls', short_help='list vm change requests')
+@click.option('-f', '--filter', type=click.STRING,
+              help='apply filter')
+@click.option('-s', '--sort', type=click.STRING,
+              help='apply sorting ')
+@click.option('-a', '--show-all', is_flag=True,
+              help='show all results')
+@click.option('-c', '--count', type=int,
+              help='size of results')
+@click.option('-p', '--page', is_flag=True,
+              help='page results in a less-like format')
+@pass_context
+def request_mgmt_change_ls(ctx: Configuration, filter, page, sort,
+                           show_all, count):
+    """List requests based on:
+
+        Filter list in the following format <field_name>,<operator>,<value>
+        where operator is eq, ne, lt, le, gt, ge, like, in.
+        For example: status,eq,Processed
+
+            vss request change ls -f status,eq,Processed
+
+        Sort list in the following format <field_name>,<asc|desc>. For example:
+
+            vss request change ls -s created_on,desc
+
+    """
+    columns = ctx.columns or const.COLUMNS_REQUEST
+    if not ctx.columns:
+        columns.extend([
+            ('VM_NAME', 'vm_name'),
+            ('VM_UUID', 'vm_uuid'),
+            ('ATTRIBUTE', 'attribute'),
+            ('VALUE', 'value[*]')
+        ])
+    params = dict()
+    if filter:
+        params['filter'] = filter
+    if sort:
+        params['sort'] = sort
+
+    _requests = ctx.get_change_requests(
+        show_all=show_all,
+        per_page=count, **params)
+
+    output = format_output(
+            ctx,
+            _requests,
+            columns=columns,
+        )
+    # page results
+    if page:
+        click.echo_via_pager(output)
+    else:
+        click.echo(output)
+
+
+@request_mgmt_change.command('get', short_help='Change request')
+@click.argument('rid', type=int, required=True)
+@pass_context
+def request_change_mgmt_get(ctx: Configuration, rid):
+    obj = ctx.get_change_request(rid)
+    columns = ctx.columns or const.COLUMNS_REQUEST
+    if not ctx.columns:
+        columns.extend(
+            const.COLUMNS_REQUEST_CHANGE
+        )
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@request_mgmt_change.command('retry', short_help='Retry vm change request')
+@click.argument('rid', type=int, required=True)
+@pass_context
+def request_change_mgmt_retry(ctx: Configuration, rid):
+    """Retries given virtual machine change request with status
+    'Error Processed'.
+    """
+    obj = ctx.retry_change_request(rid)
+    columns = ctx.columns or []
+    if not ctx.columns:
+        columns.extend(
+            const.COLUMNS_REQUEST_SUBMITTED
+        )
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )

@@ -33,11 +33,15 @@ COLUMNS_MOID = [
 ]
 COLUMNS_REQUEST = [
     ('ID', 'id'),
-    ('TASK', 'task_id'),
+    ('STATUS', 'status'),
     ('CREATED', 'created_on'),
     ('UPDATED', 'updated_on'),
-    ('STATUS', 'status'),
-    ('USER', 'user.username'),
+]
+COLUMNS_REQUEST_SUBMITTED = [
+    ('ID', 'request.id'),
+    ('STATUS', 'request.status'),
+    ('TASK ID', 'request.task_id'),
+    ('MESSAGE', 'message')
 ]
 COLUMNS_REQUEST_SNAP = [
     ('DESCRIPTION', 'snapshot.description'),
@@ -47,5 +51,19 @@ COLUMNS_REQUEST_SNAP = [
     ('VM NAME', 'vm_name'),
     ('VM UUID', 'vm_uuid'),
     ('ERRORS', 'message.errors'),
-    ('WARNINGS', 'message.warnings')
+    ('WARNINGS', 'message.warnings'),
+    ('TASK', 'task_id'),
+    ('USER', 'user.username'),
+]
+COLUMNS_REQUEST_CHANGE = [
+    ('VM NAME', 'vm_name'),
+    ('VM UUID', 'vm_uuid'),
+    ('ATTRIBUTE', 'attribute'),
+    ('VALUE', 'value[*]'),
+    ('ERRORS', 'message.errors'),
+    ('WARNINGS', 'message.warnings'),
+    ('TASK', 'task_id'),
+    ('USER', 'user.username'),
+    ('SCHEDULED', 'scheduled_datetime'),
+    ('APPROVED', 'approval.approved')
 ]
