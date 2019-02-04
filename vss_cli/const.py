@@ -85,3 +85,14 @@ COLUMNS_REQUEST_FOLDER = [
     ('ERRORS', 'message.errors'),
     ('WARNINGS', 'message.warnings'),
 ]
+COLUMNS_REQUEST_INVENTORY = [
+    ('NAME', 'name'),
+    ('FORMAT', 'format'),
+    ('PROPS', 'properties'),
+    ('FILTERS', 'filters'),
+    ('HITS', 'hits'),
+    ('TASK', 'task_id'),
+    ('USER', 'user.username'),
+    ('ERRORS', 'message.errors'),
+    ('WARNINGS', 'message.warnings'),
+]
