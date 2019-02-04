@@ -89,8 +89,11 @@ class VssCli(click.MultiCommand):
                 {},
                 ['cli'],
             )
-        except ImportError:
-            # todo: print out issue of loading plugins?
+        except ImportError as ex:
+            _LOGGER.warning(
+                f'Error loading plugin'
+                f' {cmd_name} {type(ex).__name__}: {ex}'
+            )
             return None
         return cast(Union[Group, Command], mod.cli)
 

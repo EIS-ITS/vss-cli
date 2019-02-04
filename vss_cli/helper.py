@@ -97,12 +97,9 @@ def raw_format_output(
         if single:
             dat = data[0]
             for fmtpair in fmt:
-                val = None
-                for match in fmtpair[1].find(dat):
-                    val = match.value
-                    if val:
-                        break
-                line = const.COLUMNS_TWO_FMT.format(fmtpair[0], str(val))
+                val = [match.value for match in fmtpair[1].find(dat)]
+                val_str = ", ".join(map(str, val))
+                line = const.COLUMNS_TWO_FMT.format(fmtpair[0], val_str)
                 result.append(line)
             res = '\n'.join(result)
             return res

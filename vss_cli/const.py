@@ -28,7 +28,7 @@ COLUMNS_VIM = [
     ('NAME', 'name')
 ]
 COLUMNS_MOID = [
-    ('MOID', 'moref'),
+    ('MOREF', 'moref'),
     ('NAME', 'name')
 ]
 COLUMNS_MIN = [
@@ -55,8 +55,8 @@ COLUMNS_REQUEST_SNAP = [
     ('ACTION', 'action'),
     ('VM NAME', 'vm_name'),
     ('VM UUID', 'vm_uuid'),
-    ('ERRORS', 'message.errors'),
-    ('WARNINGS', 'message.warnings'),
+    ('ERRORS', 'message.errors[*]'),
+    ('WARNINGS', 'message.warnings[*]'),
     ('TASK', 'task_id'),
     ('USER', 'user.username'),
 ]
@@ -65,8 +65,8 @@ COLUMNS_REQUEST_CHANGE = [
     ('VM UUID', 'vm_uuid'),
     ('ATTRIBUTE', 'attribute'),
     ('VALUE', 'value[*]'),
-    ('ERRORS', 'message.errors'),
-    ('WARNINGS', 'message.warnings'),
+    ('ERRORS', 'message.errors[*]'),
+    ('WARNINGS', 'message.warnings[*]'),
     ('TASK', 'task_id'),
     ('USER', 'user.username'),
     ('SCHEDULED', 'scheduled_datetime'),
@@ -79,27 +79,27 @@ COLUMNS_REQUEST_EXPORT = [
     ('FILES', 'files[*]'),
     ('TASK', 'task_id'),
     ('USER', 'user.username'),
-    ('ERRORS', 'message.errors'),
-    ('WARNINGS', 'message.warnings'),
+    ('ERRORS', 'message.errors[*]'),
+    ('WARNINGS', 'message.warnings[*]'),
 ]
 COLUMNS_REQUEST_FOLDER = [
     ('ACTION', 'action'),
     ('MOREF', 'moref'),
     ('TASK', 'task_id'),
     ('USER', 'user.username'),
-    ('ERRORS', 'message.errors'),
-    ('WARNINGS', 'message.warnings'),
+    ('ERRORS', 'message.errors[*]'),
+    ('WARNINGS', 'message.warnings[*]'),
 ]
 COLUMNS_REQUEST_INVENTORY = [
     ('NAME', 'name'),
     ('FORMAT', 'format'),
-    ('PROPS', 'properties'),
+    ('PROPS', 'properties.data[*]'),
     ('FILTERS', 'filters'),
     ('HITS', 'hits'),
     ('TASK', 'task_id'),
     ('USER', 'user.username'),
-    ('ERRORS', 'message.errors'),
-    ('WARNINGS', 'message.warnings'),
+    ('ERRORS', 'message.errors[*]'),
+    ('WARNINGS', 'message.warnings[*]'),
 ]
 COLUMNS_REQUEST_NEW = [
     ('VM NAME', 'vm_name'),
@@ -111,10 +111,10 @@ COLUMNS_REQUEST_NEW = [
     ('FOLDER', 'folder'),
     ('CPU', 'cpu'),
     ('MEMORY', 'memory'),
-    ('DISKS', 'disks'),
-    ('NETWORKS', 'networks'),
-    ('ERRORS', 'message.errors'),
-    ('WARNINGS', 'message.warnings'),
+    ('DISKS', 'disks[*]'),
+    ('NETWORKS', 'networks[*]'),
+    ('ERRORS', 'message.errors[*]'),
+    ('WARNINGS', 'message.warnings[*]'),
     ('TASK', 'task_id'),
     ('USER', 'user.username'),
     ('APPROVED', 'approval.approved')
@@ -135,4 +135,50 @@ COLUMNS_MESSAGE = [
     ('FROM', 'user.username'),
     ('SUBJECT', 'subject'),
     ('TEXT', 'text')
+]
+COLUMNS_VM = [
+    ('UUID', 'uuid'),
+    ('NAME', 'name')
+]
+COLUMNS_GROUP = [
+    ('NAME', 'cn'),
+    ('DESCRIPTION', 'description'),
+    ('CREATED', 'createTimestamp'),
+    ('MODIFIED', 'modifyTimestamp'),
+    ('MEMBERS', 'uniqueMemberCount'),
+    ('MEMBER', 'uniqueMember[*].uid')
+]
+COLUMNS_GROUPS = [
+    ('GROUPS', 'groups[*]')
+]
+COLUMNS_ROLE = [
+    ('NAME', 'name'),
+    ('DESCRIPTION', 'description'),
+    ('ENTITLEMENTS', 'entitlements[*]')
+]
+COLUMNS_USER_PERSONAL = [
+    ('USERNAME', 'username'),
+    ('NAME', 'full_name'),
+    ('EMAIL', 'email'),
+    ('PHONE', 'phone'),
+    ('AUTH', 'authTimestamp'),
+    ('PWDCHANGE', 'pwdChangeTime'),
+    ('LOCKED', 'pwdAccountLockedTime')
+]
+COLUMNS_USER_STATUS = [
+    ('CREATED', 'created_on'),
+    ('UPDATED', 'updated_on'),
+    ('LAST ACCESS', 'last_access'),
+    ('LAST IP', 'ip_address')
+]
+COLUMNS_MESSAGE_DIGEST = [
+    ('MESSAGE', 'message')
+]
+COLUMNS_NOT_REQUEST = [
+    ('ALL', 'all'),
+    ('NONE', 'none'),
+    ('COMPLETION', 'completion'),
+    ('ERROR', 'error'),
+    ('SUBMISSION', 'submission')
+
 ]
