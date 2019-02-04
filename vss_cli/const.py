@@ -31,11 +31,14 @@ COLUMNS_MOID = [
     ('MOID', 'moref'),
     ('NAME', 'name')
 ]
+COLUMNS_MIN = [
+    ('ID', 'id'),
+]
 COLUMNS_REQUEST = [
     ('ID', 'id'),
-    ('STATUS', 'status'),
     ('CREATED', 'created_on'),
     ('UPDATED', 'updated_on'),
+    ('STATUS', 'status'),
 ]
 COLUMNS_REQUEST_SUBMITTED = [
     ('ID', 'request.id'),
@@ -113,4 +116,11 @@ COLUMNS_REQUEST_NEW = [
     ('TASK', 'task_id'),
     ('USER', 'user.username'),
     ('APPROVED', 'approval.approved')
+]
+COLUMNS_TK = [
+    ('ID', 'id'),
+    ('CREATED', 'status.created_on'),
+    ('UPDATED', 'status.updated_on'),
+    ('LAST ACCESS', 'status.last_access'),
+    ('LAST IP', 'status.ip_address')
 ]
