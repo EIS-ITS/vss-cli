@@ -33,6 +33,8 @@ COLUMNS_MOID = [
 ]
 COLUMNS_MIN = [
     ('ID', 'id'),
+    ('CREATED', 'created_on'),
+    ('UPDATED', 'updated_on'),
 ]
 COLUMNS_REQUEST = [
     ('ID', 'id'),
@@ -123,4 +125,14 @@ COLUMNS_TK = [
     ('UPDATED', 'status.updated_on'),
     ('LAST ACCESS', 'status.last_access'),
     ('LAST IP', 'status.ip_address')
+]
+COLUMNS_MESSAGE = [
+    ('ID', 'id'),
+    ('CREATED', 'created_on'),
+    ('UPDATED', 'updated_on'),
+    ('KIND', 'kind'),
+    ('STATUS', 'status'),
+    ('FROM', 'user.username'),
+    ('SUBJECT', 'subject'),
+    ('TEXT', 'text')
 ]
