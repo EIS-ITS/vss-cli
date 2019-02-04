@@ -96,3 +96,21 @@ COLUMNS_REQUEST_INVENTORY = [
     ('ERRORS', 'message.errors'),
     ('WARNINGS', 'message.warnings'),
 ]
+COLUMNS_REQUEST_NEW = [
+    ('VM NAME', 'vm_name'),
+    ('VM UUID', 'vm_uuid'),
+    ('DOMAIN', 'domain'),
+    ('SOURCE', 'source_vm'),
+    ('SOURCE', 'source_template'),
+    ('SOURCE', 'source_image'),
+    ('FOLDER', 'folder'),
+    ('CPU', 'cpu'),
+    ('MEMORY', 'memory'),
+    ('DISKS', 'disks'),
+    ('NETWORKS', 'networks'),
+    ('ERRORS', 'message.errors'),
+    ('WARNINGS', 'message.warnings'),
+    ('TASK', 'task_id'),
+    ('USER', 'user.username'),
+    ('APPROVED', 'approval.approved')
+]

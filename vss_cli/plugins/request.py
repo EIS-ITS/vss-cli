@@ -23,7 +23,10 @@ def request_mgmt_image_sync(ctx: Configuration):
     image-sync request"""
 
 
-@request_mgmt_image_sync.command('ls', short_help='list image-sync requests')
+@request_mgmt_image_sync.command(
+    'ls',
+    short_help='list image-sync requests'
+)
 @click.option('-f', '--filter', type=click.STRING,
               help='apply filter')
 @click.option('-s', '--sort', type=click.STRING,
@@ -76,7 +79,10 @@ def request_mgmt_image_sync_ls(
         click.echo(output)
 
 
-@request_mgmt_image_sync.command('get', help='Image sync request')
+@request_mgmt_image_sync.command(
+    'get',
+    help='Image sync request'
+)
 @click.argument('rid', type=int, required=True)
 @pass_context
 def request_mgmt_image_sync_get(ctx, rid):
@@ -111,7 +117,10 @@ def request_mgmt_snapshot(ctx: Configuration):
     a virtual machine snapshot request."""
 
 
-@request_mgmt_snapshot.command('ls', short_help='list snapshot requests')
+@request_mgmt_snapshot.command(
+    'ls',
+    short_help='list snapshot requests'
+)
 @click.option('-f', '--filter', type=click.STRING,
               help='apply filter')
 @click.option('-s', '--sort', type=click.STRING,
@@ -167,7 +176,10 @@ def request_snapshot_mgmt_ls(ctx: Configuration, filter, page,
         click.echo(output)
 
 
-@request_mgmt_snapshot.command('get', help='Snapshot request')
+@request_mgmt_snapshot.command(
+    'get',
+    help='Snapshot request'
+)
 @click.argument('rid', type=int, required=True)
 @pass_context
 def request_snapshot_mgmt_get(ctx, rid):
@@ -187,7 +199,10 @@ def request_snapshot_mgmt_get(ctx, rid):
     )
 
 
-@request_mgmt_snapshot.group('set', help='Update snapshot request')
+@request_mgmt_snapshot.group(
+    'set',
+    help='Update snapshot request'
+)
 @click.argument('rid', type=int, required=True)
 @pass_context
 def request_snapshot_mgmt_set(ctx: Configuration, rid):
@@ -218,17 +233,16 @@ def request_snapshot_mgmt_set_duration(ctx: Configuration, lifetime):
     )
 
 
-@cli.group('change')
+@cli.group('new')
 @pass_context
-def request_mgmt_change(ctx: Configuration):
-    """Manage your virtual machine change requests.
-
-    Updating any virtual machine attribute will produce a virtual machine
-    change request."""
+def request_mgmt_new(ctx: Configuration):
+    """Manage your new virtual machine deployment requests."""
     pass
 
 
-@request_mgmt_change.command('ls', short_help='list vm change requests')
+@request_mgmt_new.command(
+    'ls', short_help='list vm new requests'
+)
 @click.option('-f', '--filter', type=click.STRING,
               help='apply filter')
 @click.option('-s', '--sort', type=click.STRING,
@@ -240,8 +254,134 @@ def request_mgmt_change(ctx: Configuration):
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
 @pass_context
-def request_mgmt_change_ls(ctx: Configuration, filter, page, sort,
-                           show_all, count):
+def request_mgmt_new_ls(
+        ctx: Configuration, filter, page, sort,
+        show_all, count
+):
+    """List requests based on:
+
+        Filter list in the following format <field_name>,<operator>,<value>
+        where operator is eq, ne, lt, le, gt, ge, like, in.
+        For example: status,eq,Processed
+
+            vss request new ls -f status,eq,Processed
+
+        Sort list in the following format <field_name>,<asc|desc>. For example:
+
+            vss request new ls -s created_on,desc
+
+    """
+    columns = ctx.columns or const.COLUMNS_REQUEST
+    if not ctx.columns:
+        columns.extend([
+            ('APPROVED', 'approval.approved'),
+            ('VM_NAME', 'vm_name'),
+            ('VM_UUID', 'vm_uuid'),
+            ('BUILT', 'built_from')
+        ])
+    params = dict()
+    if filter:
+        params['filter'] = filter
+    if sort:
+        params['sort'] = sort
+
+    _requests = ctx.get_new_requests(
+        show_all=show_all,
+        per_page=count, **params)
+
+    output = format_output(
+            ctx,
+            _requests,
+            columns=columns,
+        )
+    # page results
+    if page:
+        click.echo_via_pager(output)
+    else:
+        click.echo(output)
+
+
+@request_mgmt_new.command(
+    'get',
+    short_help='New vm request'
+)
+@click.argument('rid', type=int, required=True)
+@pass_context
+def request_mgmt_new_get(
+    ctx: Configuration,
+    rid
+):
+    obj = ctx.get_new_request(rid)
+    columns = ctx.columns or const.COLUMNS_REQUEST
+    if not ctx.columns:
+        columns.extend(
+            const.COLUMNS_REQUEST_NEW
+        )
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@request_mgmt_new.command(
+    'retry',
+    short_help='Retry vm new request'
+)
+@click.argument('rid', type=int, required=True)
+@pass_context
+def request_mgmt_new_retry(ctx: Configuration, rid):
+    """Retries given virtual machine new request with status
+    'Error Processed'.
+    """
+    obj = ctx.retry_new_request(rid)
+    columns = ctx.columns or []
+    if not ctx.columns:
+        columns.extend(
+            const.COLUMNS_REQUEST_SUBMITTED
+        )
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@cli.group('change')
+@pass_context
+def request_mgmt_change(ctx: Configuration):
+    """Manage virtual machine change requests.
+
+    Updating any virtual machine attribute will produce a virtual machine
+    change request."""
+    pass
+
+
+@request_mgmt_change.command(
+    'ls',
+    short_help='list vm change requests'
+)
+@click.option('-f', '--filter', type=click.STRING,
+              help='apply filter')
+@click.option('-s', '--sort', type=click.STRING,
+              help='apply sorting ')
+@click.option('-a', '--show-all', is_flag=True,
+              help='show all results')
+@click.option('-c', '--count', type=int,
+              help='size of results')
+@click.option('-p', '--page', is_flag=True,
+              help='page results in a less-like format')
+@pass_context
+def request_mgmt_change_ls(
+        ctx: Configuration, filter, page, sort,
+        show_all, count
+):
     """List requests based on:
 
         Filter list in the following format <field_name>,<operator>,<value>
@@ -286,8 +426,10 @@ def request_mgmt_change_ls(ctx: Configuration, filter, page, sort,
         click.echo(output)
 
 
-@request_mgmt_change.command('get',
-                             short_help='Change request')
+@request_mgmt_change.command(
+    'get',
+    short_help='Change request'
+)
 @click.argument('rid', type=int, required=True)
 @pass_context
 def request_mgmt_change_get(ctx: Configuration, rid):
@@ -307,8 +449,10 @@ def request_mgmt_change_get(ctx: Configuration, rid):
     )
 
 
-@request_mgmt_change.command('retry',
-                             short_help='Retry vm change request')
+@request_mgmt_change.command(
+    'retry',
+    short_help='Retry vm change request'
+)
 @click.argument('rid', type=int, required=True)
 @pass_context
 def request_mgmt_change_retry(ctx: Configuration, rid):
@@ -338,7 +482,10 @@ def request_mgmt_export(ctx: Configuration):
     pass
 
 
-@request_mgmt_export.command('ls', short_help='list vm export requests')
+@request_mgmt_export.command(
+    'ls',
+    short_help='list vm export requests'
+)
 @click.option('-f', '--filter', type=click.STRING,
               help='apply filter')
 @click.option('-s', '--sort', type=click.STRING,
@@ -394,7 +541,10 @@ def request_mgmt_export_ls(ctx: Configuration, filter, page, sort,
         click.echo(output)
 
 
-@request_mgmt_export.command('get', short_help='Export request')
+@request_mgmt_export.command(
+    'get',
+    short_help='Export request'
+)
 @click.argument('rid', type=int, required=True)
 @pass_context
 def request_mgmt_export_get(ctx: Configuration, rid):
@@ -414,18 +564,23 @@ def request_mgmt_export_get(ctx: Configuration, rid):
     )
 
 
-@cli.group('folder',
-           help='Logical folder requests.')
+@cli.group(
+    'folder',
+    help='Manage logical folder requests.'
+)
 @click.pass_context
 def request_mgmt_folder(ctx: Configuration):
-    """Manage your logical folder requests.
+    """Manage logical folder requests.
 
     Logical Folders are containers for storing and organizing
     inventory objects, in this case virtual machines."""
     pass
 
 
-@request_mgmt_folder.command('ls', short_help='list logical folder requests')
+@request_mgmt_folder.command(
+    'ls',
+    short_help='list logical folder requests'
+)
 @click.option('-f', '--filter', type=click.STRING,
               help='apply filter')
 @click.option('-s', '--sort', type=click.STRING,
@@ -482,8 +637,10 @@ def request_mgmt_folder_ls(
         click.echo(output)
 
 
-@request_mgmt_folder.command('get',
-                             short_help='Folder request')
+@request_mgmt_folder.command(
+    'get',
+    short_help='Folder request'
+)
 @click.argument('rid', type=int, required=True)
 @pass_context
 def request_mgmt_folder_get(ctx, rid):
@@ -510,7 +667,8 @@ def request_mgmt_inventory(ctx: Configuration):
 
 
 @request_mgmt_inventory.command(
-    'ls', short_help='list inventory requests'
+    'ls',
+    short_help='list inventory requests'
 )
 @click.option('-f', '--filter', type=click.STRING,
               help='apply filter')
@@ -569,7 +727,8 @@ def request_mgmt_inventory_ls(
 
 
 @request_mgmt_inventory.command(
-    'get', short_help='Inventory request'
+    'get',
+    short_help='Inventory request'
 )
 @click.argument('rid', type=int, required=True)
 @pass_context
