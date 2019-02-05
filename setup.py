@@ -63,7 +63,8 @@ REQUIRES = [
     'click-repl==0.1.6',
     'prompt-toolkit==2.0.8',
     'Pygments==2.3.1',
-    'pyvss==0.9.27'
+    'pyvss==0.9.27',
+    'webdavclient3==0.10'
 ]
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))

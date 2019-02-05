@@ -31,6 +31,7 @@ class Configuration(VssManager):
         self.output = const.DEFAULT_OUTPUT  # type: str
         self.config = const.DEFAULT_CONFIG  # type: str
         self.history = const.DEFAULT_HISTORY  # type: str
+        self.webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.token = None  # type: Optional[str]
@@ -315,3 +316,14 @@ class Configuration(VssManager):
                     self.write_config_file()
         else:
             self.write_config_file()
+
+    def get_vskey_stor(self, **kwargs):
+        from webdav3 import client as wc
+        options = dict(
+            webdav_login=self.username,
+            webdav_password=self.password,
+            webdav_hostname=self.webdav_server,
+            verbose=self.verbose
+        )
+        self.vskey_stor = wc.Client(options=options)
+        return self.vskey_stor.valid()
