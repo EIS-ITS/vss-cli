@@ -4,8 +4,6 @@ from typing import Any, Dict, List, Tuple  # NOQA
 
 from vss_cli import const
 from vss_cli.config import Configuration
-import vss_cli.remote as api
-from requests.exceptions import HTTPError
 
 
 def _init_ctx(ctx: Configuration) -> None:
@@ -28,84 +26,6 @@ def _init_ctx(ctx: Configuration) -> None:
         ctx.timeout = int(
             os.environ.get('VSS_TIMEOUT', str(const.DEFAULT_TIMEOUT))
         )
-
-
-def services(
-    ctx: Configuration, args: List, incomplete: str
-) -> List[Tuple[str, str]]:
-    """Services."""
-    _init_ctx(ctx)
-    try:
-        response = api.get_services(ctx)
-    except HTTPError:
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for domain in response:
-            domain_name = domain['domain']
-            servicesdict = domain['services']
-
-            for service in servicesdict:
-                completions.append(
-                    (
-                        "{}.{}".format(domain_name, service),
-                        servicesdict[service]['description'],
-                    )
-                )
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-
-    return completions
-
-
-def entities(
-    ctx: Configuration, args: List, incomplete: str
-) -> List[Tuple[str, str]]:
-    """Entities."""
-    _init_ctx(ctx)
-    try:
-        response = api.get_states(ctx)
-    except HTTPError:
-        response = []
-
-    completions = []  # type List[Tuple[str, str]]
-
-    if response:
-        for entity in response:
-            friendly_name = entity['attributes'].get('friendly_name', '')
-            completions.append((entity['entity_id'], friendly_name))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-
-    return completions
-
-
-def events(
-    ctx: Configuration, args: List, incomplete: str
-) -> List[Tuple[str, str]]:
-    """Events."""
-    _init_ctx(ctx)
-    try:
-        response = api.get_events(ctx)
-    except HTTPError:
-        response = {}
-
-    completions = []
-
-    if response:
-        for entity in response:
-            completions.append((entity['event'], ''))  # type: ignore
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-
-    return completions
 
 
 def table_formats(
@@ -144,20 +64,3 @@ def table_formats(
 
     return [c for c in completions if incomplete in c[0]]
 
-
-def api_methods(
-    ctx: Configuration, args: List, incomplete: str
-) -> List[Tuple[str, str]]:
-    """Auto completion for methods."""
-    _init_ctx(ctx)
-
-    from inspect import getmembers
-
-    completions = []
-    for name, value in getmembers([]):
-        if name.startswith('URL_API_'):
-            completions.append((value, name[len('URL_API_') :]))
-
-    completions.sort()
-
-    return [c for c in completions if incomplete in c[0]]
