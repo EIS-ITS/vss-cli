@@ -297,7 +297,7 @@ def compute_folder_get_vms(
     obj = ctx.get_folder(ctx.moref, summary=1)
     objs = obj['vms']
     # format output
-    columns = ctx.columns or const.COLUMNS_VM
+    columns = ctx.columns or const.COLUMNS_VM_MIN
     output = format_output(
         ctx,
         objs,

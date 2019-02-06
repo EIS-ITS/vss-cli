@@ -23,7 +23,7 @@ DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
 COLUMNS_DEFAULT = [('ALL', '*')]
-COLUMNS_VIM = [
+COLUMNS_VM_MIN = [
     ('UUID', 'uuid'),
     ('NAME', 'name')
 ]
@@ -196,8 +196,12 @@ COLUMNS_MESSAGE = [
     ('TEXT', 'text')
 ]
 COLUMNS_VM = [
-    ('UUID', 'uuid'),
-    ('NAME', 'name')
+    *COLUMNS_VM_MIN,
+    ('FOLDER', 'folder'),
+    ('CPU', 'cpuCount'),
+    ('MEMORY', 'memoryGB'),
+    ('POWER', 'powerState'),
+    ('GUEST', 'guestFullName')
 ]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),

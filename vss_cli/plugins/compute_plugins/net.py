@@ -114,7 +114,7 @@ def net_get_vms(ctx: Configuration, page):
             f'or you do not have permission to access.'
         )
     objs = obj['vms']
-    columns = ctx.columns or const.COLUMNS_VM
+    columns = ctx.columns or const.COLUMNS_VM_MIN
     output = format_output(
         ctx,
         objs,

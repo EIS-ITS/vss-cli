@@ -109,6 +109,6 @@ def domain_get_vms(ctx: Configuration, page):
         format_output(
             ctx,
             objs,
-            columns=const.COLUMNS_VM
+            columns=const.COLUMNS_VM_MIN
         )
     )
