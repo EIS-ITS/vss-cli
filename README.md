@@ -120,14 +120,14 @@ $ export VSS_TABLE=simple
 ```
 
 You can also control the data shown with ``--columns`` providing a name and a `jsonpath`. For instance 
-`` --columns=ID=id,VMNAME=vm_name,WARNINGS=message.warnings request snapshot ls``
+``--columns=ID=id,VMNAME=vm_name,WARNINGS=message.warnings[*] request snapshot ls``
 
 ```text
   ID  VMNAME           WARNINGS
 ----  ---------------  -----------------------
-   1  1502P-wiki-vss   ['Snapshot 3 deleted']
-   6  1000P-Med-ASP02  ['Snapshot 1 deleted']
-   2  1606T-coreos0    ['Snapshot 1 deleted']
+   1  1502P-wiki-vss   Snapshot 3 deleted
+   6  1000P-Med-ASP02  Snapshot 1 deleted
+   2  1606T-coreos0    Snapshot 1 deleted
 ```
 
 ## JSON Parameter Input (WIP)
@@ -175,7 +175,7 @@ or
 source <(vss-cli completion zsh)
 ```
 
-## VSS Shell (WIP)
+## VSS Shell
 
 The VSS CLI provides a REPL interactive shell with tab-completion, suggestions and
 command history.
@@ -188,6 +188,18 @@ Usage: vss shell [OPTIONS]
 Options:
   -i, --history TEXT  File path to save history
   --help              Show this message and exit.
+
+```
+To enter the shell just execute vss shell and you will get the following welcome message:
+
+```bash
+    __   _____ ___
+    \ \ / / __/ __|      API Endpoint: https://cloud-api.eis.utoronto.ca/v2
+     \ V /\__ \__ \      Tab-completion & suggestions
+      \_/ |___/___/      Prefix external commands with "!"
+       CLI v0.0.0        History is saved: /Users/user/.vss-cli/history
+
+    Exit shell with :exit, :q, :quit, ctrl+d
 
 ```
 
