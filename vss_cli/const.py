@@ -192,3 +192,10 @@ COLUMNS_WEBDAV_INFO = [
     ('NAME', 'name'),
     ('SIZE', 'size')
 ]
+COLUMNS_SSH_KEY = [
+    ('ID', 'id'),
+    ('CREATED', 'created_on'),
+    ('UPDATED', 'updated_on'),
+    ('TYPE', 'type'),
+    ('COMMENT', 'comment')
+]
