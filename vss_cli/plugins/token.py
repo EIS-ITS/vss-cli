@@ -6,7 +6,10 @@ from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 
 
-@click.group('token')
+@click.group(
+    'token',
+    short_help='Manage access tokens'
+)
 @pass_context
 def cli(ctx: Configuration):
     """Manage access tokens."""

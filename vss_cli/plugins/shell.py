@@ -10,6 +10,7 @@ from vss_cli.helper import get_hostname_from_url
 
 
 @click.group('shell',
+             short_help='REPL interactive shell.',
              invoke_without_command=True)
 @click.option('-i', '--history', type=click.STRING,
               help='File path to save history',
@@ -51,7 +52,8 @@ def cli(ctx: Configuration, history):
         'history': FileHistory(history),
         'message': _message
     }
-    repl(ctx, prompt_kwargs=prompt_kwargs,
+    repl(click.get_current_context(),
+         prompt_kwargs=prompt_kwargs,
          allow_internal_commands=True,
          allow_system_commands=True)
 

@@ -6,7 +6,10 @@ from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 
 
-@click.group('message')
+@click.group(
+    'message',
+    short_help='Manage VSS Messages.'
+)
 @pass_context
 def cli(ctx: Configuration):
     """Manage VSS Messages."""

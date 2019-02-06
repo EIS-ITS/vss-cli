@@ -12,7 +12,10 @@ from vss_cli.exceptions import VssCliError
 _LOGGING = logging.getLogger(__name__)
 
 
-@click.group('key')
+@click.group(
+    'key',
+    short_help='Manage your SSH Public Keys.'
+)
 @pass_context
 def cli(ctx: Configuration):
     """Manage your SSH Public Keys."""

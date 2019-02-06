@@ -1,16 +1,21 @@
 """Request Management plugin for VSS CLI (vss-cli)."""
+import logging
 import click
 from vss_cli.cli import pass_context
 from vss_cli import const
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 
+_LOGGING = logging.getLogger(__name__)
 
-@click.group('request')
+
+@click.group(
+    'request',
+    short_help='Manage various requests.'
+)
 @pass_context
 def cli(ctx: Configuration):
-    """Manage various requests.
-    Useful to track request status and details."""
+    """Useful to track request status and details."""
     ctx.load_config()
 
 
@@ -272,6 +277,7 @@ def request_mgmt_new_ls(
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST
+    _LOGGING.debug(f'Columns {columns}')
     if not ctx.columns:
         columns.extend([
             ('APPROVED', 'approval.approved'),

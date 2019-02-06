@@ -61,7 +61,7 @@ def run() -> None:
         sys.exit(1)
 
 
-class VssCli(click.MultiCommand):
+class VssCli(click.Group):
     """The ITS Private Cloud Command-line."""
 
     def list_commands(self, ctx: Context) -> List[str]:

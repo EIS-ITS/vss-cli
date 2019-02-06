@@ -5,7 +5,10 @@ from click._bashcomplete import get_completion_script
 from vss_cli.cli import pass_context
 
 
-@click.group('completion')
+@click.group(
+    'completion',
+    short_help='Output shell completion code for the specified shell (bash or zsh).'
+)
 @pass_context
 def cli(ctx):
     """Output shell completion code for the specified shell (bash or zsh)."""

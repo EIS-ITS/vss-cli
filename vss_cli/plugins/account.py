@@ -6,7 +6,10 @@ from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 
 
-@click.group('account')
+@click.group(
+    'account',
+    short_help='Manage your VSS account'
+)
 @pass_context
 def cli(ctx: Configuration):
     """Manage your VSS account."""
