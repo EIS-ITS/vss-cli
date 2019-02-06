@@ -75,7 +75,7 @@ class VssCli(click.Group):
             if filename.endswith('.py') and not filename.startswith('__'):
                 commands.append(filename[:-3])
         commands.sort()
-
+        _LOGGER.debug(f'Loading {commands}')
         return commands
 
     def get_command(
@@ -89,6 +89,7 @@ class VssCli(click.Group):
                 {},
                 ['cli'],
             )
+            _LOGGER.debug(f'Loading {mod}')
         except ImportError as ex:
             _LOGGER.warning(
                 f'Error loading plugin'
@@ -149,7 +150,7 @@ def _default_token() -> Optional[str]:
     help="Output format.",
     type=click.Choice(['json', 'yaml', 'table', 'auto']),
     envvar='VSS_OUTPUT',
-    default='table',
+    default=const.DEFAULT_DATAOUTPUT,
     show_default=True,
 )
 @click.option(

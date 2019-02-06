@@ -3,6 +3,7 @@
 import codecs
 from datetime import datetime as dt
 import os
+import io
 import re
 from setuptools import find_packages, setup
 
@@ -23,6 +24,10 @@ def find_version(*file_paths):
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
+
+
+with io.open('requirements.txt', encoding='utf-8') as f:
+    REQUIRES = f.read().splitlines()
 
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
@@ -51,21 +56,6 @@ DOWNLOAD_URL = '{}/archive/{}.zip'.format(GITLAB_URL, __VERSION__)
 PROJECT_URLS = {
     'Bug Reports': '{}/issues'.format(GITLAB_URL),
 }
-
-REQUIRES = [
-    'pyyaml>=4.2b1',
-    'click==7.0',
-    'click-log==0.3.2',
-    'tabulate==0.8.3',
-    'jsonpath-rw==1.4.0',
-    'jinja2>=2.10',
-    'dateparser==0.7.0',
-    'click-repl==0.1.6',
-    'prompt-toolkit==2.0.8',
-    'Pygments==2.3.1',
-    'pyvss>=0.9.27',
-    'webdavclient3==0.10'
-]
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))
 

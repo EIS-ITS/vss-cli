@@ -48,13 +48,7 @@ def message_ls(
             vss message ls -s created_on,desc
 
     """
-    columns = ctx.columns or const.COLUMNS_MIN
-    if not ctx.columns:
-        columns.extend(
-            [('KIND', 'kind'),
-             ('SUBJECT', 'subject'),
-             ('STATUS', 'status')]
-        )
+    columns = ctx.columns or const.COLUMNS_MESSAGE_MIN
     params = dict()
     if filter:
         params['filter'] = filter

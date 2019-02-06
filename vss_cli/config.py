@@ -28,7 +28,7 @@ class Configuration(VssManager):
         )
         self.verbose = False  # type: bool
         self.server = const.DEFAULT_SERVER  # type: str
-        self.output = const.DEFAULT_OUTPUT  # type: str
+        self.output = const.DEFAULT_DATAOUTPUT  # type: str
         self.config = const.DEFAULT_CONFIG  # type: str
         self.history = const.DEFAULT_HISTORY  # type: str
         self.webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str

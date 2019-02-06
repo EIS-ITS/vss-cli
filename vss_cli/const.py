@@ -7,14 +7,13 @@ __version__ = '0.1.0.dev0'
 
 REQUIRED_PYTHON_VER = (3, 5, 3)
 
-DEFAULT_OUTPUT = 'json'
 DEFAULT_TIMEOUT = 30
 DEFAULT_SERVER = 'https://cloud-api.eis.utoronto.ca'
 DEFAULT_WEBDAV_SERVER = 'https://vskey-stor.eis.utoronto.ca'
 DEFAULT_CONFIG = os.path.expanduser(os.path.join('~', '.vss-cli', 'config.json'))
 DEFAULT_HISTORY = os.path.expanduser(os.path.join('~', '.vss-cli', 'history'))
 
-DEFAULT_DATAOUTPUT = 'yaml'
+DEFAULT_DATAOUTPUT = 'table'
 
 DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "-._~%!$&'()*+,;=]+@)?([a-z0-9\\-." \
@@ -27,6 +26,10 @@ COLUMNS_DEFAULT = [('ALL', '*')]
 COLUMNS_VIM = [
     ('UUID', 'uuid'),
     ('NAME', 'name')
+]
+COLUMNS_VIM_REQUEST = [
+    ('UUID', 'vm_uuid'),
+    ('NAME', 'vm_name')
 ]
 COLUMNS_MOID = [
     ('MOREF', 'moref'),
@@ -58,6 +61,23 @@ COLUMNS_REQUEST = [
     *COLUMNS_MIN,
     ('STATUS', 'status'),
 ]
+COLUMNS_REQUEST_MAX = [
+    ('ERRORS', 'message.errors[*]'),
+    ('WARNINGS', 'message.warnings[*]'),
+    ('TASK', 'task_id'),
+    ('USER', 'user.username')
+]
+COLUMNS_REQUEST_IMAGE_SYNC_MIN = [
+    *COLUMNS_REQUEST,
+    ('TYPE', 'type')
+]
+COLUMNS_REQUEST_IMAGE_SYNC = [
+    *COLUMNS_REQUEST,
+    ('TYPE', 'type'),
+    ('DELETED', 'deleted'),
+    ('ADDED', 'added'),
+    *COLUMNS_REQUEST_MAX
+]
 COLUMNS_REQUEST_SUBMITTED = [
     ('ID', 'request.id'),
     ('STATUS', 'request.status'),
@@ -69,57 +89,60 @@ COLUMNS_REQUEST_SNAP = [
     ('ID', 'snapshot.snap_id'),
     ('EXTENSIONS', 'extensions'),
     ('ACTION', 'action'),
-    ('VM NAME', 'vm_name'),
-    ('VM UUID', 'vm_uuid'),
-    ('ERRORS', 'message.errors[*]'),
-    ('WARNINGS', 'message.warnings[*]'),
-    ('TASK', 'task_id'),
-    ('USER', 'user.username'),
+    *COLUMNS_VIM_REQUEST,
+    *COLUMNS_REQUEST_MAX
+]
+COLUMNS_REQUEST_CHANGE_MIN = [
+    *COLUMNS_REQUEST,
+    *COLUMNS_VIM_REQUEST,
+    ('APPROVED', 'approval.approved'),
+    ('ATTRIBUTE', 'attribute'),
 ]
 COLUMNS_REQUEST_CHANGE = [
-    ('VM NAME', 'vm_name'),
-    ('VM UUID', 'vm_uuid'),
-    ('ATTRIBUTE', 'attribute'),
+    *COLUMNS_REQUEST_CHANGE_MIN,
     ('VALUE', 'value[*]'),
-    ('ERRORS', 'message.errors[*]'),
-    ('WARNINGS', 'message.warnings[*]'),
-    ('TASK', 'task_id'),
-    ('USER', 'user.username'),
     ('SCHEDULED', 'scheduled_datetime'),
-    ('APPROVED', 'approval.approved')
+    *COLUMNS_REQUEST_MAX,
+]
+COLUMNS_REQUEST_EXPORT_MIN = [
+    *COLUMNS_REQUEST,
+    *COLUMNS_VIM_REQUEST,
+    ('TRANSFERRED', 'transferred'),
 ]
 COLUMNS_REQUEST_EXPORT = [
-    ('VM NAME', 'vm_name'),
-    ('VM UUID', 'vm_uuid'),
-    ('TRANSFERRED', 'transferred'),
+    *COLUMNS_REQUEST_EXPORT_MIN,
     ('FILES', 'files[*]'),
-    ('TASK', 'task_id'),
-    ('USER', 'user.username'),
-    ('ERRORS', 'message.errors[*]'),
-    ('WARNINGS', 'message.warnings[*]'),
+    *COLUMNS_REQUEST_MAX
 ]
-COLUMNS_REQUEST_FOLDER = [
+COLUMNS_REQUEST_FOLDER_MIN = [
+    *COLUMNS_REQUEST,
     ('ACTION', 'action'),
     ('MOREF', 'moref'),
-    ('TASK', 'task_id'),
-    ('USER', 'user.username'),
-    ('ERRORS', 'message.errors[*]'),
-    ('WARNINGS', 'message.warnings[*]'),
+]
+COLUMNS_REQUEST_FOLDER = [
+    *COLUMNS_REQUEST_FOLDER_MIN,
+    *COLUMNS_REQUEST_MAX
+]
+COLUMNS_REQUEST_INVENTORY_MIN = [
+    *COLUMNS_REQUEST,
+    ('NAME', 'name'),
+    ('FORMAT', 'format')
 ]
 COLUMNS_REQUEST_INVENTORY = [
-    ('NAME', 'name'),
-    ('FORMAT', 'format'),
+    *COLUMNS_REQUEST_INVENTORY_MIN,
     ('PROPS', 'properties.data[*]'),
     ('FILTERS', 'filters'),
     ('HITS', 'hits'),
-    ('TASK', 'task_id'),
-    ('USER', 'user.username'),
-    ('ERRORS', 'message.errors[*]'),
-    ('WARNINGS', 'message.warnings[*]'),
+    *COLUMNS_REQUEST_MAX
+]
+COLUMNS_REQUEST_NEW_MIN = [
+    *COLUMNS_REQUEST,
+    *COLUMNS_VIM_REQUEST,
+    ('APPROVED', 'approval.approved'),
+    ('BUILT', 'built_from')
 ]
 COLUMNS_REQUEST_NEW = [
-    ('VM NAME', 'vm_name'),
-    ('VM UUID', 'vm_uuid'),
+    *COLUMNS_REQUEST_NEW_MIN,
     ('DOMAIN', 'domain'),
     ('SOURCE', 'source_vm'),
     ('SOURCE', 'source_template'),
@@ -129,23 +152,28 @@ COLUMNS_REQUEST_NEW = [
     ('MEMORY', 'memory'),
     ('DISKS', 'disks[*]'),
     ('NETWORKS', 'networks[*]'),
-    ('ERRORS', 'message.errors[*]'),
-    ('WARNINGS', 'message.warnings[*]'),
-    ('TASK', 'task_id'),
-    ('USER', 'user.username'),
-    ('APPROVED', 'approval.approved')
+    *COLUMNS_REQUEST_MAX
 ]
-COLUMNS_TK = [
+COLUMNS_TK_MIN = [
     ('ID', 'id'),
     ('CREATED', 'status.created_on'),
     ('UPDATED', 'status.updated_on'),
     ('LAST ACCESS', 'status.last_access'),
-    ('LAST IP', 'status.ip_address')
+    ('LAST IP', 'status.ip_address'),
+    ('VALID', 'status.valid')
+]
+COLUMNS_TK = [
+    *COLUMNS_TK_MIN,
+
+]
+COLUMNS_MESSAGE_MIN = [
+    *COLUMNS_MIN,
+    ('KIND', 'kind'),
+    ('SUBJECT', 'subject'),
+    ('STATUS', 'status')
 ]
 COLUMNS_MESSAGE = [
-    ('ID', 'id'),
-    ('CREATED', 'created_on'),
-    ('UPDATED', 'updated_on'),
+    *COLUMNS_MIN,
     ('KIND', 'kind'),
     ('STATUS', 'status'),
     ('FROM', 'user.username'),
@@ -196,7 +224,6 @@ COLUMNS_NOT_REQUEST = [
     ('COMPLETION', 'completion'),
     ('ERROR', 'error'),
     ('SUBMISSION', 'submission')
-
 ]
 COLUMNS_WEBDAV = [
     ('FILES', '[*]')
@@ -207,10 +234,14 @@ COLUMNS_WEBDAV_INFO = [
     ('NAME', 'name'),
     ('SIZE', 'size')
 ]
-COLUMNS_SSH_KEY = [
-    ('ID', 'id'),
-    ('CREATED', 'created_on'),
-    ('UPDATED', 'updated_on'),
+COLUMNS_SSH_KEY_MIN = [
+    *COLUMNS_MIN,
     ('TYPE', 'type'),
     ('COMMENT', 'comment')
+]
+COLUMNS_SSH_KEY = [
+    *COLUMNS_SSH_KEY_MIN,
+    ('FINGERPRINT', 'fingerprint'),
+    ('VALUE', 'value')
+
 ]

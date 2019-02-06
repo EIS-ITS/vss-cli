@@ -49,8 +49,6 @@ def token_ls(
 
     """
     columns = ctx.columns or const.COLUMNS_TK
-    if not ctx.columns:
-        columns.append(('VALID', 'status.valid'))
     params = dict()
     if filter:
         params['filter'] = filter

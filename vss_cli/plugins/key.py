@@ -53,7 +53,7 @@ def key_ls(
             vss key ls -s created_on,desc
 
     """
-    columns = ctx.columns or const.COLUMNS_SSH_KEY
+    columns = ctx.columns or const.COLUMNS_SSH_KEY_MIN
     params = dict()
     if filter:
         params['filter'] = filter
@@ -89,11 +89,6 @@ def key_ls(
 def key_get(ctx: Configuration, kid):
     obj = ctx.get_user_ssh_key(kid)
     columns = ctx.columns or const.COLUMNS_SSH_KEY
-    if not ctx.columns:
-        columns.extend([
-            ('FINGERPRINT', 'fingerprint'),
-            ('VALUE', 'value')
-        ])
     # format output
     click.echo(
         format_output(
@@ -120,12 +115,7 @@ def key_mk(ctx, path_or_key):
     else:
         obj = ctx.create_user_ssh_key(path_or_key)
     # defining columns
-    columns = ctx.columns or const.COLUMNS_SSH_KEY
-    if not ctx.columns:
-        columns.extend([
-            ('FINGERPRINT', 'fingerprint'),
-            ('VALUE', 'value')
-        ])
+    columns = ctx.columns or const.COLUMNS_SSH_KEY_MIN
     # if key has been created print
     if obj:
         # format output

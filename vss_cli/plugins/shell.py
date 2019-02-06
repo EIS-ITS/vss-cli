@@ -23,10 +23,12 @@ def cli(ctx: Configuration, history):
     _message_pfix = 'vss'
     _message_sfix = '> '
     # obtain hostname
-    _host = get_hostname_from_url(const.DEFAULT_HISTORY,
-                                  endpoint)
+    _host = get_hostname_from_url(
+        const.DEFAULT_HOST_REGEX,
+        endpoint
+    )
     if _host:
-        _message = [_message_pfix, '({})'.format(_host),
+        _message = [_message_pfix, f'({_host})',
                     _message_sfix]
     else:
         _message = [_message_pfix, _message_sfix]
@@ -52,8 +54,10 @@ def cli(ctx: Configuration, history):
         'history': FileHistory(history),
         'message': _message
     }
-    repl(click.get_current_context(),
-         prompt_kwargs=prompt_kwargs,
-         allow_internal_commands=True,
-         allow_system_commands=True)
+    repl(
+        click.get_current_context(),
+        prompt_kwargs=prompt_kwargs,
+        allow_internal_commands=True,
+        allow_system_commands=True
+    )
 

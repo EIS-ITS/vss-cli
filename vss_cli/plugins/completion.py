@@ -1,5 +1,4 @@
 """Auto-completion for VSS CLI (vss-cli)."""
-
 import click
 from click._bashcomplete import get_completion_script
 from vss_cli.cli import pass_context
