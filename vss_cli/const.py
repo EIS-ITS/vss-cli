@@ -35,6 +35,11 @@ COLUMNS_MOID = [
     ('MOREF', 'moref'),
     ('NAME', 'name')
 ]
+COLUMNS_FOLDER = [
+    *COLUMNS_MOID,
+    ('PARENT', 'parent'),
+    ('PATH', 'path')
+]
 COLUMNS_NET_MIN = [
     *COLUMNS_MOID,
     ('DESCRIPTION', 'description'),

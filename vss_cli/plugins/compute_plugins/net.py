@@ -115,13 +115,16 @@ def net_get_vms(ctx: Configuration, page):
         )
     objs = obj['vms']
     columns = ctx.columns or const.COLUMNS_VM
-    click.echo(
-        format_output(
-            ctx,
-            objs,
-            columns=columns
-        )
+    output = format_output(
+        ctx,
+        objs,
+        columns=columns
     )
+    # page
+    if page:
+        click.echo_via_pager(output)
+    else:
+        click.echo(output)
 
 
 @network_get.command(
@@ -142,10 +145,13 @@ def net_get_permission(ctx: Configuration, page):
             f'or you do not have permission to access.'
         )
     columns = ctx.columns or const.COLUMNS_PERMISSION
-    click.echo(
-        format_output(
-            ctx,
-            obj,
-            columns=columns
-        )
+    output = format_output(
+        ctx,
+        obj,
+        columns=columns
     )
+    # page
+    if page:
+        click.echo_via_pager(output)
+    else:
+        click.echo(output)
