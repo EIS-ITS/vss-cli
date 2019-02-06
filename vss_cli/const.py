@@ -32,15 +32,30 @@ COLUMNS_MOID = [
     ('MOREF', 'moref'),
     ('NAME', 'name')
 ]
+COLUMNS_NET_MIN = [
+    *COLUMNS_MOID,
+    ('DESCRIPTION', 'description'),
+    ('SUBNET', 'subnet'),
+    ('PORTS', 'ports')
+]
+COLUMNS_NET = [
+    *COLUMNS_NET_MIN,
+    ('ACCESSIBLE', 'accessible'),
+    ('ADMIN', 'admin'),
+    ('ADMIN', 'client'),
+]
+COLUMNS_PERMISSION = [
+    ('PRINCIPAL', 'principal'),
+    ('GROUP', 'group'),
+    ('PROPAGATE', 'propagate')
+]
 COLUMNS_MIN = [
     ('ID', 'id'),
     ('CREATED', 'created_on'),
     ('UPDATED', 'updated_on'),
 ]
 COLUMNS_REQUEST = [
-    ('ID', 'id'),
-    ('CREATED', 'created_on'),
-    ('UPDATED', 'updated_on'),
+    *COLUMNS_MIN,
     ('STATUS', 'status'),
 ]
 COLUMNS_REQUEST_SUBMITTED = [

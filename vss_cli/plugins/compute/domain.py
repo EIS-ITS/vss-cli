@@ -36,7 +36,7 @@ def cli(ctx: Configuration):
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
 @pass_context
-def compute_domain_ls(
+def domain_ls(
         ctx: Configuration, filter, page
 ):
     columns = ctx.columns or const.COLUMNS_MOID
@@ -70,7 +70,7 @@ def compute_domain_ls(
     required=True
 )
 @pass_context
-def compute_domain_get(ctx: Configuration, moref):
+def domain_get(ctx: Configuration, moref):
     ctx.moref = moref
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_MOID
@@ -90,14 +90,14 @@ def compute_domain_get(ctx: Configuration, moref):
         )
 
 
-@compute_domain_get.command(
+@domain_get.command(
     'vms',
     help='Given domain vms.'
 )
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
 @pass_context
-def compute_domain_get(ctx: Configuration, page):
+def domain_get_vms(ctx: Configuration, page):
     obj = ctx.get_domain(ctx.moref, summary=1)
     if not obj:
         raise VssCliError(
