@@ -57,6 +57,11 @@ COLUMNS_MIN = [
     ('CREATED', 'created_on'),
     ('UPDATED', 'updated_on'),
 ]
+COLUMNS_OS = [
+    ('ID', 'id'),
+    ('GUESTID', 'guestId'),
+    ('NAME', 'guestFullName')
+]
 COLUMNS_REQUEST = [
     *COLUMNS_MIN,
     ('STATUS', 'status'),
