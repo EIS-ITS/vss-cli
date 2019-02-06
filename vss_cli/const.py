@@ -57,6 +57,11 @@ COLUMNS_MIN = [
     ('CREATED', 'created_on'),
     ('UPDATED', 'updated_on'),
 ]
+COLUMNS_IMAGE = [
+    ('ID', 'id'),
+    ('PATH', 'path'),
+    ('NAME', 'name')
+]
 COLUMNS_OS = [
     ('ID', 'id'),
     ('GUESTID', 'guestId'),

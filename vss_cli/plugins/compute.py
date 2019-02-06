@@ -17,6 +17,7 @@ def cli(ctx: Configuration):
 
 
 from vss_cli.plugins.compute_plugins import (
-    domain, inventory, net, os as compute_os
+    domain, inventory, net, os as compute_os,
+    image
 )  # pylint: disable=unused-import
 

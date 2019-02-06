@@ -16,7 +16,7 @@ _LOGGING = logging.getLogger(__name__)
     'os',
     short_help='Supported OS.'
 )
-@click.pass_context
+@pass_context
 def compute_os(ctx):
     """Supported operating systems by our infrastructure.
     This resource is useful when deploying a new or
