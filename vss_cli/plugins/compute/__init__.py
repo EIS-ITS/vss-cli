@@ -13,4 +13,4 @@ def cli(ctx: Configuration):
     ctx.load_config()
 
 
-from vss_cli.plugins.compute import domain
+from vss_cli.plugins.compute import domain, inventory

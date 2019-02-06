@@ -12,15 +12,18 @@ from vss_cli.exceptions import VssCliError
 _LOGGING = logging.getLogger(__name__)
 
 
-@cli.group('domain')
+@cli.group(
+    'domain',
+    short_help='List compute domains.'
+)
 @pass_context
-def compute_domain(ctx: Configuration):
+def cli(ctx: Configuration):
     """A fault domain consists of one or more ESXI hosts and
     Datastore Clusters grouped together according to their
     physical location in the datacenter."""
 
 
-@compute_domain.command(
+@cli.command(
     'ls',
     short_help='list fault domains'
 )
@@ -56,7 +59,7 @@ def compute_domain_ls(
         click.echo(output)
 
 
-@compute_domain.group(
+@cli.group(
     'get',
     help='Given domain info.',
     invoke_without_command=True
