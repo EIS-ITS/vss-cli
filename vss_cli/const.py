@@ -23,7 +23,7 @@ DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
 COLUMNS_DEFAULT = [('ALL', '*')]
-COLUMNS_VIM = [
+COLUMNS_VM_MIN = [
     ('UUID', 'uuid'),
     ('NAME', 'name')
 ]
@@ -34,6 +34,11 @@ COLUMNS_VIM_REQUEST = [
 COLUMNS_MOID = [
     ('MOREF', 'moref'),
     ('NAME', 'name')
+]
+COLUMNS_FOLDER = [
+    *COLUMNS_MOID,
+    ('PARENT', 'parent'),
+    ('PATH', 'path')
 ]
 COLUMNS_NET_MIN = [
     *COLUMNS_MOID,
@@ -191,8 +196,29 @@ COLUMNS_MESSAGE = [
     ('TEXT', 'text')
 ]
 COLUMNS_VM = [
+    *COLUMNS_VM_MIN,
+    ('FOLDER', 'folder'),
+    ('CPU', 'cpuCount'),
+    ('MEMORY', 'memoryGB'),
+    ('POWER', 'powerState'),
+    ('GUEST', 'guestFullName'),
+    ('VERSION', 'version')
+]
+COLUMNS_VM_INFO = [
     ('UUID', 'uuid'),
-    ('NAME', 'name')
+    ('NAME', 'name.full_name'),
+    ('FOLDER', 'folder.path'),
+    ('GUEST OS', 'config.os.guestId'),
+    ('VERSION', 'hardware.version'),
+    ('STATUS', 'state.overallStatus'),
+    ('STATE', 'state.powerState'),
+    ('ALARMS', 'state.alarms'),
+    ('CPU', 'hardware.cpu.cpuCount'),
+    ('MEMORY (GB)', 'hardware.memory.memoryGB'),
+    ('PROVISIONED (GB)', 'storage.provisionedGB'),
+    ('SNAPSHOT', 'snapshot.exist'),
+    ('DISKS', 'hardware.devices.disks[*].unit'),
+    ('NICS', 'hardware.devices.nics[*].unit')
 ]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),

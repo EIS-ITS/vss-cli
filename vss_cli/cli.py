@@ -231,7 +231,12 @@ def cli(
     ctx.table_format = table_format
     ctx.sort_by = sort_by  # type: ignore
 
-    _LOGGER.debug("Using settings: %s", ctx)
-
     if debug:
         debug_requests_on()
+
+    _LOGGER.debug("Using settings: %s", ctx)
+
+    if ctx.server:
+        _LOGGER.debug(f"Updating endpoint from {ctx.api_endpoint} to {server}")
+        ctx.update_endpoints(ctx.server)
+        _LOGGER.debug(f"Using {ctx.api_endpoint}")
