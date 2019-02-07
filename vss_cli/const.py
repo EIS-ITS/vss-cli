@@ -201,7 +201,24 @@ COLUMNS_VM = [
     ('CPU', 'cpuCount'),
     ('MEMORY', 'memoryGB'),
     ('POWER', 'powerState'),
-    ('GUEST', 'guestFullName')
+    ('GUEST', 'guestFullName'),
+    ('VERSION', 'version')
+]
+COLUMNS_VM_INFO = [
+    ('UUID', 'uuid'),
+    ('NAME', 'name.full_name'),
+    ('FOLDER', 'folder.path'),
+    ('GUEST OS', 'config.os.guestId'),
+    ('VERSION', 'hardware.version'),
+    ('STATUS', 'state.overallStatus'),
+    ('STATE', 'state.powerState'),
+    ('ALARMS', 'state.alarms'),
+    ('CPU', 'hardware.cpu.cpuCount'),
+    ('MEMORY (GB)', 'hardware.memory.memoryGB'),
+    ('PROVISIONED (GB)', 'storage.provisionedGB'),
+    ('SNAPSHOT', 'snapshot.exist'),
+    ('DISKS', 'hardware.devices.disks[*].unit'),
+    ('NICS', 'hardware.devices.nics[*].unit')
 ]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),
