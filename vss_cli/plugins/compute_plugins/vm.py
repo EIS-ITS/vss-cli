@@ -119,3 +119,70 @@ def compute_vm_get(
                 single=True
             )
         )
+
+
+@compute_vm_get.command(
+    'admin',
+    short_help='Admin (metadata)'
+)
+@pass_context
+def compute_vm_get_admin(
+        ctx: Configuration,
+        ):
+    """Virtual machine administrator. Part of the
+    VSS metadata."""
+    columns = ctx.columns or const.COLUMNS_VM_ADMIN
+    obj = ctx.get_vm_vss_admin(ctx.uuid)
+    if not obj:
+        raise VssCliError('Virtual Machine Admin not found')
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'alarm',
+    short_help='Triggered alarms'
+)
+@click.argument(
+    'moref',
+    type=click.STRING,
+    required=False
+)
+@pass_context
+def compute_vm_get_alarms(
+        ctx: Configuration, moref
+):
+    """Virtual machine triggered alarms"""
+    if moref:
+        columns = ctx.columns or const.COLUMNS_VM_ALARM
+        obj = ctx.get_vm_alarm(
+            ctx.uuid, moref)
+        if not obj:
+            raise VssCliError('Virtual Machine Alarm not found')
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns,
+                single=True
+            )
+        )
+    else:
+        columns = ctx.columns or const.COLUMNS_VM_ALARM
+        obj = ctx.get_vm_alarms(ctx.uuid)
+        if not obj:
+            raise VssCliError('Virtual Machine Alarms not found')
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns
+            )
+        )
+

@@ -220,6 +220,22 @@ COLUMNS_VM_INFO = [
     ('DISKS', 'hardware.devices.disks[*].unit'),
     ('NICS', 'hardware.devices.nics[*].unit')
 ]
+COLUMNS_VM_ADMIN = [
+    ('NAME', 'name'),
+    ('EMAIL', 'email'),
+    ('PHONE', 'phone')
+]
+COLUMNS_VM_ALARM_MIN = [
+    *COLUMNS_MOID,
+    ('STATUS', 'overallStatus'),
+    ('DATETIME', 'dateTime')
+]
+COLUMNS_VM_ALARM = [
+    *COLUMNS_VM_ALARM_MIN,
+    ('ACK', 'acknowledged'),
+    ('ACKBY', 'acknowledgedByUser'),
+    ('ACKDATE', 'acknowledgedDateTime')
+]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),
     ('DESCRIPTION', 'description'),
