@@ -528,3 +528,64 @@ def compute_vm_get_disks(
                 columns=columns
             )
         )
+
+
+@compute_vm_get.command(
+    'domain',
+    short_help='Running domain'
+)
+@pass_context
+def compute_vm_get_domain(ctx: Configuration):
+    """Virtual machine running domain"""
+    obj = ctx.get_vm_domain(ctx.uuid)
+    columns = ctx.columns or [('MOREF', 'domain.moref'),
+                              ('NAME', 'domain.name')]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'event',
+    short_help='Events'
+)
+@click.option(
+    '-w', '--window', type=int, default=1,
+    help='Time window')
+@pass_context
+def compute_vm_get_events(ctx: Configuration, window):
+    """Get virtual machine related events in given time window"""
+    obj = ctx.request(f'/vm/{ctx.uuid}/event',
+                      params=dict(hours=window))
+    obj = obj.get('data')
+    columns = ctx.columns or const.COLUMNS_VM_EVENT
+    click.echo(
+        format_output(
+            ctx,
+            obj,
+            columns=columns
+        )
+    )
+
+
+@compute_vm_get.command(
+    'extra-config',
+    short_help='GuestInfo extra configs'
+)
+@pass_context
+def compute_vm_get_extra_config(ctx: Configuration):
+    """Get virtual machine guest info via VMware Tools."""
+    obj = ctx.get_vm_extra_config(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_DEFAULT
+    click.echo(
+        format_output(
+            ctx,
+            obj,
+            columns=columns
+        )
+    )

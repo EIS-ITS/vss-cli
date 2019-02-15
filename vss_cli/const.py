@@ -296,6 +296,11 @@ COLUMNS_VM_CPU = [
     ('QUICKSTATS.DEMAND', 'quickStats.overallCpuDemandMHz'),
     ('QUICKSTATS.USAGE', 'quickStats.overallCpuUsageMHz')
 ]
+COLUMNS_VM_EVENT = [
+    ('USERNAME', 'userName'),
+    ('CREATED', 'createdTime'),
+    ('MESSAGE', 'message')
+]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),
     ('DESCRIPTION', 'description'),
