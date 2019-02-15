@@ -357,6 +357,22 @@ COLUMNS_VM_EVENT = [
     ('CREATED', 'createdTime'),
     ('MESSAGE', 'message')
 ]
+COLUMNS_VM_STATE = [
+    ('POWER', 'powerState'),
+    ('BOOT', 'bootTime'),
+    ('CONNECTION', 'connectionState'),
+    ('DOMAIN', 'domain.name')
+]
+COLUMNS_VM_TOOLS = [
+    ('VERSION', 'version'),
+    ('STATUS', 'versionStatus'),
+    ('RUNNING', 'runningStatus')
+]
+COLUMNS_VM_HW = [
+    ('VALUE', 'value'),
+    ('STATUS', 'status'),
+    ('UPGRADE_POLICY', 'upgrade_policy.upgradePolicy')
+]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),
     ('DESCRIPTION', 'description'),

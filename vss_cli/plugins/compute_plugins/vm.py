@@ -884,3 +884,171 @@ def compute_vm_get_snapshot(
                 columns=columns
             )
         )
+
+
+@compute_vm_get.command(
+    'spec',
+    short_help='Configuration specification',
+    context_settings={"ignore_unknown_options": True}
+)
+@click.argument(
+    'spec_file', type=click.Path(),
+    required=False,
+)
+@pass_context
+def compute_vm_get_spec(
+        ctx: Configuration,
+        spec_file
+):
+    """Virtual machine configuration specification."""
+    import json
+    obj = ctx.get_vm_spec(ctx.uuid)
+    f_name = spec_file or f'{ctx.uuid}.json'
+    with open(f_name, 'w') as fp:
+        json.dump(obj, fp=fp)
+    click.echo(f'Written to {f_name}')
+
+
+@compute_vm_get.command(
+    'state',
+    short_help='Power state'
+)
+@pass_context
+def compute_vm_get_state(ctx: Configuration):
+    """Virtual machine running and power state."""
+    obj = ctx.get_vm_state(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_VM_STATE
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'stats',
+    short_help='Performance statistics'
+)
+@click.argument(
+    'kind',
+    type=click.Choice(
+        ['memory', 'io',
+         'cpu', 'net']
+    )
+)
+@pass_context
+def compute_vm_get_stats(ctx: Configuration, kind):
+    """Get virtual machine memory, io, cpu and network
+     performance statistics. Choose between: io, memory,
+     cpu or net. For example:
+
+    vss compute vm get <uuid> stats memory
+    """
+    lookup = {'cpu': ctx.get_vm_performance_cpu,
+              'memory': ctx.get_vm_performance_memory,
+              'io': ctx.get_vm_performance_io,
+              'net': ctx.get_vm_performance_net}
+
+    if not ctx.is_powered_on_vm(ctx.uuid):
+        raise VssCliError(
+            'Cannot perform operation in '
+            'current power state'
+        )
+    obj = lookup[kind](ctx.uuid)
+    columns = ctx.columns or [
+        (i.upper(), i) for i in obj.keys()
+    ]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'template',
+    short_help='Template configuration'
+)
+@pass_context
+def compute_vm_get_template(ctx: Configuration):
+    """Virtual machine template state."""
+    obj = ctx.is_vm_template(ctx.uuid)
+    columns = ctx.columns or [
+        ('ISTEMPLATE', 'isTemplate')
+    ]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'tools',
+    short_help='VMware Tools Status'
+)
+@pass_context
+def compute_vm_get_tools(ctx: Configuration):
+    """Virtual machine VMware Tools status."""
+    obj = ctx.get_vm_tools(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_VM_TOOLS
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'usage',
+    short_help='Usage (Metadata)'
+)
+@pass_context
+def compute_vm_get_usage(ctx: Configuration):
+    """Get current virtual machine usage.
+
+    Part of the VSS metadata and the name prefix (YYMMP-) is composed
+    by the virtual machine usage, which is intended to specify
+    whether it will be hosting a Production, Development,
+    QA, or Testing system."""
+    obj = ctx.get_vm_vss_usage(ctx.uuid)
+    columns = ctx.columns or [('USAGE', 'value')]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'version',
+    short_help='Hardware (VMX) version'
+)
+@pass_context
+def compute_vm_get_version(ctx: Configuration):
+    """Get VMX hardware version"""
+    obj = ctx.get_vm_version(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_VM_HW
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
