@@ -629,3 +629,258 @@ def compute_vm_get_floppies(
                 columns=columns
             )
         )
+
+
+@compute_vm_get.command(
+    'folder',
+    short_help='Logical folder'
+)
+@pass_context
+def compute_vm_get_folder(ctx: Configuration):
+    """Virtual machine logical folder."""
+    obj = ctx.get_vm_folder(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_FOLDER
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.group(
+    'guest',
+    short_help='Guest summary',
+    invoke_without_command=True
+)
+@pass_context
+def compute_vm_get_guest(ctx: Configuration):
+    """Get virtual machine guest info via VMware Tools."""
+    obj = ctx.get_vm_guest(ctx.uuid)
+    if click.get_current_context().invoked_subcommand is None:
+        columns = ctx.columns or const.COLUMNS_VM_GUEST
+        click.echo(
+            format_output(
+                ctx,
+                [obj],
+                columns=columns,
+                single=True
+            )
+        )
+
+
+@compute_vm_get_guest.command(
+    'os',
+    short_help='Guest OS configuration'
+)
+@pass_context
+def compute_vm_get_guest_os(ctx: Configuration):
+    """Get virtual machine guest OS."""
+    obj = ctx.get_vm_guest_os(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_VM_GUEST_OS
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get_guest.command(
+    'ip',
+    short_help='Guest IP Address configuration'
+)
+@pass_context
+def compute_vm_get_guest_ip(ctx: Configuration):
+    """Get virtual machine ip addresses via VMware Tools."""
+    obj = ctx.get_vm_guest_ip(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_VM_GUEST_IP
+    click.echo(
+        format_output(
+            ctx,
+            obj,
+            columns=columns
+        )
+    )
+
+
+@compute_vm_get.command(
+    'ha-group',
+    short_help='HA Group (Metadata)'
+)
+@pass_context
+def compute_vm_get_ha_group(ctx: Configuration):
+    obj = ctx.get_vm_vss_ha_group(ctx.uuid)
+    if obj:
+        obj = obj.get('vms', [])
+    else:
+        obj = []
+    columns = ctx.columns or const.COLUMNS_VM_HAGROUP
+    click.echo(
+        format_output(
+            ctx,
+            obj,
+            columns=columns
+        )
+    )
+
+
+@compute_vm_get.command(
+    'inform',
+    short_help='Informational contacts (Metadata)'
+)
+@pass_context
+def compute_vm_get_inform(ctx: Configuration):
+    """Virtual machine informational contacts. Part of the
+    VSS metadata."""
+    obj = ctx.get_vm_vss_inform(ctx.uuid)
+    if obj:
+        obj = dict(inform=obj)
+    columns = ctx.columns or [('INFORM', 'inform.[*]')]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'memory',
+    short_help='Memory configuration'
+)
+@pass_context
+def compute_vm_get_memory(ctx: Configuration):
+    """Virtual machine memory configuration."""
+    obj = ctx.get_vm_memory(str(ctx.uuid))
+    columns = ctx.columns or const.COLUMNS_VM_MEMORY
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'name',
+    short_help='Logical name'
+)
+@pass_context
+def compute_vm_get_name(ctx: Configuration):
+    """Virtual machine human readable name."""
+    obj = ctx.get_vm_name(ctx.uuid)
+    columns = ctx.columns or [('NAME', 'name')]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'nic',
+    short_help='NIC configuration'
+)
+@click.argument(
+    'unit', type=int, required=False
+)
+@pass_context
+def compute_vm_get_nics(
+        ctx: Configuration, unit
+):
+    """Virtual machine network interface adapters configuration."""
+
+    if unit:
+        obj = ctx.get_vm_nic(ctx.uuid, unit)
+        if not obj:
+            raise VssCliError('NIC not found')
+        columns = ctx.columns or const.COLUMNS_VM_NIC
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns,
+                single=True
+            )
+        )
+    else:
+        obj = ctx.get_vm_nics(ctx.uuid)
+        if not obj:
+            raise VssCliError('NIC not found')
+        obj = [d.get('data') for d in obj]
+        columns = ctx.columns or const.COLUMNS_VM_NIC_MIN
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns
+            )
+        )
+
+
+@compute_vm_get.command(
+    'perm',
+    short_help='Permissions'
+)
+@click.option('-p', '--page', is_flag=True,
+              help='page results in a less-like format')
+@pass_context
+def compute_vm_get_perms(ctx: Configuration, page):
+    """Obtain virtual machine group or user permissions."""
+    obj = ctx.get_vm_permission(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_OBJ_PERMISSION
+    click.echo(
+        format_output(
+            ctx,
+            obj,
+            columns=columns
+        )
+    )
+
+
+@compute_vm_get.command(
+    'snapshot',
+    short_help='Snapshots'
+)
+@click.argument(
+    'snapshot_id', type=int,
+    required=False
+)
+@pass_context
+def compute_vm_get_snapshot(
+        ctx: Configuration, snapshot_id
+):
+    """Virtual Machine snapshots"""
+    if snapshot_id:
+        obj = ctx.get_vm_snapshot(ctx.uuid, snapshot_id)
+        columns = ctx.columns or const.COLUMNS_VM_SNAP
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns,
+                single=True
+            )
+        )
+    else:
+        obj = ctx.get_vm_snapshots(ctx.uuid)
+        columns = ctx.columns or const.COLUMNS_VM_SNAP_MIN
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns
+            )
+        )

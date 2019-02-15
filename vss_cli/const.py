@@ -5,7 +5,7 @@ PACKAGE_NAME = 'vss_cli'
 
 __version__ = '0.1.0.dev0'
 
-REQUIRED_PYTHON_VER = (3, 5, 3)
+REQUIRED_PYTHON_VER = (3, 6, 4)
 
 DEFAULT_TIMEOUT = 30
 DEFAULT_SERVER = 'https://cloud-api.eis.utoronto.ca'
@@ -179,7 +179,6 @@ COLUMNS_TK_MIN = [
 ]
 COLUMNS_TK = [
     *COLUMNS_TK_MIN,
-
 ]
 COLUMNS_MESSAGE_MIN = [
     *COLUMNS_MIN,
@@ -219,6 +218,63 @@ COLUMNS_VM_INFO = [
     ('SNAPSHOT', 'snapshot.exist'),
     ('DISKS', 'hardware.devices.disks[*].unit'),
     ('NICS', 'hardware.devices.nics[*].unit')
+]
+COLUMNS_VM_GUEST = [
+    ('HOSTNAME', 'hostName'),
+    ('IP', 'ipAddress[*]'),
+    ('GUEST_NAME', 'os.guestFullName'),
+    ('GUEST_ID', 'os.guestId'),
+    ('TOOLS', 'tools.runningStatus')
+]
+COLUMNS_VM_GUEST_OS = [
+    ('FAMILY', 'guestFamily'),
+    ('NAME', 'guestFullName'),
+    ('ID', 'guestId')
+]
+COLUMNS_VM_GUEST_IP = [
+    ('IP', 'ipAddress'),
+    ('MAC', 'macAddress'),
+    ('ORIGIN', 'origin'),
+    ('STATE', 'state')
+]
+COLUMNS_VM_HAGROUP = [
+    *COLUMNS_VM_MIN,
+    ('VALID', 'valid')
+]
+COLUMNS_VM_MEMORY = [
+    ('MEMORY_GB', 'memoryGB'),
+    ('HOTADD', 'hotAdd.enabled'),
+    ('HOTADD_LIMIT', 'hotAdd.limitGB'),
+    ('QUICKSTATS_BALLOONED', 'quickStats.balloonedMemoryMB'),
+    ('QUICKSTATS_USAGE', 'quickStats.guestMemoryUsageMB')
+]
+COLUMNS_VM_NIC_MIN = [
+    ('LABEL', 'label'),
+    ('MAC', 'macAddress'),
+    ('TYPE', 'type'),
+    ('CONNECTED', 'connected')
+]
+COLUMNS_VM_NIC = [
+    *COLUMNS_VM_NIC_MIN,
+    ('START_CONNECTED', 'startConnected'),
+    ('NETWORK', 'network.name'),
+    ('NETWORK_MOREF', 'network.moref')
+]
+COLUMNS_OBJ_PERMISSION = [
+    ('PRINCIPAL', 'principal'),
+    ('GROUP', 'group'),
+    ('PROPAGATE', 'propagate')
+]
+COLUMNS_VM_SNAP_MIN = [
+    ('ID', 'id'),
+    ('NAME', 'name')
+]
+COLUMNS_VM_SNAP = [
+    *COLUMNS_VM_SNAP_MIN,
+    ('SIZE_GB', 'sizeGB'),
+    ('DESCRIPTION', 'description'),
+    ('CREATED', 'createTime'),
+    ('AGE', 'age')
 ]
 COLUMNS_VM_ADMIN = [
     ('NAME', 'name'),
@@ -293,8 +349,8 @@ COLUMNS_VM_CPU = [
     ('CORES/SOCKET', 'coresPerSocket'),
     ('HOTADD', 'hotAdd.enabled'),
     ('HOTREMOVE', 'hotRemove.enabled'),
-    ('QUICKSTATS.DEMAND', 'quickStats.overallCpuDemandMHz'),
-    ('QUICKSTATS.USAGE', 'quickStats.overallCpuUsageMHz')
+    ('QUICKSTATS_DEMAND', 'quickStats.overallCpuDemandMHz'),
+    ('QUICKSTATS_USAGE', 'quickStats.overallCpuUsageMHz')
 ]
 COLUMNS_VM_EVENT = [
     ('USERNAME', 'userName'),
