@@ -477,3 +477,54 @@ def compute_vm_get_description(ctx: Configuration):
             single=True
         )
     )
+
+
+@compute_vm_get.command(
+    'disk',
+    short_help='Disk configuration'
+)
+@click.argument(
+    'unit', type=int, required=False
+)
+@click.option(
+    '--backing', '-b',
+    help='include backing info',
+    is_flag=True
+)
+@pass_context
+def compute_vm_get_disks(
+        ctx: Configuration, unit, backing
+):
+    """Virtual machine Disk configuration."""
+    if unit:
+        obj = ctx.get_vm_disk(ctx.uuid, unit)
+        if not obj:
+            raise VssCliError('Disk not found')
+        if backing:
+            columns = ctx.columns or const.COLUMNS_VM_DISK_BACKING
+            _obj = ctx.get_vm_disk_backing(ctx.uuid, unit)
+            obj[0].update(_obj)
+        else:
+            columns = ctx.columns or const.COLUMNS_VM_DISK
+
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns,
+                single=True
+            )
+        )
+    else:
+        obj = ctx.get_vm_disks(ctx.uuid)
+        if not obj:
+            raise VssCliError('Disks not found')
+        obj = [d.get('data') for d in obj]
+        columns = ctx.columns or const.COLUMNS_VM_DISK_MIN
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns
+            )
+        )

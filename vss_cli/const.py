@@ -263,13 +263,29 @@ COLUMNS_VM_CTRL = [
     ('SHARED_BUS', 'sharedBus'),
     ('HOTADDREMOVE', 'hotAddRemove')
 ]
-COLUMNS_VM_DISK = [
+COLUMNS_VM_DISK_MIN = [
     ('LABEL', 'label'),
-    ('UNIT', 'unit')
+    ('UNIT', 'unit'),
+    ('CONTROLLER', 'controller.virtualDeviceNode')
+]
+COLUMNS_VM_DISK = [
+    *COLUMNS_VM_DISK_MIN,
+    ('CAPACITY_GB', 'capacityGB'),
+    ('SHARES', 'shares.level')
+]
+
+COLUMNS_VM_DISK_BACKING = [
+    *COLUMNS_VM_DISK,
+    ('DESCRIPTOR', 'descriptorFileName'),
+    ('DEVICE_NAME', 'deviceName'),
+    ('DISK_MODE', 'diskMode'),
+    ('FILE', 'fileName'),
+    ('LUN', 'lunUuid'),
+    ('THIN', 'thinProvisioned')
 ]
 COLUMNS_VM_CTRL_DISK = [
     ('CONTROLLER', 'controller.virtualDeviceNode'),
-    *COLUMNS_VM_DISK,
+    *COLUMNS_VM_DISK_MIN,
     ('CAPACITY_GB', 'capacityGB'),
 ]
 COLUMNS_VM_CPU = [
