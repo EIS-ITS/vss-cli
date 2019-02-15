@@ -14,6 +14,7 @@ DEFAULT_CONFIG = os.path.expanduser(os.path.join('~', '.vss-cli', 'config.json')
 DEFAULT_HISTORY = os.path.expanduser(os.path.join('~', '.vss-cli', 'history'))
 
 DEFAULT_DATAOUTPUT = 'table'
+DEFAULT_RAW_OUTPUT = 'json'
 
 DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "-._~%!$&'()*+,;=]+@)?([a-z0-9\\-." \

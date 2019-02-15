@@ -150,7 +150,7 @@ def _default_token() -> Optional[str]:
     help="Output format.",
     type=click.Choice(['json', 'yaml', 'table', 'auto']),
     envvar='VSS_OUTPUT',
-    default=const.DEFAULT_DATAOUTPUT,
+    default='auto',
     show_default=True,
 )
 @click.option(

@@ -104,7 +104,7 @@ class Configuration(VssManager):
         """Configure output format."""
         if self.output == "auto":
             if auto_output == 'data':
-                auto_output = const.DEFAULT_DATAOUTPUT
+                auto_output = const.DEFAULT_RAW_OUTPUT
             _LOGGING.debug("Setting auto-output to: %s", auto_output)
             self.output = auto_output
         return self.output
