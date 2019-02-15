@@ -236,6 +236,50 @@ COLUMNS_VM_ALARM = [
     ('ACKBY', 'acknowledgedByUser'),
     ('ACKDATE', 'acknowledgedDateTime')
 ]
+COLUMNS_VM_BOOT = [
+    ('ENTER_BIOS', 'enterBIOSSetup'),
+    ('BOOTRETRYDELAY', 'bootRetryDelayMs'),
+    ('BOOTDELAY', 'bootDelayMs')
+]
+COLUMNS_VM_CD_MIN = [
+    ('LABEL', 'label'),
+    ('BACKING', 'backing'),
+    ('CONNECTED', 'connected')
+]
+COLUMNS_VM_CD = [
+    *COLUMNS_VM_CD_MIN,
+    ('CONTROLLER_TYPE', 'controller.type'),
+    ('CONTROLLER_NODE', 'controller.virtualDeviceNode')
+]
+COLUMNS_VM_CTRL_MIN = [
+    ('LABEL', 'label'),
+    ('BUS_NUM', 'busNumber'),
+    ('TYPE', 'type')
+]
+COLUMNS_VM_CTRL = [
+    *COLUMNS_VM_CTRL_MIN,
+    ('CTRL KEY', 'controllerKey'),
+    ('SUMMARY', 'summary'),
+    ('SHARED_BUS', 'sharedBus'),
+    ('HOTADDREMOVE', 'hotAddRemove')
+]
+COLUMNS_VM_DISK = [
+    ('LABEL', 'label'),
+    ('UNIT', 'unit')
+]
+COLUMNS_VM_CTRL_DISK = [
+    ('CONTROLLER', 'controller.virtualDeviceNode'),
+    *COLUMNS_VM_DISK,
+    ('CAPACITY_GB', 'capacityGB'),
+]
+COLUMNS_VM_CPU = [
+    ('CPU', 'cpu'),
+    ('CORES/SOCKET', 'coresPerSocket'),
+    ('HOTADD', 'hotAdd.enabled'),
+    ('HOTREMOVE', 'hotRemove.enabled'),
+    ('QUICKSTATS.DEMAND', 'quickStats.overallCpuDemandMHz'),
+    ('QUICKSTATS.USAGE', 'quickStats.overallCpuUsageMHz')
+]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),
     ('DESCRIPTION', 'description'),

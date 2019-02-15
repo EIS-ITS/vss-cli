@@ -186,3 +186,294 @@ def compute_vm_get_alarms(
             )
         )
 
+
+@compute_vm_get.command(
+    'boot',
+    short_help='Boot configuration'
+)
+@pass_context
+def compute_vm_get_boot(
+        ctx: Configuration,
+):
+    """Virtual machine boot settings.
+       Including boot delay and whether or not
+       to boot and enter directly to BIOS."""
+    columns = ctx.columns or const.COLUMNS_VM_BOOT
+    obj = ctx.get_vm_boot(ctx.uuid)
+    if not obj:
+        raise VssCliError('Virtual Machine Admin not found')
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'cd',
+    short_help='CD/DVD configuration'
+)
+@click.argument(
+    'unit', type=int, required=False
+)
+@pass_context
+def compute_vm_get_cds(
+        ctx: Configuration, unit
+):
+    """Virtual machine CD/DVD configuration."""
+    if unit:
+        obj = ctx.get_vm_cd(ctx.uuid, unit)
+        if not obj:
+            raise VssCliError('CD/DVD could not be found')
+        columns = ctx.columns or const.COLUMNS_VM_CD_MIN
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns,
+                single=True
+            )
+        )
+    else:
+        devs = ctx.get_vm_cds(ctx.uuid)
+        obj = [d.get('data') for d in devs]
+        columns = ctx.columns or const.COLUMNS_VM_CD
+        if not obj:
+            raise VssCliError('Virtual Machine CD not found')
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns
+            )
+        )
+
+
+@compute_vm_get.command(
+    'client',
+    short_help='Client (Metadata)'
+)
+@pass_context
+def compute_vm_get_client(ctx: Configuration):
+    """Get current virtual machine client/billing department.
+    Part of the VSS metadata.
+    """
+    obj = ctx.get_vm_vss_client(ctx.uuid)
+    columns = ctx.columns or [('VALUE', 'value')]
+    if not obj:
+        raise VssCliError('Virtual Machine Client not found')
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'client-note',
+    short_help='Client note (Metadata)'
+)
+@pass_context
+def compute_vm_get_client_notes(ctx):
+    """Virtual machine client notes. Part of the
+    VM metadata."""
+    obj = ctx.get_vm_notes(ctx.uuid)
+    columns = ctx.columns or [('VALUE', 'value')]
+    if not obj:
+        raise VssCliError('Virtual Machine Note not found')
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'console',
+    short_help='HTML console link'
+)
+@click.option(
+    '-l', '--launch', is_flag=True,
+    help='Launch link in default browser'
+)
+@pass_context
+def compute_vm_get_console(
+        ctx: Configuration,
+        launch
+):
+    """'Get one-time HTML link to access console"""
+    username = ctx.username or click.prompt(
+        'Username',
+        default=os.environ.get('VSS_USER', '')
+    )
+    password = ctx.password or click.prompt(
+        'Password',
+        default=os.environ.get('VSS_USER_PASSWORD', ''),
+        show_default=False, hide_input=True,
+        confirmation_prompt=True
+    )
+    auth = (username.decode(), password.decode())
+    obj = ctx.get_vm_console(
+        ctx.uuid,
+        auth=auth
+    )
+    link = obj.get('value')
+    # print
+    columns = ctx.columns or [('VALUE', 'value')]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+    # launch
+    if launch:
+        click.launch(link)
+
+
+@compute_vm_get.command(
+    'consolidate',
+    short_help='Consolidation requirement'
+)
+@pass_context
+def compute_vm_get_consolidate(ctx):
+    """Virtual Machine disk consolidation status."""
+    obj = ctx.get_vm_consolidation(ctx.uuid)
+    columns = ctx.columns or [('REQUIRE', 'requireDiskConsolidation')]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.group(
+    'controller',
+    invoke_without_command=True
+)
+@pass_context
+def compute_vm_get_controllers(
+        ctx: Configuration
+):
+    """Controllers (IDE, SCSI, etc.)"""
+    if click.get_current_context().invoked_subcommand is None:
+        obj = ctx.get_vm_controllers(ctx.uuid)
+        if not obj:
+            raise VssCliError('No Controllers found')
+        columns = ctx.columns or [('SCSI', 'scsi.count')]
+        click.echo(
+            format_output(
+                ctx,
+                [obj],
+                columns=columns,
+                single=True
+            )
+        )
+
+
+@compute_vm_get_controllers.command(
+    'scsi',
+    short_help='SCSI adapters'
+)
+@click.argument(
+    'bus', type=int, required=False
+)
+@click.option(
+    '--disks', '-d',
+    help='include disks attached',
+    is_flag=True
+)
+@pass_context
+def compute_vm_get_controller_scsi(
+        ctx: Configuration, bus, disks
+):
+    """Virtual machine SCSI controllers and attached disks"""
+    if bus is None:
+        obj = ctx.get_vm_controllers_scsi(ctx.uuid)
+        columns = ctx.columns or const.COLUMNS_VM_CTRL_MIN
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns
+            )
+        )
+    else:
+        obj = ctx.get_vm_controller_scsi(
+            ctx.uuid, bus, disks
+        )
+        if disks:
+            obj = obj.get('devices', [])
+            columns = ctx.columns or const.COLUMNS_VM_CTRL_DISK
+            click.echo(
+                format_output(
+                    ctx,
+                    obj,
+                    columns=columns
+                )
+            )
+        else:
+            columns = ctx.columns or const.COLUMNS_VM_CTRL
+            click.echo(
+                format_output(
+                    ctx,
+                    [obj],
+                    columns=columns,
+                    single=True
+                )
+            )
+
+
+@compute_vm_get.command(
+    'cpu',
+    short_help='CPU configuration'
+)
+@pass_context
+def compute_vm_get_cpu(ctx: Configuration):
+    """Virtual machine cpu configuration.
+    Get CPU count and quick stats."""
+    columns = ctx.columns or const.COLUMNS_VM_CPU
+    obj = ctx.get_vm_cpu(ctx.uuid)
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'description',
+    short_help='Description (Metadata)'
+)
+@pass_context
+def compute_vm_get_description(ctx: Configuration):
+    """Virtual machine description. Part of the
+    VSS metadata."""
+    obj = ctx.get_vm_vss_description(ctx.uuid)
+    # print
+    columns = ctx.columns or [('VALUE', 'value')]
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
