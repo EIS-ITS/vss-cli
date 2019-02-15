@@ -228,7 +228,7 @@ def compute_vm_get_cds(
         obj = ctx.get_vm_cd(ctx.uuid, unit)
         if not obj:
             raise VssCliError('CD/DVD could not be found')
-        columns = ctx.columns or const.COLUMNS_VM_CD_MIN
+        columns = ctx.columns or const.COLUMNS_VM_CD
         click.echo(
             format_output(
                 ctx,
@@ -240,7 +240,7 @@ def compute_vm_get_cds(
     else:
         devs = ctx.get_vm_cds(ctx.uuid)
         obj = [d.get('data') for d in devs]
-        columns = ctx.columns or const.COLUMNS_VM_CD
+        columns = ctx.columns or const.COLUMNS_VM_CD_MIN
         if not obj:
             raise VssCliError('Virtual Machine CD not found')
         click.echo(
@@ -589,3 +589,43 @@ def compute_vm_get_extra_config(ctx: Configuration):
             columns=columns
         )
     )
+
+
+@compute_vm_get.command(
+    'floppy',
+    short_help='Floppy configuration'
+)
+@click.argument(
+    'unit', type=int, required=False
+)
+@pass_context
+def compute_vm_get_floppies(
+        ctx: Configuration, unit
+):
+    """Virtual machine Floppy configuration."""
+    if unit:
+        obj = ctx.get_vm_floppy(ctx.uuid, unit)
+        if not obj:
+            raise VssCliError('Floppy could not be found')
+        columns = ctx.columns or const.COLUMNS_VM_CD
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns,
+                single=True
+            )
+        )
+    else:
+        devs = ctx.get_vm_floppies(ctx.uuid)
+        obj = [d.get('data') for d in devs]
+        columns = ctx.columns or const.COLUMNS_VM_CD_MIN
+        if not obj:
+            raise VssCliError('Virtual Machine Floppy not found')
+        click.echo(
+            format_output(
+                ctx,
+                obj,
+                columns=columns
+            )
+        )
