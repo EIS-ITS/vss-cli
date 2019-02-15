@@ -163,8 +163,7 @@ def compute_vm_get_alarms(
         columns = ctx.columns or const.COLUMNS_VM_ALARM
         obj = ctx.get_vm_alarm(
             ctx.uuid, moref)
-        if not obj:
-            raise VssCliError('Virtual Machine Alarm not found')
+        obj = obj or []
         click.echo(
             format_output(
                 ctx,
@@ -176,8 +175,7 @@ def compute_vm_get_alarms(
     else:
         columns = ctx.columns or const.COLUMNS_VM_ALARM
         obj = ctx.get_vm_alarms(ctx.uuid)
-        if not obj:
-            raise VssCliError('Virtual Machine Alarms not found')
+        obj = obj or []
         click.echo(
             format_output(
                 ctx,
@@ -200,8 +198,7 @@ def compute_vm_get_boot(
        to boot and enter directly to BIOS."""
     columns = ctx.columns or const.COLUMNS_VM_BOOT
     obj = ctx.get_vm_boot(ctx.uuid)
-    if not obj:
-        raise VssCliError('Virtual Machine Admin not found')
+    obj = obj or {}
     click.echo(
         format_output(
             ctx,
@@ -226,23 +223,22 @@ def compute_vm_get_cds(
     """Virtual machine CD/DVD configuration."""
     if unit:
         obj = ctx.get_vm_cd(ctx.uuid, unit)
-        if not obj:
-            raise VssCliError('CD/DVD could not be found')
-        columns = ctx.columns or const.COLUMNS_VM_CD
-        click.echo(
-            format_output(
-                ctx,
-                obj,
-                columns=columns,
-                single=True
+        if obj:
+            columns = ctx.columns or const.COLUMNS_VM_CD
+            click.echo(
+                format_output(
+                    ctx,
+                    obj,
+                    columns=columns,
+                    single=True
+                )
             )
-        )
+        else:
+            logging.error('Unit does not exist')
     else:
         devs = ctx.get_vm_cds(ctx.uuid)
-        obj = [d.get('data') for d in devs]
+        obj = [d.get('data') for d in devs] if devs else []
         columns = ctx.columns or const.COLUMNS_VM_CD_MIN
-        if not obj:
-            raise VssCliError('Virtual Machine CD not found')
         click.echo(
             format_output(
                 ctx,
@@ -263,8 +259,7 @@ def compute_vm_get_client(ctx: Configuration):
     """
     obj = ctx.get_vm_vss_client(ctx.uuid)
     columns = ctx.columns or [('VALUE', 'value')]
-    if not obj:
-        raise VssCliError('Virtual Machine Client not found')
+    obj = obj or {}
     click.echo(
         format_output(
             ctx,
@@ -285,8 +280,7 @@ def compute_vm_get_client_notes(ctx):
     VM metadata."""
     obj = ctx.get_vm_notes(ctx.uuid)
     columns = ctx.columns or [('VALUE', 'value')]
-    if not obj:
-        raise VssCliError('Virtual Machine Note not found')
+    obj = obj or {}
     click.echo(
         format_output(
             ctx,
@@ -372,8 +366,7 @@ def compute_vm_get_controllers(
     """Controllers (IDE, SCSI, etc.)"""
     if click.get_current_context().invoked_subcommand is None:
         obj = ctx.get_vm_controllers(ctx.uuid)
-        if not obj:
-            raise VssCliError('No Controllers found')
+        obj = obj or {}
         columns = ctx.columns or [('SCSI', 'scsi.count')]
         click.echo(
             format_output(
@@ -498,28 +491,27 @@ def compute_vm_get_disks(
     """Virtual machine Disk configuration."""
     if unit:
         obj = ctx.get_vm_disk(ctx.uuid, unit)
-        if not obj:
-            raise VssCliError('Disk not found')
-        if backing:
-            columns = ctx.columns or const.COLUMNS_VM_DISK_BACKING
-            _obj = ctx.get_vm_disk_backing(ctx.uuid, unit)
-            obj[0].update(_obj)
-        else:
-            columns = ctx.columns or const.COLUMNS_VM_DISK
+        if obj:
+            if backing:
+                columns = ctx.columns or const.COLUMNS_VM_DISK_BACKING
+                _obj = ctx.get_vm_disk_backing(ctx.uuid, unit)
+                obj[0].update(_obj)
+            else:
+                columns = ctx.columns or const.COLUMNS_VM_DISK
 
-        click.echo(
-            format_output(
-                ctx,
-                obj,
-                columns=columns,
-                single=True
+            click.echo(
+                format_output(
+                    ctx,
+                    obj,
+                    columns=columns,
+                    single=True
+                )
             )
-        )
+        else:
+            logging.error('Unit does not exist')
     else:
         obj = ctx.get_vm_disks(ctx.uuid)
-        if not obj:
-            raise VssCliError('Disks not found')
-        obj = [d.get('data') for d in obj]
+        obj = [d.get('data') for d in obj] if obj else []
         columns = ctx.columns or const.COLUMNS_VM_DISK_MIN
         click.echo(
             format_output(
@@ -605,23 +597,22 @@ def compute_vm_get_floppies(
     """Virtual machine Floppy configuration."""
     if unit:
         obj = ctx.get_vm_floppy(ctx.uuid, unit)
-        if not obj:
-            raise VssCliError('Floppy could not be found')
-        columns = ctx.columns or const.COLUMNS_VM_CD
-        click.echo(
-            format_output(
-                ctx,
-                obj,
-                columns=columns,
-                single=True
+        if obj:
+            columns = ctx.columns or const.COLUMNS_VM_CD
+            click.echo(
+                format_output(
+                    ctx,
+                    obj,
+                    columns=columns,
+                    single=True
+                )
             )
-        )
+        else:
+            logging.error('Unit does not exist')
     else:
         devs = ctx.get_vm_floppies(ctx.uuid)
-        obj = [d.get('data') for d in devs]
+        obj = [d.get('data') for d in devs] if devs else []
         columns = ctx.columns or const.COLUMNS_VM_CD_MIN
-        if not obj:
-            raise VssCliError('Virtual Machine Floppy not found')
         click.echo(
             format_output(
                 ctx,
@@ -804,22 +795,21 @@ def compute_vm_get_nics(
 
     if unit:
         obj = ctx.get_vm_nic(ctx.uuid, unit)
-        if not obj:
-            raise VssCliError('NIC not found')
-        columns = ctx.columns or const.COLUMNS_VM_NIC
-        click.echo(
-            format_output(
-                ctx,
-                obj,
-                columns=columns,
-                single=True
+        if obj:
+            columns = ctx.columns or const.COLUMNS_VM_NIC
+            click.echo(
+                format_output(
+                    ctx,
+                    obj,
+                    columns=columns,
+                    single=True
+                )
             )
-        )
+        else:
+            logging.error('Unit does not exist')
     else:
         obj = ctx.get_vm_nics(ctx.uuid)
-        if not obj:
-            raise VssCliError('NIC not found')
-        obj = [d.get('data') for d in obj]
+        obj = [d.get('data') for d in obj] if obj else []
         columns = ctx.columns or const.COLUMNS_VM_NIC_MIN
         click.echo(
             format_output(
