@@ -16,6 +16,8 @@ DEFAULT_HISTORY = os.path.expanduser(os.path.join('~', '.vss-cli', 'history'))
 DEFAULT_DATAOUTPUT = 'table'
 DEFAULT_RAW_OUTPUT = 'json'
 
+DEFAULT_DATETIME_FMT = '%Y-%m-%d %H:%M'
+
 DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "-._~%!$&'()*+,;=]+@)?([a-z0-9\\-." \
                      "_~%]+|\\[[a-z0-9\\-._~%!$&'()*+,;" \

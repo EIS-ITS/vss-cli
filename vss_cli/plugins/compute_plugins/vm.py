@@ -4,7 +4,7 @@ import os
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
-from vss_cli.helper import format_output
+from vss_cli.helper import format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
 
@@ -1042,3 +1042,37 @@ def compute_vm_get_version(ctx: Configuration):
             single=True
         )
     )
+
+
+@compute_vm.group(
+    'set',
+    short_help='Set virtual machine attribute',
+    invoke_without_command=True
+)
+@click.argument(
+    'uuid',
+    type=click.UUID,
+    required=True)
+@click.option(
+    '-s', '--schedule',
+    type=click.DateTime(formats=[const.DEFAULT_DATETIME_FMT]),
+    required=False, default=None,
+    help='Schedule change in a given point in time based'
+         ' on format YYYY-MM-DD HH:MM.'
+)
+@click.option(
+    '-u', '--user-meta',
+    help='User metadata in key=value format. '
+         'These tags are stored in the request.',
+    required=False, default=None
+)
+@pass_context
+def compute_vm_set(
+        ctx: Configuration,
+        uuid, schedule, user_meta: str
+):
+    """Set given virtual machine attribute such as cpu,
+    memory, disk, network backing, cd, etc.."""
+    ctx.uuid = uuid
+    ctx.user_meta = to_tuples(user_meta)
+    ctx.schedule = schedule
