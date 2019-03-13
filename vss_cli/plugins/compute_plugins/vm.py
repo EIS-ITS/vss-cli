@@ -1,10 +1,16 @@
 import click
 import logging
 import os
+
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
-from vss_cli.helper import format_output, to_tuples
+from vss_cli.helper import (
+    format_output, to_tuples,
+)
+from vss_cli.validators import (
+    validate_phone_number, validate_email
+)
 from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
 
@@ -1074,5 +1080,55 @@ def compute_vm_set(
     """Set given virtual machine attribute such as cpu,
     memory, disk, network backing, cd, etc.."""
     ctx.uuid = uuid
-    ctx.user_meta = to_tuples(user_meta)
+    ctx.payload_options = dict()
+    ctx.user_meta = dict(to_tuples(user_meta))
     ctx.schedule = schedule
+    if user_meta:
+        ctx.payload_options['user_meta'] = ctx.user_meta
+    if schedule:
+        ctx.payload_options['schedule'] = ctx.schedule
+
+
+@compute_vm_set.command(
+    'admin',
+    short_help='Administrator'
+)
+@click.argument(
+    'name', type=click.STRING, required=True
+)
+@click.argument(
+    'email', type=click.STRING, required=True,
+    callback=validate_email
+)
+@click.argument(
+    'phone', type=click.STRING, required=True,
+    callback=validate_phone_number
+)
+@pass_context
+def compute_vm_set_admin(
+        ctx: Configuration, name, email, phone
+):
+    """Set or update virtual machine administrator in metadata.
+
+    vss compute vm set <uuid> admin "Admin Name"
+    admin.email@utoronto.ca 416-666-6666
+    """
+    payload = dict(
+        name=name,
+        phone=phone,
+        email=email,
+        uuid=ctx.uuid
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # process request
+    obj = ctx.update_vm_vss_admin(**payload)
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
