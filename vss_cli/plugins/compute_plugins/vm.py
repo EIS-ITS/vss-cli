@@ -9,7 +9,8 @@ from vss_cli.helper import (
     format_output, to_tuples,
 )
 from vss_cli.validators import (
-    validate_phone_number, validate_email
+    validate_phone_number, validate_email,
+    validate_json_type
 )
 from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
@@ -1091,6 +1092,10 @@ def compute_vm_set(
         ctx.payload_options['user_meta'] = ctx.user_meta
     if schedule:
         ctx.payload_options['schedule'] = ctx.schedule
+    if click.get_current_context().invoked_subcommand is None:
+        raise click.UsageError(
+            'Sub command is required'
+        )
 
 
 @compute_vm_set.command(
@@ -1286,20 +1291,22 @@ def compute_vm_set_cd(
     vss compute vm set <uuid> cd <unit> --iso client
     """
     iso_ref = {}
+    user_isos = ctx.get_user_isos()
     try:
         iso_id = int(iso)
-        if ctx.get_isos(filter=f'id,eq,{iso_id}'):
-            iso_ref = ctx.get_isos(filter=f'id,eq,{iso_id}')
+        # public or user
+        iso_ref = ctx.get_isos(filter=f'id,eq,{iso_id}') \
+            or list(filter(lambda i: i['id'] == iso_id, user_isos))
     except ValueError as ex:
         # not an integer
         _LOGGING.debug(f'iso is not an id {iso_ref}')
         # checking name or path
-        if ctx.get_isos(filter=f'name,like,%{iso}%'):
-            iso_ref = ctx.get_isos(filter=f'name,like,%{iso}%')
-        elif ctx.get_isos(filter=f'path,like,%{iso}%'):
-            iso_ref = ctx.get_isos(filter=f'path,like,%{iso}%')
-        else:
-            pass
+        # check in public and user isos
+        iso_ref = ctx.get_isos(filter=f'name,like,%{iso}%') \
+            or ctx.get_isos(filter=f'path,like,%{iso}%') \
+            or list(filter(lambda i: i['name'] == iso, user_isos)) \
+            or list(filter(lambda i: i['path'] == iso, user_isos))
+
     # no iso ref
     if not iso_ref:
         raise click.BadParameter(
@@ -1316,6 +1323,781 @@ def compute_vm_set_cd(
     payload.update(ctx.payload_options)
     # request
     obj = ctx.update_vm_cd(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'client',
+    short_help='Client (Metadata)'
+)
+@click.argument(
+    'client', type=click.STRING,
+    required=True
+)
+@pass_context
+def compute_vm_set_client(
+        ctx: Configuration,
+        client
+):
+    """Update virtual machine client/billing department.
+
+    vss compute vm set <uuid> client <New-Client>
+    """
+    # generate payload
+    payload = dict(
+        uuid=ctx.uuid,
+        value=client
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_vss_client(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'client-note',
+    short_help='Client note (Metadata)'
+)
+@click.argument(
+    'notes',
+    required=True
+)
+@click.option(
+    '--replace', '-r', is_flag=True,
+    required=False,
+    help="Whether to replace existing value."
+)
+@pass_context
+def compute_vm_set_client_note(
+        ctx: Configuration, notes, replace
+):
+    """Set or update virtual machine client notes
+     in metadata.
+
+     vss compute vm set <uuid> client-note "New note"
+     """
+    if not replace:
+        _old_notes = ctx.get_vm_notes(
+            ctx.uuid
+        )
+        old_notes = _old_notes.get('value') or ""
+        notes = "{}\n{}".format(old_notes, notes)
+    # generate payload
+    payload = dict(
+        uuid=ctx.uuid,
+        notes=notes
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_notes(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'consolidate',
+    short_help='Disk consolidation'
+)
+@pass_context
+def compute_vm_set_consolidate(
+        ctx: Configuration
+):
+    """Perform virtual machine disk consolidation
+
+    vss compute vm set --schedule <timestamp> <uuid> consolidate
+    """
+    # generate payload
+    payload = dict(
+        uuid=ctx.uuid
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.consolidate_vm_disks(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.group(
+    'cpu'
+)
+@pass_context
+def compute_vm_set_cpu(
+        ctx: Configuration
+):
+    """Update virtual machine CPU count and settings
+    """
+    pass
+
+
+@compute_vm_set_cpu.command(
+    'count',
+    short_help='Update CPU count'
+)
+@click.argument(
+    'cpu_count', type=click.INT,
+    required=True
+)
+@click.pass_context
+def compute_vm_set_cpu_count(
+        ctx: Configuration,
+        cpu_count
+):
+    # generate payload
+    payload = dict(
+        uuid=ctx.uuid,
+        number=cpu_count
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.set_vm_cpu(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_cpu.command(
+    'hot-add',
+    short_help='Enable/disable CPU hot add'
+)
+@click.argument(
+    'status', type=click.Choice(['on', 'off']),
+    required=True
+)
+@pass_context
+def compute_vm_set_cpu_hot_add(
+        ctx: Configuration, status
+):
+    lookup = {'on': True, 'off': False}
+    payload = dict(
+        uuid=ctx.uuid,
+        hot_add=lookup[status]
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_cpu_hot_add(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'custom-spec',
+    short_help='Custom specification'
+)
+@click.option(
+    '--hostname', '-h', type=click.STRING,
+    required=True, help='OS hostname.'
+)
+@click.option(
+    '--domain', '-m', type=click.STRING,
+    required=True, help='OS domain.'
+)
+@click.option(
+    '--dns', '-n', type=click.STRING,
+    multiple=True,
+    required=False, help='DNS list.'
+)
+@click.option(
+    '--interface', '-i', type=click.STRING,
+    required=False, multiple=True,
+    help='Interfaces to customize in json format.'
+)
+@pass_context
+def compute_vm_set_custom_spec(
+        ctx: Configuration,
+        hostname, domain,
+        dns, interface
+):
+    """Set up Guest OS customization specification.
+    Virtual machine power state require is powered off."""
+    if ctx.is_powered_on_vm(
+        ctx.uuid
+    ):
+        raise Exception(
+            'Cannot perform operation '
+            'on VM with current power state'
+        )
+    # temp custom_spec
+    _custom_spec = dict(
+        hostname=hostname,
+        domain=domain
+    )
+    if dns:
+        _custom_spec['dns'] = dns
+    interfaces = list()
+    # interfaces
+    if interface:
+        import json
+        for iface in interface:
+            validate_json_type(ctx, '', iface)
+            _if = json.loads(iface)
+            interfaces.append(
+                ctx.get_custom_spec_interface(**_if)
+            )
+    else:
+        _LOGGING.warning('No interfaces were received from input')
+    # update custom spec with interfaces
+    _custom_spec.update(
+        {'interfaces': interfaces}
+    )
+    # create custom_spec
+    custom_spec = ctx.get_custom_spec(**_custom_spec)
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        custom_spec=custom_spec
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # process request
+    # submit custom_spec
+    obj = ctx.create_vm_custom_spec(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'description',
+    short_help='Description (Metadata)'
+)
+@click.argument(
+    'description',
+    required=True
+)
+@pass_context
+def compute_vm_set_description(
+        ctx: Configuration, description
+):
+    """Set or update virtual machine description in metadata.
+
+    vss compute vm set <uuid> description "This is a new description"
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        description=description
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_vss_description(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.group(
+    'disk',
+    short_help='Virtual disk settings'
+)
+@pass_context
+def compute_vm_set_disk(
+        ctx: Configuration
+):
+    """Manage virtual machine disks.
+     Add, expand and remove virtual disks."""
+    pass
+
+
+@compute_vm_set_disk.command(
+    'mk',
+    short_help='Create new disk(s)'
+)
+@click.option(
+    '-c', '--capacity', type=click.INT,
+    required=True, multiple=True,
+    help='Create given disk(s) capacity in GB.'
+)
+@pass_context
+def compute_vm_set_disk_mk(
+        ctx: Configuration, capacity
+):
+    """Create virtual machine disk:
+
+        vss compute vm set <uuid> disk mk -c 10 -c 40
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        values_in_gb=capacity
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_disk(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_disk.command(
+    'up',
+    short_help='Update disk capacity'
+)
+@click.argument(
+    'unit', type=click.INT, required=True
+)
+@click.option(
+    '-c', '--capacity', type=int,
+    required=True,
+    help='Update given disk capacity in GB.'
+)
+@pass_context
+def compute_vm_set_disk_up(
+        ctx: Configuration,
+        unit, capacity
+):
+    """Update virtual machine disk capacity:
+
+        vss compute vm set <uuid> disk up --capacity 30 <unit>
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        disk=unit,
+        valueGB=capacity
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_disk_capacity(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_disk.command(
+    'rm',
+    short_help='Remove disk from vm'
+)
+@click.argument(
+    'unit', type=click.INT,
+    required=True, nargs=-1
+)
+@click.option(
+    '-r', '--rm',
+    is_flag=True, default=False,
+    help='Confirm disk removal'
+)
+@pass_context
+def compute_vm_set_disk_rm(
+        ctx: Configuration, unit, rm
+):
+    """Remove virtual machine disks. Warning: data will be lost:
+
+        vss compute vm set <uuid> disk rm <unit> <unit> ...
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        units=list(unit)
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # confirm
+    confirm = rm or click.confirm(
+        f'Are you sure you want to delete disk unit {unit}?'
+    )
+    if confirm:
+        obj = ctx.delete_vm_disks(**payload)
+    else:
+        raise click.ClickException('Cancelled by user.')
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'domain',
+    short_help='Domain migration'
+)
+@click.argument(
+    'domain_moref', type=click.STRING,
+    required=True
+)
+@click.option(
+    '-f', '--force', is_flag=True,
+    help='Shut down or power off before migration.'
+)
+@click.option(
+    '-o', '--on', is_flag=True,
+    help='Power of after migrating'
+)
+@pass_context
+def compute_vm_set_domain(
+        ctx: Configuration,
+        domain_moref, force, on
+):
+    """Migrate a virtual machine to another fault domain.
+    In order to proceed with the virtual machine relocation,
+    it's required to be in a powered off state. The `force` flag
+    will send a shutdown signal anf if times out, will perform a
+    power off task. After migration completes, the `on` flag
+    indicates to power on the virtual machine.
+
+    vss compute vm set <uuid> domain <domain-moref> --force --on
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        moref=domain_moref,
+        poweron=on, force=force
+    )
+    if not ctx.get_domain(domain_moref):
+        raise click.BadArgumentUsage(
+            f'Domain {domain_moref} does not exist'
+        )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_domain(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'export',
+    short_help='Export to OVF'
+)
+@pass_context
+def compute_vm_set_export(
+        ctx: Configuration
+):
+    """Export current virtual machine to OVF.
+
+    vss compute vm set <uuid> export
+    """
+    payload = dict(
+        uuid=ctx.uuid
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.export_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'floppy',
+    short_help='Floppy backing'
+)
+@click.argument(
+    'unit', type=click.INT,
+    required=True
+)
+@click.option(
+    '-i', '--image', type=click.STRING,
+    required=True,
+    help='Update floppy backing device to'
+         ' given flp image path.'
+)
+@pass_context
+def compute_vm_set_floppy(
+        ctx: Configuration, unit, image
+):
+    """Update virtual machine floppy backend to Image or client"""
+    img_ref = {}
+    user_imgs = ctx.get_user_floppies()
+    try:
+        img_id = int(image)
+        # public or personal
+        img_ref = ctx.get_floppies(filter=f'id,eq,{img_id}') \
+            or list(filter(lambda i: i['id'] == img_id, user_imgs))
+    except ValueError as ex:
+        # not an integer
+        _LOGGING.debug(f'iso is not an id {img_ref}')
+        # checking name or path
+        # check in public and user images
+        img_ref = ctx.get_floppies(filter=f'name,like,%{image}%') \
+            or ctx.get_floppies(filter=f'path,like,%{image}%') \
+            or list(filter(lambda i: i['name'] == image, user_imgs)) \
+            or list(filter(lambda i: i['path'] == image, user_imgs))
+    # no iso ref
+    if not img_ref:
+        raise click.BadParameter(
+            '--image/-i should be a valid name, path or id'
+        )
+    _LOGGING.debug(f'Will mount {img_ref}')
+    # generate payload
+    payload = dict(
+        uuid=ctx.uuid,
+        floppy=unit,
+        image=img_ref[0].get('path')
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_floppy(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'folder',
+    short_help='Logical folder'
+)
+@click.argument(
+    'moref', type=click.STRING,
+    required=True
+)
+@pass_context
+def compute_vm_set_folder(
+        ctx: Configuration, moref
+):
+    """Move vm from logical folder. Get folder moref from:
+
+        vss compute folder ls
+
+    """
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        folder_moId=moref
+    )
+    if not ctx.get_folder(moref):
+        raise click.BadArgumentUsage(
+            f'Folder {moref} does not exist'
+        )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_folder(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'guest-cmd',
+    short_help='Execute command on OS host'
+)
+@click.option(
+    '-u', '--username',
+    help='Guest Operating System username or via '
+         'environment variable VSS_CMD_USER',
+    envvar='VSS_CMD_USER'
+)
+@click.option(
+    '-p', '--password',
+    help='Guest Operating System username password or via '
+         'environment variable VSS_CMD_USER_PASS',
+    envvar='VSS_CMD_USER_PASS'
+)
+@click.option(
+    '-e', '--env',  multiple=True,
+    help='Environment variables in KEY=value format.'
+)
+@click.argument(
+    'cmd', type=click.STRING,
+    required=True
+)
+@click.argument(
+    'cmd-args', type=click.STRING,
+    required=True
+)
+@pass_context
+def compute_vm_set_guest_cmd(
+        ctx, cmd, cmd_args,
+        env, username, password
+):
+    """
+    Execute a command in the Guest Operating system.
+
+    vss compute vm set <uuid> guest-cmd "/bin/echo"
+    "Hello > /tmp/hello.txt"
+
+    Note: VMware Tools must be installed and running.
+    """
+    username = username or click.prompt('Username')
+    password = password or click.prompt(
+        'Password',
+        show_default=False, hide_input=True,
+        confirmation_prompt=True
+    )
+    # check vmware tools status
+    vmt = ctx.get_vm_tools(ctx.uuid)
+    if not vmt:
+        raise click.BadParameter(
+            f'VMware Tools status could '
+            f'not be checked on {ctx.uuid} '
+        )
+    if vmt.get('runningStatus') not in ["guestToolsRunning"]:
+        raise click.BadParameter(
+            f'VMware Tools must be running '
+            f'on {ctx.uuid} to execute cmd.'
+        )
+    # creating payload
+    payload = dict(
+        uuid=ctx.uuid, user=username,
+        pwd=password, cmd=cmd,
+        arg=cmd_args, env=env
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.run_cmd_guest_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'guest-os',
+    short_help='Update guest operating system'
+)
+@click.argument(
+    'guest-id', type=click.STRING,
+    required=True
+)
+@click.pass_context
+def compute_vm_set_guest_os(
+        ctx: Configuration, guest_id
+):
+    """Update guest operating system configuration:
+
+        vss compute os ls -f guestId,like,cent%
+
+        or
+
+        vss compute os ls -f guestFullName,like,Cent%
+
+    """
+    if not ctx.get_os(filter=f'guestId,eq,{guest_id}'):
+        raise click.BadParameter(
+            'OS not found. Please try: "vss compute os ls"'
+        )
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        os=guest_id
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_os(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(

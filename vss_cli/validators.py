@@ -1,5 +1,6 @@
 import re
 import click
+import json
 
 
 def validate_phone_number(ctx, param, phone):
@@ -17,3 +18,13 @@ def validate_email(ctx, param, email):
         raise click.BadParameter('Value must be in the '
                                  'following format user@utoronto.ca')
     return email
+
+
+def validate_json_type(ctx, param, value):
+    try:
+        if value is not None:
+            return json.loads(value)
+    except ValueError as ex:
+        raise click.BadParameter(
+            f'{param.name} should be a JSON Parameter Input.'
+        )
