@@ -1079,6 +1079,10 @@ def compute_vm_set(
 ):
     """Set given virtual machine attribute such as cpu,
     memory, disk, network backing, cd, etc.."""
+    if not ctx.get_vm(uuid):
+        raise click.BadArgumentUsage(
+            'uuid should be an existing Virtual Machine'
+        )
     ctx.uuid = uuid
     ctx.payload_options = dict()
     ctx.user_meta = dict(to_tuples(user_meta))
@@ -1123,6 +1127,196 @@ def compute_vm_set_admin(
     payload.update(ctx.payload_options)
     # process request
     obj = ctx.update_vm_vss_admin(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'alarm',
+    short_help='Acknowledge or clear alarms'
+)
+@click.argument(
+    'alarm_moref', type=click.STRING, required=True
+)
+@click.option(
+    '-a', '--action', type=click.Choice(['ack', 'cl']),
+    help='Action to perform', required=True
+)
+@pass_context
+def compute_vm_set_alarm(
+        ctx: Configuration, action, alarm_moref
+):
+    """Acknowledge or clear a given alarm. Obtain alarm moref by:
+
+        vss compute vm get <uuid> alarm
+
+        vss compute vm set <uuid> alarm <moref> --action ack
+
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        moref=alarm_moref
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # action
+    if action == 'ack':
+        obj = ctx.ack_vm_alarm(**payload)
+    else:
+        obj = ctx.clear_vm_alarm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'boot-bios',
+    short_help='Enable or disable Boot to BIOS'
+)
+@click.option(
+    '--on/--off',
+    is_flag=True,
+    help='Enable/Disable boot to BIOS',
+    default=False)
+@pass_context
+def compute_vm_set_boot_bios(
+        ctx: Configuration,
+        on
+):
+    """Update virtual machine boot configuration to
+    boot directly to BIOS.
+
+    vss compute vm set <uuid> boot-bios --on
+    vss compute vm set <uuid> boot-bios --off
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        boot_bios=on
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_boot_bios(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'boot-delay',
+    short_help='Boot delay in milliseconds'
+)
+@click.argument(
+    'delay-in-ms', type=click.INT,
+    required=True
+)
+@pass_context
+def compute_vm_set_boot_delay(
+        ctx: Configuration,
+        delay_in_ms
+):
+    """Update virtual machine boot delay time (ms).
+
+    vss compute vm set <uuid> boot-delay 5000
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        boot_delay_ms=delay_in_ms
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_boot_delay(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'cd',
+    short_help='CD/DVD backing'
+)
+@click.argument(
+    'unit', type=click.INT,
+    required=True
+)
+@click.option(
+    '-i', '--iso', type=click.STRING,
+    required=True,
+    help='Update CD/DVD backing device '
+         'to given ISO path or Client device.'
+)
+@pass_context
+def compute_vm_set_cd(
+        ctx: Configuration, unit, iso
+):
+    """Update virtual machine CD/DVD backend to ISO or client.
+
+    vss compute vm set <uuid> cd <unit> --iso "<name-or-path-or-id>"
+
+    vss compute vm set <uuid> cd <unit> --iso client
+    """
+    iso_ref = {}
+    try:
+        iso_id = int(iso)
+        if ctx.get_isos(filter=f'id,eq,{iso_id}'):
+            iso_ref = ctx.get_isos(filter=f'id,eq,{iso_id}')
+    except ValueError as ex:
+        # not an integer
+        _LOGGING.debug(f'iso is not an id {iso_ref}')
+        # checking name or path
+        if ctx.get_isos(filter=f'name,like,%{iso}%'):
+            iso_ref = ctx.get_isos(filter=f'name,like,%{iso}%')
+        elif ctx.get_isos(filter=f'path,like,%{iso}%'):
+            iso_ref = ctx.get_isos(filter=f'path,like,%{iso}%')
+        else:
+            pass
+    # no iso ref
+    if not iso_ref:
+        raise click.BadParameter(
+            '--iso/-i should be a valid name, path or id'
+        )
+    _LOGGING.debug(f'Will mount {iso_ref}')
+    # generate payload
+    payload = dict(
+        uuid=ctx.uuid,
+        unit=unit,
+        iso=iso_ref[0].get('path')
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_cd(**payload)
+    # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
         format_output(
