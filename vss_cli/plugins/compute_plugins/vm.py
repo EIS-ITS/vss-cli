@@ -2108,3 +2108,226 @@ def compute_vm_set_guest_os(
             single=True
         )
     )
+
+
+@compute_vm_set.command(
+    'ha-group',
+    short_help='HA Group (Metadata)'
+)
+@click.argument(
+    'uuid', type=click.UUID, nargs=-1,
+    required=True
+)
+@click.option(
+    '-r', '--replace', is_flag=True,
+    required=False,
+    help='Replace existing value.'
+)
+@pass_context
+def compute_vm_set_ha_group(
+        ctx: Configuration, uuid, replace
+):
+    """Create HA group by tagging virtual machines with given
+    virtual machine UUIDs.
+
+    Checks will run every 3 hours to validate virtual machine
+    association and domain separation.
+
+    vss compute vm set <uuid> ha-group --replace <uuid-1> <uuid-n>
+    """
+    for vm in uuid:
+        _vm = ctx.get_vm(vm)
+        if not vm:
+            raise click.BadArgumentUsage(
+                f'{vm} could not be found'
+            )
+    # create payload
+    payload = dict(
+        append=not replace,
+        vms=list(map(str, uuid)),
+        uuid=str(ctx.uuid)
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_vss_ha_group(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'inform',
+    short_help='Informational contacts (Metadata)'
+)
+@click.argument(
+    'email', type=click.STRING,
+    nargs=-1, required=True
+)
+@click.option(
+    '-r', '--replace', is_flag=True,
+    required=False,
+    help='Replace existing value.'
+)
+@pass_context
+def compute_vm_set_inform(
+        ctx: Configuration, email, replace
+):
+    """Update or set informational contacts emails in
+    metadata.
+
+    vss compute vm set <uuid> inform <email-1> <email-n>
+    """
+    for e in email:
+        validate_email(ctx, '', e)
+    # create payload
+    payload = dict(
+        append=not replace,
+        emails=list(email),
+        uuid=ctx.uuid
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_vss_inform(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.group(
+    'memory'
+)
+@pass_context
+def compute_vm_set_memory(ctx: Configuration):
+    """Update virtual machine Memory count and settings
+    """
+    pass
+
+
+@compute_vm_set_memory.command(
+    'size', short_help='Update memory size in GB'
+)
+@click.argument(
+    'memory_gb', type=click.INT,
+    required=True
+)
+@pass_context
+def compute_vm_set_memory_size(
+        ctx: Configuration, memory_gb
+):
+    """Update virtual machine memory size in GB.
+
+    vss compute vm set <uuid> memory size <memory_gb>
+
+    """
+    # create payload
+    payload = dict(
+        sizeGB=memory_gb,
+        uuid=ctx.uuid
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.set_vm_memory(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_memory.command(
+    'hot-add',
+    short_help='Enable/disable Memory hot add'
+)
+@click.argument(
+    'status', type=click.Choice(['on', 'off']),
+    required=True
+)
+@pass_context
+def compute_vm_set_memory_hot_add(
+        ctx: Configuration, status
+):
+    """Enable or disable virtual machine memory hot-add setting
+
+    vss compute vm set <uuid> memory hot-add on|off
+
+    """
+    lookup = {'on': True, 'off': False}
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        hot_add=lookup[status]
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_memory_hot_add(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'name',
+    short_help='Logical name'
+)
+@click.argument(
+    'name', type=click.STRING,
+    required=True
+)
+@pass_context
+def compute_vm_set_name(
+        ctx: Configuration, name
+):
+    """Update virtual machine name only. It does not update
+    VSS prefix YYMM{P|D|Q|T}.
+
+    vss compute vm set <uuid> name <new-name>
+
+    """
+    payload = dict(
+        name=name,
+        uuid=ctx.uuid
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.rename_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
