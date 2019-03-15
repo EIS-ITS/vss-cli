@@ -23,6 +23,25 @@ DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "_~%]+|\\[[a-z0-9\\-._~%!$&'()*+,;" \
                      "=:]+\\])"
 
+DEFAULT_NIC_DEL_MSG = 'Network adapter:\t{unit}\n' \
+                      'Mac address:\t\t{macAddress}\n' \
+                      'Network:\t\t{network[name]} ({network[moref]})\n' \
+                      'Connected:\t\t{connected}\n'
+
+DEFAULT_STATE_MSG = 'Host Name:\t{hostName} ({os[guestFullName]})\n' \
+                    'IP Address:\t{ip_addresses}\n' \
+                    'Are you sure you want to change the state from ' \
+                    '"{guestState} to {state}" ' \
+                    'of the above VM?'
+
+DEFAULT_VM_DEL_MSG = 'Name:\t\t{name[name]}\n' \
+                     'Folder:\t\t{folder_info[path]}\n' \
+                     'Host Name:\t{hostName} ' \
+                     '({os[guestFullName]})\n' \
+                     'IP Address:\t{ip_addresses}\n' \
+                     'Are you sure you want to delete ' \
+                     'the above VM?'
+
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
 COLUMNS_DEFAULT = [('ALL', '*')]

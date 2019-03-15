@@ -1655,7 +1655,7 @@ def compute_vm_set_description(
 
 @compute_vm_set.group(
     'disk',
-    short_help='Virtual disk settings'
+    short_help='Disk management'
 )
 @pass_context
 def compute_vm_set_disk(
@@ -2331,3 +2331,771 @@ def compute_vm_set_name(
             single=True
         )
     )
+
+
+@compute_vm_set.group(
+    'nic',
+    short_help='Network adapter management'
+)
+@pass_context
+def compute_vm_set_nic(ctx: Configuration):
+    """Add, remove or update virtual machine network adapters
+
+        vss compute vm set <uuid> nic mk --network <net-moref>
+
+    """
+    pass
+
+
+@compute_vm_set_nic.command(
+    'up',
+    short_help='Update NIC unit'
+)
+@click.argument(
+    'unit', type=click.INT,
+    required=True
+)
+@click.option(
+    '-n', '--network', type=click.STRING,
+    help='Virtual network moref'
+)
+@click.option(
+    '-s', '--state',
+    type=click.Choice(['connect',
+                       'disconnect']),
+    help='Updates nic state'
+)
+@click.option(
+    '-a', '--adapter',
+    type=click.Choice(['VMXNET2', 'VMXNET3',
+                       'E1000', 'E1000e']),
+    help='Updates nic adapter type'
+)
+@pass_context
+def compute_vm_set_nic_up(
+        ctx: Configuration,
+        unit, network, state, adapter
+):
+    """Update network adapter backing network, type or state
+
+        vss compute vm set <uuid> nic up --adapter VMXNET3 <unit>
+        vss compute vm set <uuid> nic up --network <name-or-moref> <unit>
+    """
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        nic=unit
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # process request
+    lookup = {
+        'network': ctx.update_vm_nic_network,
+        'state': ctx.update_vm_nic_state,
+        'type': ctx.update_vm_nic_type
+    }
+    # select attr
+    if network:
+        networks = ctx.get_networks(summary=1)
+        # search by name or moref
+        net = list(filter(lambda i: network in i['name'], networks)) \
+            or list(filter(lambda i: network in i['moref'], networks))
+        net_count = len(net)
+        if not net:
+            raise click.BadParameter(
+                f'{network} could not be found'
+            )
+        if len(net) > 1:
+            raise click.BadParameter(
+                f'{network} returned {net_count} results. '
+                f'Narrow down by using specific name or moref.'
+            )
+        attr = 'network'
+        value = net[0]['moref']
+        _LOGGING.debug(f'Update NIC {unit} to {net}')
+    elif state:
+        attr = 'state'
+        value = state
+    elif adapter:
+        attr = 'type'
+        value = adapter
+    else:
+        raise click.UsageError(
+            'Select at least one setting to change'
+        )
+    # lookup function to call
+    f = lookup[attr]
+    payload[attr] = value
+    # request
+    obj = f(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_nic.command(
+    'mk',
+    short_help='Create NIC unit'
+)
+@click.option(
+    '-n', '--network', type=click.STRING,
+    multiple=True,
+    help='Virtual network moref'
+)
+@pass_context
+def compute_vm_set_nic_mk(
+        ctx: Configuration, network
+):
+    """Add network adapter specifying backing network.
+
+        vss compute vm set <uuid> nic mk -n <moref-or-name>
+        -n <moref-or-name>
+    """
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # pull networks
+    networks = ctx.get_networks()
+    _LOGGING.debug(networks)
+    networks_payload = []
+    for net_name_or_moref in network:
+        # search by name or moref
+        net = list(filter(lambda i: net_name_or_moref in i['name'], networks)) \
+            or list(filter(lambda i: net_name_or_moref in i['moref'], networks))
+        if not net:
+            _LOGGING.warning(
+                f'{net_name_or_moref} could not be found. '
+                f'Ignoring.'
+            )
+        net_count = len(net)
+        if len(net) > 1:
+            _LOGGING.warning(
+                f'{net_name_or_moref} returned {net_count} results. '
+                f'Narrow down by using specific name or moref.'
+            )
+        # adding to payload
+        networks_payload.append(net[0]['moref'])
+    # payload
+    payload['networks'] = networks_payload
+    # request
+    obj = ctx.create_vm_nic(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_nic.command(
+    'rm',
+    short_help='Remove NIC unit'
+)
+@click.argument(
+    'unit', type=click.INT,
+    required=True, nargs=-1
+)
+@click.option(
+    '-c', '--confirm', is_flag=True,
+    default=False,
+    help='Confirm nic removal'
+)
+@pass_context
+def compute_vm_set_nic_rm(
+        ctx: Configuration,
+        unit, confirm
+):
+    """Remove given network adapters
+
+        vss compute vm set <uuid> nic rm <unit> <unit> ...
+    """
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+    )
+    units_payload = []
+    # add common options
+    payload.update(ctx.payload_options)
+    confirm_message = list()
+    # validate adapters
+    for n in unit:
+        _nic = ctx.get_vm_nic(
+            uuid=ctx.uuid, nic=n
+        )
+        if _nic:
+            _nic = _nic.pop()
+            _message = const.DEFAULT_NIC_DEL_MSG.format(
+                **_nic
+            )
+            confirm_message.append(_message)
+            units_payload.append(n)
+        else:
+            _LOGGING.warning(
+                f'Adapter {n} could not be found. Ignoring.'
+            )
+    if not units_payload:
+        raise click.BadArgumentUsage(
+            'No valid adapters could be found.'
+        )
+    else:
+        payload['units'] = units_payload
+    confirm_message.append(
+        'Are you sure you want to delete the following NICs'
+    )
+    confirm_message_str = '\n'.join(confirm_message)
+    # confirm message
+    confirm = confirm or click.confirm(confirm_message_str)
+    # request
+    if confirm:
+        obj = ctx.delete_vm_nics(**payload)
+    else:
+        raise click.ClickException('Cancelled by user.')
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.group(
+    'snapshot',
+    short_help='Snapshot management'
+)
+@pass_context
+def compute_vm_set_snapshot(
+        ctx: Configuration
+):
+    """Manage virtual machine snapshots. Create, delete and revert
+    virtual machine snapshot on a given date and time."""
+    if ctx.payload_options.get('schedule'):
+        _LOGGING.warning(
+            'schedule is ignored for snapshots. Removing.'
+        )
+        del ctx.payload_options['schedule']
+
+
+@compute_vm_set_snapshot.command(
+    'mk',
+    short_help='Create snapshot'
+)
+@click.option(
+    '-d', '--description',
+    type=click.STRING, required=True,
+    help='A brief description of the snapshot.'
+)
+@click.option(
+    '-t', '--timestamp',
+    type=click.DateTime(formats=[const.DEFAULT_DATETIME_FMT]),
+    required=True,
+    help='Timestamp to create the snapshot from.'
+)
+@click.option(
+    '-l', '--lifetime',
+    type=click.IntRange(1, 72), required=True,
+    help='Number of hours the snapshot will live.')
+@pass_context
+def compute_vm_set_snapshot_mk(
+        ctx: Configuration,
+        description, timestamp, lifetime
+):
+    """Create virtual machine snapshot:
+
+       vss compute vm set <uuid> snapshot mk -d 'Short description'
+       -t '2018-02-22 00:00' -l 72
+    """
+    import datetime
+    payload = dict(
+        uuid=ctx.uuid,
+        desc=description,
+        date_time=datetime.datetime.strftime(
+            timestamp, const.DEFAULT_DATETIME_FMT
+        ),
+        valid=lifetime
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_snapshot(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_snapshot.command(
+    'rm',
+    short_help='Remove snapshot'
+)
+@click.argument(
+    'snapshot_id', type=click.INT, required=True
+)
+@pass_context
+def compute_vm_set_snapshot_rm(
+        ctx: Configuration, snapshot_id
+):
+    """Remove virtual machine snapshot:
+
+        vss compute vm set <uuid> snapshot rm <snapshot-id>
+    """
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        snapshot=snapshot_id
+    )
+    if not ctx.get_vm_snapshot(
+            uuid=ctx.uuid, snapshot=snapshot_id
+    ):
+        raise click.BadArgumentUsage(
+            f'Snapshot ID {snapshot_id} could not be found.'
+        )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.delete_vm_snapshot(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_snapshot.command(
+    're',
+    short_help='Revert snapshot'
+)
+@click.argument(
+    'snapshot_id', type=click.INT, required=True
+)
+@pass_context
+def compute_vm_set_snapshot_re(
+        ctx: Configuration, snapshot_id
+):
+    """Revert virtual machine snapshot:
+
+        vss compute vm set <uuid> snapshot re <snapshot-id>
+    """
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        snapshot=snapshot_id
+    )
+    if not ctx.get_vm_snapshot(
+            uuid=ctx.uuid, snapshot=snapshot_id
+    ):
+        raise click.BadArgumentUsage(
+            f'Snapshot ID {snapshot_id} could not be found.'
+        )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.revert_vm_snapshot(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'state',
+    short_help='Power state'
+)
+@click.argument(
+    'state',
+    type=click.Choice(
+        ['on', 'off', 'reboot',
+         'reset', 'shutdown']
+    ),
+    required=True
+)
+@click.option(
+    '-c', '--confirm',
+    is_flag=True, default=False,
+    help='Confirm state change'
+)
+@pass_context
+def compute_vm_set_state(
+        ctx: Configuration,
+        state, confirm
+):
+    """ Set given virtual machine power state.
+
+    vss compute vm set <uuid> state on|off|reset|reboot|shutdown -c
+
+    Reboot and shutdown send a guest OS restart signal
+    (VMware Tools required).
+
+    """
+    # lookup dict for state
+    lookup = {
+        'on': 'poweredOn',
+        'off': 'poweredOff',
+        'reset': 'reset',
+        'reboot': 'reboot',
+        'shutdown': 'shutdown'
+    }
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        state=lookup[state]
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # validate VMware tools if shutdown/reboot
+    if state in ['reboot', 'shutdown']:
+        vmt = ctx.get_vm_tools(ctx.uuid)
+        if not vmt:
+            raise click.BadParameter(
+                f'VMware Tools status could '
+                f'not be checked on {ctx.uuid} '
+            )
+        if vmt.get('runningStatus') not in ["guestToolsRunning"]:
+            raise click.BadParameter(
+                f'VMware Tools must be running '
+                f'on {ctx.uuid} send a reboot or shutdown '
+                f'signal.'
+            )
+    # process request
+    # show guest os info if no confirmation flag has been
+    # included - just checking
+    guest_info = ctx.get_vm_guest(ctx.uuid)
+    ip_addresses = ', '.join(guest_info.get('ipAddress')) \
+        if guest_info.get('ipAddress') else ''
+    # confirmation string
+    confirmation_str = const.DEFAULT_STATE_MSG.format(
+        state=state, ip_addresses=ip_addresses,
+        **guest_info
+    )
+    confirmation = confirm or click.confirm(confirmation_str)
+    if not confirmation:
+        raise click.ClickException('Cancelled by user.')
+    # request
+    obj = ctx.update_vm_state(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'template',
+    short_help='Mark vm as template or vice versa.'
+)
+@click.option(
+    '--on/--off', is_flag=True,
+    help='Marks vm as template or template as vm',
+    default=False
+)
+@pass_context
+def compute_vm_set_template(
+        ctx: Configuration, on
+):
+    """Marks virtual machine as template or template to virtual machine.
+
+    vss compute vm set <uuid> template --on/--off
+    """
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        value=on
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.mark_template_as_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'tools',
+    short_help='Manage VMware Tools'
+)
+@click.argument(
+    'action',
+    type=click.Choice(['upgrade',
+                       'mount',
+                       'unmount']),
+    required=True
+)
+@pass_context
+def compute_vm_set_tools(
+        ctx: Configuration, action
+):
+    """Upgrade, mount and unmount official VMware Tools package.
+    This command does not apply for Open-VM-Tools.
+
+    vss compute vm set <uuid> tools upgrade|mount|unmount
+    """
+    payload = dict(
+        uuid=ctx.uuid,
+        action=action
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_tools(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'usage',
+    short_help='Usage (Metadata)'
+)
+@click.argument(
+    'usage',
+    type=click.Choice(['Prod', 'Test',
+                       'Dev', 'QA']),
+    required=True
+)
+@pass_context
+def compute_vm_set_usage(
+        ctx: Configuration, usage
+):
+    """Update virtual machine usage in both name prefix
+    and metadata.
+
+    vss compute vm set <uuid> usage Prod|Test|Dev|QA
+    """
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        usage=usage
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_vss_usage(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.group(
+    'version'
+)
+@pass_context
+def compute_vm_set_version(ctx: Configuration):
+    """Manage virtual machine virtual hardware version and policy."""
+
+
+@compute_vm_set_version.command(
+    'vmx',
+    short_help='Update hardware (VMX) version'
+)
+@click.argument(
+    'vmx', type=click.Choice(['vmx-11',
+                              'vmx-12',
+                              'vmx-13']),
+    required=False, default='vmx-13'
+)
+@pass_context
+def compute_vm_set_version_policy_vmx(
+        ctx: Configuration, vmx
+):
+    """Update virtual hardware version."""
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        vmx=vmx
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_version(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set_version.command(
+    'policy',
+    short_help='Update hardware (VMX) version '
+               'upgrade policy'
+)
+@click.argument(
+    'policy',
+    type=click.Choice(['never', 'onSoftPowerOff', 'always']),
+    required=True
+)
+@pass_context
+def compute_vm_set_version_policy(
+        ctx: Configuration, policy
+):
+    """Update virtual hardware version upgrade policy."""
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        policy=policy
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_version_policy(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm.group(
+    'rm', help='Delete given virtual machines',
+    invoke_without_command=True
+)
+@click.option(
+    '-f', '--force',
+    is_flag=True, default=False,
+    help='Force deletion if power state is on'
+)
+@click.option(
+    '-m', '--max-del', type=click.IntRange(1, 10),
+    required=False, default=3
+)
+@click.option(
+    '-s', '--show-info',
+    is_flag=True, default=False,
+    help='Show guest info and confirmation '
+         'if -f/--force is not included.')
+@click.argument(
+    'uuid', type=click.UUID,
+    required=True,
+    nargs=-1
+)
+@pass_context
+def compute_vm_rm(
+        ctx: Configuration, uuid,
+        force, max_del, show_info
+):
+    """ Delete a list of virtual machine uuids:
+
+        vss compute vm rm <uuid> <uuid> --show-info
+
+    """
+    # result set
+    objs = list()
+    if len(uuid) > max_del:
+        raise click.BadArgumentUsage(
+            'Increase max instance removal with '
+            '--max-del/-m option'
+        )
+    #
+    for vm in uuid:
+        skip = False
+        _vm = ctx.get_vm(vm)
+        if not _vm:
+            _LOGGING.warning(
+                f'Virtual machine {vm} could not be found. '
+                f'Skipping.'
+            )
+            skip = True
+        if _vm and show_info:
+            folder_info = ctx.get_vm_folder(vm)
+            name = ctx.get_vm_name(vm)
+            guest_info = ctx.get_vm_guest(vm)
+            ip_addresses = ', '.join(guest_info.get('ipAddress')) \
+                if guest_info.get('ipAddress') else ''
+
+            c_str = const.DEFAULT_VM_DEL_MSG.format(
+                name=name, folder_info=folder_info,
+                ip_addresses=ip_addresses,
+                **guest_info
+            )
+            confirmation = force or click.confirm(c_str)
+            if not confirmation:
+                _LOGGING.warning(
+                    f'Skipping {vm}...'
+                )
+                skip = True
+        if not skip:
+            # request
+            payload = dict(uuid=vm, force=force)
+            objs.append(ctx.delete_vm(**payload))
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    for obj in objs:
+        click.echo(
+            format_output(
+                ctx,
+                [obj],
+                columns=columns,
+                single=True
+            )
+        )
