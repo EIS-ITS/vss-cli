@@ -10,8 +10,12 @@ REQUIRED_PYTHON_VER = (3, 6, 4)
 DEFAULT_TIMEOUT = 30
 DEFAULT_SERVER = 'https://cloud-api.eis.utoronto.ca'
 DEFAULT_WEBDAV_SERVER = 'https://vskey-stor.eis.utoronto.ca'
-DEFAULT_CONFIG = os.path.expanduser(os.path.join('~', '.vss-cli', 'config.json'))
-DEFAULT_HISTORY = os.path.expanduser(os.path.join('~', '.vss-cli', 'history'))
+DEFAULT_CONFIG = os.path.expanduser(os.path.join(
+    '~', '.vss-cli', 'config.json')
+)
+DEFAULT_HISTORY = os.path.expanduser(os.path.join(
+    '~', '.vss-cli', 'history')
+)
 
 DEFAULT_DATAOUTPUT = 'table'
 DEFAULT_RAW_OUTPUT = 'json'

@@ -10,7 +10,8 @@ from vss_cli.helper import (
 )
 from vss_cli.validators import (
     validate_phone_number, validate_email,
-    validate_json_type
+    validate_json_type, validate_admin,
+    validate_inform
 )
 from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
@@ -1078,7 +1079,7 @@ def compute_vm_set(
         ctx: Configuration,
         uuid, schedule, user_meta: str
 ):
-    """Set given virtual machine attribute such as cpu,
+    """Manage virtual machine attributes such as cpu,
     memory, disk, network backing, cd, etc.."""
     if not ctx.get_vm(uuid):
         raise click.BadArgumentUsage(
@@ -1290,34 +1291,14 @@ def compute_vm_set_cd(
 
     vss compute vm set <uuid> cd <unit> --iso client
     """
-    iso_ref = {}
-    user_isos = ctx.get_user_isos()
-    try:
-        iso_id = int(iso)
-        # public or user
-        iso_ref = ctx.get_isos(filter=f'id,eq,{iso_id}') \
-            or list(filter(lambda i: i['id'] == iso_id, user_isos))
-    except ValueError as ex:
-        # not an integer
-        _LOGGING.debug(f'iso is not an id {iso_ref}')
-        # checking name or path
-        # check in public and user isos
-        iso_ref = ctx.get_isos(filter=f'name,like,%{iso}%') \
-            or ctx.get_isos(filter=f'path,like,%{iso}%') \
-            or list(filter(lambda i: i['name'] == iso, user_isos)) \
-            or list(filter(lambda i: i['path'] == iso, user_isos))
-
-    # no iso ref
-    if not iso_ref:
-        raise click.BadParameter(
-            '--iso/-i should be a valid name, path or id'
-        )
+    # get iso reference
+    iso_ref = ctx.get_iso_by_name_or_guest(iso)
     _LOGGING.debug(f'Will mount {iso_ref}')
     # generate payload
     payload = dict(
         uuid=ctx.uuid,
         unit=unit,
-        iso=iso_ref[0].get('path')
+        iso=iso_ref[0]['path']
     )
     # add common options
     payload.update(ctx.payload_options)
@@ -2396,20 +2377,10 @@ def compute_vm_set_nic_up(
     }
     # select attr
     if network:
-        networks = ctx.get_networks(summary=1)
         # search by name or moref
-        net = list(filter(lambda i: network in i['name'], networks)) \
-            or list(filter(lambda i: network in i['moref'], networks))
-        net_count = len(net)
-        if not net:
-            raise click.BadParameter(
-                f'{network} could not be found'
-            )
-        if len(net) > 1:
-            raise click.BadParameter(
-                f'{network} returned {net_count} results. '
-                f'Narrow down by using specific name or moref.'
-            )
+        net = ctx.get_network_by_name_or_moref(
+            network
+        )
         attr = 'network'
         value = net[0]['moref']
         _LOGGING.debug(f'Update NIC {unit} to {net}')
@@ -2466,7 +2437,6 @@ def compute_vm_set_nic_mk(
     payload.update(ctx.payload_options)
     # pull networks
     networks = ctx.get_networks()
-    _LOGGING.debug(networks)
     networks_payload = []
     for net_name_or_moref in network:
         # search by name or moref
@@ -3099,3 +3069,343 @@ def compute_vm_rm(
                 single=True
             )
         )
+
+
+@compute_vm.group(
+    'mk',
+    short_help='Create virtual machine',
+    invoke_without_command=True
+)
+@click.option(
+    '-u', '--user-meta',
+    help='User metadata in key=value format. '
+         'These tags are stored in the request.',
+    required=False, default=None
+)
+@pass_context
+def compute_vm_mk(
+        ctx: Configuration,
+        user_meta: str
+):
+    """Manage virtual machine attributes such as cpu,
+    memory, disk, network backing, cd, etc.."""
+    ctx.payload_options = dict()
+    ctx.user_meta = dict(to_tuples(user_meta))
+    if user_meta:
+        ctx.payload_options['user_meta'] = ctx.user_meta
+    if click.get_current_context().invoked_subcommand is None:
+        raise click.UsageError(
+            'Sub command is required'
+        )
+
+
+@compute_vm_mk.command(
+    'from-file',
+    short_help='Create virtual machine '
+               'from file specification.'
+)
+@click.argument(
+    'file-spec', type=click.File('rb')
+)
+@pass_context
+def compute_vm_from_file(ctx, file_spec):
+    """Create virtual machine from file specification.
+    Virtual Machine specification can be obtained from
+
+    vss -o [json|yaml] compute vm get <uuid> spec > spec.json
+
+    """
+    import yaml
+    # load yaml or json
+    payload = yaml.load(file_spec)
+    # set built process
+    payload['built'] = payload['built_from']
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+"""
+Reusable options for vm mk command
+"""
+
+source_opt = click.option(
+    '--source', '-s',
+    help='Source virtual machine UUID.',
+    type=click.UUID, required=True
+)
+description_opt = click.option(
+    '--description', '-d', help='Vm description.',
+    type=click.STRING, required=True
+)
+bill_dept_opt = click.option(
+    '--bill-dept', '-b', help='Billing department.',
+    type=click.STRING, required=False
+)
+admin_opt = click.option(
+    '--admin', '-a',
+    help='Admin name, phone number and email separated by '
+         '`:` i.e. "John Doe:416-123-1234:john.doe@utoronto.ca"',
+    type=click.STRING, callback=validate_admin, required=False
+)
+inform_opt = click.option(
+    '--inform', '-r',
+    help='Informational contact emails in comma separated',
+    type=click.STRING, callback=validate_inform, required=False
+)
+usage_opt = click.option(
+    '--usage', '-u', help='Vm usage.',
+    type=click.Choice(['Test', 'Prod', 'Dev', 'QA']),
+    required=False, default='Test'
+)
+os_opt = click.option(
+    '--os', '-o', help='Guest operating system id.',
+    type=click.STRING, required=False
+)
+memory_opt = click.option(
+    '--memory', '-m', help='Memory in GB.',
+    type=click.INT, required=False
+)
+cpu_opt = click.option(
+    '--cpu', '-c', help='Cpu count.',
+    type=click.INT, required=False
+)
+folder_opt = click.option(
+    '--folder', '-f', help='Logical folder moref.',
+    type=click.STRING, required=False
+)
+disks_opt = click.option(
+    '--disk', '-i', help='Disks in GB.',
+    type=click.INT, multiple=True, required=False
+)
+networks_opt = click.option(
+    '--net', '-n', help='Networks moref mapped to NICs.',
+    type=click.STRING, multiple=True, required=False
+)
+domain_opt = click.option(
+    '--domain', '-t', help='Target fault domain.',
+    type=click.STRING, required=False
+)
+notes_opt = click.option(
+    '--notes', '-t', help='Custom notes.',
+    type=click.STRING, required=False
+)
+custom_spec_opt = click.option(
+    '--custom-spec', '-p',
+    help='Guest OS custom specification in JSON format.',
+    type=click.STRING, required=False,
+    callback=validate_json_type
+)
+iso_opt = click.option(
+    '--iso', '-s',
+    help='ISO image path to be mounted after creation',
+    type=click.STRING, required=False
+)
+high_io_opt = click.option(
+    '--high-io', '-h',
+    help='VM will be created with a '
+         'VMware Paravirtual SCSIController.',
+    is_flag=True, required=False
+)
+
+
+@compute_vm_mk.command(
+    'from-spec',
+    short_help='Create vm from another vm spec'
+)
+@click.argument(
+    'name',
+    type=click.STRING, required=True
+)
+@source_opt
+@description_opt
+@bill_dept_opt
+@admin_opt
+@inform_opt
+@usage_opt
+@os_opt
+@memory_opt
+@cpu_opt
+@folder_opt
+@disks_opt
+@networks_opt
+@domain_opt
+@notes_opt
+@pass_context
+def compute_vm_mk_spec(
+        ctx: Configuration, name, source,
+        description, bill_dept, usage,
+        memory, cpu, folder, disk,
+        notes, admin, inform,
+        net, domain, os
+):
+    built = 'os_install'
+    s_payload = ctx.get_vm_spec(source)
+    # payload
+    payload = dict(
+        description=description, name=name,
+        usage=usage, built=built
+    )
+    if memory:
+        payload['memory'] = memory
+    if cpu:
+        payload['cpu'] = cpu
+    if folder:
+        payload['folder'] = folder
+    if bill_dept:
+        payload['bill_dept'] = bill_dept
+    if disk:
+        payload['disks'] = list(disk)
+    if notes:
+        payload['notes'] = notes
+    if admin:
+        name, phone, email = admin.split(':')
+        payload['admin_email'] = email
+        payload['admin_phone'] = phone
+        payload['admin_name'] = name
+    if inform:
+        payload['inform'] = inform
+    # network
+    if net:
+        networks = list()
+        for network in net:
+            _net = ctx.get_network_by_name_or_moref(network)
+            networks.append(_net[0]['moref'])
+        payload['networks'] = networks
+    # domain
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # os
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guestId']
+    # updating spec with new vm spec
+    s_payload.update(payload)
+    # request
+    obj = ctx.create_vm(**s_payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_mk.command(
+    'shell',
+    short_help='Create empty virtual machine'
+)
+@description_opt
+@inform_opt
+@usage_opt
+@admin_opt
+@memory_opt
+@cpu_opt
+@domain_opt
+@notes_opt
+@iso_opt
+@high_io_opt
+@click.argument(
+    'name',
+    type=click.STRING, required=True
+)
+@click.option(
+    '--bill-dept', '-b', help='Billing department.',
+    type=click.STRING, required=True
+)
+@click.option(
+    '--os', '-o', help='Guest operating system id.',
+    type=click.STRING, required=True
+)
+@click.option(
+    '--folder', '-f', help='Logical folder moref.',
+    type=click.STRING, required=True
+)
+@click.option(
+    '--disk', '-i', help='Disks in GB.',
+    type=click.INT, multiple=True, required=True
+)
+@click.option(
+    '--net', '-n', help='Networks moref mapped to NICs.',
+    type=click.STRING, multiple=True, required=True
+)
+@pass_context
+def compute_vm_mk_shell(
+        ctx: Configuration, name,
+        description, bill_dept, usage,
+        memory, cpu, folder, disk,
+        notes, admin, inform,
+        high_io, iso,
+        net, domain, os
+):
+    built = 'os_install'
+    payload = dict(
+        description=description, name=name,
+        usage=usage, built=built, high_io=high_io
+    )
+    if memory:
+        payload['memory'] = memory
+    if cpu:
+        payload['cpu'] = cpu
+    if folder:
+        payload['folder'] = folder
+    if bill_dept:
+        payload['bill_dept'] = bill_dept
+    if disk:
+        payload['disks'] = list(disk)
+    if notes:
+        payload['notes'] = notes
+    if admin:
+        name, phone, email = admin.split(':')
+        payload['admin_email'] = email
+        payload['admin_phone'] = phone
+        payload['admin_name'] = name
+    if inform:
+        payload['inform'] = inform
+    # network
+    if net:
+        networks = list()
+        for network in net:
+            _net = ctx.get_network_by_name_or_moref(network)
+            networks.append(_net[0]['moref'])
+        payload['networks'] = networks
+    # domain
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # os
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guestId']
+    # iso
+    if iso:
+        _iso = ctx.get_iso_by_name_or_guest(iso)
+        payload['iso'] = _iso[0]['path']
+    # request
+    obj = ctx.create_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
