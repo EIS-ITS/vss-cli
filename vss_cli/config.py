@@ -104,7 +104,7 @@ class Configuration(VssManager):
         """Configure output format."""
         if self.output == "auto":
             if auto_output == 'data':
-                auto_output = const.DEFAULT_DATAOUTPUT
+                auto_output = const.DEFAULT_RAW_OUTPUT
             _LOGGING.debug("Setting auto-output to: %s", auto_output)
             self.output = auto_output
         return self.output
@@ -207,9 +207,10 @@ class Configuration(VssManager):
                         # check for unread messages
                         self.check_unread_messages()
                     return self.username, self.password, self.api_token
-            raise VssCliError("Invalid configuration. "
-                              "Please, run "
-                              "'vss-cli configure mk' to initialize configuration.")
+            raise VssCliError(
+                "Invalid configuration. Please, run 'vss-cli "
+                "configure mk' to initialize configuration."
+            )
         except Exception as ex:
             raise VssCliError(str(ex))
 
@@ -327,3 +328,133 @@ class Configuration(VssManager):
         )
         self.vskey_stor = wc.Client(options=options)
         return self.vskey_stor.valid()
+
+    def get_domain_by_name_or_moref(self, name_or_moref):
+        g_domains = self.get_domains()
+        d = list(filter(lambda i: name_or_moref in i['name'], g_domains)) \
+            or list(filter(lambda i: name_or_moref in i['moref'], g_domains))
+        if not d:
+            raise click.BadParameter(
+                f'{name_or_moref} could not be found'
+            )
+        d_count = len(d)
+        if d_count > 1:
+            raise click.BadParameter(
+                f'{name_or_moref} returned {d_count} results. '
+                f'Narrow down by using specific name or moref.'
+            )
+        return d
+
+    def get_network_by_name_or_moref(self, name_or_moref):
+        g_networks = self.get_networks()
+        # search by name or moref
+        n = list(filter(lambda i: name_or_moref in i['name'], g_networks)) \
+            or list(filter(lambda i: name_or_moref in i['moref'], g_networks))
+        if not n:
+            raise click.BadParameter(
+                f'{name_or_moref} could not be found'
+            )
+        net_count = len(n)
+        if net_count > 1:
+            raise click.BadParameter(
+                f'{name_or_moref} returned {net_count} results. '
+                f'Narrow down by using specific name or moref.'
+            )
+        return n
+
+    def get_os_by_name_or_guest(self, name_or_guest):
+        g_os = self.get_os()
+        try:
+            o_f = list(
+                filter(
+                    lambda i: int(name_or_guest) == i['id'],
+                    g_os
+                )
+            )
+        except ValueError:
+            # not an integer
+            _LOGGING.debug(f'not an id {name_or_guest}')
+            o_f = \
+                list(filter(lambda i: name_or_guest in i['guestId'], g_os)) \
+                or list(filter(lambda i: name_or_guest in i['guestFullName'],
+                               g_os))
+        if not o_f:
+            raise click.BadParameter(
+                f'{name_or_guest} could not be found'
+            )
+        o_count = len(o_f)
+        if o_count > 1:
+            raise click.BadParameter(
+                f'{name_or_guest} returned {o_count} results. '
+                f'Narrow down by using specific name or id.'
+            )
+        return o_f
+
+    def get_iso_by_name_or_guest(self, name_or_path_or_id):
+        user_isos = self.get_user_isos()
+        pub_isos = self.get_isos(show_all=True)
+        try:
+            iso_id = int(name_or_path_or_id)
+            # public or user
+            iso_ref = \
+                list(filter(lambda i: i['id'] == iso_id, pub_isos)) \
+                or list(filter(lambda i: i['id'] == iso_id, user_isos))
+        except ValueError as ex:
+            # not an integer
+            _LOGGING.debug(f'not an id {name_or_path_or_id}')
+            # checking name or path
+            # check in public and user isos
+            iso = str(name_or_path_or_id)
+            iso_ref = \
+                list(filter(lambda i: i['name'] == iso, pub_isos)) \
+                or list(filter(lambda i: i['path'] == iso, pub_isos)) \
+                or list(filter(lambda i: i['name'] == iso, user_isos)) \
+                or list(filter(lambda i: i['path'] == iso, user_isos))
+        # check if there's no ref
+        if not iso_ref:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} could not be found'
+            )
+        # count for dup results
+        o_count = len(iso_ref)
+        if o_count > 1:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} returned {o_count} results. '
+                f'Narrow down by using specific name or id or path.'
+            )
+        return iso_ref
+
+    def get_vm_image_by_name_or_id_path(self, name_or_path_or_id):
+        user_imgs = self.get_user_vm_images()
+        pub_imgs = self.get_images(show_all=True)
+        try:
+            img_id = int(name_or_path_or_id)
+            # public or user
+            img_ref = \
+                list(filter(lambda i: i['id'] == img_id, pub_imgs)) \
+                or list(filter(lambda i: i['id'] == img_id, user_imgs))
+        except ValueError as ex:
+            # not an integer
+            _LOGGING.debug(f'not an id {name_or_path_or_id}')
+            # checking name or path
+            # check in public and user img
+            img = str(name_or_path_or_id)
+            img_ref = \
+                list(filter(lambda i: i['name'] == img, pub_imgs)) \
+                or list(filter(lambda i: i['path'] == img, pub_imgs)) \
+                or list(filter(lambda i: i['name'] == img, user_imgs)) \
+                or list(filter(lambda i: i['path'] == img, user_imgs))
+        # check if there's no ref
+        if not img_ref:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} could not be found'
+            )
+        # count for dup results
+        o_count = len(img_ref)
+        if o_count > 1:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} returned {o_count} results. '
+                f'Narrow down by using specific name or id or path.'
+            )
+        return img_ref
+

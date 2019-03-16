@@ -63,4 +63,3 @@ def table_formats(
     completions.sort()
 
     return [c for c in completions if incomplete in c[0]]
-

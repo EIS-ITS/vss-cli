@@ -5,20 +5,46 @@ PACKAGE_NAME = 'vss_cli'
 
 __version__ = '0.1.0.dev0'
 
-REQUIRED_PYTHON_VER = (3, 5, 3)
+REQUIRED_PYTHON_VER = (3, 6, 4)
 
 DEFAULT_TIMEOUT = 30
 DEFAULT_SERVER = 'https://cloud-api.eis.utoronto.ca'
 DEFAULT_WEBDAV_SERVER = 'https://vskey-stor.eis.utoronto.ca'
-DEFAULT_CONFIG = os.path.expanduser(os.path.join('~', '.vss-cli', 'config.json'))
-DEFAULT_HISTORY = os.path.expanduser(os.path.join('~', '.vss-cli', 'history'))
+DEFAULT_CONFIG = os.path.expanduser(os.path.join(
+    '~', '.vss-cli', 'config.json')
+)
+DEFAULT_HISTORY = os.path.expanduser(os.path.join(
+    '~', '.vss-cli', 'history')
+)
 
 DEFAULT_DATAOUTPUT = 'table'
+DEFAULT_RAW_OUTPUT = 'json'
+
+DEFAULT_DATETIME_FMT = '%Y-%m-%d %H:%M'
 
 DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "-._~%!$&'()*+,;=]+@)?([a-z0-9\\-." \
                      "_~%]+|\\[[a-z0-9\\-._~%!$&'()*+,;" \
                      "=:]+\\])"
+
+DEFAULT_NIC_DEL_MSG = 'Network adapter:\t{unit}\n' \
+                      'Mac address:\t\t{macAddress}\n' \
+                      'Network:\t\t{network[name]} ({network[moref]})\n' \
+                      'Connected:\t\t{connected}\n'
+
+DEFAULT_STATE_MSG = 'Host Name:\t{hostName} ({os[guestFullName]})\n' \
+                    'IP Address:\t{ip_addresses}\n' \
+                    'Are you sure you want to change the state from ' \
+                    '"{guestState} to {state}" ' \
+                    'of the above VM?'
+
+DEFAULT_VM_DEL_MSG = 'Name:\t\t{name[name]}\n' \
+                     'Folder:\t\t{folder_info[path]}\n' \
+                     'Host Name:\t{hostName} ' \
+                     '({os[guestFullName]})\n' \
+                     'IP Address:\t{ip_addresses}\n' \
+                     'Are you sure you want to delete ' \
+                     'the above VM?'
 
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
@@ -179,7 +205,6 @@ COLUMNS_TK_MIN = [
 ]
 COLUMNS_TK = [
     *COLUMNS_TK_MIN,
-
 ]
 COLUMNS_MESSAGE_MIN = [
     *COLUMNS_MIN,
@@ -219,6 +244,160 @@ COLUMNS_VM_INFO = [
     ('SNAPSHOT', 'snapshot.exist'),
     ('DISKS', 'hardware.devices.disks[*].unit'),
     ('NICS', 'hardware.devices.nics[*].unit')
+]
+COLUMNS_VM_GUEST = [
+    ('HOSTNAME', 'hostName'),
+    ('IP', 'ipAddress[*]'),
+    ('GUEST_NAME', 'os.guestFullName'),
+    ('GUEST_ID', 'os.guestId'),
+    ('TOOLS', 'tools.runningStatus')
+]
+COLUMNS_VM_GUEST_OS = [
+    ('FAMILY', 'guestFamily'),
+    ('NAME', 'guestFullName'),
+    ('ID', 'guestId')
+]
+COLUMNS_VM_GUEST_IP = [
+    ('IP', 'ipAddress'),
+    ('MAC', 'macAddress'),
+    ('ORIGIN', 'origin'),
+    ('STATE', 'state')
+]
+COLUMNS_VM_HAGROUP = [
+    *COLUMNS_VM_MIN,
+    ('VALID', 'valid')
+]
+COLUMNS_VM_MEMORY = [
+    ('MEMORY_GB', 'memoryGB'),
+    ('HOTADD', 'hotAdd.enabled'),
+    ('HOTADD_LIMIT', 'hotAdd.limitGB'),
+    ('QUICKSTATS_BALLOONED', 'quickStats.balloonedMemoryMB'),
+    ('QUICKSTATS_USAGE', 'quickStats.guestMemoryUsageMB')
+]
+COLUMNS_VM_NIC_MIN = [
+    ('LABEL', 'label'),
+    ('MAC', 'macAddress'),
+    ('TYPE', 'type'),
+    ('CONNECTED', 'connected')
+]
+COLUMNS_VM_NIC = [
+    *COLUMNS_VM_NIC_MIN,
+    ('START_CONNECTED', 'startConnected'),
+    ('NETWORK', 'network.name'),
+    ('NETWORK_MOREF', 'network.moref')
+]
+COLUMNS_OBJ_PERMISSION = [
+    ('PRINCIPAL', 'principal'),
+    ('GROUP', 'group'),
+    ('PROPAGATE', 'propagate')
+]
+COLUMNS_VM_SNAP_MIN = [
+    ('ID', 'id'),
+    ('NAME', 'name')
+]
+COLUMNS_VM_SNAP = [
+    *COLUMNS_VM_SNAP_MIN,
+    ('SIZE_GB', 'sizeGB'),
+    ('DESCRIPTION', 'description'),
+    ('CREATED', 'createTime'),
+    ('AGE', 'age')
+]
+COLUMNS_VM_ADMIN = [
+    ('NAME', 'name'),
+    ('EMAIL', 'email'),
+    ('PHONE', 'phone')
+]
+COLUMNS_VM_ALARM_MIN = [
+    *COLUMNS_MOID,
+    ('STATUS', 'overallStatus'),
+    ('DATETIME', 'dateTime')
+]
+COLUMNS_VM_ALARM = [
+    *COLUMNS_VM_ALARM_MIN,
+    ('ACK', 'acknowledged'),
+    ('ACKBY', 'acknowledgedByUser'),
+    ('ACKDATE', 'acknowledgedDateTime')
+]
+COLUMNS_VM_BOOT = [
+    ('ENTER_BIOS', 'enterBIOSSetup'),
+    ('BOOTRETRYDELAY', 'bootRetryDelayMs'),
+    ('BOOTDELAY', 'bootDelayMs')
+]
+COLUMNS_VM_CD_MIN = [
+    ('LABEL', 'label'),
+    ('BACKING', 'backing'),
+    ('CONNECTED', 'connected')
+]
+COLUMNS_VM_CD = [
+    *COLUMNS_VM_CD_MIN,
+    ('CONTROLLER_TYPE', 'controller.type'),
+    ('CONTROLLER_NODE', 'controller.virtualDeviceNode')
+]
+COLUMNS_VM_CTRL_MIN = [
+    ('LABEL', 'label'),
+    ('BUS_NUM', 'busNumber'),
+    ('TYPE', 'type')
+]
+COLUMNS_VM_CTRL = [
+    *COLUMNS_VM_CTRL_MIN,
+    ('CTRL KEY', 'controllerKey'),
+    ('SUMMARY', 'summary'),
+    ('SHARED_BUS', 'sharedBus'),
+    ('HOTADDREMOVE', 'hotAddRemove')
+]
+COLUMNS_VM_DISK_MIN = [
+    ('LABEL', 'label'),
+    ('UNIT', 'unit'),
+    ('CONTROLLER', 'controller.virtualDeviceNode')
+]
+COLUMNS_VM_DISK = [
+    *COLUMNS_VM_DISK_MIN,
+    ('CAPACITY_GB', 'capacityGB'),
+    ('SHARES', 'shares.level')
+]
+
+COLUMNS_VM_DISK_BACKING = [
+    *COLUMNS_VM_DISK,
+    ('DESCRIPTOR', 'descriptorFileName'),
+    ('DEVICE_NAME', 'deviceName'),
+    ('DISK_MODE', 'diskMode'),
+    ('FILE', 'fileName'),
+    ('LUN', 'lunUuid'),
+    ('THIN', 'thinProvisioned')
+]
+COLUMNS_VM_CTRL_DISK = [
+    ('CONTROLLER', 'controller.virtualDeviceNode'),
+    *COLUMNS_VM_DISK_MIN,
+    ('CAPACITY_GB', 'capacityGB'),
+]
+COLUMNS_VM_CPU = [
+    ('CPU', 'cpu'),
+    ('CORES/SOCKET', 'coresPerSocket'),
+    ('HOTADD', 'hotAdd.enabled'),
+    ('HOTREMOVE', 'hotRemove.enabled'),
+    ('QUICKSTATS_DEMAND', 'quickStats.overallCpuDemandMHz'),
+    ('QUICKSTATS_USAGE', 'quickStats.overallCpuUsageMHz')
+]
+COLUMNS_VM_EVENT = [
+    ('USERNAME', 'userName'),
+    ('CREATED', 'createdTime'),
+    ('MESSAGE', 'message')
+]
+COLUMNS_VM_STATE = [
+    ('POWER', 'powerState'),
+    ('BOOT', 'bootTime'),
+    ('CONNECTION', 'connectionState'),
+    ('DOMAIN', 'domain.name')
+]
+COLUMNS_VM_TOOLS = [
+    ('VERSION', 'version'),
+    ('STATUS', 'versionStatus'),
+    ('RUNNING', 'runningStatus')
+]
+COLUMNS_VM_HW = [
+    ('VALUE', 'value'),
+    ('STATUS', 'status'),
+    ('UPGRADE_POLICY', 'upgrade_policy.upgradePolicy')
 ]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),

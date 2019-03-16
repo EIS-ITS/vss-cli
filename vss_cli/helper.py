@@ -217,7 +217,7 @@ def capitalize(
 
 
 def dump_object(
-        obj: Any, _key: str=None, _list: List[str]=None
+        obj: Any, _key: str = None, _list: List[str] = None
 ) -> None:
     """Dumps dictionary in kv fmt"""
     for key, value in obj.items():
