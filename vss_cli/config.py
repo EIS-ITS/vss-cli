@@ -392,7 +392,7 @@ class Configuration(VssManager):
 
     def get_iso_by_name_or_guest(self, name_or_path_or_id):
         user_isos = self.get_user_isos()
-        pub_isos = self.get_isos()
+        pub_isos = self.get_isos(show_all=True)
         try:
             iso_id = int(name_or_path_or_id)
             # public or user
@@ -423,3 +423,38 @@ class Configuration(VssManager):
                 f'Narrow down by using specific name or id or path.'
             )
         return iso_ref
+
+    def get_vm_image_by_name_or_id_path(self, name_or_path_or_id):
+        user_imgs = self.get_user_vm_images()
+        pub_imgs = self.get_images(show_all=True)
+        try:
+            img_id = int(name_or_path_or_id)
+            # public or user
+            img_ref = \
+                list(filter(lambda i: i['id'] == img_id, pub_imgs)) \
+                or list(filter(lambda i: i['id'] == img_id, user_imgs))
+        except ValueError as ex:
+            # not an integer
+            _LOGGING.debug(f'not an id {name_or_path_or_id}')
+            # checking name or path
+            # check in public and user img
+            img = str(name_or_path_or_id)
+            img_ref = \
+                list(filter(lambda i: i['name'] == img, pub_imgs)) \
+                or list(filter(lambda i: i['path'] == img, pub_imgs)) \
+                or list(filter(lambda i: i['name'] == img, user_imgs)) \
+                or list(filter(lambda i: i['path'] == img, user_imgs))
+        # check if there's no ref
+        if not img_ref:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} could not be found'
+            )
+        # count for dup results
+        o_count = len(img_ref)
+        if o_count > 1:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} returned {o_count} results. '
+                f'Narrow down by using specific name or id or path.'
+            )
+        return img_ref
+

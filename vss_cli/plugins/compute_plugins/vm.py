@@ -3142,7 +3142,7 @@ Reusable options for vm mk command
 
 source_opt = click.option(
     '--source', '-s',
-    help='Source virtual machine UUID.',
+    help='Source virtual machine or template UUID.',
     type=click.UUID, required=True
 )
 description_opt = click.option(
@@ -3218,6 +3218,19 @@ high_io_opt = click.option(
          'VMware Paravirtual SCSIController.',
     is_flag=True, required=False
 )
+extra_config_opt = click.option(
+    '--extra-config', '-e',
+    help='VMWare Guest Info Interface in JSON format.',
+    type=click.STRING, required=False,
+    callback=validate_json_type
+)
+user_data_opt = click.option(
+    '--user-data', '-s',
+    help='Cloud-init user_data YML file path to '
+         'pre-configure guest os upon first boot.',
+    type=click.File('r'),
+    required=False
+)
 
 
 @compute_vm_mk.command(
@@ -3250,6 +3263,8 @@ def compute_vm_mk_spec(
         notes, admin, inform,
         net, domain, os
 ):
+    """Create virtual machine based on another  virtual machine
+     configuration specification."""
     built = 'os_install'
     s_payload = ctx.get_vm_spec(source)
     # payload
@@ -3326,23 +3341,28 @@ def compute_vm_mk_spec(
     type=click.STRING, required=True
 )
 @click.option(
-    '--bill-dept', '-b', help='Billing department.',
+    '--bill-dept', '-b',
+    help='Billing department.',
     type=click.STRING, required=True
 )
 @click.option(
-    '--os', '-o', help='Guest operating system id.',
+    '--os', '-o',
+    help='Guest operating system id or name.',
     type=click.STRING, required=True
 )
 @click.option(
-    '--folder', '-f', help='Logical folder moref.',
+    '--folder', '-f',
+    help='Logical folder moref.',
     type=click.STRING, required=True
 )
 @click.option(
-    '--disk', '-i', help='Disks in GB.',
+    '--disk', '-i',
+    help='Disks in GB.',
     type=click.INT, multiple=True, required=True
 )
 @click.option(
-    '--net', '-n', help='Networks moref mapped to NICs.',
+    '--net', '-n',
+    help='Networks moref or name mapped to NICs.',
     type=click.STRING, multiple=True, required=True
 )
 @pass_context
@@ -3354,6 +3374,8 @@ def compute_vm_mk_shell(
         high_io, iso,
         net, domain, os
 ):
+    """Create a new virtual machine with no operating system
+    pre-installed."""
     built = 'os_install'
     payload = dict(
         description=description, name=name,
@@ -3399,6 +3421,305 @@ def compute_vm_mk_shell(
         payload['iso'] = _iso[0]['path']
     # request
     obj = ctx.create_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_mk.command(
+    'from-template',
+    short_help='Create vm from template'
+)
+@click.argument(
+    'name',
+    type=click.STRING, required=False
+)
+@source_opt
+@description_opt
+@bill_dept_opt
+@admin_opt
+@inform_opt
+@usage_opt
+@os_opt
+@memory_opt
+@cpu_opt
+@folder_opt
+@disks_opt
+@networks_opt
+@domain_opt
+@notes_opt
+@custom_spec_opt
+@pass_context
+def compute_vm_mk_template(
+        ctx: Configuration, name, source,
+        description, bill_dept, usage,
+        memory, cpu, folder, disk,
+        notes, admin, inform,
+        net, domain, os, custom_spec
+):
+    """Deploy virtual machine from template"""
+    # payload
+    payload = dict(
+        description=description, name=name,
+        usage=usage,
+        source_template=source
+    )
+    if memory:
+        payload['memory'] = memory
+    if cpu:
+        payload['cpu'] = cpu
+    if folder:
+        payload['folder'] = folder
+    if bill_dept:
+        payload['bill_dept'] = bill_dept
+    if disk:
+        payload['disks'] = list(disk)
+    if notes:
+        payload['notes'] = notes
+    if custom_spec:
+        payload['custom_spec'] = custom_spec
+    if admin:
+        name, phone, email = admin.split(':')
+        payload['admin_email'] = email
+        payload['admin_phone'] = phone
+        payload['admin_name'] = name
+    if inform:
+        payload['inform'] = inform
+    # network
+    if net:
+        networks = list()
+        for network in net:
+            _net = ctx.get_network_by_name_or_moref(network)
+            networks.append(_net[0]['moref'])
+        payload['networks'] = networks
+    # domain
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # os
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guestId']
+    # request
+    obj = ctx.deploy_vm_from_template(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_mk.command(
+    'from-clone',
+    short_help='Create vm from clone'
+)
+@click.argument(
+    'name',
+    type=click.STRING, required=False
+)
+@source_opt
+@description_opt
+@bill_dept_opt
+@admin_opt
+@inform_opt
+@usage_opt
+@os_opt
+@memory_opt
+@cpu_opt
+@folder_opt
+@disks_opt
+@networks_opt
+@domain_opt
+@notes_opt
+@custom_spec_opt
+@pass_context
+def compute_vm_mk_clone(
+        ctx: Configuration, name, source,
+        description, bill_dept, usage,
+        memory, cpu, folder, disk,
+        notes, admin, inform,
+        net, domain, os, custom_spec
+):
+    """Clone virtual machine from running or powered off vm.
+    If name argument is not specified, -clone suffix will be added to
+    resulting virtual machine"""
+    # payload
+    payload = dict(
+        description=description, name=name,
+        usage=usage,
+        source_vm=source
+    )
+    if memory:
+        payload['memory'] = memory
+    if cpu:
+        payload['cpu'] = cpu
+    if folder:
+        payload['folder'] = folder
+    if bill_dept:
+        payload['bill_dept'] = bill_dept
+    if disk:
+        payload['disks'] = list(disk)
+    if notes:
+        payload['notes'] = notes
+    if custom_spec:
+        payload['custom_spec'] = custom_spec
+    if admin:
+        name, phone, email = admin.split(':')
+        payload['admin_email'] = email
+        payload['admin_phone'] = phone
+        payload['admin_name'] = name
+    if inform:
+        payload['inform'] = inform
+    # network
+    if net:
+        networks = list()
+        for network in net:
+            _net = ctx.get_network_by_name_or_moref(network)
+            networks.append(_net[0]['moref'])
+        payload['networks'] = networks
+    # domain
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # os
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guestId']
+    # request
+    obj = ctx.create_vm_from_clone(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_mk.command(
+    'from-image',
+    short_help='Create vm from OVA/OVF image.'
+)
+@click.argument(
+    'name',
+    type=click.STRING, required=False
+)
+@description_opt
+@admin_opt
+@inform_opt
+@usage_opt
+@memory_opt
+@cpu_opt
+@networks_opt
+@domain_opt
+@notes_opt
+@custom_spec_opt
+@extra_config_opt
+@user_data_opt
+@click.option(
+    '--bill-dept', '-b',
+    help='Billing department.',
+    type=click.STRING, required=True
+)
+@click.option(
+    '--os', '-o',
+    help='Guest operating system id, name or path.',
+    type=click.STRING, required=True
+)
+@click.option(
+    '--folder', '-f',
+    help='Logical folder moref.',
+    type=click.STRING, required=True
+)
+@click.option(
+    '--disk', '-i',
+    help='Disks in GB.',
+    type=click.INT, multiple=True, required=True
+)
+@click.option(
+    '--net', '-n',
+    help='Networks moref or name mapped to NICs.',
+    type=click.STRING, multiple=True, required=True
+)
+@click.option(
+    '--source', '-s',
+    help='Source Virtual Machine OVA/OVF id, name or path.',
+    type=click.STRING, required=True
+)
+@pass_context
+def compute_vm_mk_image(
+        ctx: Configuration, name, source,
+        description, bill_dept, usage,
+        memory, cpu, folder, disk,
+        notes, admin, inform,
+        net, domain, os, custom_spec,
+        extra_config, user_data
+):
+    """Deploy virtual machine from image"""
+    # get reference to image by
+    image_ref = ctx.get_vm_image_by_name_or_id_path(
+        source
+    )
+    # payload
+    payload = dict(
+        description=description, name=name,
+        usage=usage, bill_dept=bill_dept,
+        folder=folder,
+        image=image_ref[0]['path']
+    )
+    if memory:
+        payload['memory'] = memory
+    if cpu:
+        payload['cpu'] = cpu
+    if disk:
+        payload['disks'] = list(disk)
+    if notes:
+        payload['notes'] = notes
+    if custom_spec:
+        payload['custom_spec'] = custom_spec
+    if admin:
+        name, phone, email = admin.split(':')
+        payload['admin_email'] = email
+        payload['admin_phone'] = phone
+        payload['admin_name'] = name
+    if inform:
+        payload['inform'] = inform
+    if extra_config:
+        payload['extra_config'] = extra_config
+    if user_data:
+        payload['user_data'] = user_data.read()
+    # network
+    if net:
+        networks = list()
+        for network in net:
+            _net = ctx.get_network_by_name_or_moref(network)
+            networks.append(_net[0]['moref'])
+        payload['networks'] = networks
+    # domain
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # os
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guestId']
+    # request
+    obj = ctx.create_vm_from_image(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
