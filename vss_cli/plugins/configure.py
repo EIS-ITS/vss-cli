@@ -69,11 +69,13 @@ def ls(ctx: Configuration):
             auth_enc = auth.encode()
             user, pwd = b64decode(auth_enc).split(b':')
             masked_pwd = ''.join(['*' for i in range(len(pwd))])
-            _profiles.append({'endpoint': key,
-                              'user': user.decode(), 'pass': masked_pwd[:8],
-                              'token': '{}...{}'.format(profile['token'][:10],
-                                                        profile['token'][-10:]),
-                              'source': 'config file'})
+            _profiles.append(
+                {'endpoint': key,
+                 'user': user.decode(), 'pass': masked_pwd[:8],
+                 'token': '{}...{}'.format(profile['token'][:10],
+                                           profile['token'][-10:]),
+                 'source': 'config file'}
+            )
     except FileNotFoundError as ex:
         _LOGGING.warning(f'{str(ex)}. Have you run vss-cli configure mk?')
 

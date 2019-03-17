@@ -6,11 +6,13 @@ from vss_cli.cli import pass_context
 
 @click.group(
     'completion',
-    short_help='Output shell completion code for the specified shell (bash or zsh).'
+    short_help='Output shell completion code for '
+               'the specified shell (bash or zsh).'
 )
 @pass_context
 def cli(ctx):
-    """Output shell completion code for the specified shell (bash or zsh)."""
+    """Output shell completion code for the specified
+    shell (bash or zsh)."""
 
 
 def dump_script(shell: str) -> None:

@@ -1927,12 +1927,12 @@ def compute_vm_set_floppy(
     short_help='Logical folder'
 )
 @click.argument(
-    'moref', type=click.STRING,
+    'name-moref-path', type=click.STRING,
     required=True
 )
 @pass_context
 def compute_vm_set_folder(
-        ctx: Configuration, moref
+        ctx: Configuration, name_moref_path
 ):
     """Move vm from logical folder. Get folder moref from:
 
@@ -1942,12 +1942,12 @@ def compute_vm_set_folder(
     # create payload
     payload = dict(
         uuid=ctx.uuid,
-        folder_moId=moref
     )
-    if not ctx.get_folder(moref):
-        raise click.BadArgumentUsage(
-            f'Folder {moref} does not exist'
-        )
+    # lookup for folder
+    _folder = ctx.get_folder_by_name_or_moref_path(
+        name_moref_path
+    )
+    payload['folder_moId'] = _folder[0]['moref']
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2440,8 +2440,12 @@ def compute_vm_set_nic_mk(
     networks_payload = []
     for net_name_or_moref in network:
         # search by name or moref
-        net = list(filter(lambda i: net_name_or_moref in i['name'], networks)) \
-            or list(filter(lambda i: net_name_or_moref in i['moref'], networks))
+        net = list(
+            filter(lambda i: net_name_or_moref in i['name'], networks)
+        ) \
+            or list(
+            filter(lambda i: net_name_or_moref in i['moref'], networks)
+        )
         if not net:
             _LOGGING.warning(
                 f'{net_name_or_moref} could not be found. '
@@ -3277,7 +3281,10 @@ def compute_vm_mk_spec(
     if cpu:
         payload['cpu'] = cpu
     if folder:
-        payload['folder'] = folder
+        _folder = ctx.get_folder_by_name_or_moref_path(
+            folder
+        )
+        payload['folder'] = _folder[0]['moref']
     if bill_dept:
         payload['bill_dept'] = bill_dept
     if disk:
@@ -3386,7 +3393,10 @@ def compute_vm_mk_shell(
     if cpu:
         payload['cpu'] = cpu
     if folder:
-        payload['folder'] = folder
+        _folder = ctx.get_folder_by_name_or_moref_path(
+            folder
+        )
+        payload['folder'] = _folder[0]['moref']
     if bill_dept:
         payload['bill_dept'] = bill_dept
     if disk:
@@ -3476,7 +3486,10 @@ def compute_vm_mk_template(
     if cpu:
         payload['cpu'] = cpu
     if folder:
-        payload['folder'] = folder
+        _folder = ctx.get_folder_by_name_or_moref_path(
+            folder
+        )
+        payload['folder'] = _folder[0]['moref']
     if bill_dept:
         payload['bill_dept'] = bill_dept
     if disk:
@@ -3566,7 +3579,10 @@ def compute_vm_mk_clone(
     if cpu:
         payload['cpu'] = cpu
     if folder:
-        payload['folder'] = folder
+        _folder = ctx.get_folder_by_name_or_moref_path(
+            folder
+        )
+        payload['folder'] = _folder[0]['moref']
     if bill_dept:
         payload['bill_dept'] = bill_dept
     if disk:

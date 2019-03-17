@@ -12,6 +12,7 @@ from pyvss.manager import VssManager
 from vss_cli import vssconst
 from vss_cli.exceptions import VssCliError
 from pyvss import __version__ as pyvss_version
+from pick import pick
 
 
 _LOGGING = logging.getLogger(__name__)
@@ -339,14 +340,16 @@ class Configuration(VssManager):
             )
         d_count = len(d)
         if d_count > 1:
-            raise click.BadParameter(
-                f'{name_or_moref} returned {d_count} results. '
-                f'Narrow down by using specific name or moref.'
+            msg = f"Found {d_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg, indicator='=>',
+                options=[f"{i['name']} ({i['moref']})" for i in d]
             )
+            return [d[index]]
         return d
 
     def get_network_by_name_or_moref(self, name_or_moref):
-        g_networks = self.get_networks()
+        g_networks = self.get_networks(sort='name')
         # search by name or moref
         n = list(filter(lambda i: name_or_moref in i['name'], g_networks)) \
             or list(filter(lambda i: name_or_moref in i['moref'], g_networks))
@@ -356,14 +359,43 @@ class Configuration(VssManager):
             )
         net_count = len(n)
         if net_count > 1:
-            raise click.BadParameter(
-                f'{name_or_moref} returned {net_count} results. '
-                f'Narrow down by using specific name or moref.'
+            msg = f"Found {net_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg, indicator='=>',
+                options=[f"{i['name']} ({i['moref']})" for i in n]
             )
+            return [n[index]]
         return n
 
+    def get_folder_by_name_or_moref_path(self, name_moref_path):
+        g_folders = self.get_folders(sort='path', summary=1)
+        # search by name or moref
+        f = list(
+            filter(lambda i: name_moref_path in i['name'], g_folders)
+        ) \
+            or list(
+            filter(lambda i: name_moref_path in i['path'], g_folders)
+        ) \
+            or list(
+            filter(lambda i: name_moref_path in i['moref'], g_folders)
+        ) \
+
+        if not f:
+            raise click.BadParameter(
+                f'{name_moref_path} could not be found'
+            )
+        f_count = len(f)
+        if f_count > 1:
+            msg = f"Found {f_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg, indicator='=>',
+                options=[f"{i['path']} ({i['moref']})" for i in f]
+            )
+            return [f[index]]
+        return f
+
     def get_os_by_name_or_guest(self, name_or_guest):
-        g_os = self.get_os()
+        g_os = self.get_os(sort='guestFullName,desc')
         try:
             o_f = list(
                 filter(
@@ -384,10 +416,12 @@ class Configuration(VssManager):
             )
         o_count = len(o_f)
         if o_count > 1:
-            raise click.BadParameter(
-                f'{name_or_guest} returned {o_count} results. '
-                f'Narrow down by using specific name or id.'
+            msg = f"Found {o_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg, indicator='=>',
+                options=[f"{i['guestFullName']} ({i['guestId']})" for i in o_f]
             )
+            return [o_f[index]]
         return o_f
 
     def get_iso_by_name_or_guest(self, name_or_path_or_id):
@@ -407,9 +441,9 @@ class Configuration(VssManager):
             iso = str(name_or_path_or_id)
             iso_ref = \
                 list(filter(lambda i: i['name'] == iso, pub_isos)) \
-                or list(filter(lambda i: i['path'] == iso, pub_isos)) \
-                or list(filter(lambda i: i['name'] == iso, user_isos)) \
-                or list(filter(lambda i: i['path'] == iso, user_isos))
+                or list(filter(lambda i: iso in i['path'], pub_isos)) \
+                or list(filter(lambda i: iso in i['name'], user_isos)) \
+                or list(filter(lambda i: iso in i['path'], user_isos))
         # check if there's no ref
         if not iso_ref:
             raise click.BadParameter(
@@ -418,10 +452,12 @@ class Configuration(VssManager):
         # count for dup results
         o_count = len(iso_ref)
         if o_count > 1:
-            raise click.BadParameter(
-                f'{name_or_path_or_id} returned {o_count} results. '
-                f'Narrow down by using specific name or id or path.'
+            msg = f"Found {o_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg, indicator='=>',
+                options=[f"{i['name']}" for i in iso_ref]
             )
+            return [iso_ref[index]]
         return iso_ref
 
     def get_vm_image_by_name_or_id_path(self, name_or_path_or_id):
@@ -440,10 +476,10 @@ class Configuration(VssManager):
             # check in public and user img
             img = str(name_or_path_or_id)
             img_ref = \
-                list(filter(lambda i: i['name'] == img, pub_imgs)) \
-                or list(filter(lambda i: i['path'] == img, pub_imgs)) \
-                or list(filter(lambda i: i['name'] == img, user_imgs)) \
-                or list(filter(lambda i: i['path'] == img, user_imgs))
+                list(filter(lambda i: img in i['name'], pub_imgs)) \
+                or list(filter(lambda i: img in i['path'], pub_imgs)) \
+                or list(filter(lambda i: img in i['name'], user_imgs)) \
+                or list(filter(lambda i: img in i['path'], user_imgs))
         # check if there's no ref
         if not img_ref:
             raise click.BadParameter(
@@ -452,9 +488,10 @@ class Configuration(VssManager):
         # count for dup results
         o_count = len(img_ref)
         if o_count > 1:
-            raise click.BadParameter(
-                f'{name_or_path_or_id} returned {o_count} results. '
-                f'Narrow down by using specific name or id or path.'
+            msg = f"Found {o_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg, indicator='=>',
+                options=[f"{i['name']}" for i in img_ref]
             )
+            return [img_ref[index]]
         return img_ref
-

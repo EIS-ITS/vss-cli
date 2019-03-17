@@ -37,7 +37,8 @@ def snapshot(ctx: Configuration):
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
 @pass_context
-def snapshot_ls(ctx: Configuration, filter, page,
+def snapshot_ls(
+        ctx: Configuration, filter, page,
         sort, show_all, count):
     """List requests based on:
 
