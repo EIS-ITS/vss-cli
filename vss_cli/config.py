@@ -1,6 +1,7 @@
 """Configuration for VSS CLI (vss-cli)."""
 import logging
 import sys
+from uuid import UUID
 from typing import Any, Dict, List, Optional, Tuple, cast  # noqa: F401
 import platform
 import click
@@ -329,6 +330,39 @@ class Configuration(VssManager):
         )
         self.vskey_stor = wc.Client(options=options)
         return self.vskey_stor.valid()
+
+    def get_vm_by_uuid_or_name(self, uuid_or_name):
+        try:
+            # is uuid?
+            uuid = UUID(uuid_or_name)
+            v = self.get_vm(str(uuid))
+            if not v:
+                raise click.BadArgumentUsage(
+                    'uuid should be an existing Virtual Machine '
+                    'or template'
+                )
+            return [v]
+        except ValueError:
+            # not an uuid
+            _LOGGING.debug(f'not an uuid {uuid_or_name}')
+            # If it's a value error, then the string
+            # is not a valid hex code for a UUID.
+            # get vm by name
+            g_vms = self.get_vms()
+            v = list(filter(lambda i: uuid_or_name in i['name'], g_vms))
+            if not v:
+                raise click.BadParameter(
+                    f'{uuid_or_name} could not be found'
+                )
+            v_count = len(v)
+            if v_count > 1:
+                msg = f"Found {v_count} matches. Please select one:"
+                sel, index = pick(
+                    title=msg, indicator='=>',
+                    options=[f"{i['uuid']} ({i['name']})" for i in v]
+                )
+                return [v[index]]
+            return v
 
     def get_domain_by_name_or_moref(self, name_or_moref):
         g_domains = self.get_domains()

@@ -104,19 +104,22 @@ def compute_vm_ls(
     invoke_without_command=True
 )
 @click.argument(
-    'uuid',
-    type=click.UUID,
+    'uuid_or_name',
+    type=click.STRING,
     required=True)
 @pass_context
 def compute_vm_get(
         ctx: Configuration,
-        uuid
+        uuid_or_name
 ):
     """Obtain virtual machine summary and other attributes."""
-    ctx.uuid = uuid
+    _vm = ctx.get_vm_by_uuid_or_name(
+        uuid_or_name
+    )
+    ctx.uuid = _vm[0]['uuid']
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_VM_INFO
-        obj = ctx.get_vm(uuid)
+        obj = ctx.get_vm(ctx.uuid)
         if not obj:
             raise VssCliError('Virtual Machine not found')
         click.echo(
@@ -1058,8 +1061,8 @@ def compute_vm_get_version(ctx: Configuration):
     invoke_without_command=True
 )
 @click.argument(
-    'uuid',
-    type=click.UUID,
+    'uuid_or_name',
+    type=click.STRING,
     required=True)
 @click.option(
     '-s', '--schedule',
@@ -1077,18 +1080,20 @@ def compute_vm_get_version(ctx: Configuration):
 @pass_context
 def compute_vm_set(
         ctx: Configuration,
-        uuid, schedule, user_meta: str
+        uuid_or_name,
+        schedule, user_meta: str
 ):
     """Manage virtual machine attributes such as cpu,
     memory, disk, network backing, cd, etc.."""
-    if not ctx.get_vm(uuid):
-        raise click.BadArgumentUsage(
-            'uuid should be an existing Virtual Machine'
-        )
-    ctx.uuid = uuid
+    _vm = ctx.get_vm_by_uuid_or_name(
+        uuid_or_name
+    )
+    ctx.uuid = _vm[0]['uuid']
+    # setup payload opts
     ctx.payload_options = dict()
     ctx.user_meta = dict(to_tuples(user_meta))
     ctx.schedule = schedule
+    # set additional props
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
     if schedule:
@@ -3147,7 +3152,7 @@ Reusable options for vm mk command
 source_opt = click.option(
     '--source', '-s',
     help='Source virtual machine or template UUID.',
-    type=click.UUID, required=True
+    type=click.STRING, required=True
 )
 description_opt = click.option(
     '--description', '-d', help='Vm description.',
@@ -3270,7 +3275,11 @@ def compute_vm_mk_spec(
     """Create virtual machine based on another  virtual machine
      configuration specification."""
     built = 'os_install'
-    s_payload = ctx.get_vm_spec(source)
+    _vm = ctx.get_vm_by_uuid_or_name(
+        source
+    )
+    vm_uuid = _vm[0]['uuid']
+    s_payload = ctx.get_vm_spec(vm_uuid)
     # payload
     payload = dict(
         description=description, name=name,
@@ -3475,11 +3484,16 @@ def compute_vm_mk_template(
         net, domain, os, custom_spec
 ):
     """Deploy virtual machine from template"""
+    # get source from uuid or name
+    _vm = ctx.get_vm_by_uuid_or_name(
+        source
+    )
+    vm_uuid = _vm[0]['uuid']
     # payload
     payload = dict(
         description=description, name=name,
         usage=usage,
-        source_template=source
+        source_template=vm_uuid
     )
     if memory:
         payload['memory'] = memory
@@ -3568,11 +3582,16 @@ def compute_vm_mk_clone(
     """Clone virtual machine from running or powered off vm.
     If name argument is not specified, -clone suffix will be added to
     resulting virtual machine"""
+    # get source from uuid or name
+    _vm = ctx.get_vm_by_uuid_or_name(
+        source
+    )
+    vm_uuid = _vm[0]['uuid']
     # payload
     payload = dict(
         description=description, name=name,
         usage=usage,
-        source_vm=source
+        source_vm=vm_uuid
     )
     if memory:
         payload['memory'] = memory
