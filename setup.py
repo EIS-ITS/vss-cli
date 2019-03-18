@@ -31,7 +31,7 @@ with io.open('requirements.txt', encoding='utf-8') as f:
 
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
-REQUIRED_PYTHON_VER = (3, 5, 3)
+REQUIRED_PYTHON_VER = (3, 6, 4)
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
 
@@ -39,22 +39,20 @@ PROJECT_NAME = 'ITS Private Cloud CLI'
 PROJECT_PACKAGE_NAME = 'vss-cli'
 PROJECT_LICENSE = 'MIT'
 PROJECT_AUTHOR = 'University of Toronto'
-PROJECT_COPYRIGHT = ' 2019-{}, {}'.format(dt.now().year, PROJECT_AUTHOR)
-PROJECT_URL = 'https://gitlab-ee.eis.utoronto.ca/vss/vsscli-ng'
+PROJECT_COPYRIGHT = f' 2019-{dt.now().year}, {PROJECT_AUTHOR}'
+PROJECT_URL = 'https://gitlab-ee.eis.utoronto.ca/vss/vss-cli'
 PROJECT_EMAIL = 'vss-apps@eis.utoronto.ca'
 
 PROJECT_GITLAB_GROUP = 'vss'
-PROJECT_GITLAB_REPOSITORY = 'vsscli-ng'
+PROJECT_GITLAB_REPOSITORY = 'vss-cli'
 
-PYPI_URL = 'https://pypi.python.org/pypi/{}'.format(PROJECT_PACKAGE_NAME)
-GITLAB_PATH = '{}/{}'.format(
-    PROJECT_GITLAB_GROUP, PROJECT_GITLAB_REPOSITORY
-)
-GITLAB_URL = 'https://gitlab-ee.eis.utoronto.ca/{}'.format(GITLAB_PATH)
+PYPI_URL = f'https://pypi.python.org/pypi/{PROJECT_PACKAGE_NAME}'
+GITLAB_PATH = f'{PROJECT_GITLAB_GROUP}/{PROJECT_GITLAB_REPOSITORY}'
+GITLAB_URL = f'https://gitlab-ee.eis.utoronto.ca/{GITLAB_PATH}'
 
-DOWNLOAD_URL = '{}/archive/{}.zip'.format(GITLAB_URL, __VERSION__)
+DOWNLOAD_URL = f'{GITLAB_URL}/archive/{__VERSION__}.zip'
 PROJECT_URLS = {
-    'Bug Reports': '{}/issues'.format(GITLAB_URL),
+    'Bug Reports': f'{GITLAB_URL}/issues',
 }
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))
@@ -71,6 +69,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=REQUIRES,
-    python_requires='>={}'.format(MIN_PY_VERSION),
+    python_requires=f'>={MIN_PY_VERSION}',
     entry_points={'console_scripts': ['vss-cli = vss_cli.cli:run']},
 )

@@ -30,18 +30,18 @@ interactions with the project.
 3. Fork the Web services repository by clicking the [Fork][Fork] button.
 4. Clone your fork locally:
     
-        git clone git@gitlab-ee.eis.utoronto.ca:{username}/vsscli-ng.git
-        cd vsscli-ng
+        git clone git@gitlab-ee.eis.utoronto.ca:{username}/vss-cli.git
+        cd vss-cli
 
 5. Add the main repository as a remote to update later:
         
-        git remote add vss git@gitlab-ee.eis.utoronto.ca:vss/vsscli-ng.git
+        git remote add vss git@gitlab-ee.eis.utoronto.ca:vss/vss-cli.git
         git fetch vss
 
 6. Create virtualenv:
 
-        python2 -m virtualenv vssws
-        . vssws/bin/activate
+        python3 -m venv vss-cli
+        . vss-cli/bin/activate
    
 7. Refer to the [Readme](README.md) guide to install requirements
 
@@ -50,7 +50,7 @@ interactions with the project.
 
 1. Create a branch to identify the issue you would like to work on (e.g. ``issue-999``):
 
-        cd vsscli-ng
+        cd vss-cli
         git checkout -b issue-999
     
 2. Using your favorite editor, make your changes, [committing as you go][committing as you go].
