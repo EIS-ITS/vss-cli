@@ -1,12 +1,10 @@
 import click
 import logging
-import os
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-from vss_cli.exceptions import VssCliError
 
 
 _LOGGING = logging.getLogger(__name__)
@@ -49,7 +47,7 @@ def compute_template_ls(
 
     Filter list by name, ip address dns or path. For example:
 
-        vss compute template ls -f name VMTemplate1
+        vss-cli compute template ls -f name VMTemplate1
 
     """
     query = dict()

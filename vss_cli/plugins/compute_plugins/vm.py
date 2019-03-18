@@ -63,7 +63,7 @@ def compute_vm_ls(
 
         Filter and sort list by name, ip address dns or path. For example:
 
-        vss compute vm ls -f name VM -s -o name
+        vss-cli compute vm ls -f name VM -s -o name
 
     """
     query = dict()
@@ -946,7 +946,7 @@ def compute_vm_get_stats(ctx: Configuration, kind):
      performance statistics. Choose between: io, memory,
      cpu or net. For example:
 
-    vss compute vm get <uuid> stats memory
+    vss-cli compute vm get <name-or-uuid> stats memory
     """
     lookup = {'cpu': ctx.get_vm_performance_cpu,
               'memory': ctx.get_vm_performance_memory,
@@ -1125,7 +1125,7 @@ def compute_vm_set_admin(
 ):
     """Set or update virtual machine administrator in metadata.
 
-    vss compute vm set <uuid> admin "Admin Name"
+    vss-cli compute vm set <name-or-uuid> admin "Admin Name"
     admin.email@utoronto.ca 416-666-6666
     """
     payload = dict(
@@ -1167,9 +1167,9 @@ def compute_vm_set_alarm(
 ):
     """Acknowledge or clear a given alarm. Obtain alarm moref by:
 
-        vss compute vm get <uuid> alarm
+        vss-cli compute vm get <name-or-uuid> alarm
 
-        vss compute vm set <uuid> alarm <moref> --action ack
+        vss-cli compute vm set <name-or-uuid> alarm <moref> --action ack
 
     """
     payload = dict(
@@ -1212,8 +1212,8 @@ def compute_vm_set_boot_bios(
     """Update virtual machine boot configuration to
     boot directly to BIOS.
 
-    vss compute vm set <uuid> boot-bios --on
-    vss compute vm set <uuid> boot-bios --off
+    vss-cli compute vm set <name-or-uuid> boot-bios --on
+    vss-cli compute vm set <name-or-uuid> boot-bios --off
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1250,7 +1250,7 @@ def compute_vm_set_boot_delay(
 ):
     """Update virtual machine boot delay time (ms).
 
-    vss compute vm set <uuid> boot-delay 5000
+    vss-cli compute vm set <name-or-uuid> boot-delay 5000
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1292,9 +1292,9 @@ def compute_vm_set_cd(
 ):
     """Update virtual machine CD/DVD backend to ISO or client.
 
-    vss compute vm set <uuid> cd <unit> --iso "<name-or-path-or-id>"
+    vss-cli compute vm set <name-or-uuid> cd <unit> --iso "<name-or-path-or-id>"
 
-    vss compute vm set <uuid> cd <unit> --iso client
+    vss-cli compute vm set <name-or-uuid> cd <unit> --iso client
     """
     # get iso reference
     iso_ref = ctx.get_iso_by_name_or_guest(iso)
@@ -1336,7 +1336,7 @@ def compute_vm_set_client(
 ):
     """Update virtual machine client/billing department.
 
-    vss compute vm set <uuid> client <New-Client>
+    vss-cli compute vm set <name-or-uuid> client <New-Client>
     """
     # generate payload
     payload = dict(
@@ -1379,7 +1379,7 @@ def compute_vm_set_client_note(
     """Set or update virtual machine client notes
      in metadata.
 
-     vss compute vm set <uuid> client-note "New note"
+     vss-cli compute vm set <name-or-uuid> client-note "New note"
      """
     if not replace:
         _old_notes = ctx.get_vm_notes(
@@ -1418,7 +1418,7 @@ def compute_vm_set_consolidate(
 ):
     """Perform virtual machine disk consolidation
 
-    vss compute vm set --schedule <timestamp> <uuid> consolidate
+    vss-cli compute vm set --schedule <timestamp> <name-or-uuid> consolidate
     """
     # generate payload
     payload = dict(
@@ -1617,7 +1617,7 @@ def compute_vm_set_description(
 ):
     """Set or update virtual machine description in metadata.
 
-    vss compute vm set <uuid> description "This is a new description"
+    vss-cli compute vm set <name-or-uuid> description "This is a new description"
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1667,7 +1667,7 @@ def compute_vm_set_disk_mk(
 ):
     """Create virtual machine disk:
 
-        vss compute vm set <uuid> disk mk -c 10 -c 40
+        vss-cli compute vm set <name-or-uuid> disk mk -c 10 -c 40
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1708,7 +1708,7 @@ def compute_vm_set_disk_up(
 ):
     """Update virtual machine disk capacity:
 
-        vss compute vm set <uuid> disk up --capacity 30 <unit>
+        vss-cli compute vm set <name-or-uuid> disk up --capacity 30 <unit>
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1750,7 +1750,7 @@ def compute_vm_set_disk_rm(
 ):
     """Remove virtual machine disks. Warning: data will be lost:
 
-        vss compute vm set <uuid> disk rm <unit> <unit> ...
+        vss-cli compute vm set <name-or-uuid> disk rm <unit> <unit> ...
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1806,7 +1806,7 @@ def compute_vm_set_domain(
     power off task. After migration completes, the `on` flag
     indicates to power on the virtual machine.
 
-    vss compute vm set <uuid> domain <domain-moref> --force --on
+    vss-cli compute vm set <name-or-uuid> domain <domain-moref> --force --on
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1843,7 +1843,7 @@ def compute_vm_set_export(
 ):
     """Export current virtual machine to OVF.
 
-    vss compute vm set <uuid> export
+    vss-cli compute vm set <name-or-uuid> export
     """
     payload = dict(
         uuid=ctx.uuid
@@ -1941,7 +1941,7 @@ def compute_vm_set_folder(
 ):
     """Move vm from logical folder. Get folder moref from:
 
-        vss compute folder ls
+        vss-cli compute folder ls
 
     """
     # create payload
@@ -2005,7 +2005,7 @@ def compute_vm_set_guest_cmd(
     """
     Execute a command in the Guest Operating system.
 
-    vss compute vm set <uuid> guest-cmd "/bin/echo"
+    vss-cli compute vm set <name-or-uuid> guest-cmd "/bin/echo"
     "Hello > /tmp/hello.txt"
 
     Note: VMware Tools must be installed and running.
@@ -2064,16 +2064,16 @@ def compute_vm_set_guest_os(
 ):
     """Update guest operating system configuration:
 
-        vss compute os ls -f guestId,like,cent%
+        vss-cli compute os ls -f guestId,like,cent%
 
         or
 
-        vss compute os ls -f guestFullName,like,Cent%
+        vss-cli compute os ls -f guestFullName,like,Cent%
 
     """
     if not ctx.get_os(filter=f'guestId,eq,{guest_id}'):
         raise click.BadParameter(
-            'OS not found. Please try: "vss compute os ls"'
+            'OS not found. Please try: "vss-cli compute os ls"'
         )
     # create payload
     payload = dict(
@@ -2119,7 +2119,7 @@ def compute_vm_set_ha_group(
     Checks will run every 3 hours to validate virtual machine
     association and domain separation.
 
-    vss compute vm set <uuid> ha-group --replace <uuid-1> <uuid-n>
+    vss-cli compute vm set <name-or-uuid> ha-group --replace <uuid-1> <uuid-n>
     """
     for vm in uuid:
         _vm = ctx.get_vm(vm)
@@ -2169,7 +2169,7 @@ def compute_vm_set_inform(
     """Update or set informational contacts emails in
     metadata.
 
-    vss compute vm set <uuid> inform <email-1> <email-n>
+    vss-cli compute vm set <name-or-uuid> inform <email-1> <email-n>
     """
     for e in email:
         validate_email(ctx, '', e)
@@ -2218,7 +2218,7 @@ def compute_vm_set_memory_size(
 ):
     """Update virtual machine memory size in GB.
 
-    vss compute vm set <uuid> memory size <memory_gb>
+    vss-cli compute vm set <name-or-uuid> memory size <memory_gb>
 
     """
     # create payload
@@ -2256,7 +2256,7 @@ def compute_vm_set_memory_hot_add(
 ):
     """Enable or disable virtual machine memory hot-add setting
 
-    vss compute vm set <uuid> memory hot-add on|off
+    vss-cli compute vm set <name-or-uuid> memory hot-add on|off
 
     """
     lookup = {'on': True, 'off': False}
@@ -2296,7 +2296,7 @@ def compute_vm_set_name(
     """Update virtual machine name only. It does not update
     VSS prefix YYMM{P|D|Q|T}.
 
-    vss compute vm set <uuid> name <new-name>
+    vss-cli compute vm set <name-or-uuid> name <new-name>
 
     """
     payload = dict(
@@ -2327,7 +2327,7 @@ def compute_vm_set_name(
 def compute_vm_set_nic(ctx: Configuration):
     """Add, remove or update virtual machine network adapters
 
-        vss compute vm set <uuid> nic mk --network <net-moref>
+        vss-cli compute vm set <name-or-uuid> nic mk --network <net-moref>
 
     """
     pass
@@ -2364,8 +2364,8 @@ def compute_vm_set_nic_up(
 ):
     """Update network adapter backing network, type or state
 
-        vss compute vm set <uuid> nic up --adapter VMXNET3 <unit>
-        vss compute vm set <uuid> nic up --network <name-or-moref> <unit>
+        vss-cli compute vm set <name-or-uuid> nic up --adapter VMXNET3 <unit>
+        vss-cli compute vm set <name-or-uuid> nic up --network <name-or-moref> <unit>
     """
     # create payload
     payload = dict(
@@ -2431,7 +2431,7 @@ def compute_vm_set_nic_mk(
 ):
     """Add network adapter specifying backing network.
 
-        vss compute vm set <uuid> nic mk -n <moref-or-name>
+        vss-cli compute vm set <name-or-uuid> nic mk -n <moref-or-name>
         -n <moref-or-name>
     """
     # create payload
@@ -2500,7 +2500,7 @@ def compute_vm_set_nic_rm(
 ):
     """Remove given network adapters
 
-        vss compute vm set <uuid> nic rm <unit> <unit> ...
+        vss-cli compute vm set <name-or-uuid> nic rm <unit> <unit> ...
     """
     # create payload
     payload = dict(
@@ -2598,7 +2598,7 @@ def compute_vm_set_snapshot_mk(
 ):
     """Create virtual machine snapshot:
 
-       vss compute vm set <uuid> snapshot mk -d 'Short description'
+       vss-cli compute vm set <name-or-uuid> snapshot mk -d 'Short description'
        -t '2018-02-22 00:00' -l 72
     """
     import datetime
@@ -2639,7 +2639,7 @@ def compute_vm_set_snapshot_rm(
 ):
     """Remove virtual machine snapshot:
 
-        vss compute vm set <uuid> snapshot rm <snapshot-id>
+        vss-cli compute vm set <name-or-uuid> snapshot rm <snapshot-id>
     """
     # create payload
     payload = dict(
@@ -2681,7 +2681,7 @@ def compute_vm_set_snapshot_re(
 ):
     """Revert virtual machine snapshot:
 
-        vss compute vm set <uuid> snapshot re <snapshot-id>
+        vss-cli compute vm set <name-or-uuid> snapshot re <snapshot-id>
     """
     # create payload
     payload = dict(
@@ -2734,7 +2734,7 @@ def compute_vm_set_state(
 ):
     """ Set given virtual machine power state.
 
-    vss compute vm set <uuid> state on|off|reset|reboot|shutdown -c
+    vss-cli compute vm set <name-or-uuid> state on|off|reset|reboot|shutdown -c
 
     Reboot and shutdown send a guest OS restart signal
     (VMware Tools required).
@@ -2812,7 +2812,7 @@ def compute_vm_set_template(
 ):
     """Marks virtual machine as template or template to virtual machine.
 
-    vss compute vm set <uuid> template --on/--off
+    vss-cli compute vm set <name-or-uuid> template --on/--off
     """
     # create payload
     payload = dict(
@@ -2853,7 +2853,7 @@ def compute_vm_set_tools(
     """Upgrade, mount and unmount official VMware Tools package.
     This command does not apply for Open-VM-Tools.
 
-    vss compute vm set <uuid> tools upgrade|mount|unmount
+    vss-cli compute vm set <name-or-uuid> tools upgrade|mount|unmount
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -2892,7 +2892,7 @@ def compute_vm_set_usage(
     """Update virtual machine usage in both name prefix
     and metadata.
 
-    vss compute vm set <uuid> usage Prod|Test|Dev|QA
+    vss-cli compute vm set <name-or-uuid> usage Prod|Test|Dev|QA
     """
     # create payload
     payload = dict(
@@ -3025,7 +3025,7 @@ def compute_vm_rm(
 ):
     """ Delete a list of virtual machine uuids:
 
-        vss compute vm rm <uuid> <uuid> --show-info
+        vss-cli compute vm rm <name-or-uuid> <name-or-uuid> --show-info
 
     """
     # result set
@@ -3121,7 +3121,7 @@ def compute_vm_from_file(ctx, file_spec):
     """Create virtual machine from file specification.
     Virtual Machine specification can be obtained from
 
-    vss -o [json|yaml] compute vm get <uuid> spec > spec.json
+    vss -o [json|yaml] compute vm get <name-or-uuid> spec > spec.json
 
     """
     import yaml

@@ -41,11 +41,11 @@ def token_ls(
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: valid,eq,false
 
-            vss token ls -f valid,eq,false
+            vss-cli token ls -f valid,eq,false
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss token ls -s created_on,desc
+            vss-cli token ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_TK

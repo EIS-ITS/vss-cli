@@ -41,11 +41,11 @@ def message_ls(
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: valid,eq,false
 
-            vss message ls -f kind,eq,Notice
+            vss-cli message ls -f kind,eq,Notice
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss message ls -s created_on,desc
+            vss-cli message ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_MESSAGE_MIN

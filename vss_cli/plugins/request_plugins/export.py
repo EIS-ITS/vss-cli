@@ -45,11 +45,11 @@ def request_mgmt_export_ls(ctx: Configuration, filter, page, sort,
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: status,eq,Processed
 
-            vss request export ls -f status,eq,Processed
+            vss-cli request export ls -f status,eq,Processed
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss request export ls -s created_on,desc
+            vss-cli request export ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_EXPORT_MIN

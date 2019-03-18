@@ -1,12 +1,10 @@
 import click
 import logging
-import os
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-from vss_cli.exceptions import VssCliError
 
 
 _LOGGING = logging.getLogger(__name__)

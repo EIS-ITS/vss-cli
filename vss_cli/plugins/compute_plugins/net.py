@@ -1,6 +1,5 @@
 import click
 import logging
-import os
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -46,7 +45,7 @@ def network_ls(
     Filter by path or name name=<name> or moref=<moref>.
     For example:
 
-        vss compute net ls -f name public
+        vss-cli compute net ls -f name public
     """
     query = dict(summary=1)
     if filter:
@@ -77,15 +76,18 @@ def network_ls(
     invoke_without_command=True
 )
 @click.argument(
-    'moref', type=click.STRING,
+    'name_or_moref', type=click.STRING,
     required=True
 )
 @pass_context
-def network_get(ctx: Configuration, moref):
-    ctx.moref = moref
+def network_get(ctx: Configuration, name_or_moref):
+    _net = ctx.get_network_by_name_or_moref(
+        name_or_moref
+    )
+    ctx.moref = _net[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_NET
-        obj = ctx.get_network(moref)
+        obj = ctx.get_network(ctx.moref)
         click.echo(
             format_output(
                 ctx,

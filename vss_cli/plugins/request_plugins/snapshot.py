@@ -46,11 +46,11 @@ def snapshot_ls(
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: status,eq,Processed
 
-            vss request snapshot ls -f status,eq,Processed
+            vss-cli request snapshot ls -f status,eq,Processed
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss request snapshot ls -s created_on,desc
+            vss-cli request snapshot ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST
