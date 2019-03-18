@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 from typing import List, Optional, Union, cast
+import pyvss
 
 import click
 from click.core import Command, Context, Group
@@ -105,7 +106,6 @@ def _default_token() -> Optional[str]:
 
 @click.command(cls=VssCli, context_settings=CONTEXT_SETTINGS)
 @click_log.simple_verbosity_option(logging.getLogger(), "--loglevel", "-l")
-@click.version_option(const.__version__)
 @click.option(
     '--server',
     '-s',
@@ -196,7 +196,10 @@ def _default_token() -> Optional[str]:
     default=None,
     help='Sort table by the jsonpath expression. Example: updated_on',
 )
-@click.version_option()
+@click.version_option(
+    version=f'{const.__version__}; pyvss v{pyvss.__version__}',
+    message='%(prog)s v%(version)s'
+)
 @pass_context
 def cli(
     ctx: Configuration,
