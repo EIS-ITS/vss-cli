@@ -55,14 +55,14 @@ Or use the ``-c/--config`` option in the ``vss-cli`` command as follows:
 
     vss-cli -c ~/.secret/vss-config.json
 
-By default VSS CLI output is text, and this can be configured either by ``-o/--output``
+By default VSS CLI output is `table`, and this can be configured either by ``-o/--output``
 option or the ``VSS_OUTPUT`` environment variable as follows:
 
 .. code-block:: bash
 
     export VSS_OUTPUT=json
     # or
-    export VSS_OUTPUT=text
+    export VSS_OUTPUT=table
 
 
 Options are `json`, `yaml`, `table`, `auto`.

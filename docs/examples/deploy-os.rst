@@ -6,49 +6,6 @@ Deploying a Development Environment
 This tutorial details how to deploy a development environment in the ITS Private Cloud using
 the VSS CLI. It assumes you already have set up a VSS account with access to the REST API.
 
-Install VSS CLI
----------------
-Install VSS CLI either by using `pip`_, from source `download the tarball`_ or from
-UofT's `GitLab instance`_.
-
-Linux, macOS, Unix
-~~~~~~~~~~~~~~~~~~
-
-Python 2.7 is prerequired to run the following steps:
-
-1. Download `pip`_:
-
-.. code-block:: bash
-
-    curl https://bootstrap.pypa.io/get-pip.py | python
-
-2. Install VSS CLI using `pip`_:
-
-.. code-block:: bash
-
-    pip install vsscli
-
-3. Test VSS CLI by running ``--version``:
-
-.. code-block:: bash
-
-    vss --version
-
-
-Configure VSS CLI
------------------
-
-Run ``vss configure`` at the command line to set up your credentials:
-
-.. code-block:: bash
-
-    vss configure
-    Username []: username
-    Password:
-    Repeat for confirmation:
-
-
-
 Launch Instance
 ---------------
 
@@ -64,17 +21,20 @@ Then, all is ready to deploy a brand new virtual machine.
 Operating system
 ~~~~~~~~~~~~~~~~
 
-Run ``vss compute os ls`` to display the list of supported operating systems in
+Run ``vss-cli compute os ls`` to display the list of supported operating systems in
 the ITS Private Cloud. In order to narrow down the list to only **CentOS** operating
 systems, use the ``--filter/-f`` option which is structured
 ``<field_name>,<operator>,<value>`` and available operators are
 **eq, ne, lt, le, gt, ge, like, in**. So, to limit results to just **CentOS**, use
 the following filter:
 
+.. note:: This version of the VSS CLI supports providing OS reference
+    not only using the guestId, but also the guestFullName or Id.
+    In case of multiple results, the CLI prompts to select the right instance.
 
 .. code-block:: bash
 
-    vss compute os ls --filter guestFullName,like,CentOS%
+    vss-cli compute os ls --filter guestFullName,like,CentOS%
       id  guestId        guestFullName
     ----  -------------  -------------------
        8  centosGuest    CentOS 4/5
@@ -90,16 +50,19 @@ Set the ``OS`` environment variable to ``centos64Guest`` to save the ``guestId``
 Network
 ~~~~~~~
 
-Run ``vss compute net ls`` to list available network segments to your account. You must
+Run ``vss-cli compute net ls`` to list available network segments to your account. You must
 have at least ``VL-1584-VSS-PUBLIC`` which is our public network.
+
+.. note:: This version of the VSS CLI supports managing networks
+    not only using the moref, but also using names. In case of multiple results,
+    the CLI prompts to select the right instance.
 
 .. code-block:: bash
 
-    vss compute net ls -f name public
+    vss-cli compute net ls -f name public
     moref              name                description         subnet            ports
     -----------------  ------------------  ------------------  --------------  -------
     dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network  142.1.216.0/23       32
-
 
 
 Save ``dvportgroup-11052`` in ``NET`` environment variable:
@@ -111,15 +74,19 @@ Save ``dvportgroup-11052`` in ``NET`` environment variable:
 Folder
 ~~~~~~
 
-Logical folders can be listed by running ``vss compute folder ls``. Select the target
+Logical folders can be listed by running ``vss-cli compute folder ls``. Select the target
 ``moref`` folder to store the virtual machine on:
+
+.. note:: This version of the VSS CLI supports managing logical folders
+    not only using the moref, but also using names. In case of multiple results,
+    the CLI prompts to select the right instance.
 
 .. code-block:: bash
 
-    vss compute folder ls -f name API
+    vss-cli compute folder ls -f name API
     moref        name     parent    path
     -----------  -------  --------  ----------------------------
-    group-v6736  APIDemo  jm        jm > Demo
+    group-v6736  APIDemo  jm        jm > APIDemo
 
 Set the ``FOLDER`` environment variable to the target folder (the folder moref may vary):
 
@@ -132,12 +99,17 @@ ISO Image
 ~~~~~~~~~
 
 Since this tutorial creates a virtual machine from scratch, an ISO image is required to
-install the operating system. Run ``vss compute iso public ls`` to display  available
+install the operating system. Run ``vss-cli compute iso public ls`` to display  available
 ISO images in both the VSS central store and your personal VSKEY-STOR space.
+
+.. note:: This version of the VSS CLI supports managing ISOs
+    not only using the path, but also using name or ID. In case of multiple results,
+    the CLI prompts to select the right instance.
+
 
 .. code-block:: bash
 
-    vss compute iso public ls -f name like,Cent%
+    vss-cli compute iso public ls -f name like,Cent%
     path                                                           name
     -------------------------------------------------------------  -------------------------------------
     [vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-DVD.iso         CentOS-7.0-1406-x86_64-DVD.iso
@@ -153,42 +125,58 @@ Save the desired path to ``ISO`` environment variable:
 Deployment
 ~~~~~~~~~~
 
-Run ``vss compute vm mk shell`` to deploy a virtual machine without an operating system
+Run ``vss-cli compute vm mk shell`` to deploy a virtual machine without an operating system
 installed. Before deploying the virtual machine, display what options and arguments the ``shell``
 command takes:
 
 
 .. code-block:: bash
 
-    Usage: vss compute vm mk shell [OPTIONS] NAME
+    Usage: vss-cli compute vm mk shell [OPTIONS] NAME
 
       Create a new virtual machine with no operating system pre-installed.
 
     Options:
       -d, --description TEXT          Vm description.  [required]
-      -b, --bill-dept TEXT            Billing department.  [required]
+      -r, --inform TEXT               Informational contact emails in comma
+                                      separated
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
-      -o, --os TEXT                   Guest operating system id.  [required]
+      -a, --admin TEXT                Admin name, phone number and email separated
+                                      by `:` i.e. "John
+                                      Doe:416-123-1234:john.doe@utoronto.ca"
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
-      -f, --folder TEXT               Logical folder moref.  [required]
-      -i, --disk INTEGER              Disks in GB.
-      -n, --net TEXT                  Networks moref mapped to NICs.  [required]
+      -t, --domain TEXT               Target fault domain.
+      -t, --notes TEXT                Custom notes.
       -s, --iso TEXT                  ISO image path to be mounted after creation
-      -m, --domain TEXT               Target fault domain.
       -h, --high-io                   VM will be created with a VMware Paravirtual
                                       SCSIController.
-      -t, --notes TEXT                Custom notes.
+      -b, --bill-dept TEXT            Billing department.  [required]
+      -o, --os TEXT                   Guest operating system id or name.
+                                      [required]
+      -f, --folder TEXT               Logical folder moref.  [required]
+      -i, --disk INTEGER              Disks in GB.  [required]
+      -n, --net TEXT                  Networks moref or name mapped to NICs.
+                                      [required]
       --help                          Show this message and exit.
+
 
 Now that we have everything, proceed to deploy a new virtual machine with 1GB of memory,
 1 vCPU, 20GB disk and a tag Project:CMS as follows:
 
 .. code-block:: bash
 
-    vss compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os $OS \
+    vss-cli compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os $OS \
     --memory 1 --cpu 1 --folder $FOLDER --disk 20 --net $NET --iso "$ISO" --notes 'Project: CMS' \
     FrontEnd_1
+
+The following command will also work:
+
+.. code-block:: bash
+
+    vss-cli compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os centos \
+    --memory 1 --cpu 1 --folder APIDemo --disk 20 --net PUBLIC --iso CentOS-7.0-1406-x86_64-DVD.iso \
+    --notes 'Project: CMS' FrontEnd_1
 
 A confirmation email will be sent and the command will return the request ``id`` and
 ``task_id`` as follows:
@@ -207,7 +195,7 @@ In matter of seconds, a confirmation email will be sent with the allocated IP ad
 Manage Request
 --------------
 
-If you prefer to validate the status of the request with VSS CLI, run ``vss request new ls`` to
+If you prefer to validate the status of the request with VSS CLI, run ``vss-cli request new ls`` to
 display a list of your request history.
 
 This command supports filter and sorting by using the ``--filter/-f`` and ``--sort/-s``
@@ -220,7 +208,7 @@ the following command:
 
 .. code-block:: bash
 
-    vss request new ls -s created_on,desc -c 1
+    vss-cli request new ls -s created_on,desc -c 1
       id  created_on               updated_on               status     vm_name           vm_uuid
     ----  -----------------------  -----------------------  ---------  ----------------  ------------------------------------
     1150  2017-03-13 13:11:41 EDT  2017-03-13 13:12:00 EDT  Processed  1703T-FrontEnd_1  5012f74a-4243-6664-20a9-0993567fbb7e
@@ -231,24 +219,24 @@ Access Instance
 
 The previous command has shown the virtual machine has been successfully created and it has been
 assigned ``5012f74a-4243-6664-20a9-0993567fbb7e`` as ``uuid``. To validate the ISO is mounted, run
-``vss compute vm get <uuid> cd 1``:
+``vss-cli compute vm get <name-or-uuid> cd 1``:
 
 .. code-block:: bash
 
-    vss compute vm get 5012f74a-4243-6664-20a9-0993567fbb7e cd 1
-    Uuid                : 5012f74a-4243-6664-20a9-0993567fbb7e
-    Label               : CD/DVD drive 1
-    Backing             : [vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-DVD.iso
-    Connected           : Disconnected
-    Controller Type     : IDE 0
-    Controller Virtual Device Node: IDE 0:0
+    vss-cli compute vm get FrontEnd_1 cd 1
+
+    LABEL               : CD/DVD drive 1
+    BACKING             : [vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-DVD.iso
+    CONNECTED           : Disconnected
+    CONTROLLER_TYPE     : IDE 0
+    CONTROLLER_NODE     : IDE 0:0
 
 Confirming the ISO has been successfully mounted upon provisioning, update the state to ``on`` using
-``vss compute vm <uuid> set state on`` as follows:
+``vss-cli compute vm <name-or-uuid> set state on`` as follows:
 
 .. code-block:: bash
 
-    vss compute vm set 5012f74a-4243-6664-20a9-0993567fbb7e state on
+    vss-cli compute vm set FrontEnd_1 state on
 
 A confirmation email will be sent and the command will return the request ``id`` and
 ``task_id`` as follows:
@@ -260,12 +248,12 @@ A confirmation email will be sent and the command will return the request ``id``
     message             : Request has been accepted for processing
     name                : Accepted
 
-Launch a one-time link to the virtual machine console with ``vss compute vm get <uuid> console``
+Launch a one-time link to the virtual machine console with ``vss-cli compute vm get <name-or-uuid> console``
 and proceed with the operating system install:
 
 .. code-block:: bash
 
-    vss compute vm get 5012f74a-4243-6664-20a9-0993567fbb7e console -l
+    vss-cli compute vm get FrontEnd_1 console -l
 
 .. warning:: To generate a console link you just need to have a valid vSphere session
   (unfortunately), and this is due to the nature of vSphere API.
