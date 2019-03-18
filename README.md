@@ -98,13 +98,13 @@ Or use the ``-c/--config`` option in the ``vss-cli`` command as follows:
 vss-cli -c ~/.secret/vss-config.json
 ```
 
-By default VSS CLI output is text, and this can be configured either by ``-o/--output``
+By default VSS CLI output is `table`, and this can be configured either by ``-o/--output``
 option or the ``VSS_OUTPUT`` environment variable as follows:
 
 ```bash
 export VSS_OUTPUT=json
 # or
-export VSS_OUTPUT=text
+export VSS_OUTPUT=table
 ```
 
 Options are `json`, `yaml`, `table`, `auto`.
@@ -148,7 +148,7 @@ vss compute vm mk from-template --source c5916abb-def3-4d4d-8abe-2240b0a6c265 \
 
 ## Auto-completion (WIP)
 
-As described above you can use source <(hass-cli completion zsh) to quickly and easy enable auto completion. 
+As described above you can use `source <(vss-cli completion zsh)` to quickly and easy enable auto completion. 
 If you do it from your .bashrc or .zshrc its recommend to use the form below as that does not trigger a run of hass-cli itself.
 
 For zsh:
@@ -201,6 +201,7 @@ To enter the shell just execute vss shell and you will get the following welcome
 
     Exit shell with :exit, :q, :quit, ctrl+d
 
+vss (cloud-api) > 
 ```
 
 ## Getting Help
@@ -208,10 +209,62 @@ To enter the shell just execute vss shell and you will get the following welcome
 We use GitLab issues for tracking bugs, enhancements and feature requests.
 If it turns out that you may have found a bug, please [open a new issue][open a new issue].
 
+```bash
+Usage: vss-cli [OPTIONS] COMMAND [ARGS]...
+
+  Command line interface for the ITS Private Cloud.
+
+Options:
+  -l, --loglevel LVL              Either CRITICAL, ERROR, WARNING, INFO or
+                                  DEBUG
+  --version                       Show the version and exit.
+  -s, --server TEXT               The server URL  [default: https://cloud-
+                                  api.eis.utoronto.ca]
+  --config TEXT                   Configuration file
+  --token TEXT                    The Bearer token for the VSS API.
+  --username TEXT                 The API username for VSS API.
+  --password TEXT                 The API password for VSS API.
+  --timeout INTEGER               Timeout for network operations.  [default:
+                                  30]
+  -o, --output [json|yaml|table|auto]
+                                  Output format.  [default: auto]
+  -v, --verbose                   Enables verbose mode.
+  -x                              Print backtraces when exception occurs.
+  --debug                         Enables debug mode.
+  --columns TEXT                  Custom columns key=value list. Example:
+                                  ENTITY=entity_name,
+                                  NAME=attributes.friendly_name
+  --no-headers                    When printing tables don't use headers
+                                  (default: print headers)
+  --table-format TEXT             Which table format to use.
+  --sort-by TEXT                  Sort table by the jsonpath expression.
+                                  Example: updated_on
+  --version                       Show the version and exit.
+  --help                          Show this message and exit.
+
+Commands:
+  account     Manage your VSS account
+  completion  Output shell completion code for the specified shell (bash or
+              zsh).
+  compute     Manage VMs, networks, folders, etc.
+  configure   Configure VSS CLI options.
+  key         Manage your SSH Public Keys.
+  message     Manage VSS Messages.
+  raw         Make a raw call to the API
+  request     Manage various requests
+  shell       REPL interactive shell.
+  status      Check VSS Status.
+  stor        Manage your VSS storage account.
+  token       Manage access tokens
+  upgrade     Upgrade VSS CLI and dependencies.
+
+```
+
 ## Versioning
 
 The API versions are tagged based on [Semantic Versioning](https://semver.org/). Versions available in the 
 [tags section](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags).
+
 
 ## Contributing
 
@@ -224,7 +277,7 @@ submitting code to the repository.
 [Click]: http://click.pocoo.org/6/
 [Python Releases for Windows]: https://www.python.org/downloads/windows/
 [pip]: http://www.pip-installer.org/en/latest/
-[open a new issue]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/new>
+[open a new issue]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/new
 [build-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/build.svg
 [coverage-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/coverage.svg
 [pypi-img]: https://img.shields.io/pypi/v/vss-cli.svg
