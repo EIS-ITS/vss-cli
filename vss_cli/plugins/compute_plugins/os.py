@@ -1,12 +1,10 @@
 import click
 import logging
-import os
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-from vss_cli.exceptions import VssCliError
 
 
 _LOGGING = logging.getLogger(__name__)
@@ -44,11 +42,11 @@ def compute_os_ls(
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: status,eq,Processed
 
-            vss compute os ls -f guestFullName,like,CentOS%
+            vss-cli compute os ls -f guestFullName,like,CentOS%
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss compute os ls -s guestId,asc
+            vss-cli compute os ls -s guestId,asc
 
     """
     query = dict()

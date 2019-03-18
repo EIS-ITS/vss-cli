@@ -37,7 +37,8 @@ def snapshot(ctx: Configuration):
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
 @pass_context
-def snapshot_ls(ctx: Configuration, filter, page,
+def snapshot_ls(
+        ctx: Configuration, filter, page,
         sort, show_all, count):
     """List requests based on:
 
@@ -45,11 +46,11 @@ def snapshot_ls(ctx: Configuration, filter, page,
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: status,eq,Processed
 
-            vss request snapshot ls -f status,eq,Processed
+            vss-cli request snapshot ls -f status,eq,Processed
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss request snapshot ls -s created_on,desc
+            vss-cli request snapshot ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST

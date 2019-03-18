@@ -1,12 +1,10 @@
 import click
 import logging
-import os
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-from vss_cli.exceptions import VssCliError
 
 
 _LOGGING = logging.getLogger(__name__)
@@ -51,7 +49,7 @@ def compute_iso_public_ls(
 
     Filter by name and sort desc. For example:
 
-        vss compute iso public ls -f name like,Cent% -s path asc
+        vss-cli compute iso public ls -f name like,Cent% -s path asc
     """
     query = dict(expand=1)
     if filter:
@@ -93,8 +91,8 @@ def compute_iso_personal_ls(ctx: Configuration, page):
     """List available ISO images stored in your personal VSKEY-STOR space.
     If the image you uploaded is not listing here, use the sync and try again.
 
-        vss compute iso personal sync
-        vss compute iso personal ls
+        vss-cli compute iso personal sync
+        vss-cli compute iso personal ls
     """
     obj = ctx.get_user_isos()
     # format

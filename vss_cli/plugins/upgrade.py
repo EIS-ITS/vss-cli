@@ -16,6 +16,6 @@ def cli():
         if exit_code > 0:
             raise click.ClickException(
                 'Could not perform upgrade, please try: '
-                '\n\tpip install --upgrade vsscli')
+                '\n\tpip install --upgrade vss-cli')
     except ImportError as ex:
         raise click.UsageError('Pip is required to upgrade VSS CLI')

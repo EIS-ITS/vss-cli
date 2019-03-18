@@ -46,11 +46,11 @@ def request_mgmt_inventory_ls(
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: status,eq,Processed
 
-            vss request inventory ls -f status,eq,Processed
+            vss-cli request inventory ls -f status,eq,Processed
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss request inventory ls -s created_on,desc
+            vss-cli request inventory ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_INVENTORY_MIN

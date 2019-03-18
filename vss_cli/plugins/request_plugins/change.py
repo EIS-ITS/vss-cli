@@ -48,11 +48,11 @@ def request_mgmt_change_ls(
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: status,eq,Processed
 
-            vss request change ls -f status,eq,Processed
+            vss-cli request change ls -f status,eq,Processed
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss request change ls -s created_on,desc
+            vss-cli request change ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE_MIN

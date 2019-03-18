@@ -90,7 +90,7 @@ def stor_get(ctx, remote_path):
 )
 @pass_context
 def stor_dl(
-        ctx:Configuration,
+        ctx: Configuration,
         remote_path, dir, name
 ):
     """Download remote file."""

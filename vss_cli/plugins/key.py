@@ -46,11 +46,11 @@ def key_ls(
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: valid,eq,false
 
-            vss key ls -f valid,eq,false
+            vss-cli key ls -f valid,eq,false
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss key ls -s created_on,desc
+            vss-cli key ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_SSH_KEY_MIN

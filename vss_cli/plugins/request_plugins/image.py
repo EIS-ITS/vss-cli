@@ -46,11 +46,11 @@ def image_sync_ls(
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: status,eq,Processed
 
-            vss request image-sync ls -f status,eq,Processed
+            vss-cli request image-sync ls -f status,eq,Processed
 
         Sort list in the following format <field_name>,<asc|desc>. For example:
 
-            vss request image-sync ls -s created_on,desc
+            vss-cli request image-sync ls -s created_on,desc
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_IMAGE_SYNC_MIN

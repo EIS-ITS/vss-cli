@@ -60,4 +60,3 @@ def cli(ctx: Configuration, history):
         allow_internal_commands=True,
         allow_system_commands=True
     )
-

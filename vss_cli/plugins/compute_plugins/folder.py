@@ -1,6 +1,5 @@
 import click
 import logging
-import os
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -48,7 +47,7 @@ def compute_folder_ls(
     Filter by path or name name=<name>, moref=<moref>, parent=<parent>.
     For example:
 
-        vss compute folder ls -f name Project
+        vss-cli compute folder ls -f name Project
     """
     query = dict(summary=1)
     if filter:
@@ -78,13 +77,16 @@ def compute_folder_ls(
     short_help='update folder'
 )
 @click.argument(
-    'moref',
+    'moref_or_name',
     type=click.STRING
 )
 @pass_context
-def compute_folder_set(ctx, moref):
+def compute_folder_set(ctx, moref_or_name):
     """Update given folder attribute."""
-    ctx.moref = moref
+    _folder = ctx.get_folder_by_name_or_moref_path(
+        moref_or_name
+    )
+    ctx.moref = _folder[0]['moref']
 
 
 @compute_folder_set.command(
@@ -92,30 +94,36 @@ def compute_folder_set(ctx, moref):
     short_help='move folder'
 )
 @click.argument(
-    'parent-moref',
+    'parent-name-or-moref',
     type=click.STRING,
     required=True
 )
 @pass_context
 def compute_folder_set_parent(
-        ctx: Configuration, parent_moref
+        ctx: Configuration,
+        parent_name_or_moref
 ):
     """Move folder to given moref.
      Use to obtain parent folder:
 
-       vss compute folder ls
+       vss-cli compute folder ls
 
     """
     _LOGGING.debug(
-        f'Attempting to move {ctx.moref} to {parent_moref}'
+        f'Attempting to move {ctx.moref} to {parent_name_or_moref}'
     )
-    # exist folder
-    _ = ctx.get_folder(ctx.moref)
     # exist parent
-    _ = ctx.get_folder(parent_moref)
+    _folder = ctx.get_folder_by_name_or_moref_path(
+        parent_name_or_moref
+    )
+    parent_moref = _folder[0]['moref']
+    # create payload
+    payload = dict(
+        moref=ctx.moref,
+        new_moref=parent_moref
+    )
     obj = ctx.move_folder(
-        ctx.moref,
-        parent_moref
+        **payload
     )
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
@@ -145,18 +153,18 @@ def compute_folder_set_name(
     """Rename folder to given name.
      Use to obtain parent folder:
 
-       vss compute folder ls
+       vss-cli compute folder ls
 
     """
     _LOGGING.debug(
         f'Attempting to rename {ctx.moref} to {name}'
     )
     # exist folder
-    _ = ctx.get_folder(ctx.moref)
-    obj = ctx.rename_folder(
-        ctx.moref,
-        name
+    payload = dict(
+        moref=ctx.moref,
+        name=name
     )
+    obj = ctx.rename_folder(**payload)
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
@@ -183,17 +191,15 @@ def compute_folder_rm(ctx, moref):
     """Delete a logical folder. Folder must be empty.
     Use to obtain folder moref:
 
-       vss compute folder ls
+       vss-cli compute folder ls
 
     """
     _LOGGING.debug(
         f'Attempting to remove {moref}'
     )
     # exist folder
-    _ = ctx.get_folder(ctx.moref)
-    obj = ctx.delete_folder(
-        ctx.moref
-    )
+    payload = dict(moref=ctx.moref)
+    obj = ctx.delete_folder(**payload)
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
@@ -228,16 +234,20 @@ def compute_folder_mk(
     """Create a logical folder under a given moref parent.
     Use to obtain parent folder:
 
-       vss compute folder ls
+       vss-cli compute folder ls
 
     """
     _LOGGING.debug(
         f'Attempting to create {name} under {parent}'
     )
     # exist folder
-    _ = ctx.get_folder(parent)
-    obj = ctx.create_folder(moref=parent,
-                            name=name)
+    _folder = ctx.get_folder_by_name_or_moref_path(
+        parent
+    )
+    obj = ctx.create_folder(
+        moref=_folder[0]['moref'],
+        name=name
+    )
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
@@ -256,18 +266,21 @@ def compute_folder_mk(
     invoke_without_command=True
 )
 @click.argument(
-    'moref',
+    'moref_or_name',
     type=click.STRING,
     required=True
 )
 @pass_context
 def compute_folder_get(
-        ctx: Configuration, moref
+        ctx: Configuration, moref_or_name
 ):
-    ctx.moref = moref
+    _folder = ctx.get_folder_by_name_or_moref_path(
+        moref_or_name
+    )
+    ctx.moref = _folder[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
-        obj = ctx.get_folder(moref)
-        obj['moref'] = moref
+        obj = ctx.get_folder(ctx.moref)
+        obj['moref'] = ctx.moref
         # set columns
         columns = ctx.columns or const.COLUMNS_FOLDER
         # format

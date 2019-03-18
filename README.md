@@ -1,9 +1,9 @@
 # ITS Private Cloud Command Line Interface
 
-[![CI][build-img]](https://gitlab-ee.eis.utoronto.ca/vss/vsscli-ng/commits/master)
-[![Coverage][coverage-img]](https://gitlab-ee.eis.utoronto.ca/vss/vsscli-ng/commits/master)
-[![PyPI][pypi-img]](https://pypi.python.org/pypi/vsscli-ng)
-[![PyPI version][pyver-img]](https://pypi.python.org/pypi/vsscli-ng)
+[![CI][build-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
+[![Coverage][coverage-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
+[![PyPI][pypi-img]](https://pypi.python.org/pypi/vss-cli)
+[![PyPI version][pyver-img]](https://pypi.python.org/pypi/vss-cli)
 [![Docker Image Pulls][docker-pulls-img]][docker-image]
 [![Docker Image Layers][docker-layer-img]][docker-image]
 [![Docker Image Version][docker-version-img]][docker-image]
@@ -21,21 +21,21 @@ Package documentation is now available at [docs][docs].
 The fastest way to install VSS CLI is to use [pip][pip]:
 
 ```bash
-pip install vsscli-ng
+pip install vss-cli
 ```
 
 If you have the VSS CLI installed and want to upgrade to the latest version
 you can run:
 
 ```bash
-pip install --upgrade vsscli-ng
+pip install --upgrade vss-cli
 ```
 
 This will install VSS CLI as well as all dependencies. You can also just [download the tarball][download the tarball].
 Once you have the `vss-cli` directory structure on your workstation, you can just run:
 
 ```bash
-cd path_to_vsscli
+cd path_to_vss-cli
 python setup.py install
 ```
 
@@ -95,16 +95,16 @@ export VSS_CONFIG=/path/to/config_file.json
 Or use the ``-c/--config`` option in the ``vss-cli`` command as follows:
 
 ```bash
-vss -c ~/.secret/vss-config.json
+vss-cli -c ~/.secret/vss-config.json
 ```
 
 By default VSS CLI output is text, and this can be configured either by ``-o/--output``
 option or the ``VSS_OUTPUT`` environment variable as follows:
 
 ```bash
-$ export VSS_OUTPUT=json
+export VSS_OUTPUT=json
 # or
-$ export VSS_OUTPUT=text
+export VSS_OUTPUT=text
 ```
 
 Options are `json`, `yaml`, `table`, `auto`.
@@ -116,7 +116,7 @@ The VSS CLI supports the following table formats supported by [python-tabulate](
 This option is configurable by using ``--table-format`` or `VSS_TABLE` environment variable as follows:
 
 ```bash
-$ export VSS_TABLE=simple
+export VSS_TABLE=simple
 ```
 
 You can also control the data shown with ``--columns`` providing a name and a `jsonpath`. For instance 
@@ -130,7 +130,7 @@ You can also control the data shown with ``--columns`` providing a name and a `j
    2  1606T-coreos0    Snapshot 1 deleted
 ```
 
-## JSON Parameter Input (WIP)
+## JSON Parameter Input 
 
 VSS CLI options vary from simple string, boolean or numeric values to
 JSON data structures as input parameters on the command line.
@@ -211,7 +211,7 @@ If it turns out that you may have found a bug, please [open a new issue][open a 
 ## Versioning
 
 The API versions are tagged based on [Semantic Versioning](https://semver.org/). Versions available in the 
-[tags section](https://gitlab-ee.eis.utoronto.ca/vss/vsscli-ng/tags).
+[tags section](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags).
 
 ## Contributing
 
@@ -219,17 +219,17 @@ Refer to the [Contributing Guide](CONTRIBUTING.md) for details on our code of co
 submitting code to the repository.
 
 
-[docs]: https://eis.utoronto.ca/~vss/vsscli-ng/
-[download the tarball]: https://pypi.python.org/pypi/vsscli-ng
+[docs]: https://eis.utoronto.ca/~vss/vss-cli/
+[download the tarball]: https://pypi.python.org/pypi/vss-cli
 [Click]: http://click.pocoo.org/6/
 [Python Releases for Windows]: https://www.python.org/downloads/windows/
 [pip]: http://www.pip-installer.org/en/latest/
-[open a new issue]: https://gitlab-ee.eis.utoronto.ca/vss/vsscli-ng/issues/new>
-[build-img]: https://gitlab-ee.eis.utoronto.ca/vss/vsscli-ng/badges/master/build.svg
-[coverage-img]: https://gitlab-ee.eis.utoronto.ca/vss/vsscli-ng/badges/master/coverage.svg
-[pypi-img]: https://img.shields.io/pypi/v/vsscli-ng.svg
-[pyver-img]: https://img.shields.io/pypi/pyversions/vsscli-ng.svg
-[docker-pulls-img]:  https://img.shields.io/docker/pulls/uofteis/vsscli-ng.svg
-[docker-layer-img]: https://images.microbadger.com/badges/image/uofteis/vsscli-ng.svg
-[docker-version-img]: https://images.microbadger.com/badges/version/uofteis/vsscli-ng.svg
-[docker-image]: https://hub.docker.com/r/uofteis/vsscli-ng/
+[open a new issue]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/new>
+[build-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/build.svg
+[coverage-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/coverage.svg
+[pypi-img]: https://img.shields.io/pypi/v/vss-cli.svg
+[pyver-img]: https://img.shields.io/pypi/pyversions/vss-cli.svg
+[docker-pulls-img]:  https://img.shields.io/docker/pulls/uofteis/vss-cli.svg
+[docker-layer-img]: https://images.microbadger.com/badges/image/uofteis/vss-cli.svg
+[docker-version-img]: https://images.microbadger.com/badges/version/uofteis/vss-cli.svg
+[docker-image]: https://hub.docker.com/r/uofteis/vss-cli/

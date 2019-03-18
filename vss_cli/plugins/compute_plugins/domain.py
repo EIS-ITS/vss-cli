@@ -1,6 +1,5 @@
 import click
 import logging
-import os
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -65,13 +64,16 @@ def domain_ls(
     invoke_without_command=True
 )
 @click.argument(
-    'moref',
+    'name_or_moref',
     type=click.STRING,
     required=True
 )
 @pass_context
-def domain_get(ctx: Configuration, moref):
-    ctx.moref = moref
+def domain_get(ctx: Configuration, name_or_moref):
+    _domain = ctx.get_domain_by_name_or_moref(
+        name_or_moref
+    )
+    ctx.moref = _domain[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_MOID
         if not ctx.columns:
@@ -79,7 +81,7 @@ def domain_get(ctx: Configuration, moref):
                 ('HOSTS', 'hostsCount'),
                 ('STATUS', 'status')
             ])
-        obj = ctx.get_domain(moref)
+        obj = ctx.get_domain(ctx.moref)
         click.echo(
             format_output(
                 ctx,
@@ -105,10 +107,13 @@ def domain_get_vms(ctx: Configuration, page):
             f'or you do not have permission to access.'
         )
     objs = obj['vms']
-    click.echo(
-        format_output(
-            ctx,
-            objs,
-            columns=const.COLUMNS_VM_MIN
-        )
+    output = format_output(
+        ctx,
+        objs,
+        columns=const.COLUMNS_VM_MIN
     )
+    # page results
+    if page:
+        click.echo_via_pager(output)
+    else:
+        click.echo(output)
