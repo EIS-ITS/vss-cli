@@ -9,32 +9,34 @@ Docker image based on the official Python distro on `Alpine Linux <https://hub.d
 Usage
 -----
 
-Run in interactive mode mapping your home directory and a data directory:
+If you do not have a Python setup you can try using ``vss-cli`` via a container using Docker.
 
 .. code-block:: bash
 
-    docker run -it -v ~/:/root/ -v ~/Downloads:/data uofteis/vss-cli bash
+    docker run uofteis/vss-cli
 
-    / # vss configure
-    Username []: jm
-    Password:
-    Repeat for confirmation:
-    Successfully written configuration file /root/.vss-cli/config.json
+``docker/docker-vss-cli`` is a helpful script to run the ``vss-cli`` within a
+docker container. Just download or move the file and update the environment variables if required,
+give execution permission and move it to your ``$PATH``:
 
-Credentials are now stored locally on ``~/.vss-cli/config.json``.
+.. code-block:: bash
 
-Or set the following environment variables:
-
-* `VSS_TOKEN`: Already generated and valid access token.
-* `VSS_USER`: Username to access the API and other related services.
-* `VSS_USER_PASS`: Username password.
-* `VSS_OUTPUT`: CLI default output. Either json or text
+    curl https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/raw/master/docker/docker-vss-cli > vss-cli
+    chmod +x vss-cli
 
 The following example shows how to pass environment variables for pre-configuration:
 
+* `VSS_TOKEN`: Already generated and valid access token.
+* `VSS_USER`: Username to access the API and other related services. (optional)
+* `VSS_USER_PASS`: Username password. (optional)
+* `VSS_OUTPUT`: CLI default output. Either `yaml`, `json` or `table`. (optional)
+* `VSS_ENDPOINT`: API endpoint. (optional)
+
 .. code-block:: bash
 
-    docker run --it -v /tmp:/data \
-    -e VSS_USER=user_here -e VSS_USER_PASS=user_pass_here \
-    -e VSS_OUTPUT=json \
-    uofteis/vss-cli bash
+    export VSS_TOKEN=<long-string>
+    vss-cli configure ls
+
+    ENDPOINT                           USER    PASS      TOKEN                    SOURCE
+    ---------------------------------  ------  --------  -----------------------  -----------
+    https://cloud-api.eis.utoronto.ca                    eyJhbGciOi..._CZuStX4WE  env

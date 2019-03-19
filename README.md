@@ -39,6 +39,22 @@ cd path_to_vss-cli
 python setup.py install
 ```
 
+## Docker
+
+If you do not have a Python setup you can try using ``vss-cli`` via a container using Docker.
+
+```bash
+docker run uofteis/vss-cli
+```
+
+[docker-vss-cli](docker/docker-vss-cli) is a helpful script to run the ``vss-cli`` within a 
+docker container. Just download or move the file and update the environment variables if required, 
+give execution permission and move it to your ``$PATH``:
+
+```bash
+curl https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/raw/master/docker/docker-vss-cli > vss-cli
+chmod +x vss-cli
+``` 
 
 ## CLI Releases
 

@@ -1,0 +1,22 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#    __   _____ ___                                                     #
+#    \ \ / / __/ __|      VSS Command Line Interface                    #
+#     \ V /\__ \__ \          docker-vss-cli                            #
+#      \_/ |___/___/       Run the vss-cli on docker                    #
+#     CLI v0.1.0-dev0       TAG=develop|latest|x.x.x                    #
+#                                                                       #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+VSS_DOCKER_TAG=latest
+VSS_DOCKER_IMAGE=vss-cli:$VSS_DOCKER_TAG
+# Work dir
+VSS_DATA=~/Downloads
+# Configuration file
+VSS_CONFIG=/data/.vss-cli.json
+# -e/--env arguments passes in the environment variables needed
+# for basic vss-cli execution: 
+# - VSS_ENDPOINT
+# - VSS_TOKEN
+# - VSS_USER (optional)
+# - VSS_USER_PASSWORD (optional)
+# -v/--volume maps a local:container volume for data persistence
+docker run -it --rm -e VSS_TOKEN -e VSS_USER -e VSS_USER_PASSWORD -e VSS_ENDPOINT -v $VSS_DATA:/data $VSS_DOCKER_IMAGE --config $VSS_CONFIG $*
