@@ -49,7 +49,9 @@ def compute_inventory_dl(
     provided path. Also, it's possible to open downloaded file in
     default editor."""
     file_path = ctx.download_inventory_result(
-            request_id=request_id, directory=directory)
+        request_id=request_id,
+        directory=directory
+    )
     obj = {'file': file_path}
 
     click.echo(

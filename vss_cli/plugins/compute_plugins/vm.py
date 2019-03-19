@@ -139,7 +139,7 @@ def compute_vm_get(
 @pass_context
 def compute_vm_get_admin(
         ctx: Configuration,
-        ):
+):
     """Virtual machine administrator. Part of the
     VSS metadata."""
     columns = ctx.columns or const.COLUMNS_VM_ADMIN
@@ -1292,7 +1292,7 @@ def compute_vm_set_cd(
 ):
     """Update virtual machine CD/DVD backend to ISO or client.
 
-    vss-cli compute vm set <name-or-uuid> cd <unit> --iso "<name-or-path-or-id>"
+    vss-cli compute vm set <name-or-uuid> cd <unit> --iso <name-or-path-or-id>
 
     vss-cli compute vm set <name-or-uuid> cd <unit> --iso client
     """
@@ -1617,7 +1617,7 @@ def compute_vm_set_description(
 ):
     """Set or update virtual machine description in metadata.
 
-    vss-cli compute vm set <name-or-uuid> description "This is a new description"
+    vss-cli compute vm set <name-or-uuid> description "new description"
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1892,7 +1892,7 @@ def compute_vm_set_floppy(
             or list(filter(lambda i: i['id'] == img_id, user_imgs))
     except ValueError as ex:
         # not an integer
-        _LOGGING.debug(f'iso is not an id {img_ref}')
+        _LOGGING.debug(f'iso is not an id {img_ref}: {ex}')
         # checking name or path
         # check in public and user images
         img_ref = ctx.get_floppies(filter=f'name,like,%{image}%') \
@@ -1986,7 +1986,8 @@ def compute_vm_set_folder(
     envvar='VSS_CMD_USER_PASS'
 )
 @click.option(
-    '-e', '--env',  multiple=True,
+    '-e', '--env',
+    multiple=True,
     help='Environment variables in KEY=value format.'
 )
 @click.argument(
@@ -2123,7 +2124,7 @@ def compute_vm_set_ha_group(
     """
     for vm in uuid:
         _vm = ctx.get_vm(vm)
-        if not vm:
+        if not _vm:
             raise click.BadArgumentUsage(
                 f'{vm} could not be found'
             )
@@ -2365,7 +2366,8 @@ def compute_vm_set_nic_up(
     """Update network adapter backing network, type or state
 
         vss-cli compute vm set <name-or-uuid> nic up --adapter VMXNET3 <unit>
-        vss-cli compute vm set <name-or-uuid> nic up --network <name-or-moref> <unit>
+        vss-cli compute vm set <name-or-uuid> nic
+        up --network <name-or-moref> <unit>
     """
     # create payload
     payload = dict(

@@ -67,10 +67,10 @@ def request_mgmt_change_ls(
         per_page=count, **params)
 
     output = format_output(
-            ctx,
-            _requests,
-            columns=columns,
-        )
+        ctx,
+        _requests,
+        columns=columns,
+    )
     # page results
     if page:
         click.echo_via_pager(output)

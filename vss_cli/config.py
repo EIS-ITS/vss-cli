@@ -156,6 +156,9 @@ class Configuration(VssManager):
                 profiles = json.load(f)
                 return profiles
         except ValueError as ex:
+            _LOGGING.error(
+                f'Error loading configuration file: {ex}'
+            )
             raise Exception('Invalid configuration file.')
 
     def load_config(self):
@@ -163,9 +166,7 @@ class Configuration(VssManager):
             if self.server:
                 self.update_endpoints(self.server)
             # check for environment variables
-            if self.token or \
-                    (self.username and
-                     self.password):
+            if self.token or (self.username and self.password):
                 # don't load config file
                 if self.token:
                     # set api token
@@ -469,7 +470,7 @@ class Configuration(VssManager):
                 or list(filter(lambda i: i['id'] == iso_id, user_isos))
         except ValueError as ex:
             # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id}')
+            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
             # checking name or path
             # check in public and user isos
             iso = str(name_or_path_or_id)
@@ -505,7 +506,7 @@ class Configuration(VssManager):
                 or list(filter(lambda i: i['id'] == img_id, user_imgs))
         except ValueError as ex:
             # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id}')
+            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
             # checking name or path
             # check in public and user img
             img = str(name_or_path_or_id)
