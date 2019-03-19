@@ -168,14 +168,17 @@ def _default_token() -> Optional[str]:
     help="Print backtraces when exception occurs.",
 )
 @click.option(
-    '--debug', is_flag=True, default=False, help='Enables debug mode.'
+    '--debug',
+    is_flag=True,
+    default=False,
+    help='Enables debug mode.'
 )
 @click.option(
     '--columns',
     default=None,
     help=(
         'Custom columns key=value list.'
-        ' Example: ENTITY=entity_name, NAME=attributes.friendly_name'
+        ' Example: VM=uuid,PROVISIONED=storage.provisionedGB'
     ),
 )
 @click.option(
@@ -188,7 +191,7 @@ def _default_token() -> Optional[str]:
     '--table-format',
     default='simple',
     envvar='VSS_TABLE',
-    help="Which table format to use.",
+    help="Which table format to use (default: simple)",
     autocompletion=autocompletion.table_formats,
 )
 @click.option(
