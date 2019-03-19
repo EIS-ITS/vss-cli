@@ -61,7 +61,6 @@ in the disk command:
     Uuid                : 6000C291-b290-b14b-6606-6c2265b2b245
 
 
-
 Update
 ------
 There are three allowed actions to modify a given disk unit: remove, update and create as shown by

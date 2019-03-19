@@ -3,7 +3,7 @@
 Manage virtual machine client notes
 ===================================
 
-From version ``0.1.9`` "client custom notes" can be added to the virtual
+The VSS CLI allows "client custom notes" to be added to the virtual
 machine annotation field with a maximum of 500 characters long. Client
 notes are useful to add reminders, codes or any particular metadata that
 is different from the **VSS Metadata** such as admin, client, etc.
@@ -23,43 +23,46 @@ In order to launch a new virtual machine, we will use the following parameters:
 * Name: ``NAME=Front_end_1``
 * Notes: ``NOTES="Project: Enterprise CMS\nToDo: Backup, Recovery"``
 
-.. note::
+.. warning::
 
     Multi-line strings are handled differently by shells.
 
 
-Run ``vss compute vm mk shell`` to deploy a virtual machine without an operating system
+Run ``vss-cli compute vm mk shell`` to deploy a virtual machine without an operating system
 installed. Before deploying the virtual machine, display what options and arguments the ``shell``
 command takes:
 
 
 .. code-block:: bash
 
-    vss compute vm mk shell --help
-    Usage: vss compute vm mk shell [OPTIONS] NAME
+    vss-cli compute vm mk shell --help
+
+    Usage: vss-cli compute vm mk shell [OPTIONS] NAME
 
       Create a new virtual machine with no operating system pre-installed.
 
     Options:
       -d, --description TEXT          Vm description.  [required]
-      -b, --bill-dept TEXT            Billing department.  [required]
-      -a, --admin TEXT                Admin name, phone number and email separated
-                                      by `:` i.e. "John
-                                      Doe:416-123-1234:john.doe@utoronto.ca"
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
-      -o, --os TEXT                   Guest operating system id.  [required]
+      -a, --admin TEXT                Admin name, phone number and email separated
+                                      by `:` i.e. "John
+                                      Doe:416-123-1234:john.doe@utoronto.ca"
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
-      -f, --folder TEXT               Logical folder moref.  [required]
-      -i, --disk INTEGER              Disks in GB.
-      -n, --net TEXT                  Networks moref mapped to NICs.  [required]
-      -s, --iso TEXT                  ISO image path to be mounted after creation
       -t, --domain TEXT               Target fault domain.
+      -t, --notes TEXT                Custom notes.
+      -s, --iso TEXT                  ISO image path to be mounted after creation
       -h, --high-io                   VM will be created with a VMware Paravirtual
                                       SCSIController.
-      -t, --notes TEXT                Custom notes.
+      -b, --bill-dept TEXT            Billing department.  [required]
+      -o, --os TEXT                   Guest operating system id or name.
+                                      [required]
+      -f, --folder TEXT               Logical folder moref.  [required]
+      -i, --disk INTEGER              Disks in GB.  [required]
+      -n, --net TEXT                  Networks moref or name mapped to NICs.
+                                      [required]
       --help                          Show this message and exit.
 
 Now that we have everything, proceed to deploy a new virtual machine with 1GB of memory,
@@ -67,7 +70,7 @@ Now that we have everything, proceed to deploy a new virtual machine with 1GB of
 
 .. code-block:: bash
 
-    vss compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os $OS \
+    vss-cli compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os $OS \
     --memory 1 --cpu 1 --folder $FOLDER --disk 20 --net $NET --iso $ISO --notes "$NOTES" \
     $NAME
 
@@ -77,25 +80,29 @@ In matter of seconds, a confirmation email will be sent with the allocated IP ad
 List Client Notes
 -----------------
 
-Obtain the new ``UUID`` by either listing and filtering virtual machines in your inventory
-``vss compute vm ls --filter name front`` or listing your new requests
-``vss request new ls -s 'created_on,desc' -c``. The following command illustrates how to list
+**Optional** Obtain the new ``UUID`` by either listing and filtering virtual machines in your inventory
+``vss-cli compute vm ls --filter name front`` or listing your new requests
+``vss-cli request new ls -s 'created_on,desc' -c``. The following command illustrates how to list
 virtual machines with the ``front`` string in their names:
+
+.. note:: This version of the VSS CLI supports managing virtual machines
+    not only using the UUID, but using names. In case of multiple results,
+    the CLI prompts to select the right instance.
 
 .. code-block:: bash
 
-    vss compute vm ls --filter name front
+    vss-cli compute vm ls --filter name front
     uuid                                  name
     ------------------------------------  -----------------
     5012b89f-fae3-168e-7f44-9a23b8e65074  1709T-Front_end_1
 
-
-To query existing virtual machine **client-note** use the ``vss compute vm get <uuid> client-note``
+To query existing virtual machine **client-note** use the ``vss-cli compute vm get <uuid> client-note``
 command as follows:
 
 .. code-block:: bash
 
-    vss compute vm get 5012b89f-fae3-168e-7f44-9a23b8e65074 client-note
+    vss-cli compute vm get Front_end_1 client-note
+
     Uuid                : 5012b89f-fae3-168e-7f44-9a23b8e65074
     Value               : Project: Enterprise CMS
                           ToDo: Backup, Recovery
@@ -104,18 +111,19 @@ command as follows:
 Update Client Notes
 -------------------
 
-In order to update or replace existing client notes, use ``vss compute vm set <uuid> client-note <new-note>``
+In order to update or replace existing client notes, use ``vss-cli compute vm set <uuid> client-note <new-note>``
 to append or use the flag ``--replace`` to overwrite all notes.
 
 .. code-block:: bash
 
-    vss compute vm set 5012b89f-fae3-168e-7f44-9a23b8e65074 client-note "Billing Code: 1234"
+    vss-cli compute vm set Front_end_1 client-note "Billing Code: 1234"
 
 And query to validate any change:
 
 .. code-block:: bash
 
-    vss compute vm get 5012b89f-fae3-168e-7f44-9a23b8e65074 client-note
+    vss-cli compute vm get Front_end_1 client-note
+
     Uuid                : 5012b89f-fae3-168e-7f44-9a23b8e65074
     Value               : Project: Enterprise CMS
                           ToDo: Backup, Recovery
@@ -125,12 +133,13 @@ If you wanted just to replace existing contents, add the ``--replace/-r`` option
 
 .. code-block:: bash
 
-    vss compute vm set 5012b89f-fae3-168e-7f44-9a23b8e65074 client-note --replace "Billing Code: 1234"
+    vss-cli compute vm set Front_end_1 client-note --replace "Billing Code: 1234"
 
 And query to validate any change:
 
 .. code-block:: bash
 
-    vss compute vm get 5012b89f-fae3-168e-7f44-9a23b8e65074 client-note
+    vss-cli compute vm get Front_end_1 client-note
+
     Uuid                : 5012b89f-fae3-168e-7f44-9a23b8e65074
     Value               : Billing Code: 1234

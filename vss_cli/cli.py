@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 from typing import List, Optional, Union, cast
+import pyvss
 
 import click
 from click.core import Command, Context, Group
@@ -105,7 +106,6 @@ def _default_token() -> Optional[str]:
 
 @click.command(cls=VssCli, context_settings=CONTEXT_SETTINGS)
 @click_log.simple_verbosity_option(logging.getLogger(), "--loglevel", "-l")
-@click.version_option(const.__version__)
 @click.option(
     '--server',
     '-s',
@@ -168,14 +168,17 @@ def _default_token() -> Optional[str]:
     help="Print backtraces when exception occurs.",
 )
 @click.option(
-    '--debug', is_flag=True, default=False, help='Enables debug mode.'
+    '--debug',
+    is_flag=True,
+    default=False,
+    help='Enables debug mode.'
 )
 @click.option(
     '--columns',
     default=None,
     help=(
         'Custom columns key=value list.'
-        ' Example: ENTITY=entity_name, NAME=attributes.friendly_name'
+        ' Example: VM=uuid,PROVISIONED=storage.provisionedGB'
     ),
 )
 @click.option(
@@ -188,7 +191,7 @@ def _default_token() -> Optional[str]:
     '--table-format',
     default='simple',
     envvar='VSS_TABLE',
-    help="Which table format to use.",
+    help="Which table format to use (default: simple)",
     autocompletion=autocompletion.table_formats,
 )
 @click.option(
@@ -196,7 +199,10 @@ def _default_token() -> Optional[str]:
     default=None,
     help='Sort table by the jsonpath expression. Example: updated_on',
 )
-@click.version_option()
+@click.version_option(
+    version=f'{const.__version__}; pyvss v{pyvss.__version__}',
+    message='%(prog)s v%(version)s'
+)
 @pass_context
 def cli(
     ctx: Configuration,

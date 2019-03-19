@@ -3,7 +3,9 @@
 Installation
 ============
 
-> Windows users, download and install `Python Releases for Windows`_ prior running `pip`_.
+.. note::
+
+    Windows users, download and install `Python Releases for Windows`_ prior running `pip`_.
 
 The fastest way to install VSS CLI is to use `pip`_:
 
