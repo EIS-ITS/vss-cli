@@ -165,7 +165,7 @@ def _default_token() -> Optional[str]:
     'showexceptions',
     default=False,
     is_flag=True,
-    help="Print backtraces when exception occurs.",
+    help="Print back traces when exception occurs.",
 )
 @click.option(
     '--debug',

@@ -167,27 +167,38 @@ class Configuration(VssManager):
                 self.update_endpoints(self.server)
             # check for environment variables
             if self.token or (self.username and self.password):
+                _LOGGING.debug(f'Loading from input')
                 # don't load config file
                 if self.token:
+                    _LOGGING.debug(f'Checking token')
                     # set api token
                     self.api_token = self.token
                     return self.username, self.password, self.api_token
                 elif self.username and self.password:
+                    _LOGGING.debug(f'Checking user/pass to generate token')
                     # generate a new token - won't save
-                    self.get_token()
+                    _LOGGING.warning(
+                        'A new token will be generated but not persisted. '
+                        'Consider running command "configure mk" to save your '
+                        'credentials'
+                    )
+                    self.get_token(self.username, self.password)
+                    _LOGGING.debug(f'Token generated {self.api_token}')
                     return self.username, self.password, self.api_token
                 else:
                     raise VssCliError(
                         'Environment variables error. Please, verify '
                         'VSS_TOKEN or VSS_USER and VSS_USER_PASS')
             else:
-                self.vlog(f'Loading configuration file: {self.config}')
+                _LOGGING.debug(f'Loading configuration file: {self.config}')
                 if os.path.isfile(self.config):
                     # read config and look for profile
                     self.username, self.password, self.api_token = \
                         self.load_profile_from_config(self.base_endpoint)
-                    self.vlog(f'Loaded from file {self.base_endpoint}:'
-                              f' {self.username}')
+                    _LOGGING.debug(
+                        f'Loaded from file {self.base_endpoint}:'
+                        f' {self.username}'
+                    )
                     creds = self.username and self.password
                     if not (creds or self.api_token):
                         raise VssCliError(
@@ -197,13 +208,15 @@ class Configuration(VssManager):
                             "configuration.".format(self.base_endpoint))
                     try:
                         self.whoami()
-                        self.vlog('Token validated successfully.')
+                        _LOGGING.debug('Token validated successfully.')
                     except Exception as ex:
                         self.vlog(str(ex))
-                        self.vlog('Generating a new token')
-                        self.api_token = self.get_token(self.username,
-                                                        self.password)
-                        self.vlog('Token generated successfully')
+                        _LOGGING.debug('Generating a new token')
+                        self.api_token = self.get_token(
+                            self.username,
+                            self.password
+                        )
+                        _LOGGING.debug('Token generated successfully')
                         self.write_config_file(new_token=self.api_token)
                         # check for updates
                         # self.check_for_updates()
@@ -219,7 +232,7 @@ class Configuration(VssManager):
 
     def check_unread_messages(self):
         try:
-            self.vlog('Checking for unread messages')
+            _LOGGING.debug('Checking for unread messages')
             messages = self.get_user_messages(filter='status,eq,Created',
                                               per_page=100)
             n_messages = len(messages)
@@ -232,7 +245,7 @@ class Configuration(VssManager):
                 self.secho('vss-cli message ls', fg='red', nl=False)
                 self.secho(' to list unread messages.', fg='green')
             else:
-                self.vlog('No Created messages')
+                _LOGGING.debug('No messages with Created status')
         except ValueError as ex:
             _LOGGING.error('Could not check for messages {}'.format(ex))
 
@@ -257,8 +270,10 @@ class Configuration(VssManager):
             'token': token}
         }
         try:
-            self.vlog(f'Writing configuration file:'
-                      f' {self.config}')
+            _LOGGING.debug(
+                f'Writing configuration file:'
+                f' {self.config}'
+            )
             # validate if file exists
             if os.path.isfile(self.config):
                 with open(self.config, 'r+') as fp:
@@ -281,8 +296,10 @@ class Configuration(VssManager):
         except IOError as e:
             raise VssCliError('An error occurred writing '
                               'configuration file: {}'.format(e))
-        self.vlog(f'Successfully written'
-                  f' configuration file {self.config}')
+        _LOGGING.debug(
+            f'Successfully written'
+            f' configuration file {self.config}'
+        )
 
     def configure(self, username, password, endpoint, replace=False):
         self.username = username
@@ -315,7 +332,8 @@ class Configuration(VssManager):
             except VssCliError as ex:
                 self.echo(str(ex))
                 confirm = click.confirm(
-                    'Would you like to replace existing configuration?')
+                    'Would you like to replace existing configuration?'
+                )
                 if confirm:
                     self.write_config_file()
         else:

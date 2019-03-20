@@ -27,22 +27,30 @@ def cli(ctx: Configuration):
 @pass_context
 def mk(ctx: Configuration, replace):
     """Create new configuration or add profile to config file"""
-    endpoint = click.prompt('Endpoint',
-                            default=ctx.server,
-                            type=click.STRING)
-    username = click.prompt('Username',
-                            default=ctx.username,
-                            type=click.STRING)
-    password = click.prompt('Password',
-                            default=ctx.password,
-                            show_default=False,
-                            hide_input=True,
-                            type=click.STRING,
-                            confirmation_prompt=True)
-    ctx.configure(username=username,
-                  password=password,
-                  endpoint=endpoint,
-                  replace=replace)
+    endpoint = ctx.server or click.prompt(
+        'Endpoint',
+        default=ctx.server,
+        type=click.STRING
+    )
+    username = ctx.username or click.prompt(
+        'Username',
+        default=ctx.username,
+        type=click.STRING
+    )
+    password = ctx.password or click.prompt(
+        'Password',
+        default=ctx.password,
+        show_default=False,
+        hide_input=True,
+        type=click.STRING,
+        confirmation_prompt=True
+    )
+    ctx.configure(
+        username=username,
+        password=password,
+        endpoint=endpoint,
+        replace=replace
+    )
 
 
 COLUMNS_DETAILS = [

@@ -3716,13 +3716,17 @@ def compute_vm_mk_image(
     payload = dict(
         description=description, name=name,
         usage=usage, bill_dept=bill_dept,
-        folder=folder,
         image=image_ref[0]['path']
     )
     if memory:
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if folder:
+        _folder = ctx.get_folder_by_name_or_moref_path(
+            folder
+        )
+        payload['folder'] = _folder[0]['moref']
     if disk:
         payload['disks'] = list(disk)
     if notes:
