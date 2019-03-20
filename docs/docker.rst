@@ -16,8 +16,8 @@ If you do not have a Python setup you can try using ``vss-cli`` via a container 
     docker run uofteis/vss-cli
 
 ``docker/docker-vss-cli`` is a helpful script to run the ``vss-cli`` within a
-docker container. Just download or move the file and update the environment variables if required,
-give execution permission and move it to your ``$PATH``:
+docker container. Just download the file and update the environment variables if required,
+give execution permission and move the file to your ``$PATH``:
 
 .. code-block:: bash
 

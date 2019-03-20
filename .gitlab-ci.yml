@@ -107,13 +107,13 @@ build-docs-develop:
   image: python:3-alpine
   stage: build
   script:
-   - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
-   - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
-   - python setup.py install
-   - mkdir -p ./public
-   - cd docs
-   - make html
-   - cp -r _build/html/* ../public
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - python setup.py install
+    - mkdir -p ./public
+    - cd docs
+    - make html
+    - cp -r _build/html/* ../public
   artifacts:
     paths:
      - public
@@ -141,12 +141,12 @@ release-docs-develop:
   script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
-  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+  - ssh-add <(echo "$DOCS_SSH_PRIVATE_KEY")
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   - mkdir -p /root/.ssh
   - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > /root/.ssh/known_hosts'
-  - echo "$SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
+  - echo "$DOCS_SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
   - chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh
   - scp -r public/* $SSH_USER@$SSH_SERVER:$DOCS_DEV_SSH_PATH
   dependencies:
@@ -215,13 +215,14 @@ build-docs-master:
   image: python:3-alpine
   stage: build
   script:
-   - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
-   - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
-   - python setup.py install
-   - mkdir -p ./public
-   - cd docs
-   - make html
-   - cp -r _build/html/* ../public
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
+    - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
+    - python setup.py install
+    - mkdir -p ./public
+    - cd docs
+    - make html
+    - cp -r _build/html/* ../public
   artifacts:
     paths:
      - public
@@ -284,12 +285,13 @@ build-docs-tag:
   image: python:3-alpine
   stage: build
   script:
-   - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
-   - python setup.py install
-   - mkdir -p ./public
-   - cd docs
-   - make html
-   - cp -r _build/html/* ../public
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
+    - python setup.py install
+    - mkdir -p ./public
+    - cd docs
+    - make html
+    - cp -r _build/html/* ../public
   artifacts:
     paths:
      - public
@@ -304,12 +306,12 @@ release-docs-tag:
   script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
-  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+  - ssh-add <(echo "$DOCS_SSH_PRIVATE_KEY")
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   - mkdir -p /root/.ssh
   - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > /root/.ssh/known_hosts'
-  - echo "$SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
+  - echo "$DOCS_SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
   - chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh
   - scp -r public/* $SSH_USER@$SSH_SERVER:$DOCS_SSH_PATH
   dependencies:

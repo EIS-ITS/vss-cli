@@ -72,8 +72,8 @@ def load_requirements(requires_file: str = 'requirements.txt') -> List[str]:
 
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
-if 'dev' in __VERSION__:
-    __VERSION__ = '{v}+{s}'.format(v=__VERSION__, s=get_git_commit_datetime())
+# if 'dev' in __VERSION__:
+#     __VERSION__ = '{v}+{s}'.format(v=__VERSION__, s=get_git_commit_datetime())
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 REQUIRES = load_requirements()
