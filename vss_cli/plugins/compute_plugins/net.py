@@ -1,11 +1,13 @@
 import click
 import logging
+
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
+import vss_cli.autocompletion as autocompletion
 
 
 _LOGGING = logging.getLogger(__name__)
@@ -76,8 +78,10 @@ def network_ls(
     invoke_without_command=True
 )
 @click.argument(
-    'name_or_moref', type=click.STRING,
-    required=True
+    'name_or_moref',
+    type=click.STRING,
+    required=True,
+    autocompletion=autocompletion.networks
 )
 @pass_context
 def network_get(ctx: Configuration, name_or_moref):

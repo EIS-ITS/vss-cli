@@ -16,6 +16,8 @@ from vss_cli.validators import (
 from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
 
+import vss_cli.autocompletion as autocompletion
+
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -106,7 +108,9 @@ def compute_vm_ls(
 @click.argument(
     'uuid_or_name',
     type=click.STRING,
-    required=True)
+    required=True,
+    autocompletion=autocompletion.virtual_machines
+)
 @pass_context
 def compute_vm_get(
         ctx: Configuration,
@@ -322,7 +326,7 @@ def compute_vm_get_console(
     )
     password = ctx.password or click.prompt(
         'Password',
-        default=os.environ.get('VSS_USER_PASSWORD', ''),
+        default=os.environ.get('VSS_USER_PASS', ''),
         show_default=False, hide_input=True,
         confirmation_prompt=True
     )
@@ -1063,7 +1067,9 @@ def compute_vm_get_version(ctx: Configuration):
 @click.argument(
     'uuid_or_name',
     type=click.STRING,
-    required=True)
+    required=True,
+    autocompletion=autocompletion.virtual_machines
+)
 @click.option(
     '-s', '--schedule',
     type=click.DateTime(formats=[const.DEFAULT_DATETIME_FMT]),
@@ -1284,7 +1290,8 @@ def compute_vm_set_boot_delay(
     '-i', '--iso', type=click.STRING,
     required=True,
     help='Update CD/DVD backing device '
-         'to given ISO path or Client device.'
+         'to given ISO path or Client device.',
+    autocompletion=autocompletion.isos
 )
 @pass_context
 def compute_vm_set_cd(
@@ -1697,7 +1704,7 @@ def compute_vm_set_disk_mk(
     'unit', type=click.INT, required=True
 )
 @click.option(
-    '-c', '--capacity', type=int,
+    '-c', '--capacity', type=click.INT,
     required=True,
     help='Update given disk capacity in GB.'
 )
@@ -1784,7 +1791,8 @@ def compute_vm_set_disk_rm(
 )
 @click.argument(
     'domain_moref', type=click.STRING,
-    required=True
+    required=True,
+    autocompletion=autocompletion.domains
 )
 @click.option(
     '-f', '--force', is_flag=True,
@@ -1933,7 +1941,8 @@ def compute_vm_set_floppy(
 )
 @click.argument(
     'name-moref-path', type=click.STRING,
-    required=True
+    required=True,
+    autocompletion=autocompletion.folders
 )
 @pass_context
 def compute_vm_set_folder(
@@ -2057,7 +2066,8 @@ def compute_vm_set_guest_cmd(
 )
 @click.argument(
     'guest-id', type=click.STRING,
-    required=True
+    required=True,
+    autocompletion=autocompletion.operating_systems
 )
 @click.pass_context
 def compute_vm_set_guest_os(
@@ -2344,7 +2354,8 @@ def compute_vm_set_nic(ctx: Configuration):
 )
 @click.option(
     '-n', '--network', type=click.STRING,
-    help='Virtual network moref'
+    help='Virtual network moref',
+    autocompletion=autocompletion.networks
 )
 @click.option(
     '-s', '--state',
@@ -2425,7 +2436,8 @@ def compute_vm_set_nic_up(
 @click.option(
     '-n', '--network', type=click.STRING,
     multiple=True,
-    help='Virtual network moref'
+    help='Virtual network moref',
+    autocompletion=autocompletion.networks
 )
 @pass_context
 def compute_vm_set_nic_mk(
@@ -3018,7 +3030,8 @@ def compute_vm_set_version_policy(
 @click.argument(
     'uuid', type=click.UUID,
     required=True,
-    nargs=-1
+    nargs=-1,
+    autocompletion=autocompletion.networks
 )
 @pass_context
 def compute_vm_rm(
@@ -3154,7 +3167,8 @@ Reusable options for vm mk command
 source_opt = click.option(
     '--source', '-s',
     help='Source virtual machine or template UUID.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.virtual_machines
 )
 description_opt = click.option(
     '--description', '-d', help='Vm description.',
@@ -3182,7 +3196,8 @@ usage_opt = click.option(
 )
 os_opt = click.option(
     '--os', '-o', help='Guest operating system id.',
-    type=click.STRING, required=False
+    type=click.STRING, required=False,
+    autocompletion=autocompletion.operating_systems
 )
 memory_opt = click.option(
     '--memory', '-m', help='Memory in GB.',
@@ -3194,7 +3209,8 @@ cpu_opt = click.option(
 )
 folder_opt = click.option(
     '--folder', '-f', help='Logical folder moref.',
-    type=click.STRING, required=False
+    type=click.STRING, required=False,
+    autocompletion=autocompletion.folders
 )
 disks_opt = click.option(
     '--disk', '-i', help='Disks in GB.',
@@ -3202,11 +3218,13 @@ disks_opt = click.option(
 )
 networks_opt = click.option(
     '--net', '-n', help='Networks moref mapped to NICs.',
-    type=click.STRING, multiple=True, required=False
+    type=click.STRING, multiple=True, required=False,
+    autocompletion=autocompletion.networks
 )
 domain_opt = click.option(
     '--domain', '-t', help='Target fault domain.',
-    type=click.STRING, required=False
+    type=click.STRING, required=False,
+    autocompletion=autocompletion.domains
 )
 notes_opt = click.option(
     '--notes', '-t', help='Custom notes.',
@@ -3221,7 +3239,8 @@ custom_spec_opt = click.option(
 iso_opt = click.option(
     '--iso', '-s',
     help='ISO image path to be mounted after creation',
-    type=click.STRING, required=False
+    type=click.STRING, required=False,
+    autocompletion=autocompletion.isos
 )
 high_io_opt = click.option(
     '--high-io', '-h',
@@ -3236,7 +3255,7 @@ extra_config_opt = click.option(
     callback=validate_json_type
 )
 user_data_opt = click.option(
-    '--user-data', '-s',
+    '--user-data',
     help='Cloud-init user_data YML file path to '
          'pre-configure guest os upon first boot.',
     type=click.File('r'),
@@ -3366,12 +3385,14 @@ def compute_vm_mk_spec(
 @click.option(
     '--os', '-o',
     help='Guest operating system id or name.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.operating_systems
 )
 @click.option(
     '--folder', '-f',
     help='Logical folder moref.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.folders
 )
 @click.option(
     '--disk', '-i',
@@ -3381,7 +3402,8 @@ def compute_vm_mk_spec(
 @click.option(
     '--net', '-n',
     help='Networks moref or name mapped to NICs.',
-    type=click.STRING, multiple=True, required=True
+    type=click.STRING, multiple=True, required=True,
+    autocompletion=autocompletion.networks
 )
 @pass_context
 def compute_vm_mk_shell(
@@ -3676,12 +3698,14 @@ def compute_vm_mk_clone(
 @click.option(
     '--os', '-o',
     help='Guest operating system id, name or path.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.operating_systems
 )
 @click.option(
     '--folder', '-f',
     help='Logical folder moref.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.folders
 )
 @click.option(
     '--disk', '-i',
@@ -3691,12 +3715,14 @@ def compute_vm_mk_clone(
 @click.option(
     '--net', '-n',
     help='Networks moref or name mapped to NICs.',
-    type=click.STRING, multiple=True, required=True
+    type=click.STRING, multiple=True, required=True,
+    autocompletion=autocompletion.networks
 )
 @click.option(
     '--source', '-s',
     help='Source Virtual Machine OVA/OVF id, name or path.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.vm_images
 )
 @pass_context
 def compute_vm_mk_image(

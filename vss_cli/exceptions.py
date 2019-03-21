@@ -1,4 +1,5 @@
 """The exceptions used by VSS CLI."""
+from pyvss.exceptions import VssError
 
 
 class VssCliError(Exception):

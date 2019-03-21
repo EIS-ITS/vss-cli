@@ -9,7 +9,10 @@ from vss_cli.config import Configuration
 _LOGGING = logging.getLogger(__name__)
 
 
-@click.group()
+@click.group(
+    'misc',
+    short_help='Miscellaneous utilities.'
+)
 @pass_context
 def cli(ctx):
     """Miscellaneous utilities."""

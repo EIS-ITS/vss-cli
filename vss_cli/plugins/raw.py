@@ -16,7 +16,12 @@ _LOGGING = logging.getLogger(__name__)
     short_help='Make a raw call to the API'
 )
 @click.argument(
-    'method'
+    'method',
+    default='GET',
+    type=click.Choice(
+        ['GET', 'POST', 'PUT',
+         'DELETE', 'PATCH']
+    )
 )
 @click.argument(
     'uri',
