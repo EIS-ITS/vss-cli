@@ -4,12 +4,18 @@ from typing import Any, Dict, List, Tuple  # NOQA
 
 from vss_cli import const
 from vss_cli.config import Configuration
+from vss_cli.exceptions import VssError
+
+from requests.exceptions import HTTPError
 
 
 def _init_ctx(ctx: Configuration) -> None:
     """Initialize ctx."""
     # ctx is incomplete thus need to 'hack' around it
     # see bug https://github.com/pallets/click/issues/942
+    if not hasattr(ctx, 'get_token'):
+        ctx.client = Configuration()
+        ctx.client.load_config()
     if not hasattr(ctx, 'server'):
         ctx.server = os.environ.get('VSS_ENDPOINT', const.DEFAULT_SERVER)
 
@@ -63,3 +69,374 @@ def table_formats(
     completions.sort()
 
     return [c for c in completions if incomplete in c[0]]
+
+
+def virtual_machines(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_vms()
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for vm in response:
+            completions.append(
+                (
+                    vm['uuid'], vm['name']
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def domains(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_domains()
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    obj['moref'], obj['name']
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def folders(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_folders(summary=1)
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    obj['moref'], obj['path']
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def networks(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_networks()
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    obj['moref'], obj['name']
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def operating_systems(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_os(
+            show_all=True,
+            sort='guestId,desc'
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    obj['guestId'], obj['guestFullName']
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def isos(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_isos(
+            show_all=True,
+            sort='guestId,desc'
+        )
+        response.extend(
+            ctx.client.get_user_isos()
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    obj['name'], obj['path']
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def vm_images(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_images(
+            show_all=True,
+            sort='name,desc'
+        )
+        response.extend(
+            ctx.client.get_user_vm_images()
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    obj['name'], obj['path']
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def inventory_properties(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.request('/inventory/options')
+        if response:
+            response = response.get('data')
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    obj['key'], obj['value']
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def inventory_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_inventory_requests(
+            sort='created_on,desc'
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    f"{obj['id']}",
+                    f"{obj['name']} ({obj['created_on']})"
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def change_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_change_requests(
+            sort='created_on,desc'
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    f"{obj['id']}",
+                    f"{obj['vm_uuid']} ({obj['vm_name']}) - {obj['attribute']}"
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def export_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_export_requests(
+            sort='created_on,desc'
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    f"{obj['id']}",
+                    f"{obj['vm_uuid']} ({obj['vm_name']})"
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def folder_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_folder_requests(
+            sort='created_on,desc'
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    f"{obj['id']}",
+                    f"{obj['moref']} ({obj['action']})"
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def image_sync_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_image_sync_requests(
+            sort='created_on,desc'
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    f"{obj['id']}",
+                    f"{obj['type']}"
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
+def snapshot_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_snapshot_requests(
+            sort='created_on,desc'
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    f"{obj['id']}",
+                    f"{obj['vm_uuid']} ({obj['vm_name']})"
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions

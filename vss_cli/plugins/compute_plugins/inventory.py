@@ -1,10 +1,13 @@
 import click
 import logging
+
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
+
+import vss_cli.autocompletion as autocompletion
 
 
 _LOGGING = logging.getLogger(__name__)
@@ -27,8 +30,9 @@ def cli(ctx: Configuration):
 )
 @click.argument(
     'request_id',
-    type=int,
-    required=True
+    type=click.INT,
+    required=True,
+    autocompletion=autocompletion.inventory_requests
 )
 @click.option(
     '-d', '--directory', type=click.STRING,
@@ -74,7 +78,8 @@ def compute_inventory_dl(
 @click.argument(
     'attribute',
     nargs=-1,
-    default=None
+    default=None,
+    autocompletion=autocompletion.inventory_properties
 )
 @click.option(
     '-f', '--fmt',

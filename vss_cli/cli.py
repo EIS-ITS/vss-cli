@@ -92,7 +92,7 @@ class VssCli(click.Group):
             )
             _LOGGER.debug(f'Loading {mod}')
         except ImportError as ex:
-            _LOGGER.warning(
+            _LOGGER.debug(
                 f'Error loading plugin'
                 f' {cmd_name} {type(ex).__name__}: {ex}'
             )
@@ -136,7 +136,7 @@ def _default_token() -> Optional[str]:
     '--password',
     default=None,  # type: ignore
     help='The API password for VSS API.',
-    envvar='VSS_USER_PASSWORD',
+    envvar='VSS_USER_PASS',
 )
 @click.option(
     '--timeout',

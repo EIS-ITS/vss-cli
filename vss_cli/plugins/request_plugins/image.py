@@ -8,6 +8,8 @@ from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.request import cli
 
+import vss_cli.autocompletion as autocompletion
+
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -32,7 +34,7 @@ def image_sync(ctx: Configuration):
               help='apply sorting ')
 @click.option('-a', '--show-all', is_flag=True,
               help='show all results')
-@click.option('-c', '--count', type=int,
+@click.option('-c', '--count', type=click.INT,
               help='size of results')
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
@@ -80,7 +82,10 @@ def image_sync_ls(
     'get',
     help='Image sync request'
 )
-@click.argument('rid', type=int, required=True)
+@click.argument(
+    'rid', type=click.INT, required=True,
+    autocompletion=autocompletion.image_sync_requests
+)
 @pass_context
 def image_sync_get(ctx, rid):
     obj = ctx.get_image_sync_request(rid)

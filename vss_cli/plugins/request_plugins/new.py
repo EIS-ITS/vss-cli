@@ -31,7 +31,7 @@ def request_mgmt_new(ctx: Configuration):
               help='apply sorting ')
 @click.option('-a', '--show-all', is_flag=True,
               help='show all results')
-@click.option('-c', '--count', type=int,
+@click.option('-c', '--count', type=click.INT,
               help='size of results')
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
@@ -81,7 +81,7 @@ def request_mgmt_new_ls(
     'get',
     short_help='New vm request'
 )
-@click.argument('rid', type=int, required=True)
+@click.argument('rid', type=click.INT, required=True)
 @pass_context
 def request_mgmt_new_get(
     ctx: Configuration,
@@ -103,7 +103,7 @@ def request_mgmt_new_get(
     'retry',
     short_help='Retry vm new request'
 )
-@click.argument('rid', type=int, required=True)
+@click.argument('rid', type=click.INT, required=True)
 @pass_context
 def request_mgmt_new_retry(ctx: Configuration, rid):
     """Retries given virtual machine new request with status

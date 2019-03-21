@@ -312,6 +312,53 @@ As with JSON, YAML can be easily decoded by many programming languages. The VSS 
       uuid: 5030d265-2c35-f3a9-e295-ebee8ced91d6
 
 
+
+Auto-completion
+---------------
+
+Bash completion support is provided by [Click][Click] and will complete
+sub commands and parameters. Sub commands are always listed whereas parameters
+only if at least a dash has been provided. Example:
+
+.. code-block:: bash
+
+    vss-cli compute <TAB><TAB>
+    account    compute    configure  request    stor       token
+
+    vss-cli -<TAB><TAB>
+    --config      --no-verbose  --output      --verbose     --version     -c            -o
+
+
+Activating `bash` or `zsh` completion can be done by executing the following commands:
+
+For `bash`:
+
+.. code-block:: bash
+
+    source <(vss-cli completion bash)
+
+For `zsh`
+
+.. code-block:: bash
+
+    source <(vss-cli completion zsh)
+
+If you do it from your `.bashrc` or `.zshrc` it is recommend to use the form below
+as that does not trigger a run of vss-cli itself.
+
+For `bash`:
+
+.. code-block:: bash
+
+    eval "$(_VSS_CLI_COMPLETE=source hass-cli)"
+
+For `zsh`:
+
+.. code-block:: bash
+
+    eval "$(_VSS_CLI_COMPLETE=source_zsh vss-cli)"
+
+
 Shell
 -----
 
