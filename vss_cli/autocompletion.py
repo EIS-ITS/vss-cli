@@ -14,24 +14,21 @@ def _init_ctx(ctx: Configuration) -> None:
     # ctx is incomplete thus need to 'hack' around it
     # see bug https://github.com/pallets/click/issues/942
     if not hasattr(ctx, 'get_token'):
-        ctx.client = Configuration()
-        ctx.client.load_config()
-    if not hasattr(ctx, 'server'):
-        ctx.server = os.environ.get('VSS_ENDPOINT', const.DEFAULT_SERVER)
-
-    if not hasattr(ctx, 'token'):
-        ctx.token = os.environ.get('VSS_TOKEN', None)
-
-    if not hasattr(ctx, 'username'):
-        ctx.password = os.environ.get('VSS_USER', None)
-
-    if not hasattr(ctx, 'password'):
-        ctx.password = os.environ.get('VSS_USER_PASS', None)
-
-    if not hasattr(ctx, 'timeout'):
-        ctx.timeout = int(
+        ctx.client = Configuration(tk=os.environ.get('VSS_TOKEN'))
+        ctx.client.server = os.environ.get(
+            'VSS_ENDPOINT', const.DEFAULT_SERVER
+        )
+        ctx.client.password = os.environ.get(
+            'VSS_USER', None
+        )
+        ctx.client.password = os.environ.get(
+            'VSS_USER_PASS', None
+        )
+        ctx.client.timeout = int(
             os.environ.get('VSS_TIMEOUT', str(const.DEFAULT_TIMEOUT))
         )
+        # fallback to load configuration
+        ctx.client.load_config()
 
 
 def table_formats(
