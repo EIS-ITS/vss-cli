@@ -7,6 +7,7 @@ from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import (
     format_output, to_tuples,
+    raw_format_output
 )
 from vss_cli.validators import (
     validate_phone_number, validate_email,
@@ -900,17 +901,55 @@ def compute_vm_get_snapshot(
     'spec_file', type=click.Path(),
     required=False,
 )
+@click.option(
+    '-e', '--edit',
+    is_flag=True, required=False,
+    help='Edit before writing'
+)
 @pass_context
 def compute_vm_get_spec(
         ctx: Configuration,
-        spec_file
+        spec_file, edit
 ):
     """Virtual machine configuration specification."""
-    import json
+    if ctx.output in ['auto']:
+        raise click.UsageError(
+            'Output not supported. '
+            'Please specify '
+            '-o/--output either yaml or json'
+        )
+    f_name = spec_file or f'{ctx.uuid}.{ctx.output}'
+    # get obj
     obj = ctx.get_vm_spec(ctx.uuid)
-    f_name = spec_file or f'{ctx.uuid}.json'
-    with open(f_name, 'w') as fp:
-        json.dump(obj, fp=fp)
+    new_raw = None
+    if edit:
+        obj_raw = raw_format_output(
+            ctx.output, obj, highlighted=False
+        )
+        new_raw = click.edit(
+            obj_raw,
+            extension='.{}'.format(ctx.output)
+        )
+
+    if ctx.output == 'json':
+        import json
+        if new_raw:
+            obj = json.loads(new_raw)
+        with open(f_name, 'w') as fp:
+            json.dump(
+                obj, fp=fp,
+                indent=2,
+                sort_keys=False
+            )
+    else:
+        import yaml
+        if new_raw:
+            obj = yaml.safe_load(new_raw)
+        with open(f_name, 'w') as fp:
+            yaml.dump(
+                obj, stream=fp,
+                default_flow_style=False
+            )
     click.echo(f'Written to {f_name}')
 
 
@@ -3132,7 +3171,9 @@ def compute_vm_mk(
     'file-spec', type=click.File('rb')
 )
 @pass_context
-def compute_vm_from_file(ctx, file_spec):
+def compute_vm_from_file(
+        ctx: Configuration, file_spec
+):
     """Create virtual machine from file specification.
     Virtual Machine specification can be obtained from
 
@@ -3140,6 +3181,8 @@ def compute_vm_from_file(ctx, file_spec):
 
     """
     import yaml
+    if not file_spec:
+        click.edit(extension=f".{ctx.output}")
     # load yaml or json
     payload = yaml.load(file_spec)
     # set built process
