@@ -54,7 +54,8 @@ def raw_format_output(
     no_headers: bool = False,
     table_format: str = 'plain',
     sort_by: Optional[str] = None,
-    single: Optional[str] = None
+    single: Optional[str] = None,
+    highlighted: bool = True,
 ) -> str:
     """Format the raw output."""
     if output == 'auto':
@@ -66,24 +67,40 @@ def raw_format_output(
 
     if output == 'json':
         try:
-            return highlight(
-                json.dumps(data, indent=2,
-                           sort_keys=False),
-                JsonLexer(),
-                TerminalFormatter()
-            )
+            if highlighted:
+                return highlight(
+                    json.dumps(data, indent=2,
+                               sort_keys=False),
+                    JsonLexer(),
+                    TerminalFormatter()
+                )
+            else:
+                return json.dumps(
+                    data, indent=2,
+                    sort_keys=False
+                )
         except ValueError:
             return str(data)
     elif output == 'yaml':
         try:
-            return highlight(
-                cast(
+            if highlighted:
+                return highlight(
+                    cast(
+                        str,
+                        yaml.safe_dump(
+                            data, default_flow_style=False
+                        )
+                    ),
+                    YamlLexer(),
+                    TerminalFormatter()
+                )
+            else:
+                return cast(
                     str,
-                    yaml.safe_dump(data, default_flow_style=False)
-                ),
-                YamlLexer(),
-                TerminalFormatter()
-            )
+                    yaml.safe_dump(
+                        data, default_flow_style=False
+                    )
+                )
         except ValueError:
             return str(data)
     elif output == 'table':
