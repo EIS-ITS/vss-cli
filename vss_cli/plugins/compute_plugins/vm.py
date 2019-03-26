@@ -1117,6 +1117,25 @@ def compute_vm_get_vss_option(ctx: Configuration):
     )
 
 
+@compute_vm_get.command(
+    'vss-service',
+    short_help='Get VSS Service'
+)
+@pass_context
+def compute_vm_get_vss_service(ctx: Configuration):
+    """Get VSS Service"""
+    obj = ctx.get_vm_vss_service(ctx.uuid)
+    columns = ctx.columns  # or const.COLUMNS_VSS_SERVICE
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
 @compute_vm.group(
     'set',
     short_help='Set virtual machine attribute',
@@ -3115,6 +3134,44 @@ def compute_vm_set_vss_option(
     )
 
 
+@compute_vm_set.command(
+    'vss-service',
+    short_help='VSS Service name or ID',
+)
+@click.argument(
+    'label-name-or-id',
+    autocompletion=autocompletion.vss_services,
+    type=click.STRING,
+    required=True
+)
+@pass_context
+def compute_vm_set_vss_service(
+    ctx: Configuration, label_name_or_id
+):
+    """Update VSS service name or ID"""
+    service = ctx.get_vss_service_by_name_label_or_id(
+        label_name_or_id
+    )[0]['id']
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        service_name_or_id=service
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    obj = ctx.update_vm_vss_service(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
 @compute_vm.group(
     'rm', help='Delete given virtual machines',
     invoke_without_command=True
@@ -3371,6 +3428,12 @@ user_data_opt = click.option(
     type=click.File('r'),
     required=False
 )
+vss_service_opt = click.option(
+    '--vss-service',
+    help='VSS Service related to VM',
+    autocompletion=autocompletion.vss_services,
+    required=False
+)
 
 
 @compute_vm_mk.command(
@@ -3395,13 +3458,14 @@ user_data_opt = click.option(
 @networks_opt
 @domain_opt
 @notes_opt
+@vss_service_opt
 @pass_context
 def compute_vm_mk_spec(
         ctx: Configuration, name, source,
         description, bill_dept, usage,
         memory, cpu, folder, disk,
         notes, admin, inform,
-        net, domain, os
+        net, domain, os, vss_service
 ):
     """Create virtual machine based on another  virtual machine
      configuration specification."""
@@ -3453,6 +3517,12 @@ def compute_vm_mk_spec(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guestId']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # updating spec with new vm spec
     s_payload.update(payload)
     # request
@@ -3515,6 +3585,7 @@ def compute_vm_mk_spec(
     type=click.STRING, multiple=True, required=True,
     autocompletion=autocompletion.networks
 )
+@vss_service_opt
 @pass_context
 def compute_vm_mk_shell(
         ctx: Configuration, name,
@@ -3522,7 +3593,8 @@ def compute_vm_mk_shell(
         memory, cpu, folder, disk,
         notes, admin, inform,
         high_io, iso,
-        net, domain, os
+        net, domain, os,
+        vss_service
 ):
     """Create a new virtual machine with no operating system
     pre-installed."""
@@ -3572,6 +3644,12 @@ def compute_vm_mk_shell(
     if iso:
         _iso = ctx.get_iso_by_name_or_guest(iso)
         payload['iso'] = _iso[0]['path']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # request
     obj = ctx.create_vm(**payload)
     # print
@@ -3609,13 +3687,15 @@ def compute_vm_mk_shell(
 @domain_opt
 @notes_opt
 @custom_spec_opt
+@vss_service_opt
 @pass_context
 def compute_vm_mk_template(
         ctx: Configuration, name, source,
         description, bill_dept, usage,
         memory, cpu, folder, disk,
         notes, admin, inform,
-        net, domain, os, custom_spec
+        net, domain, os, custom_spec,
+        vss_service
 ):
     """Deploy virtual machine from template"""
     # get source from uuid or name
@@ -3668,6 +3748,12 @@ def compute_vm_mk_template(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guestId']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # request
     obj = ctx.deploy_vm_from_template(**payload)
     # print
@@ -3705,13 +3791,15 @@ def compute_vm_mk_template(
 @domain_opt
 @notes_opt
 @custom_spec_opt
+@vss_service_opt
 @pass_context
 def compute_vm_mk_clone(
         ctx: Configuration, name, source,
         description, bill_dept, usage,
         memory, cpu, folder, disk,
         notes, admin, inform,
-        net, domain, os, custom_spec
+        net, domain, os, custom_spec,
+        vss_service
 ):
     """Clone virtual machine from running or powered off vm.
     If name argument is not specified, -clone suffix will be added to
@@ -3766,6 +3854,12 @@ def compute_vm_mk_clone(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guestId']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # request
     obj = ctx.create_vm_from_clone(**payload)
     # print
@@ -3800,6 +3894,7 @@ def compute_vm_mk_clone(
 @custom_spec_opt
 @extra_config_opt
 @user_data_opt
+@vss_service_opt
 @click.option(
     '--bill-dept', '-b',
     help='Billing department.',
@@ -3841,7 +3936,7 @@ def compute_vm_mk_image(
         memory, cpu, folder, disk,
         notes, admin, inform,
         net, domain, os, custom_spec,
-        extra_config, user_data
+        extra_config, user_data, vss_service
 ):
     """Deploy virtual machine from image"""
     # get reference to image by
@@ -3895,6 +3990,12 @@ def compute_vm_mk_image(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guestId']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # request
     obj = ctx.create_vm_from_image(**payload)
     # print

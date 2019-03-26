@@ -191,6 +191,33 @@ def operating_systems(
     return completions
 
 
+def vss_services(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_vss_services(
+            show_all=True,
+            sort='label,desc'
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            completions.append(
+                (
+                    f"\"{obj['label']}\"", f"{obj['id']}"
+                )
+            )
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
 def isos(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -198,7 +225,7 @@ def isos(
     try:
         response = ctx.client.get_isos(
             show_all=True,
-            sort='guestId,desc'
+            sort='name,desc'
         )
         response.extend(
             ctx.client.get_user_isos()

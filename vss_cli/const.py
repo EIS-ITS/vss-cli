@@ -3,7 +3,7 @@ import os
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.0-dev6'
+__version__ = '0.1.0-dev7'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -91,6 +91,12 @@ COLUMNS_MIN = [
     ('ID', 'id'),
     ('CREATED', 'created_on'),
     ('UPDATED', 'updated_on'),
+]
+COLUMNS_VSS_SERVICE = [
+    ('ID', 'id'),
+    ('LABEL', 'label'),
+    ('NAME', 'NAME'),
+    ('GROUP', 'group.name')
 ]
 COLUMNS_IMAGE = [
     ('ID', 'id'),

@@ -477,6 +477,44 @@ class Configuration(VssManager):
             return [o_f[index]]
         return o_f
 
+    def get_vss_service_by_name_label_or_id(
+            self,
+            name_label_or_id
+    ):
+        vss_services = self.get_vss_services(show_all=True)
+        try:
+            svc_id = int(name_label_or_id)
+            svc_ref = \
+                list(filter(lambda i: i['id'] == svc_id, vss_services)) \
+                or list(filter(lambda i: i['id'] == svc_id, vss_services))
+        except ValueError as ex:
+            # not an integer
+            _LOGGING.debug(f'not an id {name_label_or_id} ({ex})')
+            # checking name or label
+            svc = str(name_label_or_id).lower()
+            svc_ref =  \
+                list(filter(
+                    lambda i: svc in i['name'].lower(), vss_services)
+                ) \
+                or list(
+                    filter(lambda i: svc in i['label'].lower(), vss_services)
+                )
+            # check if there's no ref
+            if not svc_ref:
+                raise click.BadParameter(
+                    f'{name_label_or_id} could not be found'
+                )
+        # count for dup results
+        o_count = len(svc_ref)
+        if o_count > 1:
+            msg = f"Found {o_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg, indicator='=>',
+                options=[f"{i['label']}" for i in svc_ref]
+            )
+            return [svc_ref[index]]
+        return svc_ref
+
     def get_iso_by_name_or_guest(self, name_or_path_or_id):
         user_isos = self.get_user_isos()
         pub_isos = self.get_isos(show_all=True)
