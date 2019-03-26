@@ -1098,6 +1098,25 @@ def compute_vm_get_version(ctx: Configuration):
     )
 
 
+@compute_vm_get.command(
+    'vss-option',
+    short_help='Get VSS Option status'
+)
+@pass_context
+def compute_vm_get_vss_option(ctx: Configuration):
+    """Get VSS Option status"""
+    obj = ctx.get_vm_vss_options(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_VSS_OPTIONS
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
 @compute_vm.group(
     'set',
     short_help='Set virtual machine attribute',
@@ -3036,6 +3055,51 @@ def compute_vm_set_version_policy(
     payload.update(ctx.payload_options)
     # request
     obj = ctx.update_vm_version_policy(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'vss-option',
+    short_help='Enable or disable given vss-option'
+)
+@click.argument(
+    'vss-option',
+    type=click.Choice(
+        ['reboot_on_restore', 'reset_on_restore']
+    )
+)
+@click.option(
+    '--on/--off',
+    help='Enable or disable given vss-option',
+    default=False
+)
+@pass_context
+def compute_vm_set_vss_option(
+        ctx: Configuration, vss_option,
+        on
+):
+    """Enable or disable given VSS Option"""
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        option_name=vss_option
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    if on:
+        obj = ctx.enable_vm_vss_option(**payload)
+    else:
+        obj = ctx.disable_vm_vss_option(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(

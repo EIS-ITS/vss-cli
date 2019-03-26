@@ -3,7 +3,7 @@ import os
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.0-dev4'
+__version__ = '0.1.0-dev5'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -398,6 +398,9 @@ COLUMNS_VM_HW = [
     ('VALUE', 'value'),
     ('STATUS', 'status'),
     ('UPGRADE_POLICY', 'upgrade_policy.upgradePolicy')
+]
+COLUMNS_VSS_OPTIONS = [
+    ('OPTIONS', '[*]')
 ]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),
