@@ -1,9 +1,10 @@
 """Constants used by VSS CLI (vss-cli)."""
 import os
+import pkg_resources
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.0-dev10'
+__version__ = '0.1.0-dev11'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -15,6 +16,9 @@ DEFAULT_CONFIG = os.path.expanduser(os.path.join(
 )
 DEFAULT_HISTORY = os.path.expanduser(os.path.join(
     '~', '.vss-cli', 'history')
+)
+DEFAULT_DATA_PATH = pkg_resources.resource_filename(
+    PACKAGE_NAME, 'data'
 )
 
 DEFAULT_DATAOUTPUT = 'table'

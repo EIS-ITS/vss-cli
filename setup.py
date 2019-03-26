@@ -43,6 +43,7 @@ REQUIRED_PYTHON_VER = (3, 6, 4)
 REQUIRES = load_requirements()
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
+PACKAGE_DATA = {'vss_cli': ['data/*.yaml']}
 
 PROJECT_NAME = 'ITS Private Cloud CLI'
 PROJECT_PACKAGE_NAME = 'vss-cli'
@@ -99,6 +100,7 @@ setup(
     author_email=PROJECT_EMAIL,
     maintainer_email=MAINTAINER_EMAIL,
     packages=PACKAGES,
+    package_data=PACKAGE_DATA,
     license=PROJECT_LICENSE,
     include_package_data=True,
     zip_safe=False,

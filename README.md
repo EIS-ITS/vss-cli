@@ -197,7 +197,7 @@ as that does not trigger a run of vss-cli itself.
 For `bash`:
 
 ```bash
-eval "$(_VSS_CLI_COMPLETE=source hass-cli)"
+eval "$(_VSS_CLI_COMPLETE=source vss-cli)"
 ```
 
 For `zsh`:
