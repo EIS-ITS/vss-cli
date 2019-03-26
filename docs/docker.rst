@@ -1,10 +1,12 @@
+.. _Docker:
+
 Docker
 ======
 
 Docker image based on the official Python distro on `Alpine Linux <https://hub.docker.com/_/alpine/>`_,
-`PyVSS <https://pypi.python.org/pypi/pyvss>`_ and `VSS-CLI <https://pypi.python.org/pypi/vss-cli>`_.
+and `VSS-CLI <https://pypi.python.org/pypi/vss-cli>`_.
 
-* Python 3.6 Alpine (uofteis/vss-cli:latest)
+* Python 3.6 Alpine `uofteis/vss-cli`_
 
 Usage
 -----
@@ -40,3 +42,6 @@ The following example shows how to pass environment variables for pre-configurat
     ENDPOINT                           USER    PASS      TOKEN                    SOURCE
     ---------------------------------  ------  --------  -----------------------  -----------
     https://cloud-api.eis.utoronto.ca                    eyJhbGciOi..._CZuStX4WE  env
+
+
+.. _`uofteis/vss-cli`: https://hub.docker.com/r/uofteis/vss-cli/
