@@ -1130,7 +1130,7 @@ def compute_vm_get_vss_option(ctx: Configuration):
 )
 @click.option(
     '-s', '--schedule',
-    type=click.DateTime(formats=[const.DEFAULT_DATETIME_FMT]),
+    type=click.DateTime(formats=const.SUPPORTED_DATETIME_FORMATS),
     required=False, default=None,
     help='Schedule change in a given point in time based'
          ' on format YYYY-MM-DD HH:MM.'
@@ -1161,7 +1161,10 @@ def compute_vm_set(
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
     if schedule:
-        ctx.payload_options['schedule'] = ctx.schedule
+        # ctx.payload_options['schedule_obj'] = ctx.schedule
+        ctx.payload_options['schedule'] = ctx.schedule.strftime(
+            const.DEFAULT_DATETIME_FMT
+        )
     if click.get_current_context().invoked_subcommand is None:
         raise click.UsageError(
             'Sub command is required'

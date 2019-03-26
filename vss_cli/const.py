@@ -3,7 +3,7 @@ import os
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.0-dev5'
+__version__ = '0.1.0-dev6'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -21,6 +21,10 @@ DEFAULT_DATAOUTPUT = 'table'
 DEFAULT_RAW_OUTPUT = 'json'
 
 DEFAULT_DATETIME_FMT = '%Y-%m-%d %H:%M'
+SUPPORTED_DATETIME_FORMATS = [
+    '%Y-%m-%dT%H:%M:%S',
+    '%Y-%m-%d %H:%M'
+]
 
 DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "-._~%!$&'()*+,;=]+@)?([a-z0-9\\-." \
