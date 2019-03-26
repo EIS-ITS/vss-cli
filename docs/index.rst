@@ -38,6 +38,7 @@ This package provides a unified command line interface to the ITS Private Cloud.
    docker
    use
    examples/index
+   development
 
 .. toctree::
    :maxdepth: 1

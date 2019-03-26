@@ -8,6 +8,7 @@ import pyvss
 import click
 from click.core import Command, Context, Group
 import click_log
+
 import vss_cli.autocompletion as autocompletion
 from vss_cli.config import Configuration
 import vss_cli.const as const
@@ -101,7 +102,10 @@ class VssCli(click.Group):
 
 
 def _default_token() -> Optional[str]:
-    return os.environ.get('VSS_TOKEN', os.environ.get('VSS_API_TOKEN', None))
+    return os.environ.get(
+        'VSS_TOKEN',
+        os.environ.get('VSS_API_TOKEN', None)
+    )
 
 
 @click.command(cls=VssCli, context_settings=CONTEXT_SETTINGS)
