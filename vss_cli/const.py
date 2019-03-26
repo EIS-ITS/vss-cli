@@ -3,7 +3,7 @@ import os
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.0-dev7'
+__version__ = '0.1.0-dev8'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
