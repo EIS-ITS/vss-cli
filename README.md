@@ -1,4 +1,4 @@
-# ITS Private Cloud Command Line Interface
+# ITS Private Cloud Command Line Interface ``vss-cli``
 
 [![CI][build-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
 [![Coverage][coverage-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
@@ -8,8 +8,11 @@
 [![Docker Image Layers][docker-layer-img]][docker-image]
 [![Docker Image Version][docker-version-img]][docker-image]
 
-This package provides a unified command line interface to the ITS Private Cloud.
 
+The ITS Private Cloud Command-Line Interface ``vss-cli`` simplifies the interaction with the [ITS Private Cloud RESTful API](https://vss-wiki.eis.utoronto.ca/display/API) 
+to manage your virtual machines and other services.
+<br>
+<br>
 [![asciicast](https://asciinema.org/a/5Ov7loKY1q2rNNAtX9n9mi0eH.svg)](https://asciinema.org/a/5Ov7loKY1q2rNNAtX9n9mi0eH)
 
 ## Documentation
@@ -293,15 +296,17 @@ Commands:
 
 ## Versioning
 
-The API versions are tagged based on [Semantic Versioning](https://semver.org/). Versions available in the 
+The `vss-cli` versions are tagged based on [Semantic Versioning](https://semver.org/). Versions available in the 
 [tags section](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags).
 
 
 ## Contributing
+Refer to the [Contributing Guide](CONTRIBUTING.md) and [Contributors](CONTRIBUTORS.md) for details on our code 
+of conduct and the process of submitting code to the repository.
 
-Refer to the [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process of 
-submitting code to the repository.
+## Changelog 📝
 
+Refer to the [Changelog file](CHANGELOG.md) for details. 
 
 [docs]: https://eis.utoronto.ca/~vss/vss-cli/
 [download the tarball]: https://pypi.python.org/pypi/vss-cli

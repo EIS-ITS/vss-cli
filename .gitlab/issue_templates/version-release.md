@@ -1,10 +1,18 @@
+
 ### Description
 
-(What is the full version to release)
+Version release vX.XX 🎉
 
 ### Change log
 
-(What bug, new feature, improvement or task this version solves)
+**Improvements:**
+- [#IssueNumber](): Issue Name 
+
+**Bug Fixes:**
+- [#IssueNumber](): Issue Name
+
+**New Features:**
+- [#IssueNumber](): Issue Name
 
 ### Configuration
 
