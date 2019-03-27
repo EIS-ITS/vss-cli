@@ -14,7 +14,7 @@ interactions with the project.
   own code.
 - Describe what actually happened. Include the full traceback if there was an
   exception.
-- List your Python, PyVssTools, Flask, and other relevant versions. If possible, check if this
+- List your Python, ``py-vss``, and other relevant versions. If possible, check if this
   issue is already fixed in the repository.
   
 [mcve]: https://stackoverflow.com/help/mcve
@@ -27,7 +27,7 @@ interactions with the project.
         git config --global user.name 'your name'
         git config --global user.email 'your email'
         
-3. Fork the Web services repository by clicking the [Fork][Fork] button.
+3. Fork the ``vss-cli`` repository by clicking the [Fork][Fork] button.
 4. Clone your fork locally:
     
         git clone git@gitlab-ee.eis.utoronto.ca:{username}/vss-cli.git
@@ -54,7 +54,7 @@ interactions with the project.
         git checkout -b issue-999
     
 2. Using your favorite editor, make your changes, [committing as you go][committing as you go].
-3. Try to follow [PEP8][PEP8].
+3. Follow [PEP8][PEP8].
 4. Push your commits to GitLab and [create a merge request][create a merge request].
 
         git push origin issue-999

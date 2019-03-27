@@ -16,11 +16,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+from datetime import datetime as dt
 import os
 import sys
-from vss_cli.const import __version__
-from datetime import datetime as dt
 
+from vss_cli.const import __version__
 
 sys.path.insert(0, os.path.abspath('.'))
 
@@ -157,4 +157,3 @@ texinfo_documents = [
 ]
 
 html_favicon = '_static/favicon.ico'
-

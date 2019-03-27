@@ -19,10 +19,16 @@ from vss_cli.exceptions import VssCliError
 
 import vss_cli.autocompletion as autocompletion
 
+from pkg_resources import iter_entry_points
+from click_plugins import with_plugins
+
 
 _LOGGING = logging.getLogger(__name__)
 
 
+@with_plugins(
+    iter_entry_points('vss_cli.contrib.compute.vm.plugins')
+)
 @cli.group(
     'vm',
     short_help='Manage virtual machines'
