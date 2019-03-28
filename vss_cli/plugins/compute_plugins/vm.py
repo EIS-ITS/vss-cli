@@ -3295,32 +3295,101 @@ def compute_vm_mk(
 @compute_vm_mk.command(
     'from-file',
     short_help='Create virtual machine '
-               'from file specification.'
+               'from VSS CLI specification.'
 )
 @click.argument(
-    'file-spec', type=click.File('rb')
+    'file-spec',
+    type=click.File('r'),
+    required=False,
+)
+@click.option(
+    '-t', '--spec-template',
+    required=False,
+    type=click.Choice(
+        ['shell']
+    ),
+    help='Specification template to load and edit.'
+)
+@click.option(
+    '--edit/--no-edit',
+    required=False,
+    default=True,
+    help='Edit before submitting request'
 )
 @pass_context
 def compute_vm_from_file(
-        ctx: Configuration, file_spec
+        ctx: Configuration, file_spec,
+        edit, spec_template
 ):
-    """Create virtual machine from file specification.
-    Virtual Machine specification can be obtained from
-
-    vss -o [json|yaml] compute vm get <name-or-uuid> spec > spec.json
+    """Create virtual machine from VSS CLI file specification.
 
     """
     import yaml
-    if not file_spec:
-        click.edit(extension=f".{ctx.output}")
-    # load yaml or json
-    payload = yaml.load(file_spec)
-    # set built process
-    payload['built'] = payload['built_from']
+    import time
+    from pick import pick
+    if file_spec:
+        raw = file_spec.read()
+    else:
+        # load default configuration
+        if not spec_template:
+            message = 'Please choose a template to load ' \
+                      '(press SPACE to mark, ENTER to continue): '
+            spec_template, index = pick(
+                ['shell'],
+                message
+            )
+        file_spec = os.path.join(
+            const.DEFAULT_DATA_PATH,
+            f'{spec_template}.yaml'
+        )
+        # proceed to load file
+        with open(file_spec, 'r') as data_file:
+            raw = data_file.read()
+    # whether to launch the editor and save file
+    # before submitting request
+    if edit:
+        # launch editor
+        new_raw = click.edit(
+            raw,
+            extension='.yaml'
+        )
+        # load object
+        if new_raw:
+            new_obj = yaml.safe_load(new_raw)
+            file_name = f'from-file-{int(time.time())}.yaml'
+            _LOGGING.debug(
+                f'Saving spec in {file_name}'
+            )
+            with open(file_name, 'w') as fp:
+                yaml.dump(
+                    new_obj, stream=fp,
+                    default_flow_style=False
+                )
+            raw = new_raw
+        else:
+            _LOGGING.warning(
+                'Nothing to save.'
+            )
+            raise click.UsageError(
+                'Input error'
+            )
+
+    payload = yaml.safe_load(raw)
+    _LOGGING.debug(f'Payload from raw: f{payload}')
     # add common options
-    payload.update(ctx.payload_options)
+    spec_payload = dict()
+    spec_payload.update(ctx.payload_options)
+    if payload['built'] == 'os_install':
+        spec_payload = ctx.get_spec_payload(
+            payload=payload,
+            built='os_install'
+        )
+    else:
+        raise click.UsageError(
+            'Not yet implemented. '
+        )
     # request
-    obj = ctx.create_vm(**payload)
+    obj = ctx.create_vm(**spec_payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
@@ -3474,7 +3543,9 @@ def compute_vm_mk_spec(
         net, domain, os, vss_service
 ):
     """Create virtual machine based on another  virtual machine
-     configuration specification."""
+     configuration specification. This command takes the vm
+     machine specification (memory, disk, networking, etc) as a
+     base for a new VM."""
     built = 'os_install'
     _vm = ctx.get_vm_by_uuid_or_name(
         source
