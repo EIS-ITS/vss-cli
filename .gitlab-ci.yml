@@ -1,0 +1,339 @@
+image: docker:latest
+
+stages:
+- test
+- build
+- release
+
+services:
+- docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_LATEST_TAG: latest
+  # local
+  DOCKER_IMAGE_TEST: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_BUILD_REF_NAME
+  DOCKER_IMAGE_LATEST: $CI_REGISTRY/$CI_PROJECT_PATH:$DOCKER_LATEST_TAG      # latest
+  DOCKER_IMAGE_DEVELOP: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_BUILD_REF_NAME    # develop and branches
+  DOCKER_IMAGE_TAG: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_BUILD_TAG             # releases (tags)
+  # hub
+  DOCKER_HUB_IMAGE_TEST: $DOCKER_HUB_REPO:$CI_BUILD_REF_NAME
+  DOCKER_HUB_IMAGE_LATEST: $DOCKER_HUB_REPO:$DOCKER_LATEST_TAG
+  DOCKER_HUB_IMAGE_DEVELOP: $DOCKER_HUB_REPO:$CI_BUILD_REF_NAME
+  DOCKER_HUB_IMAGE_TAG: $DOCKER_HUB_REPO:$CI_BUILD_TAG
+
+# Global jobs
+test-style:
+  image: python:3-alpine
+  stage: test
+  script:
+    - apk add --update --no-cache git
+    - pip install flake8 nose coverage pytz
+    - flake8 --ignore F401,E402, vss_cli/
+  tags:
+    - python-3
+
+build-dist:
+  image: python:3-alpine
+  stage: build
+  script:
+    - pip install setuptools wheel
+    - python3 setup.py sdist bdist_wheel
+  only:
+    - develop
+    - branches
+    - master
+    - tags
+  tags:
+   - python-3
+  artifacts:
+    paths:
+      - dist
+
+build-docker-local:
+  stage: build
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build -f docker/Dockerfile --pull --build-arg CI_BUILD_REF=$CI_BUILD_REF -t $DOCKER_IMAGE_TEST .
+    - docker push $DOCKER_IMAGE_TEST
+  only:
+    - develop
+    - branches
+    - master
+    - tags
+  tags:
+    - docker
+    - dind
+
+build-docker-hub:
+  stage: build
+  before_script:
+    - docker info
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_USER_PASS
+  script:
+    - docker build -f docker/Dockerfile --pull --build-arg CI_BUILD_REF=$CI_BUILD_REF -t $DOCKER_HUB_IMAGE_TEST .
+    - docker push $DOCKER_HUB_IMAGE_TEST
+  only:
+    - develop
+    - master
+    - tags
+  tags:
+    - docker
+    - dind
+
+# Develop/branches
+
+test-code-develop:
+  image: python:3-alpine
+  stage: test
+  script:
+    - python -V
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
+    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - python setup.py install
+    - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
+  tags:
+    - python-3
+  only:
+    - develop
+    - branches
+  artifacts:
+    paths:
+      - coverage/
+
+build-docs-develop:
+  image: python:3-alpine
+  stage: build
+  script:
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - python setup.py install
+    - mkdir -p ./public
+    - cd docs
+    - make html
+    - cp -r _build/html/* ../public
+  artifacts:
+    paths:
+     - public
+  only:
+    - develop
+  tags:
+    - python-3
+
+release-dist-develop:
+  image: python:3-alpine
+  stage: release
+  script:
+    - pip install twine setuptools wheel
+    - twine upload -u ${PYPI_USER} -p ${PYPI_PASSWORD} --repository-url https://test.pypi.org/legacy/ dist/*
+  dependencies:
+    - build-dist
+  only:
+    - develop
+  tags:
+   - python-3
+
+release-docs-develop:
+  image: python:3
+  stage: release
+  script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$DOCS_SSH_PRIVATE_KEY")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  - mkdir -p /root/.ssh
+  - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > /root/.ssh/known_hosts'
+  - echo "$DOCS_SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
+  - chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh
+  - scp -r public/* $SSH_USER@$SSH_SERVER:$DOCS_DEV_SSH_PATH
+  dependencies:
+  - build-docs-develop
+  only:
+  - develop
+  tags:
+   - python-3
+
+release-docker-local-develop:
+  stage: release
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker pull $DOCKER_IMAGE_TEST
+    - docker tag $DOCKER_IMAGE_TEST $DOCKER_IMAGE_DEVELOP
+    - docker push $DOCKER_IMAGE_DEVELOP
+  dependencies:
+    - build-docker-local
+  only:
+    - develop
+    - branches
+  tags:
+    - docker
+    - dind
+
+release-docker-hub-develop:
+  stage: release
+  before_script:
+    - docker info
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_USER_PASS
+  script:
+    - docker pull $DOCKER_HUB_IMAGE_TEST
+    - docker tag $DOCKER_HUB_IMAGE_TEST $DOCKER_HUB_IMAGE_DEVELOP
+    - docker push $DOCKER_HUB_IMAGE_DEVELOP
+  dependencies:
+    - build-docker-hub
+  only:
+    - develop
+  tags:
+    - docker
+    - dind
+
+# Master
+
+test-code-master:
+  image: python:3-alpine
+  stage: test
+  script:
+    - python -V
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
+    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
+    - python setup.py install
+    - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
+  tags:
+    - python-3
+  only:
+    - master
+    - tags
+  artifacts:
+    paths:
+      - coverage/
+
+build-docs-master:
+  image: python:3-alpine
+  stage: build
+  script:
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
+    - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
+    - python setup.py install
+    - mkdir -p ./public
+    - cd docs
+    - make html
+    - cp -r _build/html/* ../public
+  artifacts:
+    paths:
+     - public
+  only:
+    - master
+  tags:
+    - python-3
+
+release-docker-local-master:
+  stage: release
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker pull $DOCKER_IMAGE_TEST
+    - docker tag $DOCKER_IMAGE_TEST $DOCKER_IMAGE_LATEST
+    - docker push $DOCKER_IMAGE_LATEST
+  dependencies:
+    - build-docker-local
+  only:
+    - master
+  tags:
+    - docker
+    - dind
+
+release-docker-hub-master:
+  stage: release
+  before_script:
+    - docker info
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_USER_PASS
+  script:
+    - docker pull $DOCKER_HUB_IMAGE_TEST
+    - docker tag $DOCKER_HUB_IMAGE_TEST $DOCKER_HUB_IMAGE_LATEST
+    - docker push $DOCKER_HUB_IMAGE_LATEST
+  dependencies:
+    - build-docker-hub
+  only:
+    - master
+  tags:
+    - docker
+    - dind
+
+# Releases
+# PEP-440 compliant version (tags)
+
+release-dist-tag:
+  image: python:3-alpine
+  stage: release
+  script:
+    - pip install twine setuptools wheel
+    - twine upload -u ${PYPI_USER} -p ${PYPI_PASSWORD} dist/*
+  dependencies:
+    - build-dist
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
+  tags:
+   - python-3
+
+build-docs-tag:
+  image: python:3-alpine
+  stage: build
+  script:
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
+    - python setup.py install
+    - mkdir -p ./public
+    - cd docs
+    - make html
+    - cp -r _build/html/* ../public
+  artifacts:
+    paths:
+     - public
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
+  tags:
+    - python-3
+
+release-docs-tag:
+  image: python:3
+  stage: release
+  script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$DOCS_SSH_PRIVATE_KEY")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  - mkdir -p /root/.ssh
+  - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > /root/.ssh/known_hosts'
+  - echo "$DOCS_SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
+  - chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh
+  - scp -r public/* $SSH_USER@$SSH_SERVER:$DOCS_SSH_PATH
+  dependencies:
+    - build-docs-tag
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
+  tags:
+    - python-3
+
+release-docker-hub-tag:
+  stage: release
+  before_script:
+    - docker info
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_USER_PASS
+  script:
+    - docker pull $DOCKER_HUB_IMAGE_TEST
+    - docker tag $DOCKER_HUB_IMAGE_TEST $DOCKER_HUB_IMAGE_TAG
+    - docker push $DOCKER_HUB_IMAGE_TAG
+  dependencies:
+    - build-docker-hub
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
+  tags:
+    - docker
+    - dind

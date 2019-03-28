@@ -1,4 +1,4 @@
-# ITS Private Cloud Command Line Interface
+# ITS Private Cloud Command Line Interface ``vss-cli``
 
 [![CI][build-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
 [![Coverage][coverage-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
@@ -8,7 +8,12 @@
 [![Docker Image Layers][docker-layer-img]][docker-image]
 [![Docker Image Version][docker-version-img]][docker-image]
 
-This package provides a unified command line interface to the ITS Private Cloud.
+
+The ITS Private Cloud Command-Line Interface ``vss-cli`` simplifies the interaction with the [ITS Private Cloud RESTful API](https://vss-wiki.eis.utoronto.ca/display/API) 
+to manage your virtual machines and other services.
+<br>
+<br>
+[![asciicast](https://asciinema.org/a/5Ov7loKY1q2rNNAtX9n9mi0eH.svg)](https://asciinema.org/a/5Ov7loKY1q2rNNAtX9n9mi0eH)
 
 ## Documentation
 
@@ -162,33 +167,46 @@ vss compute vm mk from-template --source c5916abb-def3-4d4d-8abe-2240b0a6c265 \
       --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}'
 ```
 
-## Auto-completion (WIP)
+## Auto-completion
 
-As described above you can use `source <(vss-cli completion zsh)` to quickly and easy enable auto completion. 
-If you do it from your .bashrc or .zshrc its recommend to use the form below as that does not trigger a run of hass-cli itself.
-
-For zsh:
-
-```bash
-eval "$(_VSS_CLI_COMPLETE=source_zsh vss-cli)"
-```
-
-For bash:
+Bash completion support is provided by [Click][Click] and will complete
+sub commands and parameters. Sub commands are always listed whereas parameters
+only if at least a dash has been provided. Example:
 
 ```bash
-eval "$(_VSS_COMPLETE=source vss-cli)"
+vss-cli compute <TAB><TAB>
+account    compute    configure  request    stor       token
+
+vss-cli -<TAB><TAB>
+--config      --no-verbose  --output      --verbose     --version     -c            -o
 ```
 
-Activating `bash` or `zsh` completion can be done by executing the following command:
+Activating `bash` or `zsh` completion can be done by executing the following commands:
 
+For `bash`:
 ```bash
 source <(vss-cli completion bash)
 ```
 
-or
+For `zsh`
 
 ```bash
 source <(vss-cli completion zsh)
+```
+
+If you do it from your `.bashrc` or `.zshrc` it is recommend to use the form below 
+as that does not trigger a run of vss-cli itself.
+
+For `bash`:
+
+```bash
+eval "$(_VSS_CLI_COMPLETE=source vss-cli)"
+```
+
+For `zsh`:
+
+```bash
+eval "$(_VSS_CLI_COMPLETE=source_zsh vss-cli)"
 ```
 
 ## VSS Shell
@@ -278,15 +296,17 @@ Commands:
 
 ## Versioning
 
-The API versions are tagged based on [Semantic Versioning](https://semver.org/). Versions available in the 
+The `vss-cli` versions are tagged based on [Semantic Versioning](https://semver.org/). Versions available in the 
 [tags section](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags).
 
 
 ## Contributing
+Refer to the [Contributing Guide](CONTRIBUTING.md) and [Contributors](CONTRIBUTORS.md) for details on our code 
+of conduct and the process of submitting code to the repository.
 
-Refer to the [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process of 
-submitting code to the repository.
+## Changelog 📝
 
+Refer to the [Changelog file](CHANGELOG.md) for details. 
 
 [docs]: https://eis.utoronto.ca/~vss/vss-cli/
 [download the tarball]: https://pypi.python.org/pypi/vss-cli

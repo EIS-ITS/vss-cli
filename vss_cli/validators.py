@@ -1,6 +1,9 @@
 import re
 import click
 import json
+import logging
+
+_LOGGING = logging.getLogger(__name__)
 
 
 def validate_phone_number(ctx, param, phone):
@@ -31,6 +34,7 @@ def validate_json_type(ctx, param, value):
         if value is not None:
             return json.loads(value)
     except ValueError as ex:
+        _LOGGING.error(f'{ex}')
         raise click.BadParameter(
             f'{param.name} should be a JSON parameter input.'
         )

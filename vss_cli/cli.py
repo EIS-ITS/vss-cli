@@ -8,6 +8,7 @@ import pyvss
 import click
 from click.core import Command, Context, Group
 import click_log
+
 import vss_cli.autocompletion as autocompletion
 from vss_cli.config import Configuration
 import vss_cli.const as const
@@ -92,7 +93,7 @@ class VssCli(click.Group):
             )
             _LOGGER.debug(f'Loading {mod}')
         except ImportError as ex:
-            _LOGGER.warning(
+            _LOGGER.debug(
                 f'Error loading plugin'
                 f' {cmd_name} {type(ex).__name__}: {ex}'
             )
@@ -101,7 +102,10 @@ class VssCli(click.Group):
 
 
 def _default_token() -> Optional[str]:
-    return os.environ.get('VSS_TOKEN', os.environ.get('VSS_API_TOKEN', None))
+    return os.environ.get(
+        'VSS_TOKEN',
+        os.environ.get('VSS_API_TOKEN', None)
+    )
 
 
 @click.command(cls=VssCli, context_settings=CONTEXT_SETTINGS)
@@ -136,7 +140,7 @@ def _default_token() -> Optional[str]:
     '--password',
     default=None,  # type: ignore
     help='The API password for VSS API.',
-    envvar='VSS_USER_PASSWORD',
+    envvar='VSS_USER_PASS',
 )
 @click.option(
     '--timeout',
@@ -165,7 +169,7 @@ def _default_token() -> Optional[str]:
     'showexceptions',
     default=False,
     is_flag=True,
-    help="Print backtraces when exception occurs.",
+    help="Print back traces when exception occurs.",
 )
 @click.option(
     '--debug',

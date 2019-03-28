@@ -103,8 +103,8 @@ def stor_dl(
         raise VssCliError('Remote path not found {}'.format(remote_path))
     ctx.log(f'Download {remote_path} to {local_path} in progress... ')
     ctx.vskey_stor.download_sync(
-            remote_path=remote_path,
-            local_path=local_path
+        remote_path=remote_path,
+        local_path=local_path
     )
     ctx.log('Download complete.')
 

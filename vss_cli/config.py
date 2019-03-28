@@ -2,7 +2,7 @@
 import logging
 import sys
 from uuid import UUID
-from typing import Any, Dict, List, Optional, Tuple, cast  # noqa: F401
+from typing import Any, Dict, List, Optional, Tuple, cast, Union  # noqa: F401
 import platform
 import click
 import os
@@ -14,7 +14,7 @@ from vss_cli import vssconst
 from vss_cli.exceptions import VssCliError
 from pyvss import __version__ as pyvss_version
 from pick import pick
-
+from vss_cli.validators import validate_email, validate_phone_number
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -156,6 +156,9 @@ class Configuration(VssManager):
                 profiles = json.load(f)
                 return profiles
         except ValueError as ex:
+            _LOGGING.error(
+                f'Error loading configuration file: {ex}'
+            )
             raise Exception('Invalid configuration file.')
 
     def load_config(self):
@@ -163,30 +166,39 @@ class Configuration(VssManager):
             if self.server:
                 self.update_endpoints(self.server)
             # check for environment variables
-            if self.token or \
-                    (self.username and
-                     self.password):
+            if self.token or (self.username and self.password):
+                _LOGGING.debug(f'Loading from input')
                 # don't load config file
                 if self.token:
+                    _LOGGING.debug(f'Checking token')
                     # set api token
                     self.api_token = self.token
                     return self.username, self.password, self.api_token
                 elif self.username and self.password:
+                    _LOGGING.debug(f'Checking user/pass to generate token')
                     # generate a new token - won't save
-                    self.get_token()
+                    _LOGGING.warning(
+                        'A new token will be generated but not persisted. '
+                        'Consider running command "configure mk" to save your '
+                        'credentials'
+                    )
+                    self.get_token(self.username, self.password)
+                    _LOGGING.debug(f'Token generated {self.api_token}')
                     return self.username, self.password, self.api_token
                 else:
                     raise VssCliError(
                         'Environment variables error. Please, verify '
                         'VSS_TOKEN or VSS_USER and VSS_USER_PASS')
             else:
-                self.vlog(f'Loading configuration file: {self.config}')
+                _LOGGING.debug(f'Loading configuration file: {self.config}')
                 if os.path.isfile(self.config):
                     # read config and look for profile
                     self.username, self.password, self.api_token = \
                         self.load_profile_from_config(self.base_endpoint)
-                    self.vlog(f'Loaded from file {self.base_endpoint}:'
-                              f' {self.username}')
+                    _LOGGING.debug(
+                        f'Loaded from file {self.base_endpoint}:'
+                        f' {self.username}'
+                    )
                     creds = self.username and self.password
                     if not (creds or self.api_token):
                         raise VssCliError(
@@ -196,13 +208,15 @@ class Configuration(VssManager):
                             "configuration.".format(self.base_endpoint))
                     try:
                         self.whoami()
-                        self.vlog('Token validated successfully.')
+                        _LOGGING.debug('Token validated successfully.')
                     except Exception as ex:
                         self.vlog(str(ex))
-                        self.vlog('Generating a new token')
-                        self.api_token = self.get_token(self.username,
-                                                        self.password)
-                        self.vlog('Token generated successfully')
+                        _LOGGING.debug('Generating a new token')
+                        self.api_token = self.get_token(
+                            self.username,
+                            self.password
+                        )
+                        _LOGGING.debug('Token generated successfully')
                         self.write_config_file(new_token=self.api_token)
                         # check for updates
                         # self.check_for_updates()
@@ -218,7 +232,7 @@ class Configuration(VssManager):
 
     def check_unread_messages(self):
         try:
-            self.vlog('Checking for unread messages')
+            _LOGGING.debug('Checking for unread messages')
             messages = self.get_user_messages(filter='status,eq,Created',
                                               per_page=100)
             n_messages = len(messages)
@@ -231,7 +245,7 @@ class Configuration(VssManager):
                 self.secho('vss-cli message ls', fg='red', nl=False)
                 self.secho(' to list unread messages.', fg='green')
             else:
-                self.vlog('No Created messages')
+                _LOGGING.debug('No messages with Created status')
         except ValueError as ex:
             _LOGGING.error('Could not check for messages {}'.format(ex))
 
@@ -256,8 +270,10 @@ class Configuration(VssManager):
             'token': token}
         }
         try:
-            self.vlog(f'Writing configuration file:'
-                      f' {self.config}')
+            _LOGGING.debug(
+                f'Writing configuration file:'
+                f' {self.config}'
+            )
             # validate if file exists
             if os.path.isfile(self.config):
                 with open(self.config, 'r+') as fp:
@@ -280,8 +296,10 @@ class Configuration(VssManager):
         except IOError as e:
             raise VssCliError('An error occurred writing '
                               'configuration file: {}'.format(e))
-        self.vlog(f'Successfully written'
-                  f' configuration file {self.config}')
+        _LOGGING.debug(
+            f'Successfully written'
+            f' configuration file {self.config}'
+        )
 
     def configure(self, username, password, endpoint, replace=False):
         self.username = username
@@ -314,7 +332,8 @@ class Configuration(VssManager):
             except VssCliError as ex:
                 self.echo(str(ex))
                 confirm = click.confirm(
-                    'Would you like to replace existing configuration?')
+                    'Would you like to replace existing configuration?'
+                )
                 if confirm:
                     self.write_config_file()
         else:
@@ -331,7 +350,10 @@ class Configuration(VssManager):
         self.vskey_stor = wc.Client(options=options)
         return self.vskey_stor.valid()
 
-    def get_vm_by_uuid_or_name(self, uuid_or_name):
+    def get_vm_by_uuid_or_name(
+            self,
+            uuid_or_name: str
+    ):
         try:
             # is uuid?
             uuid = UUID(uuid_or_name)
@@ -349,7 +371,10 @@ class Configuration(VssManager):
             # is not a valid hex code for a UUID.
             # get vm by name
             g_vms = self.get_vms()
-            v = list(filter(lambda i: uuid_or_name in i['name'], g_vms))
+            uuid_or_name = uuid_or_name.lower()
+            v = list(filter(
+                lambda i: uuid_or_name in i['name'].lower(), g_vms)
+            )
             if not v:
                 raise click.BadParameter(
                     f'{uuid_or_name} could not be found'
@@ -364,10 +389,20 @@ class Configuration(VssManager):
                 return [v[index]]
             return v
 
-    def get_domain_by_name_or_moref(self, name_or_moref):
+    def get_domain_by_name_or_moref(
+            self, name_or_moref: str
+    ):
         g_domains = self.get_domains()
-        d = list(filter(lambda i: name_or_moref in i['name'], g_domains)) \
-            or list(filter(lambda i: name_or_moref in i['moref'], g_domains))
+        name_or_moref = name_or_moref.lower()
+        d = list(
+            filter(
+                lambda i: name_or_moref in i['name'].lower(), g_domains
+            )
+        ) or list(
+            filter(
+                lambda i: name_or_moref in i['moref'], g_domains
+            )
+        )
         if not d:
             raise click.BadParameter(
                 f'{name_or_moref} could not be found'
@@ -382,11 +417,23 @@ class Configuration(VssManager):
             return [d[index]]
         return d
 
-    def get_network_by_name_or_moref(self, name_or_moref):
+    def get_network_by_name_or_moref(
+            self, name_or_moref: str
+    ) -> List[Any]:
         g_networks = self.get_networks(sort='name')
+        name_or_moref = name_or_moref.lower()
         # search by name or moref
-        n = list(filter(lambda i: name_or_moref in i['name'], g_networks)) \
-            or list(filter(lambda i: name_or_moref in i['moref'], g_networks))
+        n = list(
+            filter(
+                lambda i: name_or_moref in i['name'].lower(),
+                g_networks
+            )
+        ) or list(
+            filter(
+                lambda i: name_or_moref in i['moref'].lower(),
+                g_networks
+            )
+        )
         if not n:
             raise click.BadParameter(
                 f'{name_or_moref} could not be found'
@@ -401,18 +448,28 @@ class Configuration(VssManager):
             return [n[index]]
         return n
 
-    def get_folder_by_name_or_moref_path(self, name_moref_path):
+    def get_folder_by_name_or_moref_path(
+            self, name_moref_path: str
+    ) -> List[Any]:
         g_folders = self.get_folders(sort='path', summary=1)
         # search by name or moref
+        name_moref_path = name_moref_path.lower()
         f = list(
-            filter(lambda i: name_moref_path in i['name'], g_folders)
-        ) \
-            or list(
-            filter(lambda i: name_moref_path in i['path'], g_folders)
-        ) \
-            or list(
-            filter(lambda i: name_moref_path in i['moref'], g_folders)
-        ) \
+            filter(
+                lambda i: name_moref_path in i['name'].lower(),
+                g_folders
+            )
+        ) or list(
+            filter(
+                lambda i: name_moref_path in i['path'].lower(),
+                g_folders
+            )
+        ) or list(
+            filter(
+                lambda i: name_moref_path in i['moref'].lower(),
+                g_folders
+            )
+        )
 
         if not f:
             raise click.BadParameter(
@@ -428,7 +485,9 @@ class Configuration(VssManager):
             return [f[index]]
         return f
 
-    def get_os_by_name_or_guest(self, name_or_guest):
+    def get_os_by_name_or_guest(
+            self, name_or_guest: str
+    ) -> List[Any]:
         g_os = self.get_os(sort='guestFullName,desc')
         try:
             o_f = list(
@@ -440,10 +499,18 @@ class Configuration(VssManager):
         except ValueError:
             # not an integer
             _LOGGING.debug(f'not an id {name_or_guest}')
-            o_f = \
-                list(filter(lambda i: name_or_guest in i['guestId'], g_os)) \
-                or list(filter(lambda i: name_or_guest in i['guestFullName'],
-                               g_os))
+            name_or_guest = name_or_guest.lower()
+            o_f = list(
+                filter(
+                    lambda i: name_or_guest in i['guestId'].lower(),
+                    g_os
+                )
+            ) or list(
+                filter(
+                    lambda i: name_or_guest in i['guestFullName'].lower(),
+                    g_os
+                )
+            )
         if not o_f:
             raise click.BadParameter(
                 f'{name_or_guest} could not be found'
@@ -458,26 +525,91 @@ class Configuration(VssManager):
             return [o_f[index]]
         return o_f
 
-    def get_iso_by_name_or_guest(self, name_or_path_or_id):
+    def get_vss_service_by_name_label_or_id(
+            self,
+            name_label_or_id: Union[str, int]
+    ) -> List[Any]:
+        vss_services = self.get_vss_services(show_all=True)
+        try:
+            svc_id = int(name_label_or_id)
+            svc_ref = list(
+                filter(
+                    lambda i: i['id'] == svc_id, vss_services
+                )
+            )
+        except ValueError as ex:
+            # not an integer
+            _LOGGING.debug(f'not an id {name_label_or_id} ({ex})')
+            # checking name or label
+            svc = str(name_label_or_id).lower()
+            svc_ref = list(
+                filter(
+                    lambda i: svc in i['name'].lower(),
+                    vss_services
+                )
+            ) or list(
+                filter(
+                    lambda i: svc in i['label'].lower(), vss_services
+                )
+            )
+        # check if there's no ref
+        if not svc_ref:
+            raise click.BadParameter(
+                f'{name_label_or_id} could not be found'
+            )
+        # count for dup results
+        o_count = len(svc_ref)
+        if o_count > 1:
+            msg = f"Found {o_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg, indicator='=>',
+                options=[f"{i['label']}" for i in svc_ref]
+            )
+            return [svc_ref[index]]
+        return svc_ref
+
+    def get_iso_by_name_or_guest(
+            self,
+            name_or_path_or_id: Union[str, int]
+    ) -> List[Any]:
         user_isos = self.get_user_isos()
         pub_isos = self.get_isos(show_all=True)
         try:
             iso_id = int(name_or_path_or_id)
             # public or user
-            iso_ref = \
-                list(filter(lambda i: i['id'] == iso_id, pub_isos)) \
-                or list(filter(lambda i: i['id'] == iso_id, user_isos))
+            iso_ref = list(
+                filter(
+                    lambda i: i['id'] == iso_id, pub_isos
+                )
+            ) or list(
+                filter(
+                    lambda i: i['id'] == iso_id, user_isos
+                )
+            )
         except ValueError as ex:
             # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id}')
+            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
             # checking name or path
             # check in public and user isos
             iso = str(name_or_path_or_id)
-            iso_ref = \
-                list(filter(lambda i: i['name'] == iso, pub_isos)) \
-                or list(filter(lambda i: iso in i['path'], pub_isos)) \
-                or list(filter(lambda i: iso in i['name'], user_isos)) \
-                or list(filter(lambda i: iso in i['path'], user_isos))
+            iso = iso.lower()
+            iso_ref = list(
+                filter(
+                    lambda i: iso in i['name'].lower(), pub_isos
+                )
+            ) or list(
+                filter(
+                    lambda i: iso in i['path'].lower(), pub_isos
+                )
+            ) or list(
+                filter(
+                    lambda i: iso in i['name'].lower(), user_isos
+                )
+            ) or list(
+                filter(
+                    lambda i: iso in i['path'].lower(), user_isos
+                )
+            )
         # check if there's no ref
         if not iso_ref:
             raise click.BadParameter(
@@ -494,26 +626,48 @@ class Configuration(VssManager):
             return [iso_ref[index]]
         return iso_ref
 
-    def get_vm_image_by_name_or_id_path(self, name_or_path_or_id):
+    def get_vm_image_by_name_or_id_path(
+            self,
+            name_or_path_or_id: Union[str, int]
+    ) -> List[Any]:
         user_imgs = self.get_user_vm_images()
         pub_imgs = self.get_images(show_all=True)
         try:
             img_id = int(name_or_path_or_id)
             # public or user
-            img_ref = \
-                list(filter(lambda i: i['id'] == img_id, pub_imgs)) \
-                or list(filter(lambda i: i['id'] == img_id, user_imgs))
+            img_ref = list(
+                filter(
+                    lambda i: i['id'] == img_id, pub_imgs
+                )
+            ) or list(
+                filter(
+                    lambda i: i['id'] == img_id, user_imgs
+                )
+            )
         except ValueError as ex:
             # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id}')
+            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
             # checking name or path
             # check in public and user img
             img = str(name_or_path_or_id)
-            img_ref = \
-                list(filter(lambda i: img in i['name'], pub_imgs)) \
-                or list(filter(lambda i: img in i['path'], pub_imgs)) \
-                or list(filter(lambda i: img in i['name'], user_imgs)) \
-                or list(filter(lambda i: img in i['path'], user_imgs))
+            img = img.lower()
+            img_ref = list(
+                filter(
+                    lambda i: img in i['name'].lower(), pub_imgs
+                )
+            ) or list(
+                filter(
+                    lambda i: img in i['path'].lower(), pub_imgs
+                )
+            ) or list(
+                filter(
+                    lambda i: img in i['name'].lower(), user_imgs
+                )
+            ) or list(
+                filter(
+                    lambda i: img in i['path'].lower(), user_imgs
+                )
+            )
         # check if there's no ref
         if not img_ref:
             raise click.BadParameter(
@@ -529,3 +683,57 @@ class Configuration(VssManager):
             )
             return [img_ref[index]]
         return img_ref
+
+    def get_spec_payload(
+            self, payload: dict, built: str
+    ) -> dict:
+        spec_payload = dict()
+        # sections
+        machine_section = payload['machine']
+        networking_section = payload['networking']
+        metadata_section = payload['metadata']
+        if built == 'os_install':
+            # machine section parse and update
+            spec_payload.update(machine_section)
+            # replace with valid values
+            spec_payload['os'] = self.get_os_by_name_or_guest(
+                machine_section['os']
+            )[0]['guestId']
+            spec_payload['iso'] = self.get_iso_by_name_or_guest(
+                machine_section['iso']
+            )[0]['path']
+            # folder
+            spec_payload['folder'] = self.get_folder_by_name_or_moref_path(
+                machine_section['folder']
+            )[0]['moref']
+            # networking
+            spec_payload['networks'] = [
+                self.get_network_by_name_or_moref(
+                    n['network']
+                )[0]['moref'] for n in networking_section['interfaces']
+            ]
+            # metadata section
+            spec_payload.update(metadata_section)
+            spec_payload['built'] = built
+            spec_payload['bill_dept'] = metadata_section['billing']
+            # optional
+            if 'inform' in metadata_section:
+                spec_payload['inform'] = [
+                    validate_email(None, 'inform', i)
+                    for i in metadata_section['inform']
+                ]
+            if 'vss_service' in metadata_section:
+                service = self.get_vss_service_by_name_label_or_id(
+                    metadata_section['vss_service']
+                )[0]['id']
+                spec_payload['vss_service'] = service
+            if 'admin' in metadata_section:
+                admin_name = metadata_section['admin']['name']
+                admin_email = metadata_section['admin']['email']
+                admin_phone = metadata_section['admin']['phone']
+                if admin_name and admin_email and admin_phone:
+                    validate_email(None, '', admin_email)
+                    validate_phone_number(None, '', admin_phone)
+                spec_payload['admin'] = f"{admin_name}:" \
+                    f"{admin_phone}:{admin_email}"
+        return spec_payload

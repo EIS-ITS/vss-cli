@@ -1,11 +1,13 @@
 import click
 import logging
+
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
+import vss_cli.autocompletion as autocompletion
 
 
 _LOGGING = logging.getLogger(__name__)
@@ -78,7 +80,8 @@ def compute_folder_ls(
 )
 @click.argument(
     'moref_or_name',
-    type=click.STRING
+    type=click.STRING,
+    autocompletion=autocompletion.domains
 )
 @pass_context
 def compute_folder_set(ctx, moref_or_name):
@@ -184,7 +187,8 @@ def compute_folder_set_name(
 @click.argument(
     'moref',
     type=click.STRING,
-    required=True
+    required=True,
+    autocompletion=autocompletion.folders
 )
 @pass_context
 def compute_folder_rm(ctx, moref):
@@ -268,7 +272,8 @@ def compute_folder_mk(
 @click.argument(
     'moref_or_name',
     type=click.STRING,
-    required=True
+    required=True,
+    autocompletion=autocompletion.folders
 )
 @pass_context
 def compute_folder_get(

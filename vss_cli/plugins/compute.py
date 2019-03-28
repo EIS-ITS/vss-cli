@@ -2,8 +2,13 @@
 import click
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from pkg_resources import iter_entry_points
+from click_plugins import with_plugins
 
 
+@with_plugins(
+    iter_entry_points('vss_cli.contrib.compute')
+)
 @click.group(
     'compute',
     short_help='Manage VMs, networks, folders, etc.'

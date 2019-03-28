@@ -8,6 +8,8 @@ from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.request import cli
 
+import vss_cli.autocompletion as autocompletion
+
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -32,7 +34,7 @@ def snapshot(ctx: Configuration):
               help='apply sorting ')
 @click.option('-a', '--show-all', is_flag=True,
               help='show all results')
-@click.option('-c', '--count', type=int,
+@click.option('-c', '--count', type=click.INT,
               help='size of results')
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
@@ -71,10 +73,10 @@ def snapshot_ls(
         per_page=count, **params)
 
     output = format_output(
-            ctx,
-            _requests,
-            columns=columns,
-        )
+        ctx,
+        _requests,
+        columns=columns,
+    )
     # page results
     if page:
         click.echo_via_pager(output)
@@ -86,7 +88,10 @@ def snapshot_ls(
     'get',
     help='Snapshot request'
 )
-@click.argument('rid', type=int, required=True)
+@click.argument(
+    'rid', type=click.INT, required=True,
+    autocompletion=autocompletion.snapshot_requests
+)
 @pass_context
 def snapshot_get(ctx, rid):
     obj = ctx.get_snapshot_request(rid)
@@ -109,16 +114,21 @@ def snapshot_get(ctx, rid):
     'set',
     help='Update snapshot request'
 )
-@click.argument('rid', type=int, required=True)
+@click.argument(
+    'rid', type=click.INT, required=True,
+    autocompletion=autocompletion.snapshot_requests
+)
 @pass_context
 def snapshot_set(ctx: Configuration, rid):
     ctx.rid = rid
 
 
 @snapshot_set.command('duration')
-@click.option('-l', '--lifetime', type=click.IntRange(1, 72),
-              help='Number of hours the snapshot will live.',
-              required=True)
+@click.option(
+    '-l', '--lifetime', type=click.IntRange(1, 72),
+    help='Number of hours the snapshot will live.',
+    required=True
+)
 @pass_context
 def snapshot_set_duration(ctx: Configuration, lifetime):
     """Extend snapshot lifetime"""

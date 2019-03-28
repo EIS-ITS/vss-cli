@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Setup script for ITS Private Cloud CLI."""
 import codecs
-from typing import List
 from datetime import datetime as dt
-import os
 import io
+import os
 import re
+from typing import List
+
 from setuptools import find_packages, setup
-import subprocess
 
 # shared consts using approach suggested at
 # https://stackoverflow.com/questions/17583443/what-is-the-correct-way-to-share-package-version-with-setup-py-and-the-package
@@ -31,40 +31,6 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-def get_git_commit_datetime() -> str:
-    """Return timestamp from last commit.
-
-    from https://github.com/home-assistant/home-assistant-cli/blob/dev/setup.py
-
-    """
-    try:
-        commit_hash = (
-            subprocess.check_output(
-                "git rev-parse HEAD", shell=True, stderr=subprocess.STDOUT
-            )
-            .decode("utf-8")
-            .strip()
-        )
-        commit_datetime = (
-            subprocess.check_output(
-                "git show -s --format=%ci " + commit_hash,
-                shell=True,
-                stderr=subprocess.STDOUT,
-            )
-            .decode("utf-8")
-            .strip()
-        )
-        print(commit_datetime)
-        datetime_object = dt.strptime(
-            commit_datetime, '%Y-%m-%d %H:%M:%S %z'
-        )
-        print("{:%Y%m%d%H%M%S}".format(datetime_object))
-        return "{:%Y%m%d%H%M%S}".format(datetime_object)
-    except subprocess.CalledProcessError as cpe:
-        print(cpe.output)
-        return "00000000000000"
-
-
 def load_requirements(requires_file: str = 'requirements.txt') -> List[str]:
     """Load requirements from file"""
     with io.open(requires_file, encoding='utf-8') as f:
@@ -72,13 +38,12 @@ def load_requirements(requires_file: str = 'requirements.txt') -> List[str]:
 
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
-if 'dev' in __VERSION__:
-    __VERSION__ = '{v}+{s}'.format(v=__VERSION__, s=get_git_commit_datetime())
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 REQUIRES = load_requirements()
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
+PACKAGE_DATA = {'vss_cli': ['data/*.yaml']}
 
 PROJECT_NAME = 'ITS Private Cloud CLI'
 PROJECT_PACKAGE_NAME = 'vss-cli'
@@ -87,7 +52,7 @@ PROJECT_AUTHOR = 'University of Toronto'
 PROJECT_COPYRIGHT = f' 2019-{dt.now().year}, {PROJECT_AUTHOR}'
 PROJECT_URL = 'https://gitlab-ee.eis.utoronto.ca/vss/vss-cli'
 PROJECT_EMAIL = 'vss-apps@eis.utoronto.ca'
-MAINTAINER_EMAIL= 'vss-py@eis.utoronto.ca'
+MAINTAINER_EMAIL = 'vss-py@eis.utoronto.ca'
 
 PROJECT_GITLAB_GROUP = 'vss'
 PROJECT_GITLAB_REPOSITORY = 'vss-cli'
@@ -99,6 +64,28 @@ GITLAB_URL = f'https://gitlab-ee.eis.utoronto.ca/{GITLAB_PATH}'
 DOWNLOAD_URL = f'{GITLAB_URL}/archive/{__VERSION__}.zip'
 PROJECT_URLS = {
     'Bug Reports': f'{GITLAB_URL}/issues',
+}
+
+TESTS_REQUIRE = [
+    'flake8==3.7.7',
+    'nose==1.3.7',
+    'coverage==4.5.3',
+    'pytz==2018.9',
+    'wheel==0.33.1',  # Otherwise setup.py bdist_wheel does not work
+]
+DEV_REQUIRE = [
+    *TESTS_REQUIRE,
+    'sphinx-rtd-theme==0.4.3',
+    'Sphinx==1.8.5'
+]
+
+# Allow you to run
+# pip install .[test]
+# pip install .[dev]
+# to get test dependencies included
+EXTRAS_REQUIRE = {
+    'test': TESTS_REQUIRE,
+    'dev': DEV_REQUIRE
 }
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))
@@ -113,10 +100,13 @@ setup(
     author_email=PROJECT_EMAIL,
     maintainer_email=MAINTAINER_EMAIL,
     packages=PACKAGES,
+    package_data=PACKAGE_DATA,
     license=PROJECT_LICENSE,
     include_package_data=True,
     zip_safe=False,
     install_requires=REQUIRES,
+    tests_require=TESTS_REQUIRE,
+    extras_require=EXTRAS_REQUIRE,
     python_requires=f'>={MIN_PY_VERSION}',
     entry_points={'console_scripts': ['vss-cli = vss_cli.cli:run']},
 )

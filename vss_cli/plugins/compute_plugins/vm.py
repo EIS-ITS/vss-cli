@@ -7,6 +7,7 @@ from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import (
     format_output, to_tuples,
+    raw_format_output
 )
 from vss_cli.validators import (
     validate_phone_number, validate_email,
@@ -16,10 +17,18 @@ from vss_cli.validators import (
 from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
 
+import vss_cli.autocompletion as autocompletion
+
+from pkg_resources import iter_entry_points
+from click_plugins import with_plugins
+
 
 _LOGGING = logging.getLogger(__name__)
 
 
+@with_plugins(
+    iter_entry_points('vss_cli.contrib.compute.vm')
+)
 @cli.group(
     'vm',
     short_help='Manage virtual machines'
@@ -106,7 +115,9 @@ def compute_vm_ls(
 @click.argument(
     'uuid_or_name',
     type=click.STRING,
-    required=True)
+    required=True,
+    autocompletion=autocompletion.virtual_machines
+)
 @pass_context
 def compute_vm_get(
         ctx: Configuration,
@@ -139,7 +150,7 @@ def compute_vm_get(
 @pass_context
 def compute_vm_get_admin(
         ctx: Configuration,
-        ):
+):
     """Virtual machine administrator. Part of the
     VSS metadata."""
     columns = ctx.columns or const.COLUMNS_VM_ADMIN
@@ -322,7 +333,7 @@ def compute_vm_get_console(
     )
     password = ctx.password or click.prompt(
         'Password',
-        default=os.environ.get('VSS_USER_PASSWORD', ''),
+        default=os.environ.get('VSS_USER_PASS', ''),
         show_default=False, hide_input=True,
         confirmation_prompt=True
     )
@@ -896,17 +907,55 @@ def compute_vm_get_snapshot(
     'spec_file', type=click.Path(),
     required=False,
 )
+@click.option(
+    '-e', '--edit',
+    is_flag=True, required=False,
+    help='Edit before writing'
+)
 @pass_context
 def compute_vm_get_spec(
         ctx: Configuration,
-        spec_file
+        spec_file, edit
 ):
     """Virtual machine configuration specification."""
-    import json
+    if ctx.output in ['auto']:
+        raise click.UsageError(
+            'Output not supported. '
+            'Please specify '
+            '-o/--output either yaml or json'
+        )
+    f_name = spec_file or f'{ctx.uuid}.{ctx.output}'
+    # get obj
     obj = ctx.get_vm_spec(ctx.uuid)
-    f_name = spec_file or f'{ctx.uuid}.json'
-    with open(f_name, 'w') as fp:
-        json.dump(obj, fp=fp)
+    new_raw = None
+    if edit:
+        obj_raw = raw_format_output(
+            ctx.output, obj, highlighted=False
+        )
+        new_raw = click.edit(
+            obj_raw,
+            extension='.{}'.format(ctx.output)
+        )
+
+    if ctx.output == 'json':
+        import json
+        if new_raw:
+            obj = json.loads(new_raw)
+        with open(f_name, 'w') as fp:
+            json.dump(
+                obj, fp=fp,
+                indent=2,
+                sort_keys=False
+            )
+    else:
+        import yaml
+        if new_raw:
+            obj = yaml.safe_load(new_raw)
+        with open(f_name, 'w') as fp:
+            yaml.dump(
+                obj, stream=fp,
+                default_flow_style=False
+            )
     click.echo(f'Written to {f_name}')
 
 
@@ -1055,6 +1104,44 @@ def compute_vm_get_version(ctx: Configuration):
     )
 
 
+@compute_vm_get.command(
+    'vss-option',
+    short_help='Get VSS Option status'
+)
+@pass_context
+def compute_vm_get_vss_option(ctx: Configuration):
+    """Get VSS Option status"""
+    obj = ctx.get_vm_vss_options(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_VSS_OPTIONS
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_get.command(
+    'vss-service',
+    short_help='Get VSS Service'
+)
+@pass_context
+def compute_vm_get_vss_service(ctx: Configuration):
+    """Get VSS Service"""
+    obj = ctx.get_vm_vss_service(ctx.uuid)
+    columns = ctx.columns  # or const.COLUMNS_VSS_SERVICE
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
 @compute_vm.group(
     'set',
     short_help='Set virtual machine attribute',
@@ -1063,10 +1150,12 @@ def compute_vm_get_version(ctx: Configuration):
 @click.argument(
     'uuid_or_name',
     type=click.STRING,
-    required=True)
+    required=True,
+    autocompletion=autocompletion.virtual_machines
+)
 @click.option(
     '-s', '--schedule',
-    type=click.DateTime(formats=[const.DEFAULT_DATETIME_FMT]),
+    type=click.DateTime(formats=const.SUPPORTED_DATETIME_FORMATS),
     required=False, default=None,
     help='Schedule change in a given point in time based'
          ' on format YYYY-MM-DD HH:MM.'
@@ -1097,7 +1186,10 @@ def compute_vm_set(
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
     if schedule:
-        ctx.payload_options['schedule'] = ctx.schedule
+        # ctx.payload_options['schedule_obj'] = ctx.schedule
+        ctx.payload_options['schedule'] = ctx.schedule.strftime(
+            const.DEFAULT_DATETIME_FMT
+        )
     if click.get_current_context().invoked_subcommand is None:
         raise click.UsageError(
             'Sub command is required'
@@ -1284,7 +1376,8 @@ def compute_vm_set_boot_delay(
     '-i', '--iso', type=click.STRING,
     required=True,
     help='Update CD/DVD backing device '
-         'to given ISO path or Client device.'
+         'to given ISO path or Client device.',
+    autocompletion=autocompletion.isos
 )
 @pass_context
 def compute_vm_set_cd(
@@ -1292,7 +1385,7 @@ def compute_vm_set_cd(
 ):
     """Update virtual machine CD/DVD backend to ISO or client.
 
-    vss-cli compute vm set <name-or-uuid> cd <unit> --iso "<name-or-path-or-id>"
+    vss-cli compute vm set <name-or-uuid> cd <unit> --iso <name-or-path-or-id>
 
     vss-cli compute vm set <name-or-uuid> cd <unit> --iso client
     """
@@ -1617,7 +1710,7 @@ def compute_vm_set_description(
 ):
     """Set or update virtual machine description in metadata.
 
-    vss-cli compute vm set <name-or-uuid> description "This is a new description"
+    vss-cli compute vm set <name-or-uuid> description "new description"
     """
     payload = dict(
         uuid=ctx.uuid,
@@ -1697,7 +1790,7 @@ def compute_vm_set_disk_mk(
     'unit', type=click.INT, required=True
 )
 @click.option(
-    '-c', '--capacity', type=int,
+    '-c', '--capacity', type=click.INT,
     required=True,
     help='Update given disk capacity in GB.'
 )
@@ -1784,7 +1877,8 @@ def compute_vm_set_disk_rm(
 )
 @click.argument(
     'domain_moref', type=click.STRING,
-    required=True
+    required=True,
+    autocompletion=autocompletion.domains
 )
 @click.option(
     '-f', '--force', is_flag=True,
@@ -1892,7 +1986,7 @@ def compute_vm_set_floppy(
             or list(filter(lambda i: i['id'] == img_id, user_imgs))
     except ValueError as ex:
         # not an integer
-        _LOGGING.debug(f'iso is not an id {img_ref}')
+        _LOGGING.debug(f'iso is not an id {img_ref}: {ex}')
         # checking name or path
         # check in public and user images
         img_ref = ctx.get_floppies(filter=f'name,like,%{image}%') \
@@ -1933,7 +2027,8 @@ def compute_vm_set_floppy(
 )
 @click.argument(
     'name-moref-path', type=click.STRING,
-    required=True
+    required=True,
+    autocompletion=autocompletion.folders
 )
 @pass_context
 def compute_vm_set_folder(
@@ -1986,7 +2081,8 @@ def compute_vm_set_folder(
     envvar='VSS_CMD_USER_PASS'
 )
 @click.option(
-    '-e', '--env',  multiple=True,
+    '-e', '--env',
+    multiple=True,
     help='Environment variables in KEY=value format.'
 )
 @click.argument(
@@ -2056,7 +2152,8 @@ def compute_vm_set_guest_cmd(
 )
 @click.argument(
     'guest-id', type=click.STRING,
-    required=True
+    required=True,
+    autocompletion=autocompletion.operating_systems
 )
 @click.pass_context
 def compute_vm_set_guest_os(
@@ -2123,7 +2220,7 @@ def compute_vm_set_ha_group(
     """
     for vm in uuid:
         _vm = ctx.get_vm(vm)
-        if not vm:
+        if not _vm:
             raise click.BadArgumentUsage(
                 f'{vm} could not be found'
             )
@@ -2343,7 +2440,8 @@ def compute_vm_set_nic(ctx: Configuration):
 )
 @click.option(
     '-n', '--network', type=click.STRING,
-    help='Virtual network moref'
+    help='Virtual network moref',
+    autocompletion=autocompletion.networks
 )
 @click.option(
     '-s', '--state',
@@ -2365,7 +2463,8 @@ def compute_vm_set_nic_up(
     """Update network adapter backing network, type or state
 
         vss-cli compute vm set <name-or-uuid> nic up --adapter VMXNET3 <unit>
-        vss-cli compute vm set <name-or-uuid> nic up --network <name-or-moref> <unit>
+        vss-cli compute vm set <name-or-uuid> nic
+        up --network <name-or-moref> <unit>
     """
     # create payload
     payload = dict(
@@ -2423,7 +2522,8 @@ def compute_vm_set_nic_up(
 @click.option(
     '-n', '--network', type=click.STRING,
     multiple=True,
-    help='Virtual network moref'
+    help='Virtual network moref',
+    autocompletion=autocompletion.networks
 )
 @pass_context
 def compute_vm_set_nic_mk(
@@ -2995,6 +3095,89 @@ def compute_vm_set_version_policy(
     )
 
 
+@compute_vm_set.command(
+    'vss-option',
+    short_help='Enable or disable given vss-option'
+)
+@click.argument(
+    'vss-option',
+    type=click.Choice(
+        ['reboot_on_restore', 'reset_on_restore']
+    )
+)
+@click.option(
+    '--on/--off',
+    help='Enable or disable given vss-option',
+    default=False
+)
+@pass_context
+def compute_vm_set_vss_option(
+        ctx: Configuration, vss_option,
+        on
+):
+    """Enable or disable given VSS Option"""
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        option_name=vss_option
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    if on:
+        obj = ctx.enable_vm_vss_option(**payload)
+    else:
+        obj = ctx.disable_vm_vss_option(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@compute_vm_set.command(
+    'vss-service',
+    short_help='VSS Service name or ID',
+)
+@click.argument(
+    'label-name-or-id',
+    autocompletion=autocompletion.vss_services,
+    type=click.STRING,
+    required=True
+)
+@pass_context
+def compute_vm_set_vss_service(
+    ctx: Configuration, label_name_or_id
+):
+    """Update VSS service name or ID"""
+    service = ctx.get_vss_service_by_name_label_or_id(
+        label_name_or_id
+    )[0]['id']
+    # create payload
+    payload = dict(
+        uuid=ctx.uuid,
+        service_name_or_id=service
+    )
+    # add common options
+    payload.update(ctx.payload_options)
+    obj = ctx.update_vm_vss_service(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
 @compute_vm.group(
     'rm', help='Delete given virtual machines',
     invoke_without_command=True
@@ -3016,7 +3199,8 @@ def compute_vm_set_version_policy(
 @click.argument(
     'uuid', type=click.UUID,
     required=True,
-    nargs=-1
+    nargs=-1,
+    autocompletion=autocompletion.networks
 )
 @pass_context
 def compute_vm_rm(
@@ -3111,28 +3295,101 @@ def compute_vm_mk(
 @compute_vm_mk.command(
     'from-file',
     short_help='Create virtual machine '
-               'from file specification.'
+               'from VSS CLI specification.'
 )
 @click.argument(
-    'file-spec', type=click.File('rb')
+    'file-spec',
+    type=click.File('r'),
+    required=False,
+)
+@click.option(
+    '-t', '--spec-template',
+    required=False,
+    type=click.Choice(
+        ['shell']
+    ),
+    help='Specification template to load and edit.'
+)
+@click.option(
+    '--edit/--no-edit',
+    required=False,
+    default=True,
+    help='Edit before submitting request'
 )
 @pass_context
-def compute_vm_from_file(ctx, file_spec):
-    """Create virtual machine from file specification.
-    Virtual Machine specification can be obtained from
-
-    vss -o [json|yaml] compute vm get <name-or-uuid> spec > spec.json
+def compute_vm_from_file(
+        ctx: Configuration, file_spec,
+        edit, spec_template
+):
+    """Create virtual machine from VSS CLI file specification.
 
     """
     import yaml
-    # load yaml or json
-    payload = yaml.load(file_spec)
-    # set built process
-    payload['built'] = payload['built_from']
+    import time
+    from pick import pick
+    if file_spec:
+        raw = file_spec.read()
+    else:
+        # load default configuration
+        if not spec_template:
+            message = 'Please choose a template to load ' \
+                      '(press SPACE to mark, ENTER to continue): '
+            spec_template, index = pick(
+                ['shell'],
+                message
+            )
+        file_spec = os.path.join(
+            const.DEFAULT_DATA_PATH,
+            f'{spec_template}.yaml'
+        )
+        # proceed to load file
+        with open(file_spec, 'r') as data_file:
+            raw = data_file.read()
+    # whether to launch the editor and save file
+    # before submitting request
+    if edit:
+        # launch editor
+        new_raw = click.edit(
+            raw,
+            extension='.yaml'
+        )
+        # load object
+        if new_raw:
+            new_obj = yaml.safe_load(new_raw)
+            file_name = f'from-file-{int(time.time())}.yaml'
+            _LOGGING.debug(
+                f'Saving spec in {file_name}'
+            )
+            with open(file_name, 'w') as fp:
+                yaml.dump(
+                    new_obj, stream=fp,
+                    default_flow_style=False
+                )
+            raw = new_raw
+        else:
+            _LOGGING.warning(
+                'Nothing to save.'
+            )
+            raise click.UsageError(
+                'Input error'
+            )
+
+    payload = yaml.safe_load(raw)
+    _LOGGING.debug(f'Payload from raw: f{payload}')
     # add common options
-    payload.update(ctx.payload_options)
+    spec_payload = dict()
+    spec_payload.update(ctx.payload_options)
+    if payload['built'] == 'os_install':
+        spec_payload = ctx.get_spec_payload(
+            payload=payload,
+            built='os_install'
+        )
+    else:
+        raise click.UsageError(
+            'Not yet implemented. '
+        )
     # request
-    obj = ctx.create_vm(**payload)
+    obj = ctx.create_vm(**spec_payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
@@ -3152,7 +3409,8 @@ Reusable options for vm mk command
 source_opt = click.option(
     '--source', '-s',
     help='Source virtual machine or template UUID.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.virtual_machines
 )
 description_opt = click.option(
     '--description', '-d', help='Vm description.',
@@ -3180,7 +3438,8 @@ usage_opt = click.option(
 )
 os_opt = click.option(
     '--os', '-o', help='Guest operating system id.',
-    type=click.STRING, required=False
+    type=click.STRING, required=False,
+    autocompletion=autocompletion.operating_systems
 )
 memory_opt = click.option(
     '--memory', '-m', help='Memory in GB.',
@@ -3192,7 +3451,8 @@ cpu_opt = click.option(
 )
 folder_opt = click.option(
     '--folder', '-f', help='Logical folder moref.',
-    type=click.STRING, required=False
+    type=click.STRING, required=False,
+    autocompletion=autocompletion.folders
 )
 disks_opt = click.option(
     '--disk', '-i', help='Disks in GB.',
@@ -3200,11 +3460,13 @@ disks_opt = click.option(
 )
 networks_opt = click.option(
     '--net', '-n', help='Networks moref mapped to NICs.',
-    type=click.STRING, multiple=True, required=False
+    type=click.STRING, multiple=True, required=False,
+    autocompletion=autocompletion.networks
 )
 domain_opt = click.option(
     '--domain', '-t', help='Target fault domain.',
-    type=click.STRING, required=False
+    type=click.STRING, required=False,
+    autocompletion=autocompletion.domains
 )
 notes_opt = click.option(
     '--notes', '-t', help='Custom notes.',
@@ -3219,7 +3481,8 @@ custom_spec_opt = click.option(
 iso_opt = click.option(
     '--iso', '-s',
     help='ISO image path to be mounted after creation',
-    type=click.STRING, required=False
+    type=click.STRING, required=False,
+    autocompletion=autocompletion.isos
 )
 high_io_opt = click.option(
     '--high-io', '-h',
@@ -3234,10 +3497,16 @@ extra_config_opt = click.option(
     callback=validate_json_type
 )
 user_data_opt = click.option(
-    '--user-data', '-s',
+    '--user-data',
     help='Cloud-init user_data YML file path to '
          'pre-configure guest os upon first boot.',
     type=click.File('r'),
+    required=False
+)
+vss_service_opt = click.option(
+    '--vss-service',
+    help='VSS Service related to VM',
+    autocompletion=autocompletion.vss_services,
     required=False
 )
 
@@ -3264,16 +3533,19 @@ user_data_opt = click.option(
 @networks_opt
 @domain_opt
 @notes_opt
+@vss_service_opt
 @pass_context
 def compute_vm_mk_spec(
         ctx: Configuration, name, source,
         description, bill_dept, usage,
         memory, cpu, folder, disk,
         notes, admin, inform,
-        net, domain, os
+        net, domain, os, vss_service
 ):
     """Create virtual machine based on another  virtual machine
-     configuration specification."""
+     configuration specification. This command takes the vm
+     machine specification (memory, disk, networking, etc) as a
+     base for a new VM."""
     built = 'os_install'
     _vm = ctx.get_vm_by_uuid_or_name(
         source
@@ -3322,6 +3594,12 @@ def compute_vm_mk_spec(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guestId']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # updating spec with new vm spec
     s_payload.update(payload)
     # request
@@ -3364,12 +3642,14 @@ def compute_vm_mk_spec(
 @click.option(
     '--os', '-o',
     help='Guest operating system id or name.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.operating_systems
 )
 @click.option(
     '--folder', '-f',
     help='Logical folder moref.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.folders
 )
 @click.option(
     '--disk', '-i',
@@ -3379,8 +3659,10 @@ def compute_vm_mk_spec(
 @click.option(
     '--net', '-n',
     help='Networks moref or name mapped to NICs.',
-    type=click.STRING, multiple=True, required=True
+    type=click.STRING, multiple=True, required=True,
+    autocompletion=autocompletion.networks
 )
+@vss_service_opt
 @pass_context
 def compute_vm_mk_shell(
         ctx: Configuration, name,
@@ -3388,7 +3670,8 @@ def compute_vm_mk_shell(
         memory, cpu, folder, disk,
         notes, admin, inform,
         high_io, iso,
-        net, domain, os
+        net, domain, os,
+        vss_service
 ):
     """Create a new virtual machine with no operating system
     pre-installed."""
@@ -3438,6 +3721,12 @@ def compute_vm_mk_shell(
     if iso:
         _iso = ctx.get_iso_by_name_or_guest(iso)
         payload['iso'] = _iso[0]['path']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # request
     obj = ctx.create_vm(**payload)
     # print
@@ -3475,13 +3764,15 @@ def compute_vm_mk_shell(
 @domain_opt
 @notes_opt
 @custom_spec_opt
+@vss_service_opt
 @pass_context
 def compute_vm_mk_template(
         ctx: Configuration, name, source,
         description, bill_dept, usage,
         memory, cpu, folder, disk,
         notes, admin, inform,
-        net, domain, os, custom_spec
+        net, domain, os, custom_spec,
+        vss_service
 ):
     """Deploy virtual machine from template"""
     # get source from uuid or name
@@ -3534,6 +3825,12 @@ def compute_vm_mk_template(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guestId']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # request
     obj = ctx.deploy_vm_from_template(**payload)
     # print
@@ -3571,13 +3868,15 @@ def compute_vm_mk_template(
 @domain_opt
 @notes_opt
 @custom_spec_opt
+@vss_service_opt
 @pass_context
 def compute_vm_mk_clone(
         ctx: Configuration, name, source,
         description, bill_dept, usage,
         memory, cpu, folder, disk,
         notes, admin, inform,
-        net, domain, os, custom_spec
+        net, domain, os, custom_spec,
+        vss_service
 ):
     """Clone virtual machine from running or powered off vm.
     If name argument is not specified, -clone suffix will be added to
@@ -3632,6 +3931,12 @@ def compute_vm_mk_clone(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guestId']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # request
     obj = ctx.create_vm_from_clone(**payload)
     # print
@@ -3666,6 +3971,7 @@ def compute_vm_mk_clone(
 @custom_spec_opt
 @extra_config_opt
 @user_data_opt
+@vss_service_opt
 @click.option(
     '--bill-dept', '-b',
     help='Billing department.',
@@ -3674,12 +3980,14 @@ def compute_vm_mk_clone(
 @click.option(
     '--os', '-o',
     help='Guest operating system id, name or path.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.operating_systems
 )
 @click.option(
     '--folder', '-f',
     help='Logical folder moref.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.folders
 )
 @click.option(
     '--disk', '-i',
@@ -3689,12 +3997,14 @@ def compute_vm_mk_clone(
 @click.option(
     '--net', '-n',
     help='Networks moref or name mapped to NICs.',
-    type=click.STRING, multiple=True, required=True
+    type=click.STRING, multiple=True, required=True,
+    autocompletion=autocompletion.networks
 )
 @click.option(
     '--source', '-s',
     help='Source Virtual Machine OVA/OVF id, name or path.',
-    type=click.STRING, required=True
+    type=click.STRING, required=True,
+    autocompletion=autocompletion.vm_images
 )
 @pass_context
 def compute_vm_mk_image(
@@ -3703,7 +4013,7 @@ def compute_vm_mk_image(
         memory, cpu, folder, disk,
         notes, admin, inform,
         net, domain, os, custom_spec,
-        extra_config, user_data
+        extra_config, user_data, vss_service
 ):
     """Deploy virtual machine from image"""
     # get reference to image by
@@ -3714,13 +4024,17 @@ def compute_vm_mk_image(
     payload = dict(
         description=description, name=name,
         usage=usage, bill_dept=bill_dept,
-        folder=folder,
         image=image_ref[0]['path']
     )
     if memory:
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if folder:
+        _folder = ctx.get_folder_by_name_or_moref_path(
+            folder
+        )
+        payload['folder'] = _folder[0]['moref']
     if disk:
         payload['disks'] = list(disk)
     if notes:
@@ -3753,6 +4067,12 @@ def compute_vm_mk_image(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guestId']
+    # vss-service
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(
+            vss_service
+        )
+        payload['vss_service'] = _svc[0]['id']
     # request
     obj = ctx.create_vm_from_image(**payload)
     # print

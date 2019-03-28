@@ -8,6 +8,8 @@ from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.request import cli
 
+import vss_cli.autocompletion as autocompletion
+
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ def request_mgmt_inventory(ctx: Configuration):
               help='apply sorting ')
 @click.option('-a', '--show-all', is_flag=True,
               help='show all results')
-@click.option('-c', '--count', type=int,
+@click.option('-c', '--count', type=click.INT,
               help='size of results')
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
@@ -80,7 +82,10 @@ def request_mgmt_inventory_ls(
     'get',
     short_help='Inventory request'
 )
-@click.argument('rid', type=int, required=True)
+@click.argument(
+    'rid', type=click.INT, required=True,
+    autocompletion=autocompletion.inventory_requests
+)
 @pass_context
 def request_mgmt_inventory_get(ctx: Configuration, rid):
     obj = ctx.get_inventory_request(rid)

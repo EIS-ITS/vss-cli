@@ -1,9 +1,10 @@
 """Constants used by VSS CLI (vss-cli)."""
 import os
+import pkg_resources
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.0-dev0'
+__version__ = '0.1.0'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -16,11 +17,18 @@ DEFAULT_CONFIG = os.path.expanduser(os.path.join(
 DEFAULT_HISTORY = os.path.expanduser(os.path.join(
     '~', '.vss-cli', 'history')
 )
+DEFAULT_DATA_PATH = pkg_resources.resource_filename(
+    PACKAGE_NAME, 'data'
+)
 
 DEFAULT_DATAOUTPUT = 'table'
 DEFAULT_RAW_OUTPUT = 'json'
 
 DEFAULT_DATETIME_FMT = '%Y-%m-%d %H:%M'
+SUPPORTED_DATETIME_FORMATS = [
+    '%Y-%m-%dT%H:%M:%S',
+    '%Y-%m-%d %H:%M'
+]
 
 DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "-._~%!$&'()*+,;=]+@)?([a-z0-9\\-." \
@@ -87,6 +95,12 @@ COLUMNS_MIN = [
     ('ID', 'id'),
     ('CREATED', 'created_on'),
     ('UPDATED', 'updated_on'),
+]
+COLUMNS_VSS_SERVICE = [
+    ('ID', 'id'),
+    ('LABEL', 'label'),
+    ('NAME', 'NAME'),
+    ('GROUP', 'group.name')
 ]
 COLUMNS_IMAGE = [
     ('ID', 'id'),
@@ -398,6 +412,9 @@ COLUMNS_VM_HW = [
     ('VALUE', 'value'),
     ('STATUS', 'status'),
     ('UPGRADE_POLICY', 'upgrade_policy.upgradePolicy')
+]
+COLUMNS_VSS_OPTIONS = [
+    ('OPTIONS', '[*]')
 ]
 COLUMNS_GROUP = [
     ('NAME', 'cn'),
