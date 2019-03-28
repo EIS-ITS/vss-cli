@@ -1,4 +1,4 @@
-# Contributing
+# Contributing 
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
@@ -14,8 +14,8 @@ interactions with the project.
   own code.
 - Describe what actually happened. Include the full traceback if there was an
   exception.
-- List your Python, ``py-vss``, and other relevant versions. If possible, check if this
-  issue is already fixed in the repository.
+- List your Python, ``py-vss``, ``vss-cli`` and other relevant versions. 
+  If possible, check if this issue is already fixed in the repository (`develop` branch).
   
 [mcve]: https://stackoverflow.com/help/mcve
 
