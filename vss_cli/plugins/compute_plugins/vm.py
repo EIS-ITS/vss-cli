@@ -27,7 +27,7 @@ _LOGGING = logging.getLogger(__name__)
 
 
 @with_plugins(
-    iter_entry_points('vss_cli.contrib.compute.vm.plugins')
+    iter_entry_points('vss_cli.contrib.compute.vm')
 )
 @cli.group(
     'vm',

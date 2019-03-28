@@ -83,8 +83,8 @@ Plugin developers need to register their sub-commands or sub-groups to either of
 in their `setup.py` that is loaded by the `vss-cli` core package:
 
 - ``vss_cli.contrib.plugins``: scope at ``vss-cli plugins`` command group.
-- ``vss_cli.contrib.compute.plugins``: scope at ``vss-cli compute`` command group.
-- ``vss_cli.contrib.compute.vm.plugins``: scope at ``vss-cli compute vm`` command group.
+- ``vss_cli.contrib.compute``: scope at ``vss-cli compute`` command group.
+- ``vss_cli.contrib.compute.vm``: scope at ``vss-cli compute vm`` command group.
 
 For example, if someone wanted to make a plugin package called ``new_plugin`` which adds a sub-command at
 ``vss-cli compute report`` and another one at ``vss-cli compute vm report``, they would create their
@@ -111,10 +111,10 @@ entry-points in ``setup.py``:
         install_requires=['vss-cli>=0.1.0']
         entry_points='''
 
-        [vss_cli.contrib.compute.plugins]
+        [vss_cli.contrib.compute]
         report=new_plugin.core:report
 
-        [vss_cli.contrib.compute.vm.plugins]
+        [vss_cli.contrib.compute.vm]
         report=new_plugin.core:report
         '''
     )

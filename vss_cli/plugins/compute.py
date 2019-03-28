@@ -7,7 +7,7 @@ from click_plugins import with_plugins
 
 
 @with_plugins(
-    iter_entry_points('vss_cli.contrib.compute.plugins')
+    iter_entry_points('vss_cli.contrib.compute')
 )
 @click.group(
     'compute',
