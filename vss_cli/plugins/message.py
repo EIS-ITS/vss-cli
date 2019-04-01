@@ -5,6 +5,8 @@ from vss_cli import const
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 
+import vss_cli.autocompletion as autocompletion
+
 
 @click.group(
     'message',
@@ -75,11 +77,15 @@ def message_ls(
     'get',
     help='Display user message info.'
 )
-@click.argument('mid', type=int, required=True)
+@click.argument(
+    'message_id', type=click.INT,
+    required=True,
+    autocompletion=autocompletion.account_messages
+)
 @pass_context
-def message_get(ctx: Configuration, mid):
+def message_get(ctx: Configuration, message_id):
     """Get given user message id info"""
-    obj = ctx.get_user_message(mid)
+    obj = ctx.get_user_message(message_id)
     columns = ctx.columns or const.COLUMNS_MESSAGE
     click.echo(
         format_output(
@@ -103,13 +109,19 @@ def message_set(ctx):
     'ack',
     short_help='Acknowledge user message'
 )
-@click.argument('mid', type=int, required=True, nargs=-1)
-@click.option('-s', '--summary', is_flag=True,
-              help='Print request summary')
+@click.argument(
+    'message_id', type=click.INT,
+    required=True, nargs=-1,
+    autocompletion=autocompletion.account_messages
+)
+@click.option(
+    '-s', '--summary', is_flag=True,
+    help='Print request summary'
+)
 @pass_context
-def message_set_ack(ctx, mid, summary):
+def message_set_ack(ctx, message_id, summary):
     result = []
-    with click.progressbar(mid) as ids:
+    with click.progressbar(message_id) as ids:
         for i in ids:
             result.append(ctx.ack_user_message(i))
     if summary:
