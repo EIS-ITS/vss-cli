@@ -109,14 +109,16 @@ build-docs-develop:
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
     - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
-    - python setup.py install
+    - python setup.py install build_sphinx
     - mkdir -p ./public
-    - cd docs
-    - make html
+    - mkdir -p ./man
+    - cp -r _build/man _build/html/
     - cp -r _build/html/* ../public
+    - cp -r _build/man/* ../man
   artifacts:
     paths:
      - public
+     - man
   only:
     - develop
   tags:
@@ -218,14 +220,16 @@ build-docs-master:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
     - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
     - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
-    - python setup.py install
+    - python setup.py install build_sphinx
     - mkdir -p ./public
-    - cd docs
-    - make html
+    - mkdir -p ./man
+    - cp -r _build/man _build/html/
     - cp -r _build/html/* ../public
+    - cp -r _build/man/* ../man
   artifacts:
     paths:
      - public
+     - man
   only:
     - master
   tags:
@@ -287,14 +291,16 @@ build-docs-tag:
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
     - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
-    - python setup.py install
+    - python setup.py install build_sphinx
     - mkdir -p ./public
-    - cd docs
-    - make html
+    - mkdir -p ./man
+    - cp -r _build/man _build/html/
     - cp -r _build/html/* ../public
+    - cp -r _build/man/* ../man
   artifacts:
     paths:
      - public
+     - man
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/
   tags:

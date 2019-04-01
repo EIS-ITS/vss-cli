@@ -1,6 +1,6 @@
 FROM python:3.6-alpine
 # Defining env vars
-ENV VSSCLI_VERSION="0.1.1-dev3"
+ENV VSSCLI_VERSION="0.1.1-dev4"
 ARG CI_BUILD_REF
 # Defininig tags
 LABEL maintainer="Jose Manuel Lopez <jm@eis.utoronto.ca>" \
@@ -13,12 +13,16 @@ WORKDIR /usr/src/app
 COPY . .
 # install OS reqs
 RUN apk add --no-cache --virtual build-dependencies \
-    gcc musl-dev bash \
+    gcc musl-dev bash man \
     libxml2-dev libxslt-dev && \
+    mkdir /usr/share/man/man1 && \
     rm -rf /var/cache/apk/*
 # install app
 RUN pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir -e .
+    pip3 install --no-cache-dir -e .[dev]
+# add man pages
+RUN python3 setup.py build_sphinx && \
+    cp docs/_build/man/* /usr/share/man/man1
 # define volumes
 VOLUME ["/data"]
 # define entrypoint
