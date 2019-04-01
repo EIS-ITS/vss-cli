@@ -51,6 +51,7 @@ PROJECT_LICENSE = 'MIT'
 PROJECT_AUTHOR = 'University of Toronto'
 PROJECT_COPYRIGHT = f' 2019-{dt.now().year}, {PROJECT_AUTHOR}'
 PROJECT_URL = 'https://gitlab-ee.eis.utoronto.ca/vss/vss-cli'
+PROJECT_DOCS = 'https://eis.utorotno.ca/~vss/vss-cli'
 PROJECT_EMAIL = 'vss-apps@eis.utoronto.ca'
 MAINTAINER_EMAIL = 'vss-py@eis.utoronto.ca'
 
@@ -64,6 +65,8 @@ GITLAB_URL = f'https://gitlab-ee.eis.utoronto.ca/{GITLAB_PATH}'
 DOWNLOAD_URL = f'{GITLAB_URL}/archive/{__VERSION__}.zip'
 PROJECT_URLS = {
     'Bug Reports': f'{GITLAB_URL}/issues',
+    'Documentation': f'{PROJECT_DOCS}/',
+    'Source': f'{PROJECT_URL}'
 }
 
 TESTS_REQUIRE = [
