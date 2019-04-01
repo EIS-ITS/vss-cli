@@ -112,9 +112,9 @@ build-docs-develop:
     - python setup.py install build_sphinx
     - mkdir -p ./public
     - mkdir -p ./man
-    - cp -r _build/man _build/html/
-    - cp -r _build/html/* ../public
-    - cp -r _build/man/* ../man
+    - cp -r docs/_build/man docs/_build/html/
+    - cp -r docs/_build/html/* ./public
+    - cp -r docs/_build/man/* ./man
   artifacts:
     paths:
      - public
@@ -223,9 +223,9 @@ build-docs-master:
     - python setup.py install build_sphinx
     - mkdir -p ./public
     - mkdir -p ./man
-    - cp -r _build/man _build/html/
-    - cp -r _build/html/* ../public
-    - cp -r _build/man/* ../man
+    - cp -r docs/_build/man docs/_build/html/
+    - cp -r docs/_build/html/* ./public
+    - cp -r docs/_build/man/* ./man
   artifacts:
     paths:
      - public
@@ -294,9 +294,9 @@ build-docs-tag:
     - python setup.py install build_sphinx
     - mkdir -p ./public
     - mkdir -p ./man
-    - cp -r _build/man _build/html/
-    - cp -r _build/html/* ../public
-    - cp -r _build/man/* ../man
+    - cp -r docs/_build/man docs/_build/html/
+    - cp -r docs/_build/html/* ./public
+    - cp -r docs/_build/man/* ./man
   artifacts:
     paths:
      - public
