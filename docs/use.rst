@@ -350,7 +350,7 @@ For `bash`:
 
 .. code-block:: bash
 
-    eval "$(_VSS_CLI_COMPLETE=source hass-cli)"
+    eval "$(_VSS_CLI_COMPLETE=source vss-cli)"
 
 For `zsh`:
 
