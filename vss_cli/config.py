@@ -1,20 +1,25 @@
 """Configuration for VSS CLI (vss-cli)."""
-import logging
-import sys
-from uuid import UUID
-from typing import Any, Dict, List, Optional, Tuple, cast, Union  # noqa: F401
-import platform
-import click
-import os
-import json
 from base64 import b64decode, b64encode
-import vss_cli.const as const
+import logging
+import os
+import platform
+import shutil
+import sys
+import json
+from typing import Any, Dict, List, Optional, Tuple, Union, cast  # noqa: F401
+from uuid import UUID
+
+import click
+from pick import pick
+from pyvss import __version__ as pyvss_version
 from pyvss.manager import VssManager
 from vss_cli import vssconst
+import vss_cli.const as const
+from vss_cli.helper import debug_requests_on, get_hostname_from_url
 from vss_cli.exceptions import VssCliError
-from pyvss import __version__ as pyvss_version
-from pick import pick
 from vss_cli.validators import validate_email, validate_phone_number
+from vss_cli.data_types import ConfigFile, ConfigEndpoint, ConfigFileGeneral
+import yaml
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -29,8 +34,13 @@ class Configuration(VssManager):
             extensions=f'pyvss/{pyvss_version}'
         )
         self.verbose = False  # type: bool
-        self.server = const.DEFAULT_SERVER  # type: str
-        self.output = const.DEFAULT_DATAOUTPUT  # type: str
+        self.default_endpoint_name = None  # type: str
+        # start of endpoint settings
+        self._endpoint = const.DEFAULT_ENDPOINT  # type: str
+        self.base_endpoint = self.endpoint    # type: str
+        self.endpoint_name = const.DEFAULT_ENDPOINT_NAME
+        # end of endpoint settings
+        self.output = const.DEFAULT_DATA_OUTPUT  # type: str
         self.config = const.DEFAULT_CONFIG  # type: str
         self.history = const.DEFAULT_HISTORY  # type: str
         self.webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
@@ -38,13 +48,42 @@ class Configuration(VssManager):
         self.password = None  # type: Optional[str]
         self.token = None  # type: Optional[str]
         self.timeout = const.DEFAULT_TIMEOUT  # type: int
-        self.debug = False  # type: bool
+        self._debug = False  # type: bool
         self.showexceptions = False  # type: bool
-        self.cert = None  # type: Optional[str]
         self.columns = None  # type: Optional[List[Tuple[str, str]]]
         self.no_headers = False
         self.table_format = 'plain'
         self.sort_by = None
+        self.check_for_updates = const.DEFAULT_CHECK_UPDATES  # type: bool
+        self.check_for_messages = const.DEFAULT_CHECK_MESSAGES  # type: bool
+        self.config_file = None  # type: ConfigFile
+
+    @property
+    def debug(self):
+        return self._debug
+
+    @debug.setter
+    def debug(self, value):
+        if value:
+            debug_requests_on()
+        self._debug = value
+
+    @property
+    def endpoint(self):
+        return self._endpoint
+
+    @endpoint.setter
+    def endpoint(self, value):
+        """ Rebuilds API endpoints"""
+        self._endpoint = value
+        self.base_endpoint = value
+        self.api_endpoint = f'{value}/v2'
+        self.token_endpoint = f'{value}/auth/request-token'
+        if value:
+            self.endpoint_name = get_hostname_from_url(
+                value,
+                const.DEFAULT_HOST_REGEX
+            )
 
     def get_token(self, user: str = '', password: str = ''):
         self.api_token = super(Configuration, self).get_token(user, password)
@@ -52,8 +91,8 @@ class Configuration(VssManager):
 
     def update_endpoints(self, endpoint: str = ''):
         """ Rebuilds API endpoints"""
-        self.api_endpoint = f'{endpoint}/v2'
         self.base_endpoint = endpoint
+        self.api_endpoint = f'{endpoint}/v2'
         self.token_endpoint = f'{endpoint}/auth/request-token'
 
     def echo(self, msg: str, *args: Optional[Any]) -> None:
@@ -92,11 +131,14 @@ class Configuration(VssManager):
     def __repr__(self) -> str:
         """Return the representation of the Configuration."""
         view = {
-            "server": self.server,
-            "access-token": 'yes' if self.token is not None else 'no',
+            "endpoint": self.endpoint,
+            "default_endpoint_name": self.default_endpoint_name,
+            "endpoint_name": self.endpoint_name,
+            "access_token": 'yes' if self.token is not None else 'no',
             "user": 'yes' if self.username is not None else 'no',
-            "user-password": 'yes' if self.password is not None else 'no',
+            "user_password": 'yes' if self.password is not None else 'no',
             "output": self.output,
+            "debug": self.debug,
             "verbose": self.verbose,
         }
 
@@ -107,66 +149,115 @@ class Configuration(VssManager):
         if self.output == "auto":
             if auto_output == 'data':
                 auto_output = const.DEFAULT_RAW_OUTPUT
-            _LOGGING.debug("Setting auto-output to: %s", auto_output)
+            _LOGGING.debug(f"Setting auto-output to: {auto_output}")
             self.output = auto_output
         return self.output
 
     @staticmethod
-    def _default_user_agent(name: str = const.PACKAGE_NAME,
-                            version: str = const.__version__,
-                            extensions: str = ''):
-        environment = {'product': name,
-                       'product_version': version,
-                       'python_version': platform.python_version(),
-                       'system': platform.system(),
-                       'system_version': platform.release(),
-                       'platform_details': platform.platform(),
-                       'extensions': extensions
-                       }
+    def get_pip_binary() -> str:
+        cmd_bin_opts = ['pip3', 'pip']
+        cmd_bin = None
+        for cmd_bin_opt in cmd_bin_opts:
+            if shutil.which(cmd_bin_opt, mode=os.X_OK):
+                cmd_bin = cmd_bin_opt
+                return cmd_bin
+        # raise if nothing found
+        if not cmd_bin:
+            raise click.ClickException(
+                f"Cloud not find {', '.join(cmd_bin_opts)}"
+            )
+
+    @staticmethod
+    def _default_user_agent(
+            name: str = const.PACKAGE_NAME,
+            version: str = const.__version__,
+            extensions: str = ''
+    ) -> str:
         # User-Agent:
         # <product>/<version> (<system-information>)
         # <platform> (<platform-details>) <extensions>
-        user_agent = '{product}/{product_version}' \
-                     ' ({system}/{system_version}) ' \
-                     'Python/{python_version} ({platform_details}) ' \
-                     '{extensions}'.format(**environment)
+        user_agent = f'{name}/{version} ' \
+            f'({platform.system()}/{platform.release()}) ' \
+            f'Python/{platform.python_version()} ' \
+            f'({platform.platform()}) {extensions}'
         return user_agent
 
-    def load_profile_from_config(self, endpoint):
-        username, password, token = None, None, None
-        profiles = self.load_raw_config_file()
-        profile = profiles.get(endpoint)
-        if profile:
-            # get auth attr
-            auth = profile.get('auth')
-            # get token attr
-            token = profile.get('token')
-            if not auth or not token:
-                raise Exception('Invalid configuration file')
-            auth_enc = auth.encode()
-            credentials_decoded = b64decode(auth_enc)
-            # get user/pass
-            username, password = \
-                credentials_decoded.split(b':')
-        return username, password, token
+    def set_credentials(
+            self, username: str, password: str,
+            token: str, endpoint: str,
+            name: str
+    ) -> None:
+        self.username = username
+        self.password = password
+        self.api_token = token
+        self.token = token
+        self.endpoint = endpoint
+        self.endpoint_name = name
+        return
 
-    def load_raw_config_file(self):
+    def load_profile_from_config(
+            self,
+            endpoint: str = None,
+    ) -> Tuple[
+        Optional[ConfigEndpoint],
+        Optional[str],
+        Optional[str]
+    ]:
+        username, password = None, None
+        # load from
+        config_endpoint = self.config_file.get_endpoint(endpoint)
+        if config_endpoint:
+            # get auth attr
+            auth = config_endpoint[0].auth
+            # get token attr
+            token = config_endpoint[0].token
+            if not auth or not token:
+                _LOGGING.warning(
+                    'Invalid configuration endpoint found.'
+                )
+            else:
+                auth_enc = auth.encode()
+                credentials_decoded = b64decode(auth_enc)
+                # get user/pass
+                username, password = \
+                    credentials_decoded.split(b':')
+            return config_endpoint[0], username, password
+        else:
+            return None, username, password
+
+    def load_config_file(
+            self, config: str = None
+    ) -> Union[ConfigFile, None]:
+        raw_config = self.load_raw_config_file(config=config)
+        self.config_file = ConfigFile.from_json(raw_config)
+        return self.config_file
+
+    def load_raw_config_file(
+            self, config: str = None
+    ) -> Union[dict, None]:
+        config_file = config or self.config
         try:
-            with open(self.config, 'r') as f:
-                profiles = json.load(f)
-                return profiles
+            with open(config_file, 'r') as f:
+                config_dict = yaml.safe_load(f)
+                return json.dumps(config_dict)
         except ValueError as ex:
             _LOGGING.error(
                 f'Error loading configuration file: {ex}'
             )
-            raise Exception('Invalid configuration file.')
+            raise VssCliError(
+                'Invalid configuration file.'
+                'Run "vss-cli configure mk" or '
+                '"vss-cli configure upgrade" to upgrade '
+                'legacy configuration.'
+            )
 
     def load_config(self):
         try:
-            if self.server:
-                self.update_endpoints(self.server)
+            # input configuration check
             # check for environment variables
             if self.token or (self.username and self.password):
+                if not self.endpoint:
+                    self.endpoint = const.DEFAULT_ENDPOINT
                 _LOGGING.debug(f'Loading from input')
                 # don't load config file
                 if self.token:
@@ -180,7 +271,7 @@ class Configuration(VssManager):
                     _LOGGING.warning(
                         'A new token will be generated but not persisted. '
                         'Consider running command "configure mk" to save your '
-                        'credentials'
+                        'credentials.'
                     )
                     self.get_token(self.username, self.password)
                     _LOGGING.debug(f'Token generated {self.api_token}')
@@ -192,154 +283,364 @@ class Configuration(VssManager):
             else:
                 _LOGGING.debug(f'Loading configuration file: {self.config}')
                 if os.path.isfile(self.config):
-                    # read config and look for profile
-                    self.username, self.password, self.api_token = \
-                        self.load_profile_from_config(self.base_endpoint)
-                    _LOGGING.debug(
-                        f'Loaded from file {self.base_endpoint}:'
-                        f' {self.username}'
-                    )
-                    creds = self.username and self.password
-                    if not (creds or self.api_token):
-                        raise VssCliError(
-                            "Invalid endpoint {} configuration. \n "
-                            "Please, run 'vss-cli configure mk' to add "
-                            "endpoint to "
-                            "configuration.".format(self.base_endpoint))
-                    try:
-                        self.whoami()
-                        _LOGGING.debug('Token validated successfully.')
-                    except Exception as ex:
-                        self.vlog(str(ex))
-                        _LOGGING.debug('Generating a new token')
-                        self.api_token = self.get_token(
-                            self.username,
-                            self.password
+                    # load configuration file from json string into class
+                    self.config_file = self.load_config_file()
+                    # general area
+                    if self.config_file.general:
+                        _LOGGING.debug(
+                            f'Loading general settings from {self.config}'
                         )
-                        _LOGGING.debug('Token generated successfully')
-                        self.write_config_file(new_token=self.api_token)
-                        # check for updates
-                        # self.check_for_updates()
-                        # check for unread messages
-                        self.check_unread_messages()
-                    return self.username, self.password, self.api_token
+                        # set config defaults
+                        for setting in const.GENERAL_SETTINGS:
+                            try:
+                                setattr(
+                                    self, setting,
+                                    getattr(self.config_file.general, setting)
+                                )
+                            except KeyError as ex:
+                                _LOGGING.warning(
+                                    f'Could not load general setting'
+                                    f' {setting}: {ex}'
+                                )
+                        # printing out
+                        _LOGGING.debug(f"General settings loaded: {self}")
+                    # load preferred endpoint from file if any
+                    if self.config_file.endpoints:
+                        _LOGGING.debug(
+                            f'Loading endpoint settings from {self.config}'
+                        )
+                        # 1. provided by input
+                        if self.endpoint:
+                            msg = f'Cloud not find endpoint provided by ' \
+                                f'input {self.endpoint}. \n'
+                            # load endpoint from endpoints
+                            config_endpoint, usr, pwd = \
+                                self.load_profile_from_config(
+                                    endpoint=self.endpoint
+                                )
+                        # 2. provided by configuration file
+                        #    (default_endpoint_name)
+                        elif self.default_endpoint_name:
+                            msg = f'Could not find default endpoint ' \
+                                f'{self.default_endpoint_name}. \n'
+                            # load endpoint from endpoints
+                            config_endpoint, usr, pwd = \
+                                self.load_profile_from_config(
+                                    endpoint=self.default_endpoint_name
+                                )
+                        # 3. fallback to default settings
+                        else:
+                            msg = f"Invalid endpoint {self.endpoint_name} " \
+                                f"configuration. \n"
+                            config_endpoint, usr, pwd = \
+                                self.load_profile_from_config(
+                                    endpoint=self.endpoint_name
+                                )
+                        # check valid creds
+                        if not (usr and pwd or getattr(config_endpoint,
+                                                       'token',
+                                                       None)):
+                            _LOGGING.warning(msg)
+                            default_endpoint = const.DEFAULT_ENDPOINT_NAME
+                            _LOGGING.warning(
+                                f'Falling back to {default_endpoint}'
+                            )
+                            config_endpoint, usr, pwd = \
+                                self.load_profile_from_config(
+                                    endpoint=const.DEFAULT_ENDPOINT_NAME
+                                )
+                        # set config data
+                        self.set_credentials(
+                            usr, pwd,
+                            config_endpoint.token,
+                            config_endpoint.url,
+                            config_endpoint.name
+                        )
+                        # last check cred
+                        creds = self.username and self.password
+                        if not (creds or self.api_token):
+                            raise VssCliError(
+                                'Run "vss-cli configure mk" to add '
+                                'endpoint to configuration file or '
+                                '"vss-cli configure upgrade" to upgrade '
+                                'legacy configuration.'
+                            )
+                        _LOGGING.debug(
+                            f'Loaded from file: {self.endpoint_name}: '
+                            f'{self.endpoint}:'
+                            f': {self.username}'
+                        )
+                        try:
+                            self.whoami()
+                            _LOGGING.debug('Token validated successfully.')
+                        except Exception as ex:
+                            self.vlog(str(ex))
+                            _LOGGING.debug('Generating a new token')
+                            try:
+                                self.api_token = self.get_token(
+                                    self.username,
+                                    self.password
+                                )
+                                _LOGGING.debug('Token generated successfully')
+                            except Exception as ex:
+                                _LOGGING.warning(
+                                    f'Could not generate new token: {ex}'
+                                )
+                            endpoint = self._create_endpoint_config(
+                                token=self.api_token
+                            )
+                            self.write_config_file(new_endpoint=endpoint)
+                            # check for updates
+                            if self.check_for_updates:
+                                self.check_available_updates()
+                            # check for unread messages
+                            if self.check_for_messages:
+                                self.check_unread_messages()
+                        return self.username, self.password, self.api_token
             raise VssCliError(
-                "Invalid configuration. Please, run 'vss-cli "
-                "configure mk' to initialize configuration."
+                'Invalid configuration. Please, run '
+                '"vss-cli configure mk" to initialize configuration, or '
+                '"vss-cli configure upgrade" to upgrade legacy '
+                'configuration.'
             )
         except Exception as ex:
             raise VssCliError(str(ex))
 
-    def check_unread_messages(self):
+    def check_available_updates(self) -> None:
+        try:
+            _LOGGING.debug('Checking for available updates.')
+            cmd_bin = self.get_pip_binary()
+            # create command with the right exec
+            pip_cmd = f'{cmd_bin} list --outdated'.split(None)
+            from subprocess import Popen, PIPE
+            p = Popen(pip_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            out, err = p.communicate()
+            out_decoded = out.decode('utf-8')
+            # verify if package name is in outdated string
+            pkg_name = const.PACKAGE_NAME
+            if pkg_name in out_decoded:
+                update_str = vssconst.EMOJI_ARROW_UP.decode('utf-8')
+                lines = out_decoded.split('\n')
+                pkg_line = [line for line in lines if pkg_name in line]
+                if pkg_line:
+                    pkg_line = pkg_line.pop()
+                    pkg, current, latest, pkgn = pkg_line.split(None)
+                    self.secho(
+                        f'Update available {current} -> {latest} '
+                        f'{update_str}.',
+                        fg='green', nl=False
+                    )
+                    self.secho(' Run ', fg='green', nl=False)
+                    self.secho('vss-cli upgrade', fg='red', nl=False)
+                    self.secho(' to install latest. \n', fg='green')
+            else:
+                check_str = vssconst.EMOJI_CHECK.decode('utf-8')
+                self.secho(
+                    f'Running latest version {const.__version__} '
+                    f'{check_str}\n',
+                    fg='green'
+                )
+        except Exception as ex:
+            _LOGGING.error(f'Could not check for updates: {ex}')
+
+    def check_unread_messages(self) -> None:
         try:
             _LOGGING.debug('Checking for unread messages')
-            messages = self.get_user_messages(filter='status,eq,Created',
-                                              per_page=100)
+            messages = self.get_user_messages(
+                filter='status,eq,Created', per_page=100)
             n_messages = len(messages)
             if messages:
                 envelope_str = vssconst.EMOJI_ENVELOPE.decode('utf-8')
                 self.secho(
-                    'You have {0} unread messages {1} '.format(
-                        n_messages, envelope_str), fg='green', nl=False)
+                    f'You have {n_messages} unread messages {envelope_str} ',
+                    fg='green', nl=False)
                 self.secho('Run ', fg='green', nl=False)
-                self.secho('vss-cli message ls', fg='red', nl=False)
+                self.secho(
+                    'vss-cli message ls -f status,eq,Created',
+                    fg='red', nl=False
+                )
                 self.secho(' to list unread messages.', fg='green')
             else:
                 _LOGGING.debug('No messages with Created status')
-        except ValueError as ex:
-            _LOGGING.error('Could not check for messages {}'.format(ex))
+        except Exception as ex:
+            _LOGGING.error(f'Could not check for messages: {ex}')
 
-    def write_config_file(self, new_token=None):
-        """
-        Creates or updates configuration file with different
-        endpoints.
-
-        :param new_token: new api token to store
-        :return:
-        """
-        token = new_token or self.get_token(self.username,
-                                            self.password)
+    def _create_endpoint_config(self, token: str = None) -> ConfigEndpoint:
+        token = token or self.get_token(
+            self.username, self.password
+        )
+        # encode or save
         username = self.username if isinstance(self.username, bytes) \
             else self.username.encode()
         password = self.password if isinstance(self.password, bytes) \
             else self.password.encode()
-        credentials = b':'.join([username,
-                                 password])
-        config_dict = {self.base_endpoint: {
-            'auth': b64encode(credentials).strip().decode('utf-8'),
-            'token': token}
+        credentials = b':'.join([username, password])
+        auth = b64encode(credentials).strip().decode('utf-8')
+        endpoint_cfg = {
+            'url': self.base_endpoint,
+            'name': self.endpoint_name,
+            'auth': auth, 'token': token,
         }
+        return ConfigEndpoint.from_json(json.dumps(endpoint_cfg))
+
+    @staticmethod
+    def load_config_template() -> ConfigFile:
+        # load template in case it fails
+        with open(const.DEFAULT_CONFIG_TMPL, 'r') as f:
+            config_tmpl = yaml.safe_load(f)
+            raw_config_tmpl = json.dumps(config_tmpl)
+            config_file_tmpl = ConfigFile.from_json(raw_config_tmpl)
+        return config_file_tmpl
+
+    def write_config_file(
+            self,
+            new_config_file: Optional[ConfigFile] = None,
+            new_endpoint: Optional[ConfigEndpoint] = None,
+            config_general: Optional[ConfigFileGeneral] = None
+    ) -> bool:
+        """
+        Creates or updates configuration endpoint section.
+
+        """
+        # load template in case it fails
+        config_file_tmpl = self.load_config_template()
         try:
             _LOGGING.debug(
-                f'Writing configuration file:'
-                f' {self.config}'
+                f'Writing configuration file: {self.config}'
             )
             # validate if file exists
             if os.path.isfile(self.config):
                 with open(self.config, 'r+') as fp:
                     try:
-                        _conf_dict = json.load(fp)
-                    except ValueError:
-                        _conf_dict = {}
-                    _conf_dict.update(config_dict)
+                        _conf_dict = yaml.safe_load(fp)
+                        raw_config = json.dumps(_conf_dict)
+                        config_file = ConfigFile.from_json(raw_config)
+                    except (ValueError, TypeError) as ex:
+                        _LOGGING.warning(f'Invalid config file: {ex}')
+                        if click.confirm(
+                                f'An error occurred loading the '
+                                f'configuration file. '
+                                f'Would you like to recreate it?'
+                        ):
+                            config_file = config_file_tmpl
+                        else:
+                            return False
+                    if new_config_file:
+                        config_file.general = new_config_file.general
+                        config_file.update_endpoints(
+                            *new_config_file.endpoints
+                        )
+                    # update general config if required
+                    if config_general:
+                        config_file.general = config_general
+                    # update endpoint if required
+                    if new_endpoint:
+                        # update endpoint
+                        config_file.update_endpoint(new_endpoint)
+                    # dumping and loading
+                    _conf_dict = json.loads(config_file.to_json())
                     fp.seek(0)
-                    json.dump(_conf_dict, fp,
-                              sort_keys=True,
-                              indent=4)
+                    yaml.safe_dump(
+                        _conf_dict, stream=fp,
+                        default_flow_style=False
+                    )
                     fp.truncate()
+                _LOGGING.debug(
+                    f'Configuration file {self.config} has been updated'
+                )
             else:
+                if new_config_file:
+                    f_type = 'Config file'
+                    config_file_dict = json.loads(new_config_file.to_json())
+                else:
+                    # New configuration file. A new endpoint must be configured
+                    f_type = 'Default template'
+                    config_endpoint = self._create_endpoint_config()
+                    config_file_tmpl.update_endpoint(config_endpoint)
+                    # load and dump
+                    config_file_dict = json.loads(config_file_tmpl.to_json())
+                # write file
                 with open(self.config, 'w') as fp:
-                    _conf_dict = config_dict
-                    json.dump(_conf_dict, fp,
-                              sort_keys=True,
-                              indent=4)
+                    yaml.safe_dump(
+                        config_file_dict, stream=fp,
+                        default_flow_style=False
+                    )
+                _LOGGING.debug(
+                    f'New {f_type} has been written to {self.config}.'
+                )
         except IOError as e:
-            raise VssCliError('An error occurred writing '
-                              'configuration file: {}'.format(e))
-        _LOGGING.debug(
-            f'Successfully written'
-            f' configuration file {self.config}'
-        )
+            raise Exception(
+                f'An error occurred writing '
+                f'configuration file: {e}'
+            )
+        return True
 
-    def configure(self, username, password, endpoint, replace=False):
+    def configure(
+            self, username: str, password: str,
+            endpoint: str,
+            replace: Optional[bool] = False,
+            endpoint_name: Optional[str] = None
+    ) -> bool:
         self.username = username
         self.password = password
         # update instance endpoints if provided
-        self.update_endpoints(endpoint)
+        self.endpoint = endpoint
+        if endpoint_name:
+            self.endpoint_name = endpoint_name
         # directory available
         if not os.path.isdir(os.path.dirname(self.config)):
             os.mkdir(os.path.dirname(self.config))
         # config file
         if os.path.isfile(self.config):
             try:
-                # load credentials by endpoint
-                e_username, e_password, e_api_token = \
-                    self.load_profile_from_config(self.base_endpoint)
-                if not (e_username and e_password and e_api_token):
-                    self.echo('Profile not found.')
-                    self.write_config_file()
-
-                if e_username and e_password and e_api_token:
+                self.config_file = self.load_config_file()
+                # load credentials by endpoint_name
+                config_endpoint, e_username, e_password = \
+                    self.load_profile_from_config(
+                        endpoint=self.endpoint_name
+                    )
+                # profile does not exist
+                if not (e_username and e_password and config_endpoint.token):
+                    self.echo(f'Endpoint {self.endpoint_name} not found. '
+                              f'Creating...')
+                    endpoint_cfg = self._create_endpoint_config()
+                    self.write_config_file(new_endpoint=endpoint_cfg)
+                # profile exists
+                elif e_username and e_password and config_endpoint.token:
+                    username = e_username.decode('utf-8') if e_username else ''
                     confirm = replace or click.confirm(
-                        'Would you like to replace existing configuration?')
+                        f"Would you like to replace existing configuration?\n "
+                        f"{self.endpoint_name}:"
+                        f"{username}: {config_endpoint.url}"
+                    )
                     if confirm:
-                        self.write_config_file()
-                else:
-                    self.echo(
-                        'Successfully configured credentials for {}. '
-                        'You are ready to use '
-                        'VSS CLI.'.format(self.base_endpoint))
-            except VssCliError as ex:
-                self.echo(str(ex))
+                        endpoint_cfg = self._create_endpoint_config()
+                        self.write_config_file(new_endpoint=endpoint_cfg)
+                    else:
+                        return False
+            except Exception as ex:
+                _LOGGING.warning(f'Invalid config file: {ex}')
                 confirm = click.confirm(
-                    'Would you like to replace existing configuration?'
+                    'An error occurred loading the '
+                    f'configuration file. '
+                    f'Would you like to recreate it?'
                 )
                 if confirm:
-                    self.write_config_file()
+                    endpoint_cfg = self._create_endpoint_config()
+                    return self.write_config_file(new_endpoint=endpoint_cfg)
+                else:
+                    return False
+            # feedback
+            self.echo(
+                f'Successfully configured credentials for '
+                f'{self.endpoint}.'
+            )
         else:
-            self.write_config_file()
+            endpoint_cfg = self._create_endpoint_config()
+            self.write_config_file(new_endpoint=endpoint_cfg)
+        return True
 
-    def get_vskey_stor(self, **kwargs):
+    def get_vskey_stor(self, **kwargs) -> bool:
         from webdav3 import client as wc
         options = dict(
             webdav_login=self.username,
@@ -353,7 +654,7 @@ class Configuration(VssManager):
     def get_vm_by_uuid_or_name(
             self,
             uuid_or_name: str
-    ):
+    ) -> List:
         try:
             # is uuid?
             uuid = UUID(uuid_or_name)
@@ -391,7 +692,7 @@ class Configuration(VssManager):
 
     def get_domain_by_name_or_moref(
             self, name_or_moref: str
-    ):
+    ) -> List[Any]:
         g_domains = self.get_domains()
         name_or_moref = name_or_moref.lower()
         d = list(

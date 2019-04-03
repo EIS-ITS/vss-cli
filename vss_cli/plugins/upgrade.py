@@ -1,7 +1,5 @@
 """Upgrade plugin for VSS CLI (vss-cli)."""
 import logging
-import os
-import shutil
 from subprocess import call
 
 import click
@@ -20,7 +18,8 @@ _LOGGING = logging.getLogger(__name__)
     'upstream',
     type=click.Choice(
         ['stable', 'develop', 'branch']
-    )
+    ),
+    default='stable'
 )
 @click.option(
     '--git-branch', '-b',
@@ -79,17 +78,7 @@ def cli(ctx: Configuration, upstream, git_branch):
         )
     # assemble command
     cmd_args_str = ' '.join(cmd_lookup['args'])
-    cmd_bin_opts = ['pip3', 'pip']
-    cmd_bin = None
-    for cmd_bin_opt in cmd_bin_opts:
-        if shutil.which(cmd_bin_opt, mode=os.X_OK):
-            cmd_bin = cmd_bin_opt
-            break
-    # raise if nothing found
-    if not cmd_bin:
-        raise click.ClickException(
-            f"Cloud not find {', '.join(cmd_bin_opts)}"
-        )
+    cmd_bin = ctx.get_pip_binary()
     # execute command
     cmd_str = f"{cmd_bin} install {cmd_args_str} {cmd_lookup['pkg']}"
     _LOGGING.debug(f'Executing {cmd_str}')

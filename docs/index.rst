@@ -20,12 +20,12 @@ with the ITS Private Cloud RESTful API to manage your virtual machines and other
    :glob:
 
    install
-   upgrade
    configure
-   docker
    use
-   examples/index
+   upgrade
    development
+   docker
+   examples/index
 
 .. toctree::
    :maxdepth: 1

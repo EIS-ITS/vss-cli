@@ -1,13 +1,13 @@
-import unittest
-import os
 import datetime
-import pytz
+import os
+import unittest
+
 from click.testing import CliRunner
+import click_log.core as logcore
+import pytz
 import vss_cli.cli as cli
 from vss_cli.const import __version__
-
-import click_log.core as logcore
-
+from vss_cli.vssconst import EMOJI_CHECK
 
 logcore.basic_config()
 
@@ -31,17 +31,95 @@ class TestVssCLI(unittest.TestCase):
         cls.vss_api_pass = os.environ.get('_VSS_API_USER_PASS')
         cls.vss_api_endpoint = os.environ.get('_VSS_API_ENDPOINT')
         cls.vss_api_endpoint_alt = os.environ.get('_VSS_API_ENDPOINT_ALT')
+        # create main cli endpoint
         r = cls.runner.invoke(
             cli.cli,
             ['--username', cls.vss_api_user,
              '--password', cls.vss_api_pass,
-             '--server', cls.vss_api_endpoint,
+             '--endpoint', cls.vss_api_endpoint,
              'configure', 'mk',
-             '--replace'],
+             '--replace',
+             '--endpoint-name', 'cloud-api'],
             catch_exceptions=False
         )
         assert r.exit_code == 0
         print(r.output.encode())
+
+    def test_alt_config(self):
+        r = self.runner.invoke(
+            cli.cli,
+            ['--username', self.vss_api_user,
+             '--password', self.vss_api_pass,
+             '--endpoint', self.vss_api_endpoint_alt,
+             'configure', 'mk',
+             '--replace',
+             '--endpoint-name', 'vss-api'],
+            catch_exceptions=False
+        )
+        assert r.exit_code == 0
+
+    def test_config_set_general(self):
+        r = self.runner.invoke(
+            cli.cli,
+            ['configure', 'set',
+             'check_for_messages',
+             'yes'],
+            catch_exceptions=False
+        )
+        assert r.exit_code == 0
+        r = self.runner.invoke(
+            cli.cli,
+            ['configure', 'set',
+             'timeout',
+             '120'],
+            catch_exceptions=False
+        )
+        assert r.exit_code == 0
+
+    def test_config_default_endpoint(self):
+        default_mark = EMOJI_CHECK.decode('utf-8')
+        r = self.runner.invoke(
+            cli.cli,
+            ['configure', 'set',
+             'default_endpoint_name',
+             'vss-api'],
+            catch_exceptions=False
+        )
+        assert r.exit_code == 0
+        r = self.runner.invoke(
+            cli.cli,
+            ['configure', 'ls'],
+            catch_exceptions=False
+        )
+        assert r.exit_code == 0
+        o_lines = r.output.split('\n')
+        # get default endpoint line
+        default = [line for line in o_lines if default_mark in line]
+        # check if line is not empty
+        self.assertGreater(len(default), 0)
+        # check if vss-api is default
+        self.assertIn('vss-api', ''.join(default))
+        # cloud-api (original)
+        r = self.runner.invoke(
+            cli.cli,
+            ['configure', 'set',
+             'default_endpoint_name',
+             'cloud-api'],
+            catch_exceptions=False
+        )
+        r = self.runner.invoke(
+            cli.cli,
+            ['configure', 'ls'],
+            catch_exceptions=False
+        )
+        assert r.exit_code == 0
+        o_lines = r.output.split('\n')
+        # get default endpoint line
+        default = [line for line in o_lines if default_mark in line]
+        # check if line is not empty
+        self.assertGreater(len(default), 0)
+        # check if vss-api is default
+        self.assertIn('cloud-api', ''.join(default))
 
     def test_version(self):
         result = self.runner.invoke(
@@ -70,7 +148,7 @@ class TestVssCLI(unittest.TestCase):
     def test_account_get_personal(self):
         result = self.runner.invoke(
             cli.cli,
-            ['--server', self.vss_api_endpoint,
+            ['--endpoint', self.vss_api_endpoint,
              'account', 'get', 'personal'],
             catch_exceptions=False
         )

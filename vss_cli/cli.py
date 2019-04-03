@@ -12,7 +12,7 @@ import click_log
 import vss_cli.autocompletion as autocompletion
 from vss_cli.config import Configuration
 import vss_cli.const as const
-from vss_cli.helper import debug_requests_on, to_tuples
+from vss_cli.helper import to_tuples
 
 click_log.basic_config()
 
@@ -111,33 +111,37 @@ def _default_token() -> Optional[str]:
 @click.command(cls=VssCli, context_settings=CONTEXT_SETTINGS)
 @click_log.simple_verbosity_option(logging.getLogger(), "--loglevel", "-l")
 @click.option(
-    '--server',
-    '-s',
-    help='The server URL',
-    default=const.DEFAULT_SERVER,
+    '--endpoint',
+    '-e',
+    help='The Cloud API endpoint URL',
+    default=None,
     show_default=True,
     envvar='VSS_ENDPOINT',
 )
 @click.option(
     '--config',
+    '-c',
     default=const.DEFAULT_CONFIG,
     help='Configuration file',
     envvar='VSS_CONFIG'
 )
 @click.option(
     '--token',
+    '-t',
     default=_default_token,
     help='The Bearer token for the VSS API.',
     envvar='VSS_TOKEN',
 )
 @click.option(
     '--username',
+    '-u',
     default=None,  # type: ignore
     help='The API username for VSS API.',
     envvar='VSS_USER',
 )
 @click.option(
     '--password',
+    '-p',
     default=None,  # type: ignore
     help='The API password for VSS API.',
     envvar='VSS_USER_PASS',
@@ -146,6 +150,7 @@ def _default_token() -> Optional[str]:
     '--timeout',
     help='Timeout for network operations.',
     default=const.DEFAULT_TIMEOUT,
+    envvar='VSS_TIMEOUT',
     show_default=True,
 )
 @click.option(
@@ -211,7 +216,7 @@ def _default_token() -> Optional[str]:
 def cli(
     ctx: Configuration,
     verbose: bool,
-    server: str,
+    endpoint: Optional[str],
     token: Optional[str],
     username: Optional[str],
     password: Optional[str],
@@ -227,7 +232,7 @@ def cli(
 ):
     """Command line interface for the ITS Private Cloud."""
     ctx.verbose = verbose
-    ctx.server = server
+    ctx.endpoint = endpoint
     ctx.token = token
     ctx.config = config
     ctx.username = username
@@ -241,12 +246,4 @@ def cli(
     ctx.table_format = table_format
     ctx.sort_by = sort_by  # type: ignore
 
-    if debug:
-        debug_requests_on()
-
-    _LOGGER.debug("Using settings: %s", ctx)
-
-    if ctx.server:
-        _LOGGER.debug(f"Updating endpoint from {ctx.api_endpoint} to {server}")
-        ctx.update_endpoints(ctx.server)
-        _LOGGER.debug(f"Using {ctx.api_endpoint}")
+    _LOGGER.debug(f"Using settings: {ctx}")
