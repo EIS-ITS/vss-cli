@@ -1553,7 +1553,7 @@ def compute_vm_set_cpu(
     'cpu_count', type=click.INT,
     required=True
 )
-@click.pass_context
+@pass_context
 def compute_vm_set_cpu_count(
         ctx: Configuration,
         cpu_count
@@ -2155,7 +2155,7 @@ def compute_vm_set_guest_cmd(
     required=True,
     autocompletion=autocompletion.operating_systems
 )
-@click.pass_context
+@pass_context
 def compute_vm_set_guest_os(
         ctx: Configuration, guest_id
 ):
