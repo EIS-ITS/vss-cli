@@ -127,3 +127,86 @@ def request_mgmt_change_retry(ctx: Configuration, rid):
             single=True
         )
     )
+
+
+@request_mgmt_change.group(
+    'set',
+    short_help='Update vm change request',
+    invoke_without_command=True
+)
+@click.argument(
+    'rid', type=click.INT,
+    required=True,
+    autocompletion=autocompletion.change_requests
+)
+@pass_context
+def request_mgmt_change_set(ctx: Configuration, rid):
+    ctx.request_id = rid
+    if click.get_current_context().invoked_subcommand is None:
+        raise click.UsageError(
+            'Sub command is required'
+        )
+
+
+@request_mgmt_change_set.command(
+    'schedule',
+    short_help='Update scheduling settings'
+)
+@click.option(
+    '-c', '--cancel',
+    is_flag=True,
+    help='Cancel scheduling',
+    default=False)
+@click.option(
+    '-d', '--date-time',
+    type=click.DateTime(formats=const.SUPPORTED_DATETIME_FORMATS),
+    required=False, default=None,
+    help='Update datetime YYYY-MM-DD HH:MM.'
+)
+@pass_context
+def request_mgmt_change_set_schedule(
+        ctx: Configuration, cancel, date_time
+):
+    obj = ctx.get_change_request(ctx.request_id)
+    if not obj:
+        raise click.BadArgumentUsage(
+            f'Change Request {ctx.request_id} does not exit.'
+        )
+    # no point of updating scheduling time if not scheduled
+    if not obj.get('status') == 'Scheduled':
+        raise click.BadArgumentUsage(
+            f'Change Request {ctx.request_id} is not '
+            f'scheduled.'
+        )
+    # create payload
+    payload = dict(
+        request_id=ctx.request_id
+    )
+    # cancel option
+    if cancel:
+        ctx.cancel_scheduled_change_request(**payload)
+        obj = ctx.get_change_request(ctx.request_id)
+    # update datetime
+    elif date_time:
+        import datetime
+        payload['date_time'] = datetime.datetime.strftime(
+            date_time, const.DEFAULT_DATETIME_FMT
+        )
+        # update request
+        obj = ctx.reschedule_change_request(**payload)
+    else:
+        raise click.BadOptionUsage(
+            option_name='date-time',
+            message='Provide either -c/--cancel or -d/--date-time '
+                    'to update request.'
+        )
+    # provide feedback
+    columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
