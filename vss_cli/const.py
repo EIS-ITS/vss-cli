@@ -4,15 +4,19 @@ import pkg_resources
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
 DEFAULT_TIMEOUT = 30
-DEFAULT_SERVER = 'https://cloud-api.eis.utoronto.ca'
+DEFAULT_ENDPOINT = 'https://cloud-api.eis.utoronto.ca'
+DEFAULT_ENDPOINT_NAME = 'cloud-api'
 DEFAULT_WEBDAV_SERVER = 'https://vskey-stor.eis.utoronto.ca'
-DEFAULT_CONFIG = os.path.expanduser(os.path.join(
+LEGACY_CONFIG = os.path.expanduser(os.path.join(
     '~', '.vss-cli', 'config.json')
+)
+DEFAULT_CONFIG = os.path.expanduser(os.path.join(
+    '~', '.vss-cli', 'config.yaml')
 )
 DEFAULT_HISTORY = os.path.expanduser(os.path.join(
     '~', '.vss-cli', 'history')
@@ -20,8 +24,13 @@ DEFAULT_HISTORY = os.path.expanduser(os.path.join(
 DEFAULT_DATA_PATH = pkg_resources.resource_filename(
     PACKAGE_NAME, 'data'
 )
+DEFAULT_CONFIG_TMPL = os.path.join(
+    DEFAULT_DATA_PATH, 'config.yaml'
+)
+DEFAULT_CHECK_UPDATES = True
+DEFAULT_CHECK_MESSAGES = True
 
-DEFAULT_DATAOUTPUT = 'table'
+DEFAULT_DATA_OUTPUT = 'table'
 DEFAULT_RAW_OUTPUT = 'json'
 
 DEFAULT_DATETIME_FMT = '%Y-%m-%d %H:%M'
@@ -29,6 +38,16 @@ SUPPORTED_DATETIME_FORMATS = [
     '%Y-%m-%dT%H:%M:%S',
     '%Y-%m-%d %H:%M'
 ]
+GENERAL_SETTINGS = {
+    'check_for_messages': bool,
+    'check_for_updates': bool,
+    'debug': bool,
+    'verbose': bool,
+    'default_endpoint_name': str,
+    'output': str,
+    'table_format': str,
+    'timeout': int,
+}
 
 DEFAULT_HOST_REGEX = "^[a-z][a-z0-9+\\-.]*://([a-z0-9\\" \
                      "-._~%!$&'()*+,;=]+@)?([a-z0-9\\-." \

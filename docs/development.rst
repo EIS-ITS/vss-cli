@@ -69,18 +69,26 @@ Build docs
 
     pip install .[dev]
 
-2. Go to the `docs` folder and run `make` to start the build:
+2. Build the ``html`` and ``man`` pages with ``distutils``:
+
+.. code-block:: bash
+
+    python setup.py build_sphinx
+
+3. Or to the `docs` folder and run ``make`` to start the build:
 
 .. code-block:: bash
 
     cd docs
-    make html
+    make html man
+
+In any case, the resulting files are located in ``docs/_build``.
 
 
 Developing Plugins
 ------------------
 Plugin developers need to register their sub-commands or sub-groups to either of the following entry-points
-in their `setup.py` that is loaded by the `vss-cli` core package:
+in their `setup.py` that is loaded by the ``vss-cli`` core package:
 
 - ``vss_cli.contrib.plugins``: scope at ``vss-cli plugins`` command group.
 - ``vss_cli.contrib.compute``: scope at ``vss-cli compute`` command group.

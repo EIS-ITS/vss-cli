@@ -1,7 +1,11 @@
-"""Status plugin for VSS CLI (vss-cli)."""
-import click
-from subprocess import call
+"""Upgrade plugin for VSS CLI (vss-cli)."""
 import logging
+from subprocess import call
+
+import click
+from vss_cli import vssconst
+from vss_cli.cli import pass_context
+from vss_cli.config import Configuration
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -14,14 +18,16 @@ _LOGGING = logging.getLogger(__name__)
     'upstream',
     type=click.Choice(
         ['stable', 'develop', 'branch']
-    )
+    ),
+    default='stable'
 )
 @click.option(
     '--git-branch', '-b',
     help='GitLab repository branch',
     required=False
 )
-def cli(upstream, git_branch):
+@pass_context
+def cli(ctx: Configuration, upstream, git_branch):
     """Upgrade existing install of VSS CLI to the latest version
     (experimental). For example, to upgrade to the stable version:
 
@@ -70,21 +76,27 @@ def cli(upstream, git_branch):
         raise click.BadArgumentUsage(
             f'Invalid upstream {upstream}'
         )
-
-    try:
-        import pip
-        cmd_args_str = ' '.join(cmd_lookup['args'])
-        cmd_str = f"pip install {cmd_args_str} {cmd_lookup['pkg']}"
-        _LOGGING.debug(f'Executing {cmd_str}')
-        exit_code = call(
-            cmd_str,
-            shell=True)
-        if exit_code > 0:
-            raise click.ClickException(
-                'Could not perform upgrade, please try: '
-                '\n\tpip install --upgrade vss-cli')
-    except ImportError as ex:
-        _LOGGING.error(f'Error loading pip: {ex}')
-        raise click.UsageError(
-            'Pip is required to upgrade VSS CLI'
+    # assemble command
+    cmd_args_str = ' '.join(cmd_lookup['args'])
+    cmd_bin = ctx.get_pip_binary()
+    # execute command
+    cmd_str = f"{cmd_bin} install {cmd_args_str} {cmd_lookup['pkg']}"
+    _LOGGING.debug(f'Executing {cmd_str}')
+    # calling command
+    exit_code = call(
+        cmd_str,
+        shell=True)
+    if exit_code > 0:
+        raise click.ClickException(
+            f'Could not perform upgrade, please try: '
+            f'\n\t{cmd_str}')
+    else:
+        _LOGGING.debug(
+            f'Successfully executed upgrade command: {cmd_str}'
         )
+    # all done
+    check = vssconst.EMOJI_CHECK.decode('utf-8')
+    ctx.secho(
+        f'Successfully executed upgrade command {check}',
+        fg='green'
+    )

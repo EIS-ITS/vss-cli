@@ -2,6 +2,27 @@
 Changelog
 =========
 
+v0.1.1
+======
+
+**Improvements:**
+
+- `#54`_: ``docs``: Windows installation steps: by [jm.lopez]
+- `#55`_: ``core``: Handle advanced configuration editable by users and via CLI : by [jm.lopez]
+- `#57`_: ``docs``: docs/Add man page build and deploy stage to pipeline: by [jm.lopez]
+
+**Bug Fixes:**
+
+- `#63`_: ``compute floppy|folder|net``: invalid context in compute, floppy, folder and network commands: by [jm.lopez]
+- `#61`_: ``core``: pyvss/AttributeError: 'Configuration' object has no attribute 'get_vss_services': by [jm.lopez]
+- `#59`_: ``account set notification request``: missing command account/set/notification/request: by [jm.lopez]
+- `#58`_: ``message get``: message/get does not provide auto-completion: by [jm.lopez]
+- `#56`_: ``upgrade``: vss-cli upgrade fails when there's no pip: by [jm.lopez]
+
+**New Features:**
+
+- `#62`_: ``request change set scheduled``: request/change/set scheduled and scheduled_datetime: by [jm.lopez]
+
 v0.1.0
 ======
 
@@ -56,6 +77,17 @@ v0.1.0
 
 .. Links to issues section
 
+
+.. _`#63`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/63
+.. _`#62`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/62
+.. _`#61`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/61
+.. _`#60`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/60
+.. _`#59`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/59
+.. _`#58`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/58
+.. _`#57`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/57
+.. _`#56`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/56
+.. _`#55`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/55
+.. _`#54`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/54
 .. _`#53`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/53
 .. _`#51`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/51
 .. _`#50`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/50

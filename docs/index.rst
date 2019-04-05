@@ -3,31 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ITS Private Cloud Command Line Interface's documentation!
-====================================================================
+ITS Private Cloud Command Line Interface ``vss-cli``
+====================================================
 
-.. image:: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/build.svg
-   :target: https://gitlab-ee.eis.utoronto.ca/vss/vsscli/commits/master
+The ITS Private Cloud Command-Line Interface ``vss-cli`` simplifies the interaction
+with the ITS Private Cloud RESTful API to manage your virtual machines and other services.
 
-.. image:: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/coverage.svg
-   :target: https://gitlab-ee.eis.utoronto.ca/vss/vsscli/commits/master
+.. raw:: html
 
-.. image:: https://img.shields.io/pypi/v/vss-cli.svg
-    :target: https://pypi.python.org/pypi/vsscli
-
-.. image:: https://img.shields.io/pypi/pyversions/vss-cli.svg
-    :target: https://pypi.python.org/pypi/vss-cli
-
-.. image:: https://img.shields.io/docker/pulls/uofteis/vss-cli.svg
-    :target: https://hub.docker.com/r/uofteis/vss-cli/
-
-.. image:: https://images.microbadger.com/badges/image/uofteis/vss-cli.svg
-    :target: https://microbadger.com/images/uofteis/vss-cli
-
-.. image:: https://images.microbadger.com/badges/version/uofteis/vss-cli.svg
-    :target: https://microbadger.com/images/uofteis/vss-cli
-
-This package provides a unified command line interface to the ITS Private Cloud.
+  <script type="text/javascript" src="https://asciinema.org/a/14.js"
+          id="asciicast-JB2CT3GmfdFFUXEDxBV3xI0i0" async
+          data-autoplay="true" data-loop="false"></script>
 
 .. toctree::
    :maxdepth: 2
@@ -35,21 +21,14 @@ This package provides a unified command line interface to the ITS Private Cloud.
 
    install
    configure
-   docker
    use
-   examples/index
+   upgrade
    development
+   docker
+   examples/index
 
 .. toctree::
    :maxdepth: 1
    :glob:
 
    changelog
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

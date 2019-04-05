@@ -15,8 +15,8 @@ _LOGGING = logging.getLogger(__name__)
 
 @cli.group('net',
            short_help='List available virtual networks')
-@click.pass_context
-def cli(ctx):
+@pass_context
+def cli(ctx: Configuration):
     """List available virtual networks."""
 
 

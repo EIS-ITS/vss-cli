@@ -262,6 +262,63 @@ def account_notification_set(ctx: Configuration):
 
 
 @account_notification_set.command(
+    'request',
+)
+@click.argument(
+    'notification_type',
+    type=click.Choice(
+        ['all', 'none',
+         'error', 'completion',
+         'submission']
+    ),
+    nargs=-1,
+    required=True
+)
+@pass_context
+def account_notification_set_request(
+        ctx: Configuration,
+        notification_type
+):
+    """Customize request notification settings"""
+    lookup = {
+        'all': ctx.enable_user_request_all_notification,
+        'none': ctx.disable_user_request_all_notification,
+        'error': ctx.enable_user_request_error_notification,
+        'submission': ctx.enable_user_request_submission_notification,
+        'completion': ctx.enable_user_request_completion_notification
+
+    }
+    for n_type in notification_type:
+        try:
+            f = lookup[n_type]
+            f()
+            if n_type in ['all', 'none']:
+                status = 'enabled' if n_type == 'all' else 'disabled'
+                ctx.secho(
+                    f'Notifications triggered by requests '
+                    f'have been {status}.', fg='green'
+                )
+            elif n_type in ['error', 'submission', 'completion']:
+                ctx.secho(
+                    f'Notifications triggered by request {n_type} '
+                    f'have been enabled.',
+                    fg='green'
+                )
+        except KeyError:
+            pass
+    obj = ctx.get_user_request_notification_settings()
+    columns = ctx.columns or const.COLUMNS_NOT_REQUEST
+    click.echo(
+        format_output(
+            ctx,
+            [obj],
+            columns=columns,
+            single=True
+        )
+    )
+
+
+@account_notification_set.command(
     'format'
 )
 @click.argument(

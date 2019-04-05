@@ -7,32 +7,31 @@ from prompt_toolkit.history import FileHistory
 from vss_cli.cli import pass_context
 from vss_cli import const
 from vss_cli.config import Configuration
-from vss_cli.helper import get_hostname_from_url
 
 
 _LOGGING = logging.getLogger(__name__)
 
 
-@click.group('shell',
-             short_help='REPL interactive shell.',
-             invoke_without_command=True)
-@click.option('-i', '--history', type=click.STRING,
-              help='File path to save history',
-              default=const.DEFAULT_HISTORY,
-              envvar='VSS_SHELL_HISTORY',
-              required=False)
+@click.group(
+    'shell',
+    short_help='REPL interactive shell.',
+    invoke_without_command=True
+)
+@click.option(
+    '-i', '--history', type=click.STRING,
+    help='File path to save history',
+    default=const.DEFAULT_HISTORY,
+    envvar='VSS_SHELL_HISTORY',
+    required=False
+)
 @pass_context
 def cli(ctx: Configuration, history):
     """REPL interactive shell."""
-    endpoint = ctx.api_endpoint
+    ctx.load_config()
     _message_pfix = 'vss'
     _message_sfix = '> '
     # obtain hostname
-    _host = get_hostname_from_url(
-        const.DEFAULT_HOST_REGEX,
-        endpoint
-    )
-    _message = f'{_message_pfix} ({_host}) {_message_sfix}'
+    _message = f'{_message_pfix} ({ctx.endpoint_name}) {_message_sfix}'
     welcome = r"""
     __   _____ ___
     \ \ / / __/ __|      API Endpoint: {endpoint}
@@ -41,9 +40,11 @@ def cli(ctx: Configuration, history):
        CLI v{version}        History is saved: {history}
 
     Exit shell with :exit, :q, :quit, ctrl+d
-    """.format(version=const.__version__,
-               history=history,
-               endpoint=endpoint)
+    """.format(
+        version=const.__version__,
+        history=history,
+        endpoint=ctx.endpoint
+    )
     ctx.secho(welcome, fg='blue')
     # create dir for history
     f_path = os.path.expanduser(history or ctx.history)
