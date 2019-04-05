@@ -24,7 +24,7 @@ def compute_floppy(ctx: Configuration):
     'public',
     short_help='Browse public images'
 )
-@click.pass_context
+@pass_context
 def compute_floppy_public(ctx: Configuration):
     """Available Floppy images in the VSS central store"""
 

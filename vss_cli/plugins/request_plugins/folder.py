@@ -18,7 +18,7 @@ _LOGGING = logging.getLogger(__name__)
     'folder',
     short_help='Manage logical folder requests.'
 )
-@click.pass_context
+@pass_context
 def request_mgmt_folder(ctx: Configuration):
     """ Logical Folders are containers for storing and organizing
     inventory objects, in this case virtual machines."""
