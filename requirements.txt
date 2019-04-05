@@ -12,3 +12,5 @@ Pygments==2.3.1
 pyvss>=0.9.29
 webdavclient3==0.10
 pick==0.6.4
+dataclasses-json==0.2.2
+validators==0.12.4

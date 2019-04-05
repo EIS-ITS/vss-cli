@@ -73,10 +73,11 @@ The release notes for the VSS CLI can be found [CHANGELOG](CHANGELOG.md) in the 
 
 Before using VSS CLI, you need setup your VSS credentials. You can do this in a couple of ways:
 
-* Environment variables
 * Configuration file
+* Environment variables
+* Command Line Input
 
-The quickest way to get started is to run the `vss-cli configure mk`` command:
+The quickest way to get started is to run the ``vss-cli configure mk`` command:
 
 ```bash
 vss-cli configure mk
@@ -97,63 +98,8 @@ export VSS_USER_PASS=superstrongpassword
 export VSS_TOKEN=JWT_TOKEN
 ```
 
-To use a config file, create a configuration as follows:
-
-```javascript
-    {
-    "https://vss-api.eis.utoronto.ca": {
-        "auth": "<encoded_creds>",
-        "token": "<access_token"
-        }
-    }
-```
-
-Place it in ``~/.vss-cli/config.json`` (or in ``%UserProfile%\.vss-cli\config.json`` on Windows).
-If you place the config file in a different location than ``~/.vss-cli/config.json``
-you need to inform VSS CLI the full path. Do this by setting
-the appropriate environment variable:
-
-```bash
-export VSS_CONFIG=/path/to/config_file.json
-```
-
-Or use the ``-c/--config`` option in the ``vss-cli`` command as follows:
-
-```bash
-vss-cli -c ~/.secret/vss-config.json
-```
-
-By default VSS CLI output is `table`, and this can be configured either by ``-o/--output``
-option or the ``VSS_OUTPUT`` environment variable as follows:
-
-```bash
-export VSS_OUTPUT=json
-# or
-export VSS_OUTPUT=table
-```
-
-Options are `json`, `yaml`, `table`, `auto`.
-
-The VSS CLI supports the following table formats supported by [python-tabulate][python-tabulate]: 
-`plain`, `simple`, `github`, `grid`, `fancy_grid`, `pipe`, `orgtbl`, `rst`, `mediawiki`, `html`, `latex`, `latex_raw`, 
-`latex_booktabs` or `tsv`. Default is `simple`.
-
-This option is configurable by using ``--table-format`` or `VSS_TABLE` environment variable as follows:
-
-```bash
-export VSS_TABLE=simple
-```
-
-You can also control the data shown with ``--columns`` providing a name and a `jsonpath`. For instance 
-``--columns=ID=id,VMNAME=vm_name,WARNINGS=message.warnings[*] request snapshot ls``
-
-```text
-  ID  VMNAME           WARNINGS
-----  ---------------  -----------------------
-   1  1502P-wiki-vss   Snapshot 3 deleted
-   6  1000P-Med-ASP02  Snapshot 1 deleted
-   2  1606T-coreos0    Snapshot 1 deleted
-```
+For detailed information about the ``vss-cli`` configuration, please refer to the 
+[official documentation site][official documentation site].
 
 ## JSON Parameter Input 
 
@@ -248,6 +194,8 @@ We use GitLab issues for tracking bugs, enhancements and feature requests.
 If it turns out that you may have found a bug, please [open a new issue][open a new issue].
 
 ```bash
+vss-cli --help
+
 Usage: vss-cli [OPTIONS] COMMAND [ARGS]...
 
   Command line interface for the ITS Private Cloud.
@@ -255,26 +203,24 @@ Usage: vss-cli [OPTIONS] COMMAND [ARGS]...
 Options:
   -l, --loglevel LVL              Either CRITICAL, ERROR, WARNING, INFO or
                                   DEBUG
-  --version                       Show the version and exit.
-  -s, --server TEXT               The server URL  [default: https://cloud-
-                                  api.eis.utoronto.ca]
-  --config TEXT                   Configuration file
-  --token TEXT                    The Bearer token for the VSS API.
-  --username TEXT                 The API username for VSS API.
-  --password TEXT                 The API password for VSS API.
+  -e, --endpoint TEXT             The Cloud API endpoint URL  [default:
+                                  https://cloud-api.eis.utoronto.ca]
+  -c, --config TEXT               Configuration file
+  -t, --token TEXT                The Bearer token for the VSS API.
+  -u, --username TEXT             The API username for VSS API.
+  -p, --password TEXT             The API password for VSS API.
   --timeout INTEGER               Timeout for network operations.  [default:
                                   30]
   -o, --output [json|yaml|table|auto]
                                   Output format.  [default: auto]
   -v, --verbose                   Enables verbose mode.
-  -x                              Print backtraces when exception occurs.
+  -x                              Print back traces when exception occurs.
   --debug                         Enables debug mode.
   --columns TEXT                  Custom columns key=value list. Example:
-                                  ENTITY=entity_name,
-                                  NAME=attributes.friendly_name
+                                  VM=uuid,PROVISIONED=storage.provisionedGB
   --no-headers                    When printing tables don't use headers
                                   (default: print headers)
-  --table-format TEXT             Which table format to use.
+  --table-format TEXT             Which table format to use (default: simple)
   --sort-by TEXT                  Sort table by the jsonpath expression.
                                   Example: updated_on
   --version                       Show the version and exit.
@@ -285,11 +231,14 @@ Commands:
   completion  Output shell completion code for the specified shell (bash or
               zsh).
   compute     Manage VMs, networks, folders, etc.
-  configure   Configure VSS CLI options.
+  configure   Configure VSS-CLI options.
   key         Manage your SSH Public Keys.
   message     Manage VSS Messages.
+  misc        Miscellaneous utilities.
+  plugins     External plugins.
   raw         Make a raw call to the API
   request     Manage various requests
+  service     ITS Service catalog.
   shell       REPL interactive shell.
   status      Check VSS Status.
   stor        Manage your VSS storage account.
@@ -315,6 +264,7 @@ Refer to the [Changelog][Changelog] for details.
 [Semantic Versioning]: https://semver.org/
 [tags section]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags
 [PyPI package section]: https://pypi.org/project/vss-cli/#history
+[official documentation site]: https://eis.utoronto.ca/~vss/vss-cli/configure.html
 [docs]: https://eis.utoronto.ca/~vss/vss-cli/
 [Contributing Guide]: https://eis.utoronto.ca/~vss/vss-cli/development.html
 [Changelog]: https://eis.utoronto.ca/~vss/vss-cli/changelog.html

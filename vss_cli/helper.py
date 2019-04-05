@@ -9,7 +9,6 @@ from typing import Any, Dict, Generator, List, Optional, Tuple, cast
 from pygments import highlight
 from pygments.lexers import JsonLexer, YamlLexer
 from pygments.formatters import TerminalFormatter
-from vss_cli.config import Configuration
 import vss_cli.const as const
 from tabulate import tabulate
 import yaml
@@ -59,8 +58,11 @@ def raw_format_output(
 ) -> str:
     """Format the raw output."""
     if output == 'auto':
-        _LOGGING.debug("Output `auto` thus using %s", const.DEFAULT_DATAOUTPUT)
-        output = const.DEFAULT_DATAOUTPUT
+        _LOGGING.debug(
+            "Output `auto` thus using %s",
+            const.DEFAULT_DATA_OUTPUT
+        )
+        output = const.DEFAULT_DATA_OUTPUT
 
     if sort_by:
         _sort_table(data, sort_by)
@@ -159,7 +161,7 @@ def _sort_table(result: List[Any], sort_by: str) -> List[Any]:
 
 
 def format_output(
-    ctx: Configuration,
+    ctx,
     data: List[Dict[str, Any]],
     columns: Optional[List] = None,
     single: Optional[bool] = False
@@ -214,7 +216,8 @@ def debug_requests() -> Generator:
 
 
 def get_hostname_from_url(
-        hostname_regex: str, url: str
+        url: str,
+        hostname_regex: str = const.DEFAULT_HOST_REGEX
 ) -> str:
     """Parse hostname from URL"""
     re_search = re.search(hostname_regex, url)
@@ -231,6 +234,10 @@ def capitalize(
         r"(\w)([A-Z])", r"\1 \2",
         value
     ).title()
+
+
+def str2bool(value: str) -> bool:
+    return value.lower() in ("yes", "true", "t", "1", "y")
 
 
 def dump_object(

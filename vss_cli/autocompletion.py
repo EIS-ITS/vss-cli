@@ -2,11 +2,10 @@
 import os
 from typing import Any, Dict, List, Tuple  # NOQA
 
+from requests.exceptions import HTTPError
 from vss_cli import const
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssError
-
-from requests.exceptions import HTTPError
 
 
 def _init_ctx(ctx: Configuration) -> None:
@@ -16,7 +15,7 @@ def _init_ctx(ctx: Configuration) -> None:
     if not hasattr(ctx, 'get_token'):
         ctx.client = Configuration(tk=os.environ.get('VSS_TOKEN'))
         ctx.client.server = os.environ.get(
-            'VSS_ENDPOINT', const.DEFAULT_SERVER
+            'VSS_ENDPOINT', const.DEFAULT_ENDPOINT
         )
         ctx.client.password = os.environ.get(
             'VSS_USER', None
