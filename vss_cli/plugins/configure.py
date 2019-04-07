@@ -15,7 +15,7 @@ from vss_cli.helper import format_output, str2bool
 _LOGGING = logging.getLogger(__name__)
 
 
-@click.group('config')
+@click.group('configure')
 @pass_context
 def cli(ctx: Configuration):
     """Configure VSS-CLI options."""
