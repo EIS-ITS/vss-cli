@@ -1,7 +1,8 @@
 """VSS Service Management plugin for VSS CLI (vss-cli)."""
 import click
-from vss_cli.cli import pass_context
+from click_spinner import spinner
 from vss_cli import const
+from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 
@@ -26,7 +27,7 @@ def cli(ctx: Configuration):
               help='apply sorting ')
 @click.option('-a', '--show-all', is_flag=True,
               help='show all results')
-@click.option('-c', '--count', type=int,
+@click.option('-c', '--count', type=click.INT,
               help='size of results')
 @click.option('-p', '--page', is_flag=True,
               help='page results in a less-like format')
@@ -55,9 +56,10 @@ def service_ls(
     if sort:
         params['sort'] = sort
     # make request
-    _requests = ctx.get_vss_services(
-        show_all=show_all,
-        per_page=count, **params)
+    with spinner():
+        _requests = ctx.get_vss_services(
+            show_all=show_all,
+            per_page=count, **params)
     # format output
     output = format_output(
         ctx,

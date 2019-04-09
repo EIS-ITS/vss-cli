@@ -1,27 +1,20 @@
-import click
 import logging
 import os
 
+import click
+from click_plugins import with_plugins
+from click_spinner import spinner
+from pkg_resources import iter_entry_points
 from vss_cli import const
+import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
-from vss_cli.helper import (
-    format_output, to_tuples,
-    raw_format_output
-)
-from vss_cli.validators import (
-    validate_phone_number, validate_email,
-    validate_json_type, validate_admin,
-    validate_inform
-)
-from vss_cli.plugins.compute import cli
 from vss_cli.exceptions import VssCliError
-
-import vss_cli.autocompletion as autocompletion
-
-from pkg_resources import iter_entry_points
-from click_plugins import with_plugins
-
+from vss_cli.helper import format_output, raw_format_output, to_tuples
+from vss_cli.plugins.compute import cli
+from vss_cli.validators import (
+    validate_admin, validate_email, validate_inform, validate_json_type,
+    validate_phone_number)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -84,7 +77,8 @@ def compute_vm_ls(
     if sort:
         query['sort'] = sort
     # get templates
-    obj = ctx.get_vms(**query)
+    with spinner():
+        obj = ctx.get_vms(**query)
     # including additional attributes?
     if summary:
         columns = ctx.columns or const.COLUMNS_VM

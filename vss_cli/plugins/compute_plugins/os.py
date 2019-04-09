@@ -1,11 +1,12 @@
-import click
 import logging
+
+import click
+from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -54,10 +55,10 @@ def compute_os_ls(
         query['filter'] = filter
     if sort:
         query['sort'] = sort
-
-    obj = ctx.get_os(show_all=show_all,
-                     per_page=count,
-                     **query)
+    with spinner():
+        obj = ctx.get_os(show_all=show_all,
+                         per_page=count,
+                         **query)
     # format
     columns = ctx.columns or const.COLUMNS_OS
     output = format_output(

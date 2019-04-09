@@ -1,15 +1,14 @@
 """Folder Request Management plugin for VSS CLI (vss-cli)."""
-import click
 import logging
 
+import click
+from click_spinner import spinner
 from vss_cli import const
+import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.request import cli
-
-import vss_cli.autocompletion as autocompletion
-
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -63,10 +62,11 @@ def request_mgmt_folder_ls(
         params['filter'] = filter
     if sort:
         params['sort'] = sort
-
-    _requests = ctx.get_folder_requests(
-        show_all=show_all,
-        per_page=count, **params)
+    # make request
+    with spinner():
+        _requests = ctx.get_folder_requests(
+            show_all=show_all,
+            per_page=count, **params)
 
     output = format_output(
         ctx,
@@ -91,7 +91,9 @@ def request_mgmt_folder_ls(
 )
 @pass_context
 def request_mgmt_folder_get(ctx, rid):
-    obj = ctx.get_folder_request(rid)
+    # make request
+    with spinner():
+        obj = ctx.get_folder_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_FOLDER
     click.echo(
         format_output(

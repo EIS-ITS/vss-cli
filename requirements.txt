@@ -14,3 +14,4 @@ webdavclient3==0.10
 pick==0.6.4
 dataclasses-json==0.2.2
 validators==0.12.4
+click-spinner==0.1.8

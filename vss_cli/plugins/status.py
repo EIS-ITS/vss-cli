@@ -1,7 +1,8 @@
 """Status plugin for VSS CLI (vss-cli)."""
 import logging
-import click
 
+import click
+from click_spinner import spinner
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -18,7 +19,8 @@ _LOGGING = logging.getLogger(__name__)
 @pass_context
 def cli(ctx: Configuration):
     """Check VSS Status from https://www.systemstatus.utoronto.ca/"""
-    obj = check_status()
+    with spinner():
+        obj = check_status()
     ctx.status = obj
     if click.get_current_context().invoked_subcommand is None:
         columns = [
