@@ -1,4 +1,2 @@
-from vss_cli.plugins.request_plugins import (
-    snapshot, image, new, change,
-    export, folder, inventory
-)  # pylint: disable=unused-import
+from vss_cli.plugins.request_plugins import (  # pylint: disable=unused-import
+    change, export, folder, image, inventory, new, snapshot)

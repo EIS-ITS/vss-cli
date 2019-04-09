@@ -1,14 +1,14 @@
-import click
 import logging
-from vss_cli import const
 
+import click
+from click_spinner import spinner
+from vss_cli import const
+import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-from vss_cli.exceptions import VssCliError
-import vss_cli.autocompletion as autocompletion
-
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -46,7 +46,8 @@ def domain_ls(
         for f in filter:
             query_params[f[0]] = f[1]
     # query
-    objs = ctx.get_domains(**query_params)
+    with spinner():
+        objs = ctx.get_domains(**query_params)
     # format output
     output = format_output(
         ctx,
@@ -84,7 +85,8 @@ def domain_get(ctx: Configuration, name_or_moref):
                 ('HOSTS', 'hostsCount'),
                 ('STATUS', 'status')
             ])
-        obj = ctx.get_domain(ctx.moref)
+        with spinner():
+            obj = ctx.get_domain(ctx.moref)
         click.echo(
             format_output(
                 ctx,
@@ -103,7 +105,8 @@ def domain_get(ctx: Configuration, name_or_moref):
               help='page results in a less-like format')
 @pass_context
 def domain_get_vms(ctx: Configuration, page):
-    obj = ctx.get_domain(ctx.moref, summary=1)
+    with spinner():
+        obj = ctx.get_domain(ctx.moref, summary=1)
     if not obj:
         raise VssCliError(
             f'Either domain {ctx.moref} does not exist, '

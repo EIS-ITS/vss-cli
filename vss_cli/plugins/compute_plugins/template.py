@@ -1,11 +1,12 @@
-import click
 import logging
+
+import click
+from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -57,7 +58,8 @@ def compute_template_ls(
         for f in filter:
             query[f[0]] = f[1]
     # get templates
-    obj = ctx.get_templates(**query)
+    with spinner():
+        obj = ctx.get_templates(**query)
     # including additional attributes?
     if summary:
         columns = ctx.columns or const.COLUMNS_VM
