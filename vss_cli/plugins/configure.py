@@ -15,14 +15,17 @@ from vss_cli.helper import format_output, str2bool
 _LOGGING = logging.getLogger(__name__)
 
 
-@click.group('config')
+@click.group('configure')
 @pass_context
 def cli(ctx: Configuration):
     """Configure VSS-CLI options."""
     ctx.auto_output('table')
 
 
-@cli.command()
+@cli.command(
+    'upgrade',
+    short_help='Upgrade legacy configuration.'
+)
 @click.argument(
     'legacy_config',
     envvar='VSS_CONFIG',
@@ -41,6 +44,7 @@ def cli(ctx: Configuration):
 )
 @pass_context
 def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
+    """Upgrade legacy configuration (config.json) to current (config.yaml)."""
     with open(legacy_config, 'r') as f:
         legacy_endpoints = yaml.safe_load(f)
     endpoints = []
@@ -88,7 +92,10 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
         ctx.echo('No endpoints found. ')
 
 
-@cli.command()
+@cli.command(
+    'mk',
+    short_help='Create new endpoint configuration.'
+)
 @click.option(
     '-r', '--replace',
     is_flag=True, default=False,
@@ -205,7 +212,10 @@ def set_cfg(ctx: Configuration, setting: str, value: Any):
     return
 
 
-@cli.command()
+@cli.command(
+    'ls',
+    short_help='List existing endpoint configuration'
+)
 @pass_context
 def ls(ctx: Configuration):
     """List existing configuration"""
@@ -280,7 +290,10 @@ def ls(ctx: Configuration):
         ctx.echo('No configuration was found')
 
 
-@cli.command()
+@cli.command(
+    'edit',
+    short_help='Edit configuration file.'
+)
 @click.option(
     '-l', '--launch',
     is_flag=True,

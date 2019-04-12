@@ -1,14 +1,13 @@
-import click
 import logging
 
+import click
+from click_spinner import spinner
 from vss_cli import const
+import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-
-import vss_cli.autocompletion as autocompletion
-
 
 _LOGGING = logging.getLogger(__name__)
 

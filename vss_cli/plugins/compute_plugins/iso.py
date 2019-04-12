@@ -1,11 +1,12 @@
-import click
 import logging
+
+import click
+from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -57,7 +58,8 @@ def compute_iso_public_ls(
     if sort:
         query['sort'] = '{},{}'.format(sort[0], sort[1])
     # get objects
-    obj = ctx.get_isos(**query)
+    with spinner():
+        obj = ctx.get_isos(**query)
     # format
     columns = ctx.columns or const.COLUMNS_IMAGE
     output = format_output(
@@ -94,7 +96,8 @@ def compute_iso_personal_ls(ctx: Configuration, page):
         vss-cli compute iso personal sync
         vss-cli compute iso personal ls
     """
-    obj = ctx.get_user_isos()
+    with spinner():
+        obj = ctx.get_user_isos()
     # format
     columns = ctx.columns or const.COLUMNS_IMAGE
     output = format_output(

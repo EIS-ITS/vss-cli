@@ -1,13 +1,14 @@
 """SSH Key Management plugin for VSS CLI (vss-cli)."""
-import click
 import logging
 import os
+
+import click
+from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
-from vss_cli.helper import format_output
 from vss_cli.exceptions import VssCliError
-
+from vss_cli.helper import format_output
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -60,9 +61,10 @@ def key_ls(
     if sort:
         params['sort'] = sort
     # make request
-    obj = ctx.get_user_ssh_keys(
-        show_all=show_all,
-        per_page=count, **params)
+    with spinner():
+        obj = ctx.get_user_ssh_keys(
+            show_all=show_all,
+            per_page=count, **params)
     # format output
     output = format_output(
         ctx,
@@ -87,7 +89,8 @@ def key_ls(
 )
 @pass_context
 def key_get(ctx: Configuration, kid):
-    obj = ctx.get_user_ssh_key(kid)
+    with spinner():
+        obj = ctx.get_user_ssh_key(kid)
     columns = ctx.columns or const.COLUMNS_SSH_KEY
     # format output
     click.echo(
@@ -110,10 +113,11 @@ def key_get(ctx: Configuration, kid):
 )
 @pass_context
 def key_mk(ctx, path_or_key):
-    if os.path.isfile(path_or_key):
-        obj = ctx.create_user_ssh_key_path(path_or_key)
-    else:
-        obj = ctx.create_user_ssh_key(path_or_key)
+    with spinner():
+        if os.path.isfile(path_or_key):
+            obj = ctx.create_user_ssh_key_path(path_or_key)
+        else:
+            obj = ctx.create_user_ssh_key(path_or_key)
     # defining columns
     columns = ctx.columns or const.COLUMNS_SSH_KEY_MIN
     # if key has been created print

@@ -1,14 +1,14 @@
-import click
 import logging
 
+import click
+from click_spinner import spinner
 from vss_cli import const
+import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
-from vss_cli.exceptions import VssCliError
-import vss_cli.autocompletion as autocompletion
-
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -58,7 +58,8 @@ def compute_folder_ls(
     if sort:
         query['sort'] = sort
     # query
-    obj = ctx.get_folders(**query)
+    with spinner():
+        obj = ctx.get_folders(**query)
     # set columns
     columns = ctx.columns or const.COLUMNS_FOLDER
     # format

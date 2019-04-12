@@ -1,13 +1,13 @@
 """New VM Request Management plugin for VSS CLI (vss-cli)."""
-import click
 import logging
 
+import click
+from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
 from vss_cli.plugins.request import cli
-
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -60,10 +60,11 @@ def request_mgmt_new_ls(
         params['filter'] = filter
     if sort:
         params['sort'] = sort
-
-    _requests = ctx.get_new_requests(
-        show_all=show_all,
-        per_page=count, **params)
+    # make request
+    with spinner():
+        _requests = ctx.get_new_requests(
+            show_all=show_all,
+            per_page=count, **params)
 
     output = format_output(
         ctx,
@@ -87,7 +88,9 @@ def request_mgmt_new_get(
     ctx: Configuration,
     rid
 ):
-    obj = ctx.get_new_request(rid)
+    # make request
+    with spinner():
+        obj = ctx.get_new_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_NEW
     click.echo(
         format_output(
@@ -109,7 +112,9 @@ def request_mgmt_new_retry(ctx: Configuration, rid):
     """Retries given virtual machine new request with status
     'Error Processed'.
     """
-    obj = ctx.retry_new_request(rid)
+    # make request
+    with spinner():
+        obj = ctx.retry_new_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
         format_output(
