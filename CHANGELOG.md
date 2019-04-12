@@ -1,5 +1,17 @@
 # Changelog 📝
 
+## [v0.1.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.1) (2019-04-12)
+
+**Improvements:**
+
+- [#67](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/67): Provide user feedback while CLI processing
+
+**Bug Fixes:**
+
+- [#65](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/65): configure command mismatch from autocompletion
+- [#66](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/66): configure upgrade missing description
+
+
 ## [v0.1.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.1) (2019-04-05)
 
 **Improvements:**
