@@ -1,7 +1,6 @@
 import logging
 
 import click
-from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -55,7 +54,7 @@ def compute_os_ls(
         query['filter'] = filter
     if sort:
         query['sort'] = sort
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_os(show_all=show_all,
                          per_page=count,
                          **query)

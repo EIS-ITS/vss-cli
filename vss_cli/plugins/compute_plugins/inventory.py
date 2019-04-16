@@ -1,7 +1,6 @@
 import logging
 
 import click
-from click_spinner import spinner
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
@@ -51,10 +50,11 @@ def compute_inventory_dl(
     """Downloads given inventory request to current directory or
     provided path. Also, it's possible to open downloaded file in
     default editor."""
-    file_path = ctx.download_inventory_result(
-        request_id=request_id,
-        directory=directory
-    )
+    with ctx.spinner(disable=ctx.debug):
+        file_path = ctx.download_inventory_result(
+            request_id=request_id,
+            directory=directory
+        )
     obj = {'file': file_path}
 
     click.echo(

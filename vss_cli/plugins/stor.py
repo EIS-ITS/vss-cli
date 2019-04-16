@@ -19,7 +19,8 @@ _LOGGING = logging.getLogger(__name__)
 @pass_context
 def cli(ctx: Configuration):
     """Manage your VSS storage account."""
-    ctx.load_config()
+    with ctx.spinner(disable=ctx.debug):
+        ctx.load_config()
 
 
 @cli.command(
@@ -35,7 +36,8 @@ def cli(ctx: Configuration):
 def stor_ls(ctx: Configuration, remote_path):
     columns = ctx.columns or const.COLUMNS_WEBDAV
     ctx.get_vskey_stor()
-    obj = ctx.vskey_stor.list(remote_path)
+    with ctx.spinner(disable=ctx.debug):
+        obj = ctx.vskey_stor.list(remote_path)
     click.echo(
         format_output(
             ctx,

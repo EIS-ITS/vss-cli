@@ -1,7 +1,6 @@
 import logging
 
 import click
-from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -58,7 +57,7 @@ def compute_template_ls(
         for f in filter:
             query[f[0]] = f[1]
     # get templates
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_templates(**query)
     # including additional attributes?
     if summary:
