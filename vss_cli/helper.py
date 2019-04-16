@@ -1,17 +1,19 @@
 """Helpers used by Home Assistant CLI (hass-cli)."""
-import re
 import contextlib
 from http.client import HTTPConnection
 import json
 import logging
+import re
 import shlex
 from typing import Any, Dict, Generator, List, Optional, Tuple, cast
+
 from pygments import highlight
-from pygments.lexers import JsonLexer, YamlLexer
 from pygments.formatters import TerminalFormatter
-import vss_cli.const as const
+from pygments.lexers import JsonLexer, YamlLexer
+from ruamel.yaml import YAML
 from tabulate import tabulate
-import yaml
+import vss_cli.const as const
+import vss_cli.yaml as yaml
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -49,6 +51,7 @@ def to_tuples(entry: str) -> List[Tuple[str, str]]:
 def raw_format_output(
     output: str,
     data: List[Dict[str, Any]],
+    yamlparser: YAML,
     columns: Optional[List] = None,
     no_headers: bool = False,
     table_format: str = 'plain',
@@ -89,8 +92,9 @@ def raw_format_output(
                 return highlight(
                     cast(
                         str,
-                        yaml.safe_dump(
-                            data, default_flow_style=False
+                        yaml.dump_yaml(
+                            yamlparser,
+                            data
                         )
                     ),
                     YamlLexer(),
@@ -99,8 +103,9 @@ def raw_format_output(
             else:
                 return cast(
                     str,
-                    yaml.safe_dump(
-                        data, default_flow_style=False
+                    yaml.dump_yaml(
+                        yamlparser,
+                        data
                     )
                 )
         except ValueError:
@@ -141,9 +146,7 @@ def raw_format_output(
             return res
     else:
         raise ValueError(
-            "Output Format was {}, expected either 'json' or 'yaml'".format(
-                output
-            )
+            f"Output Format was {output}, expected either 'json' or 'yaml'"
         )
 
 
@@ -170,6 +173,7 @@ def format_output(
     return raw_format_output(
         ctx.output,
         data,
+        ctx.yaml(),
         columns,
         ctx.no_headers,
         ctx.table_format,

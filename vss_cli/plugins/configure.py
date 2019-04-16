@@ -2,7 +2,6 @@
 import logging
 import os
 import json
-import yaml
 
 from typing import Any
 import click
@@ -46,7 +45,7 @@ def cli(ctx: Configuration):
 def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
     """Upgrade legacy configuration (config.json) to current (config.yaml)."""
     with open(legacy_config, 'r') as f:
-        legacy_endpoints = yaml.safe_load(f)
+        legacy_endpoints = ctx.yaml_load(f)
     endpoints = []
     if legacy_endpoints:
         n_ep = len(legacy_endpoints)
@@ -317,11 +316,10 @@ def edit(ctx: Configuration, launch):
         if new_raw is not None:
             save = vssconst.EMOJI_DISK.decode('utf-8')
             ctx.secho(f"Updating {ctx.config} {save}", fg='green')
-            new_obj = yaml.safe_load(new_raw)
+            new_obj = ctx.yaml_load(new_raw)
             with open(ctx.config, 'w') as fp:
-                yaml.dump(
-                    new_obj, stream=fp,
-                    default_flow_style=False
+                ctx.yaml_dump_stream(
+                    new_obj, stream=fp
                 )
         else:
             ctx.echo("No edits/changes returned from editor.")

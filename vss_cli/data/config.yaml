@@ -4,12 +4,12 @@
 general:
     default_endpoint_name: cloud-api
     timeout: 60
-    verbose: no
-    debug: no
+    verbose: false
+    debug: false
     output: auto
     table_format: simple
-    check_for_updates: yes
-    check_for_messages: yes
+    check_for_updates: true
+    check_for_messages: true
 
 endpoints:
     - name: cloud-api
