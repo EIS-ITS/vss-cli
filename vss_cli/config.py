@@ -20,7 +20,9 @@ from vss_cli.helper import debug_requests_on, get_hostname_from_url
 from vss_cli.exceptions import VssCliError
 from vss_cli.validators import validate_email, validate_phone_number
 from vss_cli.data_types import ConfigFile, ConfigEndpoint, ConfigFileGeneral
-import yaml
+from ruamel.yaml import YAML
+import vss_cli.yaml as yaml
+
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -240,7 +242,7 @@ class Configuration(VssManager):
         config_file = config or self.config
         try:
             with open(config_file, 'r') as f:
-                config_dict = yaml.safe_load(f)
+                config_dict = yaml.load_yaml(self.yaml(), f)
                 return json.dumps(config_dict)
         except ValueError as ex:
             _LOGGING.error(
@@ -485,11 +487,10 @@ class Configuration(VssManager):
         }
         return ConfigEndpoint.from_json(json.dumps(endpoint_cfg))
 
-    @staticmethod
-    def load_config_template() -> ConfigFile:
+    def load_config_template(self) -> ConfigFile:
         # load template in case it fails
         with open(const.DEFAULT_CONFIG_TMPL, 'r') as f:
-            config_tmpl = yaml.safe_load(f)
+            config_tmpl = yaml.load_yaml(self.yaml(), f)
             raw_config_tmpl = json.dumps(config_tmpl)
             config_file_tmpl = ConfigFile.from_json(raw_config_tmpl)
         return config_file_tmpl
@@ -514,7 +515,7 @@ class Configuration(VssManager):
             if os.path.isfile(self.config):
                 with open(self.config, 'r+') as fp:
                     try:
-                        _conf_dict = yaml.safe_load(fp)
+                        _conf_dict = yaml.load_yaml(self.yaml(), fp)
                         raw_config = json.dumps(_conf_dict)
                         config_file = ConfigFile.from_json(raw_config)
                     except (ValueError, TypeError) as ex:
@@ -542,9 +543,9 @@ class Configuration(VssManager):
                     # dumping and loading
                     _conf_dict = json.loads(config_file.to_json())
                     fp.seek(0)
-                    yaml.safe_dump(
-                        _conf_dict, stream=fp,
-                        default_flow_style=False
+                    yaml.dump_yaml(
+                        self.yaml(), _conf_dict,
+                        stream=fp
                     )
                     fp.truncate()
                 _LOGGING.debug(
@@ -563,9 +564,9 @@ class Configuration(VssManager):
                     config_file_dict = json.loads(config_file_tmpl.to_json())
                 # write file
                 with open(self.config, 'w') as fp:
-                    yaml.safe_dump(
-                        config_file_dict, stream=fp,
-                        default_flow_style=False
+                    yaml.dump_yaml(
+                        self.yaml(), config_file_dict,
+                        stream=fp
                     )
                 _LOGGING.debug(
                     f'New {f_type} has been written to {self.config}.'
@@ -1049,3 +1050,21 @@ class Configuration(VssManager):
                 spec_payload['admin'] = f"{admin_name}:" \
                     f"{admin_phone}:{admin_email}"
         return spec_payload
+
+    def yaml(self) -> YAML:
+        """Create default yaml parser."""
+        if self:
+            return yaml.yaml()
+
+    def yaml_load(self, source: str) -> Any:
+        """Load YAML from source."""
+        return self.yaml().load(source)
+
+    def yaml_dump(self, source: Any) -> str:
+        """Dump dictionary to YAML string."""
+        return cast(str, yaml.dump_yaml(self.yaml(), source))
+
+    def yaml_dump_stream(
+            self, data: Any, stream: Any = None, **kw: Any
+    ) -> Optional[str]:
+        return yaml.dump_yaml(self.yaml(), data, stream, **kw)
