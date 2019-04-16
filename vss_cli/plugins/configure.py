@@ -112,7 +112,7 @@ def mk(ctx: Configuration, replace: bool, endpoint_name: str):
     """Create new configuration or add profile to config file"""
     new_endpoint = ctx.endpoint or click.prompt(
         'Endpoint',
-        default=ctx.endpoint,
+        default=const.DEFAULT_ENDPOINT,
         type=click.STRING,
         show_default=True
     )
