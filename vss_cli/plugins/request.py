@@ -11,7 +11,8 @@ from vss_cli.config import Configuration
 @pass_context
 def cli(ctx: Configuration):
     """Useful to track request status and details."""
-    ctx.load_config()
+    with ctx.spinner(disable=ctx.debug):
+        ctx.load_config()
 
 
 from vss_cli.plugins.request_plugins import (

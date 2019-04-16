@@ -18,7 +18,8 @@ def cli(ctx: Configuration):
     """Compute related resources such as virtual machines, networks
        supported operating systems, logical folders, OVA/OVF images,
        floppy images, ISO images and more."""
-    ctx.load_config()
+    with ctx.spinner(disable=ctx.debug):
+        ctx.load_config()
 
 
 from vss_cli.plugins.compute_plugins import (

@@ -3,7 +3,6 @@ import os
 
 import click
 from click_plugins import with_plugins
-from click_spinner import spinner
 from pkg_resources import iter_entry_points
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
@@ -77,7 +76,7 @@ def compute_vm_ls(
     if sort:
         query['sort'] = sort
     # get templates
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_vms(**query)
     # including additional attributes?
     if summary:

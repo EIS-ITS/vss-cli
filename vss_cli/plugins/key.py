@@ -3,7 +3,6 @@ import logging
 import os
 
 import click
-from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -20,7 +19,8 @@ _LOGGING = logging.getLogger(__name__)
 @pass_context
 def cli(ctx: Configuration):
     """Manage your SSH Public Keys."""
-    ctx.load_config()
+    with ctx.spinner(disable=ctx.debug):
+        ctx.load_config()
 
 
 @cli.command(
@@ -61,7 +61,7 @@ def key_ls(
     if sort:
         params['sort'] = sort
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_ssh_keys(
             show_all=show_all,
             per_page=count, **params)
@@ -89,7 +89,7 @@ def key_ls(
 )
 @pass_context
 def key_get(ctx: Configuration, kid):
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_ssh_key(kid)
     columns = ctx.columns or const.COLUMNS_SSH_KEY
     # format output
@@ -113,7 +113,7 @@ def key_get(ctx: Configuration, kid):
 )
 @pass_context
 def key_mk(ctx, path_or_key):
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         if os.path.isfile(path_or_key):
             obj = ctx.create_user_ssh_key_path(path_or_key)
         else:

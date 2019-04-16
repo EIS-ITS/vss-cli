@@ -1,7 +1,6 @@
 import logging
 
 import click
-from click_spinner import spinner
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
@@ -56,7 +55,7 @@ def network_ls(
     if sort:
         query['sort'] = sort
     # query
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_networks(**query)
     # set columns
     columns = ctx.columns or const.COLUMNS_NET_MIN

@@ -2,7 +2,6 @@
 import logging
 
 import click
-from click_spinner import spinner
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
@@ -63,7 +62,7 @@ def request_mgmt_change_ls(
     if sort:
         params['sort'] = sort
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_change_requests(
             show_all=show_all,
             per_page=count, **params)
@@ -92,7 +91,7 @@ def request_mgmt_change_ls(
 @pass_context
 def request_mgmt_change_get(ctx: Configuration, rid):
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_change_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE
     click.echo(
@@ -120,7 +119,7 @@ def request_mgmt_change_retry(ctx: Configuration, rid):
     'Error Processed'.
     """
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.retry_change_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(
@@ -172,7 +171,7 @@ def request_mgmt_change_set_schedule(
         ctx: Configuration, cancel, date_time
 ):
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_change_request(ctx.request_id)
     if not obj:
         raise click.BadArgumentUsage(

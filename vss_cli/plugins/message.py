@@ -1,6 +1,5 @@
 """Token Management plugin for VSS CLI (vss-cli)."""
 import click
-from click_spinner import spinner
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
@@ -15,7 +14,8 @@ from vss_cli.helper import format_output
 @pass_context
 def cli(ctx: Configuration):
     """Manage VSS Messages."""
-    ctx.load_config()
+    with ctx.spinner(disable=ctx.debug):
+        ctx.load_config()
 
 
 @cli.command(
@@ -57,7 +57,7 @@ def message_ls(
     if sort:
         params['sort'] = sort
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_user_messages(
             show_all=show_all,
             per_page=count, **params)
@@ -86,7 +86,7 @@ def message_ls(
 @pass_context
 def message_get(ctx: Configuration, message_id):
     """Get given user message id info"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_message(message_id)
     columns = ctx.columns or const.COLUMNS_MESSAGE
     click.echo(

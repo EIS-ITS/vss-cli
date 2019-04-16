@@ -1,6 +1,5 @@
 """Token Management plugin for VSS CLI (vss-cli)."""
 import click
-from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -14,7 +13,8 @@ from vss_cli.helper import format_output
 @pass_context
 def cli(ctx: Configuration):
     """Manage access tokens."""
-    ctx.load_config()
+    with ctx.spinner(disable=ctx.debug):
+        ctx.load_config()
 
 
 @cli.command(
@@ -56,7 +56,7 @@ def token_ls(
     if sort:
         params['sort'] = sort
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_user_tokens(
             show_all=show_all,
             per_page=count, **params)
@@ -80,7 +80,7 @@ def token_ls(
 @click.argument('tid', type=click.INT, required=True)
 @pass_context
 def token_get(ctx: Configuration, tid):
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_token(tid)
     columns = ctx.columns or const.COLUMNS_TK
     if not ctx.columns:

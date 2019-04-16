@@ -3,7 +3,6 @@ import json as json_
 import logging
 
 import click
-from click_spinner import spinner
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -41,7 +40,7 @@ def cli(ctx: Configuration, method, uri, json):
         data = json_.loads(json)
         req['payload'] = data
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.request(**req)
     ctx.echo(
         format_output(

@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union, cast  # noqa: F401
 from uuid import UUID
 
 import click
+from click_spinner import spinner
 from pick import pick
 from pyvss import __version__ as pyvss_version
 from pyvss.manager import VssManager
@@ -57,6 +58,7 @@ class Configuration(VssManager):
         self.check_for_updates = const.DEFAULT_CHECK_UPDATES  # type: bool
         self.check_for_messages = const.DEFAULT_CHECK_MESSAGES  # type: bool
         self.config_file = None  # type: ConfigFile
+        self.spinner = spinner
 
     @property
     def debug(self):
