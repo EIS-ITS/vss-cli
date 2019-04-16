@@ -791,7 +791,10 @@ class Configuration(VssManager):
     def get_os_by_name_or_guest(
             self, name_or_guest: str
     ) -> List[Any]:
-        g_os = self.get_os(sort='guestFullName,desc')
+        g_os = self.get_os(
+            sort='guestFullName,desc',
+            per_page=200
+        )
         try:
             o_f = list(
                 filter(
@@ -832,7 +835,9 @@ class Configuration(VssManager):
             self,
             name_label_or_id: Union[str, int]
     ) -> List[Any]:
-        vss_services = self.get_vss_services(show_all=True)
+        vss_services = self.get_vss_services(
+            show_all=True, per_page=200
+        )
         try:
             svc_id = int(name_label_or_id)
             svc_ref = list(
@@ -876,7 +881,9 @@ class Configuration(VssManager):
             name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
         user_isos = self.get_user_isos()
-        pub_isos = self.get_isos(show_all=True)
+        pub_isos = self.get_isos(
+            show_all=True, per_page=200
+        )
         try:
             iso_id = int(name_or_path_or_id)
             # public or user
@@ -934,7 +941,9 @@ class Configuration(VssManager):
             name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
         user_imgs = self.get_user_vm_images()
-        pub_imgs = self.get_images(show_all=True)
+        pub_imgs = self.get_images(
+            show_all=True, per_page=200
+        )
         try:
             img_id = int(name_or_path_or_id)
             # public or user
