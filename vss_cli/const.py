@@ -4,7 +4,7 @@ import pkg_resources
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.3-dev1'
+__version__ = '0.1.3-dev2'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -118,7 +118,7 @@ COLUMNS_MIN = [
 COLUMNS_VSS_SERVICE = [
     ('ID', 'id'),
     ('LABEL', 'label'),
-    ('NAME', 'NAME'),
+    ('NAME', 'name'),
     ('GROUP', 'group.name')
 ]
 COLUMNS_IMAGE = [
