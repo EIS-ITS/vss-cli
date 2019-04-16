@@ -46,7 +46,7 @@ def cli(ctx: Configuration, upstream, git_branch):
     lookup = {
         'stable': {
             'pkg': 'vss-cli',
-            'args': []
+            'args': ['--upgrade']
         },
         'develop': {
             'pkg': 'vss-cli',
