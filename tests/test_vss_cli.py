@@ -7,7 +7,7 @@ import click_log.core as logcore
 import pytz
 import vss_cli.cli as cli
 from vss_cli.const import __version__
-from vss_cli.vssconst import EMOJI_CHECK
+from vss_cli.utils.emoji import EMOJI_UNICODE
 
 logcore.basic_config()
 
@@ -77,7 +77,7 @@ class TestVssCLI(unittest.TestCase):
         assert r.exit_code == 0
 
     def test_config_default_endpoint(self):
-        default_mark = EMOJI_CHECK.decode('utf-8')
+        default_mark = EMOJI_UNICODE.get(":white_heavy_check_mark:")
         r = self.runner.invoke(
             cli.cli,
             ['configure', 'set',
