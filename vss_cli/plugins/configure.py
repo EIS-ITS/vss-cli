@@ -82,7 +82,8 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
             ctx.write_config_file(new_config_file=config_file)
             tada = vssconst.EMOJI_TADA.decode('utf-8')
             ctx.secho(
-                f'\nSuccessfully migrated {legacy_config} {tada}', fg='green',
+                f'\nSuccessfully migrated {legacy_config} {tada}',
+                fg='green',
                 nl=True
             )
         else:
@@ -183,7 +184,7 @@ COLUMNS_DETAILS = [
 )
 @pass_context
 def set_cfg(ctx: Configuration, setting: str, value: Any):
-    ctx.load_config()
+    ctx.load_config(validate=False)
     data_type = const.GENERAL_SETTINGS[setting]
     was = None
     to = None

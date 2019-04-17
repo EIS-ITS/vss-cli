@@ -255,7 +255,7 @@ class Configuration(VssManager):
                 'legacy configuration.'
             )
 
-    def load_config(self):
+    def load_config(self, validate: bool = True):
         try:
             # input configuration check
             # check for environment variables
@@ -360,46 +360,49 @@ class Configuration(VssManager):
                             config_endpoint.url,
                             config_endpoint.name
                         )
-                        # last check cred
-                        creds = self.username and self.password
-                        if not (creds or self.api_token):
-                            raise VssCliError(
-                                'Run "vss-cli configure mk" to add '
-                                'endpoint to configuration file or '
-                                '"vss-cli configure upgrade" to upgrade '
-                                'legacy configuration.'
+                        if validate:
+                            # last check cred
+                            creds = self.username and self.password
+                            if not (creds or self.api_token):
+                                raise VssCliError(
+                                    'Run "vss-cli configure mk" to add '
+                                    'endpoint to configuration file or '
+                                    '"vss-cli configure upgrade" to upgrade '
+                                    'legacy configuration.'
+                                )
+                            _LOGGING.debug(
+                                f'Loaded from file: {self.endpoint_name}: '
+                                f'{self.endpoint}:'
+                                f': {self.username}'
                             )
-                        _LOGGING.debug(
-                            f'Loaded from file: {self.endpoint_name}: '
-                            f'{self.endpoint}:'
-                            f': {self.username}'
-                        )
-                        try:
-                            self.whoami()
-                            _LOGGING.debug('Token validated successfully.')
-                        except Exception as ex:
-                            self.vlog(str(ex))
-                            _LOGGING.debug('Generating a new token')
                             try:
-                                self.api_token = self.get_token(
-                                    self.username,
-                                    self.password
-                                )
-                                _LOGGING.debug('Token generated successfully')
+                                self.whoami()
+                                _LOGGING.debug('Token validated successfully.')
                             except Exception as ex:
-                                _LOGGING.warning(
-                                    f'Could not generate new token: {ex}'
+                                self.vlog(str(ex))
+                                _LOGGING.debug('Generating a new token')
+                                try:
+                                    self.api_token = self.get_token(
+                                        self.username,
+                                        self.password
+                                    )
+                                    _LOGGING.debug(
+                                        'Token generated successfully'
+                                    )
+                                except Exception as ex:
+                                    _LOGGING.warning(
+                                        f'Could not generate new token: {ex}'
+                                    )
+                                endpoint = self._create_endpoint_config(
+                                    token=self.api_token
                                 )
-                            endpoint = self._create_endpoint_config(
-                                token=self.api_token
-                            )
-                            self.write_config_file(new_endpoint=endpoint)
-                            # check for updates
-                            if self.check_for_updates:
-                                self.check_available_updates()
-                            # check for unread messages
-                            if self.check_for_messages:
-                                self.check_unread_messages()
+                                self.write_config_file(new_endpoint=endpoint)
+                                # check for updates
+                                if self.check_for_updates:
+                                    self.check_available_updates()
+                                # check for unread messages
+                                if self.check_for_messages:
+                                    self.check_unread_messages()
                         return self.username, self.password, self.api_token
             raise VssCliError(
                 'Invalid configuration. Please, run '
