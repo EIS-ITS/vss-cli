@@ -6,20 +6,21 @@ from typing import Any
 
 import click
 from ruamel.yaml.parser import ParserError
-from vss_cli import const, vssconst
+from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.data_types import ConfigEndpoint
 from vss_cli.helper import format_output, str2bool
+from vss_cli.utils.emoji import EMOJI_UNICODE
 
 _LOGGING = logging.getLogger(__name__)
 
 
-ej_warn = vssconst.EMOJI_ALIEN.decode('utf-8')
-ej_rkt = vssconst.EMOJI_ROCKET.decode('utf-8')
-ej_tada = vssconst.EMOJI_TADA.decode('utf-8')
-ej_save = vssconst.EMOJI_DISK.decode('utf-8')
-ej_check = vssconst.EMOJI_CHECK.decode('utf-8')
+ej_warn = EMOJI_UNICODE.get(':alien:')
+ej_rkt = EMOJI_UNICODE.get(':rocket:')
+ej_tada = EMOJI_UNICODE.get(':party_popper:')
+ej_save = EMOJI_UNICODE.get(':floppy_disk:')
+ej_check = EMOJI_UNICODE.get(':white_heavy_check_mark:')
 
 
 @click.group('configure')

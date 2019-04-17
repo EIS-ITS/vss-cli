@@ -14,7 +14,7 @@ from click_spinner import spinner
 from pick import pick
 from pyvss import __version__ as pyvss_version
 from pyvss.manager import VssManager
-from vss_cli import vssconst
+from vss_cli.utils.emoji import EMOJI_UNICODE
 import vss_cli.const as const
 from vss_cli.helper import debug_requests_on, get_hostname_from_url
 from vss_cli.exceptions import VssCliError
@@ -426,7 +426,6 @@ class Configuration(VssManager):
             # verify if package name is in outdated string
             pkg_name = const.PACKAGE_NAME
             if pkg_name in out_decoded:
-                update_str = vssconst.EMOJI_ARROW_UP.decode('utf-8')
                 lines = out_decoded.split('\n')
                 pkg_line = [line for line in lines if pkg_name in line]
                 if pkg_line:
@@ -434,17 +433,16 @@ class Configuration(VssManager):
                     pkg, current, latest, pkgn = pkg_line.split(None)
                     self.secho(
                         f'Update available {current} -> {latest} '
-                        f'{update_str}.',
+                        f'{EMOJI_UNICODE.get(":upwards_button:")}.',
                         fg='green', nl=False
                     )
                     self.secho(' Run ', fg='green', nl=False)
                     self.secho('vss-cli upgrade', fg='red', nl=False)
                     self.secho(' to install latest. \n', fg='green')
             else:
-                check_str = vssconst.EMOJI_CHECK.decode('utf-8')
                 self.secho(
                     f'Running latest version {const.__version__} '
-                    f'{check_str}\n',
+                    f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}\n',
                     fg='green'
                 )
         except Exception as ex:
@@ -457,9 +455,9 @@ class Configuration(VssManager):
                 filter='status,eq,Created', per_page=100)
             n_messages = len(messages)
             if messages:
-                envelope_str = vssconst.EMOJI_ENVELOPE.decode('utf-8')
                 self.secho(
-                    f'You have {n_messages} unread messages {envelope_str} ',
+                    f'You have {n_messages} unread messages '
+                    f'{EMOJI_UNICODE.get(":envelope_with_arrow:")} ',
                     fg='green', nl=False)
                 self.secho('Run ', fg='green', nl=False)
                 self.secho(
