@@ -43,22 +43,22 @@ class Configuration(VssManager):
         self.base_endpoint = self.endpoint    # type: str
         self.endpoint_name = const.DEFAULT_ENDPOINT_NAME
         # end of endpoint settings
-        self.output = const.DEFAULT_DATA_OUTPUT  # type: str
-        self.config = const.DEFAULT_CONFIG  # type: str
         self.history = const.DEFAULT_HISTORY  # type: str
         self.webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.token = None  # type: Optional[str]
-        self.timeout = const.DEFAULT_TIMEOUT  # type: int
-        self._debug = False  # type: bool
+        self.timeout = None  # type: Optional[int]
+        self._debug = False  # type: Optional[bool]
         self.showexceptions = False  # type: bool
         self.columns = None  # type: Optional[List[Tuple[str, str]]]
         self.no_headers = False
-        self.table_format = 'plain'
+        self.table_format = None  # type: Optional[str]
         self.sort_by = None
-        self.check_for_updates = const.DEFAULT_CHECK_UPDATES  # type: bool
-        self.check_for_messages = const.DEFAULT_CHECK_MESSAGES  # type: bool
+        self.output = None  # type: str
+        self.config = None  # type: str
+        self.check_for_updates = None  # type: Optional[bool]
+        self.check_for_messages = None  # type: Optional[bool]
         self.config_file = None  # type: ConfigFile
         self.spinner = spinner
 
@@ -77,7 +77,7 @@ class Configuration(VssManager):
         return self._endpoint
 
     @endpoint.setter
-    def endpoint(self, value):
+    def endpoint(self, value: str):
         """ Rebuilds API endpoints"""
         self._endpoint = value
         self.base_endpoint = value
@@ -89,8 +89,18 @@ class Configuration(VssManager):
                 const.DEFAULT_HOST_REGEX
             )
 
+    def set_defaults(self) -> None:
+        """Set default configuration settings"""
+        _LOGGING.debug('Setting default configuration.')
+        for setting, default in const.DEFAULT_SETTINGS.items():
+            if getattr(self, setting) is None:
+                setattr(self, setting, default)
+        _LOGGING.debug(self)
+
     def get_token(self, user: str = '', password: str = ''):
-        self.api_token = super(Configuration, self).get_token(user, password)
+        self.api_token = super(
+            Configuration, self
+        ).get_token(user, password)
         return self.api_token
 
     def update_endpoints(self, endpoint: str = ''):
@@ -142,6 +152,7 @@ class Configuration(VssManager):
             "user": 'yes' if self.username is not None else 'no',
             "user_password": 'yes' if self.password is not None else 'no',
             "output": self.output,
+            "timeout": self.timeout,
             "debug": self.debug,
             "verbose": self.verbose,
         }
@@ -258,10 +269,9 @@ class Configuration(VssManager):
     def load_config(self, validate: bool = True):
         try:
             # input configuration check
-            # check for environment variables
             if self.token or (self.username and self.password):
-                if not self.endpoint:
-                    self.endpoint = const.DEFAULT_ENDPOINT
+                # setting defaults if required
+                self.set_defaults()
                 _LOGGING.debug(f'Loading from input')
                 # don't load config file
                 if self.token:
@@ -297,10 +307,22 @@ class Configuration(VssManager):
                         # set config defaults
                         for setting in const.GENERAL_SETTINGS:
                             try:
-                                setattr(
-                                    self, setting,
-                                    getattr(self.config_file.general, setting)
-                                )
+                                # check if setting hasn't been set
+                                # by input or env
+                                # which overrides configuration file
+                                if getattr(self, setting) is None:
+                                    setattr(
+                                        self, setting,
+                                        getattr(
+                                            self.config_file.general,
+                                            setting
+                                        )
+                                    )
+                                else:
+                                    _LOGGING.debug(
+                                        f'Prioritizing {setting} from '
+                                        f'command line input.'
+                                    )
                             except KeyError as ex:
                                 _LOGGING.warning(
                                     f'Could not load general setting'
@@ -404,6 +426,8 @@ class Configuration(VssManager):
                                 if self.check_for_messages:
                                     self.check_unread_messages()
                         return self.username, self.password, self.api_token
+                else:
+                    self.set_defaults()
             raise VssCliError(
                 'Invalid configuration. Please, run '
                 '"vss-cli configure mk" to initialize configuration, or '

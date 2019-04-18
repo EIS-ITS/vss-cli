@@ -244,6 +244,7 @@ def ls(ctx: Configuration):
     cfg_endpoints = list()
     try:
         config_file = ctx.load_config_file()
+        ctx.set_defaults()
         default_endpoint = config_file.general.default_endpoint_name
         endpoints = config_file.endpoints or []
         # checking profiles
