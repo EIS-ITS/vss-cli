@@ -13,19 +13,19 @@ machine:
     - 40                  # Optional: Disk capacity in GB (Default: source vm disk capacity)
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
-#  high_io: no            # Optional: created with a VMware Paravirtual SCSIController.
+#  high_io: false         # Optional: created with a VMware Paravirtual SCSIController.
 # Networking
 networking:
-  use_custom_spec: no     # (Custom Spec) Required: attempt to apply a custom spec to this VM. (default: no)
+  use_custom_spec: false  # (Custom Spec) Required: attempt to apply a custom spec to this VM. (default: no)
   hostname: *name         # (Custom Spec) Required: host name setting for the OS (default: name)
   domain: eis.utoronto.ca # (Custom Spec) Required: full search domain
   dns_servers:
-    - 128.100.100.128     # (Custom Spec) Required (if dhcp:no): Remove if using VSS-PUBLIC or any other DHCP based network
+    - 128.100.100.128     # (Custom Spec) Required (if dhcp:false): Remove if using VSS-PUBLIC or any other DHCP based network
   interfaces:
     - network:            # Optional: Network name or network ID (default: source vm network)
-      dhcp: no            # (Custom Spec) Required: Whether to use DHCP for interface configuration (default: no)
-      ip_addr:            # (Custom Spec) Required (if dhcp:no): CIDR format. Remove if using VSS-PUBLIC or any other DHCP based network
-      gw_addr:            # (Custom Spec) Required (if dhcp:no): Remove if using VSS-PUBLIC or any other DHCP based network
+      dhcp: false         # (Custom Spec) Required: Whether to use DHCP for interface configuration (default: no)
+      ip_addr:            # (Custom Spec) Required (if dhcp:false): CIDR format. Remove if using VSS-PUBLIC or any other DHCP based network
+      gw_addr:            # (Custom Spec) Required (if dhcp:false): Remove if using VSS-PUBLIC or any other DHCP based network
 
 # Note Custom Spec
 # linux customization specification (optional)

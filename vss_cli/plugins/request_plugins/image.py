@@ -2,7 +2,6 @@
 import logging
 
 import click
-from click_spinner import spinner
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
@@ -61,7 +60,7 @@ def image_sync_ls(
     if sort:
         params['sort'] = sort
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_image_sync_requests(
             show_all=show_all,
             per_page=count, **params)
@@ -89,7 +88,7 @@ def image_sync_ls(
 @pass_context
 def image_sync_get(ctx, rid):
     # make request
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_image_sync_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_IMAGE_SYNC
     click.echo(

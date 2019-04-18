@@ -10,16 +10,19 @@ from typing import Any, Dict, List, Optional, Tuple, Union, cast  # noqa: F401
 from uuid import UUID
 
 import click
+from click_spinner import spinner
 from pick import pick
 from pyvss import __version__ as pyvss_version
 from pyvss.manager import VssManager
-from vss_cli import vssconst
+from vss_cli.utils.emoji import EMOJI_UNICODE
 import vss_cli.const as const
 from vss_cli.helper import debug_requests_on, get_hostname_from_url
 from vss_cli.exceptions import VssCliError
 from vss_cli.validators import validate_email, validate_phone_number
 from vss_cli.data_types import ConfigFile, ConfigEndpoint, ConfigFileGeneral
-import yaml
+from ruamel.yaml import YAML
+import vss_cli.yaml as yaml
+
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -40,23 +43,24 @@ class Configuration(VssManager):
         self.base_endpoint = self.endpoint    # type: str
         self.endpoint_name = const.DEFAULT_ENDPOINT_NAME
         # end of endpoint settings
-        self.output = const.DEFAULT_DATA_OUTPUT  # type: str
-        self.config = const.DEFAULT_CONFIG  # type: str
         self.history = const.DEFAULT_HISTORY  # type: str
         self.webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.token = None  # type: Optional[str]
-        self.timeout = const.DEFAULT_TIMEOUT  # type: int
-        self._debug = False  # type: bool
+        self.timeout = None  # type: Optional[int]
+        self._debug = False  # type: Optional[bool]
         self.showexceptions = False  # type: bool
         self.columns = None  # type: Optional[List[Tuple[str, str]]]
         self.no_headers = False
-        self.table_format = 'plain'
+        self.table_format = None  # type: Optional[str]
         self.sort_by = None
-        self.check_for_updates = const.DEFAULT_CHECK_UPDATES  # type: bool
-        self.check_for_messages = const.DEFAULT_CHECK_MESSAGES  # type: bool
+        self.output = None  # type: str
+        self.config = None  # type: str
+        self.check_for_updates = None  # type: Optional[bool]
+        self.check_for_messages = None  # type: Optional[bool]
         self.config_file = None  # type: ConfigFile
+        self.spinner = spinner
 
     @property
     def debug(self):
@@ -73,7 +77,7 @@ class Configuration(VssManager):
         return self._endpoint
 
     @endpoint.setter
-    def endpoint(self, value):
+    def endpoint(self, value: str):
         """ Rebuilds API endpoints"""
         self._endpoint = value
         self.base_endpoint = value
@@ -85,8 +89,18 @@ class Configuration(VssManager):
                 const.DEFAULT_HOST_REGEX
             )
 
+    def set_defaults(self) -> None:
+        """Set default configuration settings"""
+        _LOGGING.debug('Setting default configuration.')
+        for setting, default in const.DEFAULT_SETTINGS.items():
+            if getattr(self, setting) is None:
+                setattr(self, setting, default)
+        _LOGGING.debug(self)
+
     def get_token(self, user: str = '', password: str = ''):
-        self.api_token = super(Configuration, self).get_token(user, password)
+        self.api_token = super(
+            Configuration, self
+        ).get_token(user, password)
         return self.api_token
 
     def update_endpoints(self, endpoint: str = ''):
@@ -138,6 +152,7 @@ class Configuration(VssManager):
             "user": 'yes' if self.username is not None else 'no',
             "user_password": 'yes' if self.password is not None else 'no',
             "output": self.output,
+            "timeout": self.timeout,
             "debug": self.debug,
             "verbose": self.verbose,
         }
@@ -238,7 +253,7 @@ class Configuration(VssManager):
         config_file = config or self.config
         try:
             with open(config_file, 'r') as f:
-                config_dict = yaml.safe_load(f)
+                config_dict = yaml.load_yaml(self.yaml(), f)
                 return json.dumps(config_dict)
         except ValueError as ex:
             _LOGGING.error(
@@ -251,13 +266,12 @@ class Configuration(VssManager):
                 'legacy configuration.'
             )
 
-    def load_config(self):
+    def load_config(self, validate: bool = True):
         try:
             # input configuration check
-            # check for environment variables
             if self.token or (self.username and self.password):
-                if not self.endpoint:
-                    self.endpoint = const.DEFAULT_ENDPOINT
+                # setting defaults if required
+                self.set_defaults()
                 _LOGGING.debug(f'Loading from input')
                 # don't load config file
                 if self.token:
@@ -293,10 +307,22 @@ class Configuration(VssManager):
                         # set config defaults
                         for setting in const.GENERAL_SETTINGS:
                             try:
-                                setattr(
-                                    self, setting,
-                                    getattr(self.config_file.general, setting)
-                                )
+                                # check if setting hasn't been set
+                                # by input or env
+                                # which overrides configuration file
+                                if getattr(self, setting) is None:
+                                    setattr(
+                                        self, setting,
+                                        getattr(
+                                            self.config_file.general,
+                                            setting
+                                        )
+                                    )
+                                else:
+                                    _LOGGING.debug(
+                                        f'Prioritizing {setting} from '
+                                        f'command line input.'
+                                    )
                             except KeyError as ex:
                                 _LOGGING.warning(
                                     f'Could not load general setting'
@@ -356,47 +382,52 @@ class Configuration(VssManager):
                             config_endpoint.url,
                             config_endpoint.name
                         )
-                        # last check cred
-                        creds = self.username and self.password
-                        if not (creds or self.api_token):
-                            raise VssCliError(
-                                'Run "vss-cli configure mk" to add '
-                                'endpoint to configuration file or '
-                                '"vss-cli configure upgrade" to upgrade '
-                                'legacy configuration.'
+                        if validate:
+                            # last check cred
+                            creds = self.username and self.password
+                            if not (creds or self.api_token):
+                                raise VssCliError(
+                                    'Run "vss-cli configure mk" to add '
+                                    'endpoint to configuration file or '
+                                    '"vss-cli configure upgrade" to upgrade '
+                                    'legacy configuration.'
+                                )
+                            _LOGGING.debug(
+                                f'Loaded from file: {self.endpoint_name}: '
+                                f'{self.endpoint}:'
+                                f': {self.username}'
                             )
-                        _LOGGING.debug(
-                            f'Loaded from file: {self.endpoint_name}: '
-                            f'{self.endpoint}:'
-                            f': {self.username}'
-                        )
-                        try:
-                            self.whoami()
-                            _LOGGING.debug('Token validated successfully.')
-                        except Exception as ex:
-                            self.vlog(str(ex))
-                            _LOGGING.debug('Generating a new token')
                             try:
-                                self.api_token = self.get_token(
-                                    self.username,
-                                    self.password
-                                )
-                                _LOGGING.debug('Token generated successfully')
+                                self.whoami()
+                                _LOGGING.debug('Token validated successfully.')
                             except Exception as ex:
-                                _LOGGING.warning(
-                                    f'Could not generate new token: {ex}'
+                                self.vlog(str(ex))
+                                _LOGGING.debug('Generating a new token')
+                                try:
+                                    self.api_token = self.get_token(
+                                        self.username,
+                                        self.password
+                                    )
+                                    _LOGGING.debug(
+                                        'Token generated successfully'
+                                    )
+                                except Exception as ex:
+                                    _LOGGING.warning(
+                                        f'Could not generate new token: {ex}'
+                                    )
+                                endpoint = self._create_endpoint_config(
+                                    token=self.api_token
                                 )
-                            endpoint = self._create_endpoint_config(
-                                token=self.api_token
-                            )
-                            self.write_config_file(new_endpoint=endpoint)
-                            # check for updates
-                            if self.check_for_updates:
-                                self.check_available_updates()
-                            # check for unread messages
-                            if self.check_for_messages:
-                                self.check_unread_messages()
+                                self.write_config_file(new_endpoint=endpoint)
+                                # check for updates
+                                if self.check_for_updates:
+                                    self.check_available_updates()
+                                # check for unread messages
+                                if self.check_for_messages:
+                                    self.check_unread_messages()
                         return self.username, self.password, self.api_token
+                else:
+                    self.set_defaults()
             raise VssCliError(
                 'Invalid configuration. Please, run '
                 '"vss-cli configure mk" to initialize configuration, or '
@@ -419,7 +450,6 @@ class Configuration(VssManager):
             # verify if package name is in outdated string
             pkg_name = const.PACKAGE_NAME
             if pkg_name in out_decoded:
-                update_str = vssconst.EMOJI_ARROW_UP.decode('utf-8')
                 lines = out_decoded.split('\n')
                 pkg_line = [line for line in lines if pkg_name in line]
                 if pkg_line:
@@ -427,17 +457,16 @@ class Configuration(VssManager):
                     pkg, current, latest, pkgn = pkg_line.split(None)
                     self.secho(
                         f'Update available {current} -> {latest} '
-                        f'{update_str}.',
+                        f'{EMOJI_UNICODE.get(":upwards_button:")}.',
                         fg='green', nl=False
                     )
                     self.secho(' Run ', fg='green', nl=False)
                     self.secho('vss-cli upgrade', fg='red', nl=False)
                     self.secho(' to install latest. \n', fg='green')
             else:
-                check_str = vssconst.EMOJI_CHECK.decode('utf-8')
                 self.secho(
                     f'Running latest version {const.__version__} '
-                    f'{check_str}\n',
+                    f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}\n',
                     fg='green'
                 )
         except Exception as ex:
@@ -450,9 +479,9 @@ class Configuration(VssManager):
                 filter='status,eq,Created', per_page=100)
             n_messages = len(messages)
             if messages:
-                envelope_str = vssconst.EMOJI_ENVELOPE.decode('utf-8')
                 self.secho(
-                    f'You have {n_messages} unread messages {envelope_str} ',
+                    f'You have {n_messages} unread messages '
+                    f'{EMOJI_UNICODE.get(":envelope_with_arrow:")} ',
                     fg='green', nl=False)
                 self.secho('Run ', fg='green', nl=False)
                 self.secho(
@@ -483,11 +512,10 @@ class Configuration(VssManager):
         }
         return ConfigEndpoint.from_json(json.dumps(endpoint_cfg))
 
-    @staticmethod
-    def load_config_template() -> ConfigFile:
+    def load_config_template(self) -> ConfigFile:
         # load template in case it fails
         with open(const.DEFAULT_CONFIG_TMPL, 'r') as f:
-            config_tmpl = yaml.safe_load(f)
+            config_tmpl = yaml.load_yaml(self.yaml(), f)
             raw_config_tmpl = json.dumps(config_tmpl)
             config_file_tmpl = ConfigFile.from_json(raw_config_tmpl)
         return config_file_tmpl
@@ -512,7 +540,7 @@ class Configuration(VssManager):
             if os.path.isfile(self.config):
                 with open(self.config, 'r+') as fp:
                     try:
-                        _conf_dict = yaml.safe_load(fp)
+                        _conf_dict = yaml.load_yaml(self.yaml(), fp)
                         raw_config = json.dumps(_conf_dict)
                         config_file = ConfigFile.from_json(raw_config)
                     except (ValueError, TypeError) as ex:
@@ -540,9 +568,9 @@ class Configuration(VssManager):
                     # dumping and loading
                     _conf_dict = json.loads(config_file.to_json())
                     fp.seek(0)
-                    yaml.safe_dump(
-                        _conf_dict, stream=fp,
-                        default_flow_style=False
+                    yaml.dump_yaml(
+                        self.yaml(), _conf_dict,
+                        stream=fp
                     )
                     fp.truncate()
                 _LOGGING.debug(
@@ -561,9 +589,9 @@ class Configuration(VssManager):
                     config_file_dict = json.loads(config_file_tmpl.to_json())
                 # write file
                 with open(self.config, 'w') as fp:
-                    yaml.safe_dump(
-                        config_file_dict, stream=fp,
-                        default_flow_style=False
+                    yaml.dump_yaml(
+                        self.yaml(), config_file_dict,
+                        stream=fp
                     )
                 _LOGGING.debug(
                     f'New {f_type} has been written to {self.config}.'
@@ -789,7 +817,10 @@ class Configuration(VssManager):
     def get_os_by_name_or_guest(
             self, name_or_guest: str
     ) -> List[Any]:
-        g_os = self.get_os(sort='guestFullName,desc')
+        g_os = self.get_os(
+            sort='guestFullName,desc',
+            per_page=200
+        )
         try:
             o_f = list(
                 filter(
@@ -830,7 +861,9 @@ class Configuration(VssManager):
             self,
             name_label_or_id: Union[str, int]
     ) -> List[Any]:
-        vss_services = self.get_vss_services(show_all=True)
+        vss_services = self.get_vss_services(
+            show_all=True, per_page=200
+        )
         try:
             svc_id = int(name_label_or_id)
             svc_ref = list(
@@ -874,7 +907,9 @@ class Configuration(VssManager):
             name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
         user_isos = self.get_user_isos()
-        pub_isos = self.get_isos(show_all=True)
+        pub_isos = self.get_isos(
+            show_all=True, per_page=200
+        )
         try:
             iso_id = int(name_or_path_or_id)
             # public or user
@@ -932,7 +967,9 @@ class Configuration(VssManager):
             name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
         user_imgs = self.get_user_vm_images()
-        pub_imgs = self.get_images(show_all=True)
+        pub_imgs = self.get_images(
+            show_all=True, per_page=200
+        )
         try:
             img_id = int(name_or_path_or_id)
             # public or user
@@ -1038,3 +1075,21 @@ class Configuration(VssManager):
                 spec_payload['admin'] = f"{admin_name}:" \
                     f"{admin_phone}:{admin_email}"
         return spec_payload
+
+    def yaml(self) -> YAML:
+        """Create default yaml parser."""
+        if self:
+            return yaml.yaml()
+
+    def yaml_load(self, source: str) -> Any:
+        """Load YAML from source."""
+        return self.yaml().load(source)
+
+    def yaml_dump(self, source: Any) -> str:
+        """Dump dictionary to YAML string."""
+        return cast(str, yaml.dump_yaml(self.yaml(), source))
+
+    def yaml_dump_stream(
+            self, data: Any, stream: Any = None, **kw: Any
+    ) -> Optional[str]:
+        return yaml.dump_yaml(self.yaml(), data, stream, **kw)

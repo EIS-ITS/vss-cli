@@ -2,6 +2,27 @@
 Changelog
 =========
 
+v0.1.3
+======
+
+**Improvements:**
+
+- `#69`_: ``core``: Implement ruamel.yaml for yaml mgmt `jm.lopez`_
+- `#72`_: ``core``: spinner improvements `jm.lopez`_
+- `#78`_: ``core``: emoji handling/rendering improvements `jm.lopez`_
+- `#79`_: ``stor``: general improvements  `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#68`_: ``core``: options are overridden by configuration file `jm.lopez`_
+- `#71`_: ``upgrade``: stable does not occur due to a missing argument `jm.lopez`_
+- `#73`_: ``service``: missing column name in table format `jm.lopez`_
+- `#74`_: ``core``: config.py aka ctx does not match services available `jm.lopez`_
+- `#75`_: ``configure mk``: missing default endpoint `jm.lopez`_
+- `#76`_: ``configure migrate``: unhandled exception with invalid configuration file `jm.lopez`_
+- `#77`_: ``configure set``: cannot change default_endpoint_name when invalid endpoint is found `jm.lopez`_
+- `#80`_: ``status``: command fails when there's no input format selected.  `jm.lopez`_
+
 v0.1.2
 ======
 
@@ -19,17 +40,17 @@ v0.1.1
 
 **Improvements:**
 
-- `#54`_: ``docs``: Windows installation steps: by [jm.lopez]
-- `#55`_: ``core``: Handle advanced configuration editable by users and via CLI : by [jm.lopez]
-- `#57`_: ``docs``: docs/Add man page build and deploy stage to pipeline: by [jm.lopez]
+- `#54`_: ``docs``: Windows installation steps: by `jm.lopez`_
+- `#55`_: ``core``: Handle advanced configuration editable by users and via CLI : by `jm.lopez`_
+- `#57`_: ``docs``: docs/Add man page build and deploy stage to pipeline: by `jm.lopez`_
 
 **Bug Fixes:**
 
-- `#63`_: ``compute floppy|folder|net``: invalid context in compute, floppy, folder and network commands: by [jm.lopez]
-- `#61`_: ``core``: pyvss/AttributeError: 'Configuration' object has no attribute 'get_vss_services': by [jm.lopez]
-- `#59`_: ``account set notification request``: missing command account/set/notification/request: by [jm.lopez]
-- `#58`_: ``message get``: message/get does not provide auto-completion: by [jm.lopez]
-- `#56`_: ``upgrade``: vss-cli upgrade fails when there's no pip: by [jm.lopez]
+- `#63`_: ``compute floppy|folder|net``: invalid context in compute, floppy, folder and network commands: by `jm.lopez`_
+- `#61`_: ``core``: pyvss/AttributeError: 'Configuration' object has no attribute 'get_vss_services': by `jm.lopez`_
+- `#59`_: ``account set notification request``: missing command account/set/notification/request: by `jm.lopez`_
+- `#58`_: ``message get``: message/get does not provide auto-completion: by `jm.lopez`_
+- `#56`_: ``upgrade``: vss-cli upgrade fails when there's no pip: by `jm.lopez`_
 
 **New Features:**
 
@@ -89,6 +110,19 @@ v0.1.0
 
 .. Links to issues section
 
+.. _`#80`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/80
+.. _`#79`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/79
+.. _`#78`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/78
+.. _`#77`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/77
+.. _`#76`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/76
+.. _`#75`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/75
+.. _`#74`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/74
+.. _`#73`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/73
+.. _`#72`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/72
+.. _`#71`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/71
+.. _`#70`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/70
+.. _`#69`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/69
+.. _`#68`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/68
 .. _`#67`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/67
 .. _`#66`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/66
 .. _`#65`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/65

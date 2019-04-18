@@ -1,7 +1,6 @@
 import logging
 
 import click
-from click_spinner import spinner
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
@@ -46,7 +45,7 @@ def domain_ls(
         for f in filter:
             query_params[f[0]] = f[1]
     # query
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         objs = ctx.get_domains(**query_params)
     # format output
     output = format_output(
@@ -85,7 +84,7 @@ def domain_get(ctx: Configuration, name_or_moref):
                 ('HOSTS', 'hostsCount'),
                 ('STATUS', 'status')
             ])
-        with spinner():
+        with ctx.spinner(disable=ctx.debug):
             obj = ctx.get_domain(ctx.moref)
         click.echo(
             format_output(
@@ -105,7 +104,7 @@ def domain_get(ctx: Configuration, name_or_moref):
               help='page results in a less-like format')
 @pass_context
 def domain_get_vms(ctx: Configuration, page):
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_domain(ctx.moref, summary=1)
     if not obj:
         raise VssCliError(

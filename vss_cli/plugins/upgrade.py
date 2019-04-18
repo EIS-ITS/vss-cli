@@ -6,6 +6,7 @@ import click
 from vss_cli import vssconst
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from vss_cli.utils.emoji import EMOJI_UNICODE
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ def cli(ctx: Configuration, upstream, git_branch):
     lookup = {
         'stable': {
             'pkg': 'vss-cli',
-            'args': []
+            'args': ['--upgrade']
         },
         'develop': {
             'pkg': 'vss-cli',
@@ -95,8 +96,8 @@ def cli(ctx: Configuration, upstream, git_branch):
             f'Successfully executed upgrade command: {cmd_str}'
         )
     # all done
-    check = vssconst.EMOJI_CHECK.decode('utf-8')
     ctx.secho(
-        f'Successfully executed upgrade command {check}',
+        f'Successfully executed upgrade command '
+        f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}',
         fg='green'
     )

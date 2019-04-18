@@ -3,7 +3,6 @@ import os
 
 import click
 from click_plugins import with_plugins
-from click_spinner import spinner
 from pkg_resources import iter_entry_points
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
@@ -77,7 +76,7 @@ def compute_vm_ls(
     if sort:
         query['sort'] = sort
     # get templates
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_vms(**query)
     # including additional attributes?
     if summary:
@@ -924,7 +923,9 @@ def compute_vm_get_spec(
     new_raw = None
     if edit:
         obj_raw = raw_format_output(
-            ctx.output, obj, highlighted=False
+            ctx.output, obj,
+            ctx.yaml(),
+            highlighted=False
         )
         new_raw = click.edit(
             obj_raw,
@@ -942,13 +943,11 @@ def compute_vm_get_spec(
                 sort_keys=False
             )
     else:
-        import yaml
         if new_raw:
-            obj = yaml.safe_load(new_raw)
+            obj = ctx.yaml_load(new_raw)
         with open(f_name, 'w') as fp:
-            yaml.dump(
-                obj, stream=fp,
-                default_flow_style=False
+            ctx.yaml_dump_stream(
+                obj, stream=fp
             )
     click.echo(f'Written to {f_name}')
 
@@ -3318,7 +3317,6 @@ def compute_vm_from_file(
     """Create virtual machine from VSS CLI file specification.
 
     """
-    import yaml
     import time
     from pick import pick
     if file_spec:
@@ -3349,15 +3347,14 @@ def compute_vm_from_file(
         )
         # load object
         if new_raw:
-            new_obj = yaml.safe_load(new_raw)
+            new_obj = ctx.yaml_load(new_raw)
             file_name = f'from-file-{int(time.time())}.yaml'
             _LOGGING.debug(
                 f'Saving spec in {file_name}'
             )
             with open(file_name, 'w') as fp:
-                yaml.dump(
-                    new_obj, stream=fp,
-                    default_flow_style=False
+                ctx.yaml_dump_stream(
+                    new_obj, stream=fp
                 )
             raw = new_raw
         else:
@@ -3368,7 +3365,7 @@ def compute_vm_from_file(
                 'Input error'
             )
 
-    payload = yaml.safe_load(raw)
+    payload = ctx.yaml_load(raw)
     _LOGGING.debug(f'Payload from raw: f{payload}')
     # add common options
     spec_payload = dict()

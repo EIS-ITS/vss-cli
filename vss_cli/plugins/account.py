@@ -1,6 +1,5 @@
 """Account Management plugin for VSS CLI (vss-cli)."""
 import click
-from click_spinner import spinner
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -14,7 +13,8 @@ from vss_cli.helper import format_output
 @pass_context
 def cli(ctx: Configuration):
     """Manage your VSS account."""
-    ctx.load_config()
+    with ctx.spinner(disable=ctx.debug):
+        ctx.load_config()
 
 
 @cli.group('get',
@@ -36,7 +36,7 @@ def account_get_digest(ctx):
 @pass_context
 def account_get_digest_message(ctx: Configuration):
     """Get message digest status"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         _obj = ctx.get_user_digest_settings()
     obj = {'message': _obj.get('message')}
     columns = ctx.columns or const.COLUMNS_MESSAGE_DIGEST
@@ -54,7 +54,7 @@ def account_get_digest_message(ctx: Configuration):
 @pass_context
 def account_get_groups(ctx: Configuration):
     """User group membership"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = dict(groups=ctx.get_user_groups())
     columns = ctx.columns or const.COLUMNS_GROUPS
     click.echo(
@@ -74,7 +74,7 @@ def account_get_groups(ctx: Configuration):
 def account_get_group(ctx: Configuration, group_name):
     """Get given group info or members.
     User must be part of the group."""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_group(group_name, True)
     columns = ctx.columns or const.COLUMNS_GROUP
     click.echo(
@@ -91,7 +91,7 @@ def account_get_group(ctx: Configuration, group_name):
 @pass_context
 def account_get_access_role(ctx: Configuration):
     """Access role and entitlements"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_roles()
     columns = ctx.columns or const.COLUMNS_ROLE
     click.echo(
@@ -108,7 +108,7 @@ def account_get_access_role(ctx: Configuration):
 @pass_context
 def account_get_request_role(ctx: Configuration):
     """Request role and entitlements"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_roles()
     columns = ctx.columns or const.COLUMNS_ROLE
     click.echo(
@@ -125,7 +125,7 @@ def account_get_request_role(ctx: Configuration):
 @pass_context
 def account_get_personal(ctx: Configuration):
     """User information"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_personal()
     obj.update(ctx.get_user_ldap())
     columns = ctx.columns or const.COLUMNS_USER_PERSONAL
@@ -143,7 +143,7 @@ def account_get_personal(ctx: Configuration):
 @pass_context
 def account_get_pstatus(ctx: Configuration):
     """Account status"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_status()
     columns = ctx.columns or const.COLUMNS_USER_STATUS
     click.echo(
@@ -167,7 +167,7 @@ def account_get_notification(ctx: Configuration):
 @pass_context
 def account_get_notification_request(ctx: Configuration):
     """Get notification format"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_request_notification_settings()
     columns = ctx.columns or const.COLUMNS_NOT_REQUEST
     click.echo(
@@ -184,7 +184,7 @@ def account_get_notification_request(ctx: Configuration):
 @pass_context
 def account_get_notification_format(ctx: Configuration):
     """Get notification format"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_notification_format()
     click.echo(
         format_output(
@@ -200,7 +200,7 @@ def account_get_notification_format(ctx: Configuration):
 @pass_context
 def account_get_notification_method(ctx: Configuration):
     """Get notification format"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_notification_method()
     click.echo(
         format_output(
@@ -245,7 +245,7 @@ def account_set_digest_message(
         ctx: Configuration, state
 ):
     """Opt-in or opt-out of weekly message digest"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         if state == 'in':
             ctx.enable_user_message_digest()
         else:
@@ -318,7 +318,7 @@ def account_notification_set_request(
                 )
         except KeyError:
             pass
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_request_notification_settings()
     columns = ctx.columns or const.COLUMNS_NOT_REQUEST
     click.echo(
@@ -344,7 +344,7 @@ def account_notification_set_format(
         fmt
 ):
     """Update notification format where FMT can be html or text"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.update_user_notification_format(fmt)
     click.echo(
         format_output(
@@ -370,7 +370,7 @@ def account_notification_set_method(
         method
 ):
     """Update notification method where METHOD can be mail or message"""
-    with spinner():
+    with ctx.spinner(disable=ctx.debug):
         obj = ctx.update_user_notification_method(method)
     click.echo(
         format_output(

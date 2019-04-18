@@ -57,7 +57,7 @@ def run() -> None:
         else:
             _LOGGER.error("%s: %s", type(ex).__name__, ex)
             _LOGGER.info(
-                "Run with %s to see full exception infomation.",
+                "Run with %s to see full exception information.",
                 " or ".join(exceptionflags),
             )
         sys.exit(1)
@@ -109,7 +109,6 @@ def _default_token() -> Optional[str]:
 
 
 @click.command(cls=VssCli, context_settings=CONTEXT_SETTINGS)
-@click_log.simple_verbosity_option(logging.getLogger(), "--loglevel", "-l")
 @click.option(
     '--endpoint',
     '-e',
@@ -149,38 +148,51 @@ def _default_token() -> Optional[str]:
 @click.option(
     '--timeout',
     help='Timeout for network operations.',
-    default=const.DEFAULT_TIMEOUT,
+    type=click.INT,
     envvar='VSS_TIMEOUT',
     show_default=True,
 )
-@click.option(
-    '--output',
-    '-o',
-    help="Output format.",
-    type=click.Choice(['json', 'yaml', 'table', 'auto']),
-    envvar='VSS_OUTPUT',
-    default='auto',
-    show_default=True,
+@click_log.simple_verbosity_option(
+    logging.getLogger(), "--loglevel", "-l"
 )
 @click.option(
     '-v',
     '--verbose',
     is_flag=True,
     default=False,
+    envvar='VSS_VERBOSE',
     help='Enables verbose mode.',
-)
-@click.option(
-    '-x',
-    'showexceptions',
-    default=False,
-    is_flag=True,
-    help="Print back traces when exception occurs.",
 )
 @click.option(
     '--debug',
     is_flag=True,
     default=False,
+    envvar='VSS_DEBUG',
     help='Enables debug mode.'
+)
+@click.option(
+    '-x',
+    'showexceptions',
+    is_flag=True,
+    default=False,
+    envvar='VSS_EXCEPTIONS',
+    help="Print back traces when exception occurs.",
+)
+@click.option(
+    '-o',
+    '--output',
+    help="Output format (default: auto).",
+    type=click.Choice(['json', 'yaml', 'table', 'auto']),
+    default=None,
+    envvar='VSS_OUTPUT',
+    show_default=True,
+)
+@click.option(
+    '--table-format',
+    default=None,
+    envvar='VSS_TABLE',
+    help="Which table format to use (default: simple)",
+    autocompletion=autocompletion.table_formats,
 )
 @click.option(
     '--columns',
@@ -191,19 +203,14 @@ def _default_token() -> Optional[str]:
     ),
 )
 @click.option(
+    '-n',
     '--no-headers',
     default=False,
     is_flag=True,
     help="When printing tables don\'t use headers (default: print headers)",
 )
 @click.option(
-    '--table-format',
-    default='simple',
-    envvar='VSS_TABLE',
-    help="Which table format to use (default: simple)",
-    autocompletion=autocompletion.table_formats,
-)
-@click.option(
+    '-s',
     '--sort-by',
     default=None,
     help='Sort table by the jsonpath expression. Example: updated_on',
@@ -222,7 +229,7 @@ def cli(
     password: Optional[str],
     config: str,
     output: str,
-    timeout: int,
+    timeout: Optional[int],
     debug: bool,
     showexceptions: bool,
     columns: str,

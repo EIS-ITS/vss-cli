@@ -4,7 +4,7 @@ import pkg_resources
 
 PACKAGE_NAME = 'vss_cli'
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -30,8 +30,23 @@ DEFAULT_CONFIG_TMPL = os.path.join(
 DEFAULT_CHECK_UPDATES = True
 DEFAULT_CHECK_MESSAGES = True
 
+DEFAULT_TABLE_FORMAT = 'simple'
 DEFAULT_DATA_OUTPUT = 'table'
 DEFAULT_RAW_OUTPUT = 'json'
+DEFAULT_OUTPUT = 'auto'
+DEFAULT_VERBOSE = False
+DEFAULT_DEBUG = False
+
+DEFAULT_SETTINGS = {
+    'endpoint': DEFAULT_ENDPOINT,
+    'output': DEFAULT_OUTPUT,
+    'table_format': DEFAULT_TABLE_FORMAT,
+    'check_for_messages': DEFAULT_CHECK_MESSAGES,
+    'check_for_updates': DEFAULT_CHECK_UPDATES,
+    'timeout': DEFAULT_TIMEOUT,
+    'verbose': DEFAULT_VERBOSE,
+    'debug': DEFAULT_DEBUG
+}
 
 DEFAULT_DATETIME_FMT = '%Y-%m-%d %H:%M'
 SUPPORTED_DATETIME_FORMATS = [
@@ -118,7 +133,7 @@ COLUMNS_MIN = [
 COLUMNS_VSS_SERVICE = [
     ('ID', 'id'),
     ('LABEL', 'label'),
-    ('NAME', 'NAME'),
+    ('NAME', 'name'),
     ('GROUP', 'group.name')
 ]
 COLUMNS_IMAGE = [
