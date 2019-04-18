@@ -1,15 +1,33 @@
 # Changelog 📝
 
-## [v0.1.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.1) (2019-04-12)
+## [v0.1.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.3) (2019-04-18)
+
+**Improvements:**
+- [#69](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/69): `core`: Implement ruamel.yaml for yaml mgmt [jm.lopez]
+- [#72](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/72): `core`: spinner improvements [jm.lopez]
+- [#78](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/78): `core`: emoji handling/rendering improvements  [jm.lopez]
+- [#79](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/79): `stor`: general improvements [jm.lopez]
+
+**Bug Fixes:**
+- [#68](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/68): `core`: options are overridden by configuration file [jm.lopez]
+- [#71](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/71): `upgrade`: stable does not occur due to a missing argument [jm.lopez]
+- [#73](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/73): `service`: missing column name in table format [jm.lopez]
+- [#74](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/74): `core`: config.py aka ctx does not match services available [jm.lopez]
+- [#75](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/75): `configure mk`: missing default endpoint [jm.lopez]
+- [#76](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/76): `configure migrate`: unhandled exception with invalid configuration file [jm.lopez]
+- [#77](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/77): `configure set`: cannot change default_endpoint_name when invalid endpoint is found [jm.lopez]
+- [#80](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/80): `status`: command fails when there's no input format selected. [jm.lopez]
+
+## [v0.1.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.2) (2019-04-12)
 
 **Improvements:**
 
-- [#67](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/67): Provide user feedback while CLI processing
+- [#67](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/67): Provide user feedback while CLI processing [jm.lopez]
 
 **Bug Fixes:**
 
-- [#65](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/65): configure command mismatch from autocompletion
-- [#66](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/66): configure upgrade missing description
+- [#65](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/65): configure command mismatch from autocompletion [jm.lopez]
+- [#66](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/66): configure upgrade missing description [jm.lopez]
 
 
 ## [v0.1.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.1) (2019-04-05)
