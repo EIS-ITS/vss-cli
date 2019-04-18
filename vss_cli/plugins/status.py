@@ -18,6 +18,7 @@ _LOGGING = logging.getLogger(__name__)
 @pass_context
 def cli(ctx: Configuration):
     """Check VSS Status from https://www.systemstatus.utoronto.ca/"""
+    ctx.set_defaults()
     with ctx.spinner(disable=ctx.debug):
         obj = check_status()
     ctx.status = obj
