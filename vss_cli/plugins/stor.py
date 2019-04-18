@@ -1,13 +1,13 @@
 """VSS Storage Management plugin for VSS CLI (vss-cli)."""
-import click
-import os
 import logging
-from vss_cli.cli import pass_context
+import os
+
+import click
 from vss_cli import const
+from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
-from vss_cli.exceptions import VssCliError
-
+from vss_cli.utils.emoji import EMOJI_UNICODE
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -83,7 +83,8 @@ def stor_get(ctx, remote_path):
 @click.option(
     '-d', '--dir',
     type=click.STRING,
-    help='Local target directory'
+    help='Local target directory',
+    default=os.getcwd()
 )
 @click.option(
     '-n', '--name',
@@ -102,13 +103,19 @@ def stor_dl(
     local_path = os.path.join(local_dir, local_name)
     # check if remote path exists
     if not ctx.vskey_stor.check(remote_path):
-        raise VssCliError('Remote path not found {}'.format(remote_path))
-    ctx.log(f'Download {remote_path} to {local_path} in progress... ')
-    ctx.vskey_stor.download_sync(
-        remote_path=remote_path,
-        local_path=local_path
+        raise _LOGGING.warning(f'Remote path not found {remote_path}')
+    ctx.log(
+        f'Download {remote_path} to {local_path} in '
+        f'progress {EMOJI_UNICODE.get(":fast_down_button:")} '
     )
-    ctx.log('Download complete.')
+    with ctx.spinner(disable=ctx.debug):
+        ctx.vskey_stor.download_sync(
+            remote_path=remote_path,
+            local_path=local_path
+        )
+    ctx.log(
+        f'Download complete to {local_path} '
+        f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}')
 
 
 @cli.command(
@@ -143,11 +150,18 @@ def stor_ul(ctx: Configuration, file_path, name, dir):
     remote_base = dir
     # check if remote path exists
     if not ctx.vskey_stor.check(remote_base):
+        _LOGGING.debug(f'Creating {remote_base}.')
         ctx.vskey_stor.mkdir(remote_base)
+        _LOGGING.debug(f'Created {remote_base}.')
     # upload
     remote_path = os.path.join(remote_base, file_name)
-    ctx.log(f'Upload {file_path} to {remote_path} in progress... ')
-    ctx.vskey_stor.upload_sync(
-        remote_path=remote_path,
-        local_path=file_path)
-    click.echo('Upload complete.')
+    ctx.log(f'Upload {file_path} to {remote_path} '
+            f'in progress {EMOJI_UNICODE.get(":fast_up_button:")}')
+    with ctx.spinner(disable=ctx.debug):
+        ctx.vskey_stor.upload_sync(
+            remote_path=remote_path,
+            local_path=file_path)
+    ctx.echo(
+        f'Upload complete to {remote_path} '
+        f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}'
+    )
