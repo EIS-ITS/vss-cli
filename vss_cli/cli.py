@@ -3,11 +3,11 @@ import logging
 import os
 import sys
 from typing import List, Optional, Union, cast
-import pyvss
 
 import click
 from click.core import Command, Context, Group
 import click_log
+from pyvss.const import __version__ as pyvss_version
 
 import vss_cli.autocompletion as autocompletion
 from vss_cli.config import Configuration
@@ -102,10 +102,7 @@ class VssCli(click.Group):
 
 
 def _default_token() -> Optional[str]:
-    return os.environ.get(
-        'VSS_TOKEN',
-        os.environ.get('VSS_API_TOKEN', None)
-    )
+    return os.environ.get('VSS_TOKEN', os.environ.get('VSS_API_TOKEN', None))
 
 
 @click.command(cls=VssCli, context_settings=CONTEXT_SETTINGS)
@@ -122,7 +119,7 @@ def _default_token() -> Optional[str]:
     '-c',
     default=const.DEFAULT_CONFIG,
     help='Configuration file',
-    envvar='VSS_CONFIG'
+    envvar='VSS_CONFIG',
 )
 @click.option(
     '--token',
@@ -152,9 +149,7 @@ def _default_token() -> Optional[str]:
     envvar='VSS_TIMEOUT',
     show_default=True,
 )
-@click_log.simple_verbosity_option(
-    logging.getLogger(), "--loglevel", "-l"
-)
+@click_log.simple_verbosity_option(logging.getLogger(), "--loglevel", "-l")
 @click.option(
     '-v',
     '--verbose',
@@ -168,7 +163,7 @@ def _default_token() -> Optional[str]:
     is_flag=True,
     default=False,
     envvar='VSS_DEBUG',
-    help='Enables debug mode.'
+    help='Enables debug mode.',
 )
 @click.option(
     '-x',
@@ -216,8 +211,8 @@ def _default_token() -> Optional[str]:
     help='Sort table by the jsonpath expression. Example: updated_on',
 )
 @click.version_option(
-    version=f'{const.__version__}; pyvss v{pyvss.__version__}',
-    message='%(prog)s v%(version)s'
+    version=f'{const.__version__}; pyvss v{pyvss_version}',
+    message='%(prog)s v%(version)s',
 )
 @pass_context
 def cli(

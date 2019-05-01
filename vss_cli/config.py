@@ -1,28 +1,28 @@
 """Configuration for VSS CLI (vss-cli)."""
 from base64 import b64decode, b64encode
+import json
 import logging
 import os
 import platform
 import shutil
 import sys
-import json
 from typing import Any, Dict, List, Optional, Tuple, Union, cast  # noqa: F401
 from uuid import UUID
 
 import click
 from click_spinner import spinner
 from pick import pick
-from pyvss import __version__ as pyvss_version
+from pyvss.const import __version__ as pyvss_version
 from pyvss.manager import VssManager
-from vss_cli.utils.emoji import EMOJI_UNICODE
-import vss_cli.const as const
-from vss_cli.helper import debug_requests_on, get_hostname_from_url
-from vss_cli.exceptions import VssCliError
-from vss_cli.validators import validate_email, validate_phone_number
-from vss_cli.data_types import ConfigFile, ConfigEndpoint, ConfigFileGeneral
 from ruamel.yaml import YAML
-import vss_cli.yaml as yaml
 
+import vss_cli.const as const
+from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
+from vss_cli.exceptions import VssCliError
+from vss_cli.helper import debug_requests_on, get_hostname_from_url
+from vss_cli.utils.emoji import EMOJI_UNICODE
+from vss_cli.validators import validate_email, validate_phone_number
+import vss_cli.yaml as yaml
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class Configuration(VssManager):
         self.default_endpoint_name = None  # type: str
         # start of endpoint settings
         self._endpoint = const.DEFAULT_ENDPOINT  # type: str
-        self.base_endpoint = self.endpoint    # type: str
+        self.base_endpoint = self.endpoint  # type: str
         self.endpoint_name = const.DEFAULT_ENDPOINT_NAME
         # end of endpoint settings
         self.history = const.DEFAULT_HISTORY  # type: str
@@ -85,8 +85,7 @@ class Configuration(VssManager):
         self.token_endpoint = f'{value}/auth/request-token'
         if value:
             self.endpoint_name = get_hostname_from_url(
-                value,
-                const.DEFAULT_HOST_REGEX
+                value, const.DEFAULT_HOST_REGEX
             )
 
     def set_defaults(self) -> None:
@@ -98,9 +97,7 @@ class Configuration(VssManager):
         _LOGGING.debug(self)
 
     def get_token(self, user: str = '', password: str = ''):
-        self.api_token = super(
-            Configuration, self
-        ).get_token(user, password)
+        self.api_token = super(Configuration, self).get_token(user, password)
         return self.api_token
 
     def update_endpoints(self, endpoint: str = ''):
@@ -121,16 +118,12 @@ class Configuration(VssManager):
             msg %= args
         click.echo(msg, file=sys.stdout)
 
-    def secho(
-            self, msg: str, *args: Optional[Any],
-            **kwargs
-    ) -> None:
+    def secho(self, msg: str, *args: Optional[Any], **kwargs) -> None:
         """Put content message to stdout with style."""
         self.slog(msg, *args, **kwargs)
 
     def slog(  # pylint: disable=no-self-use
-        self, msg: str, *args: Optional[str],
-        **kwargs,
+        self, msg: str, *args: Optional[str], **kwargs
     ) -> None:  # pylint: disable=no-self-use
         """Log a message to stdout with style."""
         if args:
@@ -184,23 +177,28 @@ class Configuration(VssManager):
 
     @staticmethod
     def _default_user_agent(
-            name: str = const.PACKAGE_NAME,
-            version: str = const.__version__,
-            extensions: str = ''
+        name: str = const.PACKAGE_NAME,
+        version: str = const.__version__,
+        extensions: str = '',
     ) -> str:
         # User-Agent:
         # <product>/<version> (<system-information>)
         # <platform> (<platform-details>) <extensions>
-        user_agent = f'{name}/{version} ' \
-            f'({platform.system()}/{platform.release()}) ' \
-            f'Python/{platform.python_version()} ' \
+        user_agent = (
+            f'{name}/{version} '
+            f'({platform.system()}/{platform.release()}) '
+            f'Python/{platform.python_version()} '
             f'({platform.platform()}) {extensions}'
+        )
         return user_agent
 
     def set_credentials(
-            self, username: str, password: str,
-            token: str, endpoint: str,
-            name: str
+        self,
+        username: str,
+        password: str,
+        token: str,
+        endpoint: str,
+        name: str,
     ) -> None:
         self.username = username
         self.password = password
@@ -211,13 +209,8 @@ class Configuration(VssManager):
         return
 
     def load_profile_from_config(
-            self,
-            endpoint: str = None,
-    ) -> Tuple[
-        Optional[ConfigEndpoint],
-        Optional[str],
-        Optional[str]
-    ]:
+        self, endpoint: str = None
+    ) -> Tuple[Optional[ConfigEndpoint], Optional[str], Optional[str]]:
         username, password = None, None
         # load from
         config_endpoint = self.config_file.get_endpoint(endpoint)
@@ -227,38 +220,29 @@ class Configuration(VssManager):
             # get token attr
             token = config_endpoint[0].token
             if not auth or not token:
-                _LOGGING.warning(
-                    'Invalid configuration endpoint found.'
-                )
+                _LOGGING.warning('Invalid configuration endpoint found.')
             else:
                 auth_enc = auth.encode()
                 credentials_decoded = b64decode(auth_enc)
                 # get user/pass
-                username, password = \
-                    credentials_decoded.split(b':')
+                username, password = credentials_decoded.split(b':')
             return config_endpoint[0], username, password
         else:
             return None, username, password
 
-    def load_config_file(
-            self, config: str = None
-    ) -> Union[ConfigFile, None]:
+    def load_config_file(self, config: str = None) -> Union[ConfigFile, None]:
         raw_config = self.load_raw_config_file(config=config)
         self.config_file = ConfigFile.from_json(raw_config)
         return self.config_file
 
-    def load_raw_config_file(
-            self, config: str = None
-    ) -> Union[dict, None]:
+    def load_raw_config_file(self, config: str = None) -> Union[dict, None]:
         config_file = config or self.config
         try:
             with open(config_file, 'r') as f:
                 config_dict = yaml.load_yaml(self.yaml(), f)
                 return json.dumps(config_dict)
         except ValueError as ex:
-            _LOGGING.error(
-                f'Error loading configuration file: {ex}'
-            )
+            _LOGGING.error(f'Error loading configuration file: {ex}')
             raise VssCliError(
                 'Invalid configuration file.'
                 'Run "vss-cli configure mk" or '
@@ -293,7 +277,8 @@ class Configuration(VssManager):
                 else:
                     raise VssCliError(
                         'Environment variables error. Please, verify '
-                        'VSS_TOKEN or VSS_USER and VSS_USER_PASS')
+                        'VSS_TOKEN or VSS_USER and VSS_USER_PASS'
+                    )
             else:
                 _LOGGING.debug(f'Loading configuration file: {self.config}')
                 if os.path.isfile(self.config):
@@ -312,11 +297,11 @@ class Configuration(VssManager):
                                 # which overrides configuration file
                                 if getattr(self, setting) is None:
                                     setattr(
-                                        self, setting,
+                                        self,
+                                        setting,
                                         getattr(
-                                            self.config_file.general,
-                                            setting
-                                        )
+                                            self.config_file.general, setting
+                                        ),
                                     )
                                 else:
                                     _LOGGING.debug(
@@ -337,50 +322,55 @@ class Configuration(VssManager):
                         )
                         # 1. provided by input
                         if self.endpoint:
-                            msg = f'Cloud not find endpoint provided by ' \
+                            msg = (
+                                f'Cloud not find endpoint provided by '
                                 f'input {self.endpoint}. \n'
+                            )
                             # load endpoint from endpoints
-                            config_endpoint, usr, pwd = \
-                                self.load_profile_from_config(
-                                    endpoint=self.endpoint
-                                )
+                            config_endpoint, usr, pwd = self.load_profile_from_config(  # NOQA: E501
+                                endpoint=self.endpoint
+                            )
                         # 2. provided by configuration file
                         #    (default_endpoint_name)
                         elif self.default_endpoint_name:
-                            msg = f'Could not find default endpoint ' \
+                            msg = (
+                                f'Could not find default endpoint '
                                 f'{self.default_endpoint_name}. \n'
+                            )
                             # load endpoint from endpoints
-                            config_endpoint, usr, pwd = \
-                                self.load_profile_from_config(
-                                    endpoint=self.default_endpoint_name
-                                )
+                            config_endpoint, usr, pwd = self.load_profile_from_config(  # NOQA: E501
+                                endpoint=self.default_endpoint_name
+                            )
                         # 3. fallback to default settings
                         else:
-                            msg = f"Invalid endpoint {self.endpoint_name} " \
+                            msg = (
+                                f"Invalid endpoint {self.endpoint_name} "
                                 f"configuration. \n"
-                            config_endpoint, usr, pwd = \
-                                self.load_profile_from_config(
-                                    endpoint=self.endpoint_name
-                                )
+                            )
+                            config_endpoint, usr, pwd = self.load_profile_from_config(  # NOQA: E501
+                                endpoint=self.endpoint_name
+                            )
                         # check valid creds
-                        if not (usr and pwd or getattr(config_endpoint,
-                                                       'token',
-                                                       None)):
+                        if not (
+                            usr
+                            and pwd
+                            or getattr(config_endpoint, 'token', None)
+                        ):
                             _LOGGING.warning(msg)
                             default_endpoint = const.DEFAULT_ENDPOINT_NAME
                             _LOGGING.warning(
                                 f'Falling back to {default_endpoint}'
                             )
-                            config_endpoint, usr, pwd = \
-                                self.load_profile_from_config(
-                                    endpoint=const.DEFAULT_ENDPOINT_NAME
-                                )
+                            config_endpoint, usr, pwd = self.load_profile_from_config(  # NOQA: E501
+                                endpoint=const.DEFAULT_ENDPOINT_NAME
+                            )
                         # set config data
                         self.set_credentials(
-                            usr, pwd,
+                            usr,
+                            pwd,
                             config_endpoint.token,
                             config_endpoint.url,
-                            config_endpoint.name
+                            config_endpoint.name,
                         )
                         if validate:
                             # last check cred
@@ -405,8 +395,7 @@ class Configuration(VssManager):
                                 _LOGGING.debug('Generating a new token')
                                 try:
                                     self.api_token = self.get_token(
-                                        self.username,
-                                        self.password
+                                        self.username, self.password
                                     )
                                     _LOGGING.debug(
                                         'Token generated successfully'
@@ -444,6 +433,7 @@ class Configuration(VssManager):
             # create command with the right exec
             pip_cmd = f'{cmd_bin} list --outdated'.split(None)
             from subprocess import Popen, PIPE
+
             p = Popen(pip_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
             out_decoded = out.decode('utf-8')
@@ -458,7 +448,8 @@ class Configuration(VssManager):
                     self.secho(
                         f'Update available {current} -> {latest} '
                         f'{EMOJI_UNICODE.get(":upwards_button:")}.',
-                        fg='green', nl=False
+                        fg='green',
+                        nl=False,
                     )
                     self.secho(' Run ', fg='green', nl=False)
                     self.secho('vss-cli upgrade', fg='red', nl=False)
@@ -467,7 +458,7 @@ class Configuration(VssManager):
                 self.secho(
                     f'Running latest version {const.__version__} '
                     f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}\n',
-                    fg='green'
+                    fg='green',
                 )
         except Exception as ex:
             _LOGGING.error(f'Could not check for updates: {ex}')
@@ -476,17 +467,21 @@ class Configuration(VssManager):
         try:
             _LOGGING.debug('Checking for unread messages')
             messages = self.get_user_messages(
-                filter='status,eq,Created', per_page=100)
+                filter='status,eq,Created', per_page=100
+            )
             n_messages = len(messages)
             if messages:
                 self.secho(
                     f'You have {n_messages} unread messages '
                     f'{EMOJI_UNICODE.get(":envelope_with_arrow:")} ',
-                    fg='green', nl=False)
+                    fg='green',
+                    nl=False,
+                )
                 self.secho('Run ', fg='green', nl=False)
                 self.secho(
                     'vss-cli message ls -f status,eq,Created',
-                    fg='red', nl=False
+                    fg='red',
+                    nl=False,
                 )
                 self.secho(' to list unread messages.', fg='green')
             else:
@@ -495,20 +490,25 @@ class Configuration(VssManager):
             _LOGGING.error(f'Could not check for messages: {ex}')
 
     def _create_endpoint_config(self, token: str = None) -> ConfigEndpoint:
-        token = token or self.get_token(
-            self.username, self.password
-        )
+        token = token or self.get_token(self.username, self.password)
         # encode or save
-        username = self.username if isinstance(self.username, bytes) \
+        username = (
+            self.username
+            if isinstance(self.username, bytes)
             else self.username.encode()
-        password = self.password if isinstance(self.password, bytes) \
+        )
+        password = (
+            self.password
+            if isinstance(self.password, bytes)
             else self.password.encode()
+        )
         credentials = b':'.join([username, password])
         auth = b64encode(credentials).strip().decode('utf-8')
         endpoint_cfg = {
             'url': self.base_endpoint,
             'name': self.endpoint_name,
-            'auth': auth, 'token': token,
+            'auth': auth,
+            'token': token,
         }
         return ConfigEndpoint.from_json(json.dumps(endpoint_cfg))
 
@@ -521,10 +521,10 @@ class Configuration(VssManager):
         return config_file_tmpl
 
     def write_config_file(
-            self,
-            new_config_file: Optional[ConfigFile] = None,
-            new_endpoint: Optional[ConfigEndpoint] = None,
-            config_general: Optional[ConfigFileGeneral] = None
+        self,
+        new_config_file: Optional[ConfigFile] = None,
+        new_endpoint: Optional[ConfigEndpoint] = None,
+        config_general: Optional[ConfigFileGeneral] = None,
     ) -> bool:
         """
         Creates or updates configuration endpoint section.
@@ -533,9 +533,7 @@ class Configuration(VssManager):
         # load template in case it fails
         config_file_tmpl = self.load_config_template()
         try:
-            _LOGGING.debug(
-                f'Writing configuration file: {self.config}'
-            )
+            _LOGGING.debug(f'Writing configuration file: {self.config}')
             # validate if file exists
             if os.path.isfile(self.config):
                 with open(self.config, 'r+') as fp:
@@ -546,9 +544,9 @@ class Configuration(VssManager):
                     except (ValueError, TypeError) as ex:
                         _LOGGING.warning(f'Invalid config file: {ex}')
                         if click.confirm(
-                                f'An error occurred loading the '
-                                f'configuration file. '
-                                f'Would you like to recreate it?'
+                            f'An error occurred loading the '
+                            f'configuration file. '
+                            f'Would you like to recreate it?'
                         ):
                             config_file = config_file_tmpl
                         else:
@@ -568,10 +566,7 @@ class Configuration(VssManager):
                     # dumping and loading
                     _conf_dict = json.loads(config_file.to_json())
                     fp.seek(0)
-                    yaml.dump_yaml(
-                        self.yaml(), _conf_dict,
-                        stream=fp
-                    )
+                    yaml.dump_yaml(self.yaml(), _conf_dict, stream=fp)
                     fp.truncate()
                 _LOGGING.debug(
                     f'Configuration file {self.config} has been updated'
@@ -589,25 +584,23 @@ class Configuration(VssManager):
                     config_file_dict = json.loads(config_file_tmpl.to_json())
                 # write file
                 with open(self.config, 'w') as fp:
-                    yaml.dump_yaml(
-                        self.yaml(), config_file_dict,
-                        stream=fp
-                    )
+                    yaml.dump_yaml(self.yaml(), config_file_dict, stream=fp)
                 _LOGGING.debug(
                     f'New {f_type} has been written to {self.config}.'
                 )
         except IOError as e:
             raise Exception(
-                f'An error occurred writing '
-                f'configuration file: {e}'
+                f'An error occurred writing ' f'configuration file: {e}'
             )
         return True
 
     def configure(
-            self, username: str, password: str,
-            endpoint: str,
-            replace: Optional[bool] = False,
-            endpoint_name: Optional[str] = None
+        self,
+        username: str,
+        password: str,
+        endpoint: str,
+        replace: Optional[bool] = False,
+        endpoint_name: Optional[str] = None,
     ) -> bool:
         self.username = username
         self.password = password
@@ -623,14 +616,15 @@ class Configuration(VssManager):
             try:
                 self.config_file = self.load_config_file()
                 # load credentials by endpoint_name
-                config_endpoint, e_username, e_password = \
-                    self.load_profile_from_config(
-                        endpoint=self.endpoint_name
-                    )
+                config_endpoint, e_username, e_password = self.load_profile_from_config(  # NOQA: E501c
+                    endpoint=self.endpoint_name
+                )
                 # profile does not exist
                 if not (e_username and e_password and config_endpoint.token):
-                    self.echo(f'Endpoint {self.endpoint_name} not found. '
-                              f'Creating...')
+                    self.echo(
+                        f'Endpoint {self.endpoint_name} not found. '
+                        f'Creating...'
+                    )
                     endpoint_cfg = self._create_endpoint_config()
                     self.write_config_file(new_endpoint=endpoint_cfg)
                 # profile exists
@@ -660,8 +654,7 @@ class Configuration(VssManager):
                     return False
             # feedback
             self.echo(
-                f'Successfully configured credentials for '
-                f'{self.endpoint}.'
+                f'Successfully configured credentials for ' f'{self.endpoint}.'
             )
         else:
             endpoint_cfg = self._create_endpoint_config()
@@ -670,27 +663,24 @@ class Configuration(VssManager):
 
     def get_vskey_stor(self, **kwargs) -> bool:
         from webdav3 import client as wc
+
         options = dict(
             webdav_login=self.username,
             webdav_password=self.password,
             webdav_hostname=self.webdav_server,
-            verbose=self.verbose
+            verbose=self.verbose,
         )
         self.vskey_stor = wc.Client(options=options)
         return self.vskey_stor.valid()
 
-    def get_vm_by_uuid_or_name(
-            self,
-            uuid_or_name: str
-    ) -> List:
+    def get_vm_by_uuid_or_name(self, uuid_or_name: str) -> List:
         try:
             # is uuid?
             uuid = UUID(uuid_or_name)
             v = self.get_vm(str(uuid))
             if not v:
                 raise click.BadArgumentUsage(
-                    'uuid should be an existing Virtual Machine '
-                    'or template'
+                    'uuid should be an existing Virtual Machine ' 'or template'
                 )
             return [v]
         except ValueError:
@@ -701,227 +691,173 @@ class Configuration(VssManager):
             # get vm by name
             g_vms = self.get_vms()
             uuid_or_name = uuid_or_name.lower()
-            v = list(filter(
-                lambda i: uuid_or_name in i['name'].lower(), g_vms)
+            v = list(
+                filter(lambda i: uuid_or_name in i['name'].lower(), g_vms)
             )
             if not v:
-                raise click.BadParameter(
-                    f'{uuid_or_name} could not be found'
-                )
+                raise click.BadParameter(f'{uuid_or_name} could not be found')
             v_count = len(v)
             if v_count > 1:
                 msg = f"Found {v_count} matches. Please select one:"
                 sel, index = pick(
-                    title=msg, indicator='=>',
-                    options=[f"{i['uuid']} ({i['name']})" for i in v]
+                    title=msg,
+                    indicator='=>',
+                    options=[f"{i['uuid']} ({i['name']})" for i in v],
                 )
                 return [v[index]]
             return v
 
-    def get_domain_by_name_or_moref(
-            self, name_or_moref: str
-    ) -> List[Any]:
+    def get_domain_by_name_or_moref(self, name_or_moref: str) -> List[Any]:
         g_domains = self.get_domains()
         name_or_moref = name_or_moref.lower()
         d = list(
-            filter(
-                lambda i: name_or_moref in i['name'].lower(), g_domains
-            )
-        ) or list(
-            filter(
-                lambda i: name_or_moref in i['moref'], g_domains
-            )
-        )
+            filter(lambda i: name_or_moref in i['name'].lower(), g_domains)
+        ) or list(filter(lambda i: name_or_moref in i['moref'], g_domains))
         if not d:
-            raise click.BadParameter(
-                f'{name_or_moref} could not be found'
-            )
+            raise click.BadParameter(f'{name_or_moref} could not be found')
         d_count = len(d)
         if d_count > 1:
             msg = f"Found {d_count} matches. Please select one:"
             sel, index = pick(
-                title=msg, indicator='=>',
-                options=[f"{i['name']} ({i['moref']})" for i in d]
+                title=msg,
+                indicator='=>',
+                options=[f"{i['name']} ({i['moref']})" for i in d],
             )
             return [d[index]]
         return d
 
-    def get_network_by_name_or_moref(
-            self, name_or_moref: str
-    ) -> List[Any]:
+    def get_network_by_name_or_moref(self, name_or_moref: str) -> List[Any]:
         g_networks = self.get_networks(sort='name')
         name_or_moref = name_or_moref.lower()
         # search by name or moref
         n = list(
-            filter(
-                lambda i: name_or_moref in i['name'].lower(),
-                g_networks
-            )
+            filter(lambda i: name_or_moref in i['name'].lower(), g_networks)
         ) or list(
-            filter(
-                lambda i: name_or_moref in i['moref'].lower(),
-                g_networks
-            )
+            filter(lambda i: name_or_moref in i['moref'].lower(), g_networks)
         )
         if not n:
-            raise click.BadParameter(
-                f'{name_or_moref} could not be found'
-            )
+            raise click.BadParameter(f'{name_or_moref} could not be found')
         net_count = len(n)
         if net_count > 1:
             msg = f"Found {net_count} matches. Please select one:"
             sel, index = pick(
-                title=msg, indicator='=>',
-                options=[f"{i['name']} ({i['moref']})" for i in n]
+                title=msg,
+                indicator='=>',
+                options=[f"{i['name']} ({i['moref']})" for i in n],
             )
             return [n[index]]
         return n
 
     def get_folder_by_name_or_moref_path(
-            self, name_moref_path: str
+        self, name_moref_path: str
     ) -> List[Any]:
         g_folders = self.get_folders(sort='path', summary=1)
         # search by name or moref
         name_moref_path = name_moref_path.lower()
-        f = list(
-            filter(
-                lambda i: name_moref_path in i['name'].lower(),
-                g_folders
+        f = (
+            list(
+                filter(
+                    lambda i: name_moref_path in i['name'].lower(), g_folders
+                )
             )
-        ) or list(
-            filter(
-                lambda i: name_moref_path in i['path'].lower(),
-                g_folders
+            or list(
+                filter(
+                    lambda i: name_moref_path in i['path'].lower(), g_folders
+                )
             )
-        ) or list(
-            filter(
-                lambda i: name_moref_path in i['moref'].lower(),
-                g_folders
+            or list(
+                filter(
+                    lambda i: name_moref_path in i['moref'].lower(), g_folders
+                )
             )
         )
 
         if not f:
-            raise click.BadParameter(
-                f'{name_moref_path} could not be found'
-            )
+            raise click.BadParameter(f'{name_moref_path} could not be found')
         f_count = len(f)
         if f_count > 1:
             msg = f"Found {f_count} matches. Please select one:"
             sel, index = pick(
-                title=msg, indicator='=>',
-                options=[f"{i['path']} ({i['moref']})" for i in f]
+                title=msg,
+                indicator='=>',
+                options=[f"{i['path']} ({i['moref']})" for i in f],
             )
             return [f[index]]
         return f
 
-    def get_os_by_name_or_guest(
-            self, name_or_guest: str
-    ) -> List[Any]:
-        g_os = self.get_os(
-            sort='guestFullName,desc',
-            per_page=200
-        )
+    def get_os_by_name_or_guest(self, name_or_guest: str) -> List[Any]:
+        g_os = self.get_os(sort='guestFullName,desc', per_page=200)
         try:
-            o_f = list(
-                filter(
-                    lambda i: int(name_or_guest) == i['id'],
-                    g_os
-                )
-            )
+            o_f = list(filter(lambda i: int(name_or_guest) == i['id'], g_os))
         except ValueError:
             # not an integer
             _LOGGING.debug(f'not an id {name_or_guest}')
             name_or_guest = name_or_guest.lower()
             o_f = list(
-                filter(
-                    lambda i: name_or_guest in i['guestId'].lower(),
-                    g_os
-                )
+                filter(lambda i: name_or_guest in i['guestId'].lower(), g_os)
             ) or list(
                 filter(
-                    lambda i: name_or_guest in i['guestFullName'].lower(),
-                    g_os
+                    lambda i: name_or_guest in i['guestFullName'].lower(), g_os
                 )
             )
         if not o_f:
-            raise click.BadParameter(
-                f'{name_or_guest} could not be found'
-            )
+            raise click.BadParameter(f'{name_or_guest} could not be found')
         o_count = len(o_f)
         if o_count > 1:
             msg = f"Found {o_count} matches. Please select one:"
             sel, index = pick(
-                title=msg, indicator='=>',
-                options=[f"{i['guestFullName']} ({i['guestId']})" for i in o_f]
+                title=msg,
+                indicator='=>',
+                options=[
+                    f"{i['guestFullName']} ({i['guestId']})" for i in o_f
+                ],
             )
             return [o_f[index]]
         return o_f
 
     def get_vss_service_by_name_label_or_id(
-            self,
-            name_label_or_id: Union[str, int]
+        self, name_label_or_id: Union[str, int]
     ) -> List[Any]:
-        vss_services = self.get_vss_services(
-            show_all=True, per_page=200
-        )
+        vss_services = self.get_vss_services(show_all=True, per_page=200)
         try:
             svc_id = int(name_label_or_id)
-            svc_ref = list(
-                filter(
-                    lambda i: i['id'] == svc_id, vss_services
-                )
-            )
+            svc_ref = list(filter(lambda i: i['id'] == svc_id, vss_services))
         except ValueError as ex:
             # not an integer
             _LOGGING.debug(f'not an id {name_label_or_id} ({ex})')
             # checking name or label
             svc = str(name_label_or_id).lower()
             svc_ref = list(
-                filter(
-                    lambda i: svc in i['name'].lower(),
-                    vss_services
-                )
+                filter(lambda i: svc in i['name'].lower(), vss_services)
             ) or list(
-                filter(
-                    lambda i: svc in i['label'].lower(), vss_services
-                )
+                filter(lambda i: svc in i['label'].lower(), vss_services)
             )
         # check if there's no ref
         if not svc_ref:
-            raise click.BadParameter(
-                f'{name_label_or_id} could not be found'
-            )
+            raise click.BadParameter(f'{name_label_or_id} could not be found')
         # count for dup results
         o_count = len(svc_ref)
         if o_count > 1:
             msg = f"Found {o_count} matches. Please select one:"
             sel, index = pick(
-                title=msg, indicator='=>',
-                options=[f"{i['label']}" for i in svc_ref]
+                title=msg,
+                indicator='=>',
+                options=[f"{i['label']}" for i in svc_ref],
             )
             return [svc_ref[index]]
         return svc_ref
 
     def get_iso_by_name_or_guest(
-            self,
-            name_or_path_or_id: Union[str, int]
+        self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
         user_isos = self.get_user_isos()
-        pub_isos = self.get_isos(
-            show_all=True, per_page=200
-        )
+        pub_isos = self.get_isos(show_all=True, per_page=200)
         try:
             iso_id = int(name_or_path_or_id)
             # public or user
             iso_ref = list(
-                filter(
-                    lambda i: i['id'] == iso_id, pub_isos
-                )
-            ) or list(
-                filter(
-                    lambda i: i['id'] == iso_id, user_isos
-                )
-            )
+                filter(lambda i: i['id'] == iso_id, pub_isos)
+            ) or list(filter(lambda i: i['id'] == iso_id, user_isos))
         except ValueError as ex:
             # not an integer
             _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
@@ -929,22 +865,11 @@ class Configuration(VssManager):
             # check in public and user isos
             iso = str(name_or_path_or_id)
             iso = iso.lower()
-            iso_ref = list(
-                filter(
-                    lambda i: iso in i['name'].lower(), pub_isos
-                )
-            ) or list(
-                filter(
-                    lambda i: iso in i['path'].lower(), pub_isos
-                )
-            ) or list(
-                filter(
-                    lambda i: iso in i['name'].lower(), user_isos
-                )
-            ) or list(
-                filter(
-                    lambda i: iso in i['path'].lower(), user_isos
-                )
+            iso_ref = (
+                list(filter(lambda i: iso in i['name'].lower(), pub_isos))
+                or list(filter(lambda i: iso in i['path'].lower(), pub_isos))
+                or list(filter(lambda i: iso in i['name'].lower(), user_isos))
+                or list(filter(lambda i: iso in i['path'].lower(), user_isos))
             )
         # check if there's no ref
         if not iso_ref:
@@ -956,32 +881,24 @@ class Configuration(VssManager):
         if o_count > 1:
             msg = f"Found {o_count} matches. Please select one:"
             sel, index = pick(
-                title=msg, indicator='=>',
-                options=[f"{i['name']}" for i in iso_ref]
+                title=msg,
+                indicator='=>',
+                options=[f"{i['name']}" for i in iso_ref],
             )
             return [iso_ref[index]]
         return iso_ref
 
     def get_vm_image_by_name_or_id_path(
-            self,
-            name_or_path_or_id: Union[str, int]
+        self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
         user_imgs = self.get_user_vm_images()
-        pub_imgs = self.get_images(
-            show_all=True, per_page=200
-        )
+        pub_imgs = self.get_images(show_all=True, per_page=200)
         try:
             img_id = int(name_or_path_or_id)
             # public or user
             img_ref = list(
-                filter(
-                    lambda i: i['id'] == img_id, pub_imgs
-                )
-            ) or list(
-                filter(
-                    lambda i: i['id'] == img_id, user_imgs
-                )
-            )
+                filter(lambda i: i['id'] == img_id, pub_imgs)
+            ) or list(filter(lambda i: i['id'] == img_id, user_imgs))
         except ValueError as ex:
             # not an integer
             _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
@@ -989,22 +906,11 @@ class Configuration(VssManager):
             # check in public and user img
             img = str(name_or_path_or_id)
             img = img.lower()
-            img_ref = list(
-                filter(
-                    lambda i: img in i['name'].lower(), pub_imgs
-                )
-            ) or list(
-                filter(
-                    lambda i: img in i['path'].lower(), pub_imgs
-                )
-            ) or list(
-                filter(
-                    lambda i: img in i['name'].lower(), user_imgs
-                )
-            ) or list(
-                filter(
-                    lambda i: img in i['path'].lower(), user_imgs
-                )
+            img_ref = (
+                list(filter(lambda i: img in i['name'].lower(), pub_imgs))
+                or list(filter(lambda i: img in i['path'].lower(), pub_imgs))
+                or list(filter(lambda i: img in i['name'].lower(), user_imgs))
+                or list(filter(lambda i: img in i['path'].lower(), user_imgs))
             )
         # check if there's no ref
         if not img_ref:
@@ -1016,15 +922,14 @@ class Configuration(VssManager):
         if o_count > 1:
             msg = f"Found {o_count} matches. Please select one:"
             sel, index = pick(
-                title=msg, indicator='=>',
-                options=[f"{i['name']}" for i in img_ref]
+                title=msg,
+                indicator='=>',
+                options=[f"{i['name']}" for i in img_ref],
             )
             return [img_ref[index]]
         return img_ref
 
-    def get_spec_payload(
-            self, payload: dict, built: str
-    ) -> dict:
+    def get_spec_payload(self, payload: dict, built: str) -> dict:
         spec_payload = dict()
         # sections
         machine_section = payload['machine']
@@ -1046,9 +951,8 @@ class Configuration(VssManager):
             )[0]['moref']
             # networking
             spec_payload['networks'] = [
-                self.get_network_by_name_or_moref(
-                    n['network']
-                )[0]['moref'] for n in networking_section['interfaces']
+                self.get_network_by_name_or_moref(n['network'])[0]['moref']
+                for n in networking_section['interfaces']
             ]
             # metadata section
             spec_payload.update(metadata_section)
@@ -1072,8 +976,9 @@ class Configuration(VssManager):
                 if admin_name and admin_email and admin_phone:
                     validate_email(None, '', admin_email)
                     validate_phone_number(None, '', admin_phone)
-                spec_payload['admin'] = f"{admin_name}:" \
-                    f"{admin_phone}:{admin_email}"
+                spec_payload['admin'] = (
+                    f"{admin_name}:" f"{admin_phone}:{admin_email}"
+                )
         return spec_payload
 
     def yaml(self) -> YAML:
@@ -1090,6 +995,6 @@ class Configuration(VssManager):
         return cast(str, yaml.dump_yaml(self.yaml(), source))
 
     def yaml_dump_stream(
-            self, data: Any, stream: Any = None, **kw: Any
+        self, data: Any, stream: Any = None, **kw: Any
     ) -> Optional[str]:
         return yaml.dump_yaml(self.yaml(), data, stream, **kw)

@@ -29,7 +29,7 @@ test-style:
   script:
     - apk add --update --no-cache git
     - pip install flake8 nose coverage pytz
-    - flake8 --ignore F401,E402, vss_cli/
+    - flake8 vss_cli/
   tags:
     - python-3
 
