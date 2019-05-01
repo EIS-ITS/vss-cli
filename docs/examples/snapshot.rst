@@ -80,23 +80,25 @@ snapshot to live.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <uuid-or-name> snapshot mk --help
-
     Usage: vss-cli compute vm set snapshot mk [OPTIONS]
 
       Create virtual machine snapshot:
 
-      vss-cli compute vm set <uuid-or-name> snapshot mk -d 'Short description'
+      vss-cli compute vm set <name-or-uuid> snapshot mk -d 'Short description'
       -t '2018-02-22 00:00' -l 72
 
+      Note: if -t/--timestamp not specified, the snapshot request timestamp is
+      now.
+
     Options:
-      -d, --description TEXT        A brief description of the snapshot.
-                                    [required]
-      -t, --timestamp TEXT          Timestamp to create the snapshot from.
-                                    [required]
-      -l, --lifetime INTEGER RANGE  Number of hours the snapshot will live.
-                                    [required]
-      --help                        Show this message and exit.
+      -d, --description TEXT          A brief description of the snapshot.
+                                      [required]
+      -t, --timestamp [%Y-%m-%d %H:%M]
+                                      Timestamp to create the snapshot from.
+                                      [default: 2019-05-01 14:18]
+      -l, --lifetime INTEGER RANGE    Number of hours the snapshot will live.
+                                      [default: 24]
+      --help                          Show this message and exit.
 
 
 The following command submits a request to create a virtual machine snapshot starting from
@@ -105,8 +107,7 @@ The following command submits a request to create a virtual machine snapshot sta
 .. code-block:: bash
 
     vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 snapshot mk \
-    --description 'Before doing a difficult upgrade' --timestamp '2017-03-14 22:30' \
-    --lifetime 24
+    --description 'Before doing a difficult upgrade' --timestamp '2017-03-14 22:30' 
 
 As a result, the command will return a snapshot request ID, as well as a confirmation email.
 
