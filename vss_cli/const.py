@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.1.4-dev2"
+__version__ = "0.1.4-dev3"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -214,13 +214,18 @@ COLUMNS_REQUEST_NEW = [
 ]
 COLUMNS_TK_MIN = [
     ("ID", "id"),
-    ("CREATED", "status.created_on"),
-    ("UPDATED", "status.updated_on"),
-    ("LAST ACCESS", "status.last_access"),
-    ("LAST IP", "status.ip_address"),
-    ("VALID", "status.valid"),
+    ("CREATED", "created_on"),
+    ("UPDATED", "updated_on"),
+    ("LAST ACCESS", "last_access"),
+    ("LAST IP", "ip_address"),
+    ("VALID", "valid"),
 ]
-COLUMNS_TK = [*COLUMNS_TK_MIN]
+COLUMNS_TK = [
+    *COLUMNS_TK_MIN,
+    ("TYPE", "type"),
+    ("EXPIRATION", "expiration"),
+    ("DURATION", "duration"),
+]
 COLUMNS_MESSAGE_MIN = [
     *COLUMNS_MIN,
     ("KIND", "kind"),
