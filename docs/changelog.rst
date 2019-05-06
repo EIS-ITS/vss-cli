@@ -2,38 +2,64 @@
 Changelog
 =========
 
+v0.1.4
+======
+
+**Improvements:**
+- `#82`_: ``core``: setup.cfg improvements: by `jm.lopez`_
+- `#85`_: ``core``: upgrade to py-vss v0.9.30: by `jm.lopez`_
+- `#86`_: ``token``: ls/get columns: by `jm.lopez`_
+- `#88`_: ``token``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``service``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``message``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``key``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``compute floppy``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``compute image``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``compute iso``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``compute os``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``request change``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``request new``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``request export``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``request folder``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``request image``: ls standardizing relational options: by `jm.lopez`_
+- `#88`_: ``request inventory``: ls standardizing relational options: by `jm.lopez`_
+
+**Bug Fixes:**
+- `#83`_: ``ci``: CI/Docker Job Failed #17142: by `jm.lopez`_
+- `#87`_: ``compute``: vm st snapshot rm - Unable to delete snapshot: by `jm.lopez`_
+
 v0.1.3
 ======
 
 **Improvements:**
 
-- `#69`_: ``core``: Implement ruamel.yaml for yaml mgmt `jm.lopez`_
-- `#72`_: ``core``: spinner improvements `jm.lopez`_
-- `#78`_: ``core``: emoji handling/rendering improvements `jm.lopez`_
-- `#79`_: ``stor``: general improvements  `jm.lopez`_
+- `#69`_: ``core``: Implement ruamel.yaml for yaml mgmt: by `jm.lopez`_
+- `#72`_: ``core``: spinner improvements: by `jm.lopez`_
+- `#78`_: ``core``: emoji handling/rendering improvements: by `jm.lopez`_
+- `#79`_: ``stor``: general improvements : by `jm.lopez`_
 
 **Bug Fixes:**
 
-- `#68`_: ``core``: options are overridden by configuration file `jm.lopez`_
-- `#71`_: ``upgrade``: stable does not occur due to a missing argument `jm.lopez`_
-- `#73`_: ``service``: missing column name in table format `jm.lopez`_
-- `#74`_: ``core``: config.py aka ctx does not match services available `jm.lopez`_
-- `#75`_: ``configure mk``: missing default endpoint `jm.lopez`_
-- `#76`_: ``configure migrate``: unhandled exception with invalid configuration file `jm.lopez`_
-- `#77`_: ``configure set``: cannot change default_endpoint_name when invalid endpoint is found `jm.lopez`_
-- `#80`_: ``status``: command fails when there's no input format selected.  `jm.lopez`_
+- `#68`_: ``core``: options are overridden by configuration file: by `jm.lopez`_
+- `#71`_: ``upgrade``: stable does not occur due to a missing argument: by `jm.lopez`_
+- `#73`_: ``service``: missing column name in table format: by `jm.lopez`_
+- `#74`_: ``core``: config.py aka ctx does not match services available: by `jm.lopez`_
+- `#75`_: ``configure mk``: missing default endpoint: by `jm.lopez`_
+- `#76`_: ``configure migrate``: unhandled exception with invalid configuration file: by `jm.lopez`_
+- `#77`_: ``configure set``: cannot change default_endpoint_name when invalid endpoint is found: by `jm.lopez`_
+- `#80`_: ``status``: command fails when there's no input format selected. : by `jm.lopez`_
 
 v0.1.2
 ======
 
 **Improvements:**
 
-- `#67`_: Provide user feedback while CLI processing
+- `#67`_: ``core``: Provide user feedback while CLI processing: by `jm.lopez`_
 
 **Bug Fixes:**
 
-- `#65`_: configure command mismatch from autocompletion
-- `#66`_: configure upgrade missing description
+- `#65`_: ``configure``: command mismatch from auto-completion: by `jm.lopez`_
+- `#66`_: ``configure``: upgrade missing description: by `jm.lopez`_
 
 v0.1.1
 ======
@@ -54,7 +80,7 @@ v0.1.1
 
 **New Features:**
 
-- `#62`_: ``request change set scheduled``: request/change/set scheduled and scheduled_datetime: by [jm.lopez]
+- `#62`_: ``request change set scheduled``: request/change/set scheduled and scheduled_datetime: by `jm.lopez`_
 
 v0.1.0
 ======
@@ -110,6 +136,13 @@ v0.1.0
 
 .. Links to issues section
 
+
+.. _`#88`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88
+.. _`#87`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/87
+.. _`#86`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/86
+.. _`#85`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/85
+.. _`#83`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/83
+.. _`#82`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/82
 .. _`#80`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/80
 .. _`#79`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/79
 .. _`#78`: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/78
