@@ -1,7 +1,8 @@
 import logging
 
 import click
-from vss_cli import const
+
+from vss_cli import const, rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -10,10 +11,7 @@ from vss_cli.plugins.compute import cli
 _LOGGING = logging.getLogger(__name__)
 
 
-@cli.group(
-    'os',
-    short_help='Supported OS.'
-)
+@cli.group('os', short_help='Supported OS.')
 @pass_context
 def compute_os(ctx):
     """Supported operating systems by our infrastructure.
@@ -22,49 +20,36 @@ def compute_os(ctx):
 
 
 @compute_os.command('ls', short_help='list operating systems')
-@click.option('-f', '--filter', type=click.STRING,
-              help='apply filter')
-@click.option('-s', '--sort', type=click.STRING,
-              help='apply sorting ')
-@click.option('-a', '--show-all', is_flag=True,
-              help='show all results')
-@click.option('-c', '--count', type=int,
-              help='size of results')
-@click.option('-p', '--page', is_flag=True,
-              help='page results in a less-like format')
+@so.filter_opt
+@so.sort_opt
+@so.all_opt
+@so.count_opt
+@so.page_opt
 @pass_context
-def compute_os_ls(
-        ctx: Configuration, filter,
-        page, sort, show_all, count):
+def compute_os_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     """List requests based on:
 
-        Filter list in the following format <field_name>,<operator>,<value>
+        Filter list in the following format <field_name> <operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status,eq,Processed
+        For example: status eq,PROCESSED
 
-            vss-cli compute os ls -f guestFullName,like,CentOS%
+            vss-cli compute os ls -f guestFullName like,CentOS%
 
-        Sort list in the following format <field_name>,<asc|desc>. For example:
+        Sort list in the following format <field_name> <asc|desc>. For example:
 
-            vss-cli compute os ls -s guestId,asc
+            vss-cli compute os ls -s guestId asc
 
     """
-    query = dict()
-    if filter:
-        query['filter'] = filter
-    if sort:
-        query['sort'] = sort
+    params = dict(expand=1)
+    if all(filter_by):
+        params['filter'] = f'{filter_by[0]},{filter_by[1]}'
+    if all(sort):
+        params['sort'] = f'{sort[0]},{sort[1]}'
     with ctx.spinner(disable=ctx.debug):
-        obj = ctx.get_os(show_all=show_all,
-                         per_page=count,
-                         **query)
+        obj = ctx.get_os(show_all=show_all, per_page=count, **params)
     # format
     columns = ctx.columns or const.COLUMNS_OS
-    output = format_output(
-        ctx,
-        obj,
-        columns=columns,
-    )
+    output = format_output(ctx, obj, columns=columns)
     # page results
     if page:
         click.echo_via_pager(output)

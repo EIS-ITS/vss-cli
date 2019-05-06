@@ -1,5 +1,30 @@
 # Changelog 📝
 
+## [v0.1.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.4) (2019-05-06)
+
+**Improvements:**
+- [#82](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/82): `core`: setup.cfg improvements [jm.lopez]
+- [#85](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/85): `core`: upgrade to py-vss v0.9.30 [jm.lopez]
+- [#86](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/86): `token`: ls/get columns [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `token`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `service`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `message`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `key`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute floppy`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute image`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute iso`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute os`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request change`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request new`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request export`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request folder`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request image`: ls standardizing relational options [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request inventory`: ls standardizing relational options [jm.lopez]
+
+**Bug Fixes:**
+- [#83](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/83): `ci`: CI/Docker Job Failed #17142 [jm.lopez]
+- [#87](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/87): `compute`: vm st snapshot rm - Unable to delete snapshot [jm.lopez]
+
 ## [v0.1.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.3) (2019-04-18)
 
 **Improvements:**
