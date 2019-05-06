@@ -82,7 +82,7 @@ List Client Notes
 
 **Optional** Obtain the new ``UUID`` by either listing and filtering virtual machines in your inventory
 ``vss-cli compute vm ls --filter name front`` or listing your new requests
-``vss-cli request new ls -s 'created_on,desc' -c``. The following command illustrates how to list
+``vss-cli request new ls -s created_on desc``. The following command illustrates how to list
 virtual machines with the ``front`` string in their names:
 
 .. note:: This version of the VSS CLI supports managing virtual machines

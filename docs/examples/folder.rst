@@ -77,7 +77,7 @@ for instance:
 
 
 Check the state of the request made by running
-``vss-cli request folder ls -s created_on,desc -c 1`` or
+``vss-cli request folder ls -s created_on desc -c 1`` or
 ``vss-cli request folder get <id>``.
 
 Update
@@ -97,7 +97,7 @@ For example, the following command renames a given moref to **Prd**:
 
 
 Check the state of the request made by running
-``vss-cli request folder ls -s created_on,desc -c 1`` or
+``vss-cli request folder ls -s created_on desc -c 1`` or
 ``vss-cli request folder get <id>``.
 
 
@@ -113,7 +113,7 @@ where the first ``name-path-moref`` is the folder required to move and the
 
 
 Check the state of the request made by running
-``vss-cli request folder ls -s created_on,desc -c 1`` or
+``vss-cli request folder ls -s created_on desc -c 1`` or
 ``vss-cli request folder get <id>``.
 
 
@@ -130,5 +130,5 @@ for instance:
 
 
 Check the state of the request made by running
-``vss-cli request folder ls -s created_on,desc -c 1`` or
+``vss-cli request folder ls -s created_on desc -c 1`` or
 ``vss-cli request folder get <id>``.

@@ -23,8 +23,8 @@ Operating system
 
 Run ``vss-cli compute os ls`` to display the list of supported operating systems in
 the ITS Private Cloud. In order to narrow down the list to only **CentOS** operating
-systems, use the ``--filter/-f`` option which is structured
-``<field_name>,<operator>,<value>`` and available operators are
+systems, use the ``--filter-by/-f`` option which is structured
+``<field_name> <operator>,<value>`` and available operators are
 **eq, ne, lt, le, gt, ge, like, in**. So, to limit results to just **CentOS**, use
 the following filter:
 
@@ -34,7 +34,7 @@ the following filter:
 
 .. code-block:: bash
 
-    vss-cli compute os ls --filter guestFullName,like,CentOS%
+    vss-cli compute os ls --filter-by guestFullName like,CentOS%
       id  guestId        guestFullName
     ----  -------------  -------------------
        8  centosGuest    CentOS 4/5
@@ -198,17 +198,17 @@ Manage Request
 If you prefer to validate the status of the request with VSS CLI, run ``vss-cli request new ls`` to
 display a list of your request history.
 
-This command supports filter and sorting by using the ``--filter/-f`` and ``--sort/-s``
-respectively. Filter list in the following format ``<field_name>,<operator>,<value>``
+This command supports filter and sorting by using the ``--filter-by/-f`` and ``--sort/-s``
+respectively. Filter list in the following format ``<field_name> <operator>,<value>``
 where operator is **eq, ne, lt, le, gt, ge, like, in**. For example: status,eq,Processed.
-Sort list in the following format ``<field_name>,<asc|desc>``.
+Sort list in the following format ``<field_name> <asc|desc>``.
 
 In order to obtain the last request submitted, status and resulting virtual machine ``uuid``, run
 the following command:
 
 .. code-block:: bash
 
-    vss-cli request new ls -s created_on,desc -c 1
+    vss-cli request new ls -s created_on desc -c 1
       id  created_on               updated_on               status     vm_name           vm_uuid
     ----  -----------------------  -----------------------  ---------  ----------------  ------------------------------------
     1150  2017-03-13 13:11:41 EDT  2017-03-13 13:12:00 EDT  Processed  1703T-FrontEnd_1  5012f74a-4243-6664-20a9-0993567fbb7e
