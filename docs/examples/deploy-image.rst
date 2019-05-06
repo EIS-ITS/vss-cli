@@ -52,7 +52,7 @@ You can verify if the task has successfully completed by issuing the command
 
 .. code-block:: bash
 
-    vss-cli request image-sync ls -s created_on,desc
+    vss-cli request image-sync ls -s created_on desc
 
       id  created_on                   updated_on                   status     type
     ----  ---------------------------  ---------------------------  ---------  ------
@@ -128,7 +128,7 @@ Operating system
 
 Run ``vss-cli compute os ls`` to display the list of supported operating systems in
 the ITS Private Cloud. In order to narrow down the list to only **CentOS** operating
-systems, use the ``--filter/-f`` option which is structured
+systems, use the ``--filter-by/-f`` option which is structured
 ``<field_name>,<operator>,<value>`` and available operators are
 **eq, ne, lt, le, gt, ge, like, in**. So, to limit results to just **CentOS**, use
 the following filter:
@@ -139,7 +139,7 @@ the following filter:
 
 .. code-block:: bash
 
-    vss-cli compute os ls --filter guestFullName,like,CentOS%
+    vss-cli compute os ls --filter-by guestFullName like,CentOS%
       id  guestId        guestFullName
     ----  -------------  -------------------
        8  centosGuest    CentOS 4/5
@@ -240,7 +240,7 @@ Wait a few minutes until the virtual machine is deployed.
 
 .. code-block:: bash
 
-    vss-cli request new ls -s 'created_on,desc' -c 1
+    vss-cli request new ls -s 'created_on desc' -c 1
 
       id  created_on               updated_on               status     vm_name             vm_uuid
     ----  -----------------------  -----------------------  ---------  ------------------  ------------------------------------

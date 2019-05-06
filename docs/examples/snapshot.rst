@@ -119,7 +119,7 @@ As a result, the command will return a snapshot request ID, as well as a confirm
     name                : Accepted
 
 Check the state of the request made by running
-``vss-cli request snapshot ls -s created_on,desc -c 1`` or
+``vss-cli request snapshot ls -s created_on desc -c 1`` or
 ``vss-cli request snapshot get <id>``.
 
 
@@ -153,7 +153,7 @@ snapshot request to revert to a particular snapshot id:
     name                : Accepted
 
 Check the state of the request made by running
-``vss-cli request snapshot ls -s created_on,desc -c 1`` or
+``vss-cli request snapshot ls -s created_on desc -c 1`` or
 ``vss-cli request snapshot get <id>``.
 
 Delete
@@ -173,7 +173,7 @@ request to delete a given snapshot:
     name                : Accepted
 
 Check the state of the request made by running
-``vss-cli request snapshot ls -s created_on,desc -c 1`` or
+``vss-cli request snapshot ls -s created_on desc -c 1`` or
 ``vss-cli request snapshot get <id>``.
 
 Extend
@@ -228,5 +228,5 @@ If disk consolidation is required, run ``vss-cli compute vm set <uuid> consolida
     vss-cli compute vm set --schedule "2017-09-06 00:00" 50128d83-0fcc-05e3-be71-d972ffdf3284 consolidate
 
 You can check the state of the request made by running
-``vss-cli request change ls -s created_on,desc -c 1`` or
+``vss-cli request change ls -s created_on desc -c 1`` or
 ``vss-cli request change get <id>``.

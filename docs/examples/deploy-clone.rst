@@ -202,7 +202,7 @@ To verify the state of the new request, run ``vss-cli request new ls`` as follow
 
 .. code-block:: bash
 
-    vss-cli request new ls -s 'created_on,desc' -c 1
+    vss-cli request new ls -s created_on desc -c 1
 
       id  created_on               updated_on               status       vm_name             vm_uuid
     ----  -----------------------  -----------------------  -----------  ------------------  ---------
@@ -212,7 +212,7 @@ Wait a few minutes until the virtual machine is deployed.
 
 .. code-block:: bash
 
-    vss-cli request new ls -s 'created_on,desc' -c 1
+    vss-cli request new ls -s created_on desc -c 1
 
       id  created_on               updated_on               status     vm_name             vm_uuid
     ----  -----------------------  -----------------------  ---------  ------------------  ------------------------------------

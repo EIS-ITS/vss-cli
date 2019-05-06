@@ -48,16 +48,15 @@ those can be filtered and sorted with including the proper options:
       List available ISO images in the VSS central store.
 
       Filter by name and sort desc. For example:
-
           vss-cli compute iso public ls -f name like,Cent% -s path asc
 
     Options:
-      -f, --filter <TEXT TEXT>...  filter list by path or name
-      -s, --sort <TEXT TEXT>...    sort by name or path
-      -p, --page                   page results in a less-like format
-      -n, --no-header              hide header
-      -q, --quiet                  Display only path
-      --help                       Show this message and exit.
+      -f, --filter-by <TEXT TEXT>...  filter list by <field_name>
+                                      <operator>,<value>
+      -s, --sort <TEXT TEXT>...       sort by <field_name> <asc|desc>
+      -a, --show-all                  show all results  [default: False]
+      -p, --page                      page results in a less-like format
+      --help                          Show this message and exit.
 
 
 For instance, to look for a publicly available **Ubuntu 18** image, the command could be something
@@ -210,15 +209,15 @@ those can be filtered and sorted with including the proper options:
 
       Filter by name and sort desc. For example:
 
-          vss-cli compute image public ls -f name like,%photon% -s path asc
+          vss-cli compute image public ls -f name like,Cent% -s path asc
 
     Options:
-      -f, --filter <TEXT TEXT>...  filter list by path or name
-      -s, --sort <TEXT TEXT>...    sort by name or path
-      -p, --page                   page results in a less-like format
-      -n, --no-header              hide header
-      -q, --quiet                  Display only path
-      --help                       Show this message and exit.
+      -f, --filter-by <TEXT TEXT>...  filter list by <field_name>
+                                      <operator>,<value>
+      -s, --sort <TEXT TEXT>...       sort by <field_name> <asc|desc>
+      -a, --show-all                  show all results  [default: False]
+      -p, --page                      page results in a less-like format
+      --help                          Show this message and exit.
 
 For instance, to look for a publicly available **Photon OS** image, the command could be something
 like:
@@ -321,12 +320,12 @@ those can be filtered and sorted with including the proper options:
           vss-cli compute floppy ls -f name like,pv% -s path asc
 
     Options:
-      -f, --filter <TEXT TEXT>...  filter list by path or name
-      -s, --sort TEXT              sort by name or path
-      -p, --page                   page results in a less-like format
-      -n, --no-header              hide header
-      -q, --quiet                  Display only path
-      --help                       Show this message and exit.
+      -f, --filter-by <TEXT TEXT>...  filter list by <field_name>
+                                      <operator>,<value>
+      -s, --sort <TEXT TEXT>...       sort by <field_name> <asc|desc>
+      -a, --show-all                  show all results  [default: False]
+      -p, --page                      page results in a less-like format
+      --help                          Show this message and exit.
 
 
 For instance, to look for a **Windows** drivers image, the command should be something
