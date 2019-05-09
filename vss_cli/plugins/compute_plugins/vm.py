@@ -490,8 +490,48 @@ def compute_vm_get_snapshot(ctx: Configuration, snapshot_id):
 
 
 @compute_vm_get.command(
+    'spec-api',
+    short_help='Cloud API configuration specification',
+    context_settings={"ignore_unknown_options": True},
+)
+@click.argument('spec_file', type=click.Path(), required=False)
+@click.option(
+    '-e', '--edit', is_flag=True, required=False, help='Edit before writing'
+)
+@pass_context
+def compute_vm_get_spec_api(ctx: Configuration, spec_file, edit):
+    """Cloud API  Virtual machine configuration specification."""
+    if ctx.output in ['auto', 'table']:
+        _LOGGING.warning(f'Input set to {ctx.output}. Falling back to yaml')
+        ctx.output = 'yaml'
+    f_name = spec_file or f'{ctx.uuid}-api-spec.{ctx.output}'
+    # get obj
+    obj = ctx.get_vm_spec(ctx.uuid)
+    new_raw = None
+    if edit:
+        obj_raw = raw_format_output(
+            ctx.output, obj, ctx.yaml(), highlighted=False
+        )
+        new_raw = click.edit(obj_raw, extension='.{}'.format(ctx.output))
+
+    if ctx.output == 'json':
+        import json
+
+        if new_raw:
+            obj = json.loads(new_raw)
+        with open(f_name, 'w') as fp:
+            json.dump(obj, fp=fp, indent=2, sort_keys=False)
+    else:
+        if new_raw:
+            obj = ctx.yaml_load(new_raw)
+        with open(f_name, 'w') as fp:
+            ctx.yaml_dump_stream(obj, stream=fp)
+    click.echo(f'Written to {f_name}')
+
+
+@compute_vm_get.command(
     'spec',
-    short_help='Configuration specification',
+    short_help='CLI configuration specification',
     context_settings={"ignore_unknown_options": True},
 )
 @click.argument('spec_file', type=click.Path(), required=False)
@@ -500,16 +540,20 @@ def compute_vm_get_snapshot(ctx: Configuration, snapshot_id):
 )
 @pass_context
 def compute_vm_get_spec(ctx: Configuration, spec_file, edit):
-    """Virtual machine configuration specification."""
-    if ctx.output in ['auto']:
-        raise click.UsageError(
-            'Output not supported. '
-            'Please specify '
-            '-o/--output either yaml or json'
-        )
-    f_name = spec_file or f'{ctx.uuid}.{ctx.output}'
+    """CLI Virtual machine configuration specification."""
+    if ctx.output in ['auto', 'table']:
+        _LOGGING.warning(f'Input set to {ctx.output}. Falling back to yaml')
+        ctx.output = 'yaml'
+    f_name = spec_file or f'{ctx.uuid}-cli-spec.{ctx.output}'
     # get obj
     obj = ctx.get_vm_spec(ctx.uuid)
+    file_spec = os.path.join(const.DEFAULT_DATA_PATH, 'shell.yaml')
+    # proceed to load file
+    with open(file_spec, 'r') as data_file:
+        raw = data_file.read()
+    template = ctx.yaml_load(raw)
+    # obj rewritten with cli spec
+    obj = ctx.get_cli_spec_from_api_spec(payload=obj, template=template)
     new_raw = None
     if edit:
         obj_raw = raw_format_output(
@@ -2074,7 +2118,7 @@ def compute_vm_mk(ctx: Configuration, user_meta: str):
 
 @compute_vm_mk.command(
     'from-file',
-    short_help='Create virtual machine ' 'from VSS CLI specification.',
+    short_help='Create virtual machine from VSS CLI specification.',
 )
 @click.argument('file-spec', type=click.File('r'), required=False)
 @click.option(
@@ -2085,14 +2129,37 @@ def compute_vm_mk(ctx: Configuration, user_meta: str):
     help='Specification template to load and edit.',
 )
 @click.option(
-    '--edit/--no-edit',
+    '-e',
+    '--edit',
+    is_flag=True,
     required=False,
-    default=True,
     help='Edit before submitting request',
 )
+@click.option(
+    '--save',
+    '-s',
+    required=False,
+    default=False,
+    help='Save file after editing.',
+)
 @pass_context
-def compute_vm_from_file(ctx: Configuration, file_spec, edit, spec_template):
+def compute_vm_from_file(
+    ctx: Configuration, file_spec, edit, spec_template, save
+):
     """Create virtual machine from VSS CLI file specification.
+
+    Run the following command to deploy a vm based on a
+    VSS CLI specification template:
+
+        vss-cli compute vm mk from-file -s -t shell -e vm.yaml
+
+    Or from an existing vm:
+
+        vss-cli compute vm get <vm_name_or_uuid> spec --edit vm.yaml
+
+    Edit vm.yaml file and deploy as follows:
+
+        vss-cli compute vm mk from-file <cli-spec>.json|yaml
 
     """
     import time
@@ -2120,16 +2187,15 @@ def compute_vm_from_file(ctx: Configuration, file_spec, edit, spec_template):
         # launch editor
         new_raw = click.edit(raw, extension='.yaml')
         # load object
-        if new_raw:
+        if new_raw and save:
             new_obj = ctx.yaml_load(new_raw)
             file_name = f'from-file-{int(time.time())}.yaml'
-            _LOGGING.debug(f'Saving spec in {file_name}')
+            _LOGGING.debug(f'Saving spec to {file_name}')
             with open(file_name, 'w') as fp:
                 ctx.yaml_dump_stream(new_obj, stream=fp)
             raw = new_raw
         else:
-            _LOGGING.warning('Nothing to save.')
-            raise click.UsageError('Input error')
+            _LOGGING.warning('Editor contents will not be saved.')
 
     payload = ctx.yaml_load(raw)
     _LOGGING.debug(f'Payload from raw: f{payload}')
@@ -2137,7 +2203,7 @@ def compute_vm_from_file(ctx: Configuration, file_spec, edit, spec_template):
     spec_payload = dict()
     spec_payload.update(ctx.payload_options)
     if payload['built'] == 'os_install':
-        spec_payload = ctx.get_spec_payload(
+        spec_payload = ctx.get_api_spec_from_cli_spec(
             payload=payload, built='os_install'
         )
     else:
