@@ -3,6 +3,7 @@ import os
 from typing import Any, Dict, List, Tuple  # NOQA
 
 from requests.exceptions import HTTPError
+
 from vss_cli import const
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssError
@@ -12,22 +13,16 @@ def _init_ctx(ctx: Configuration) -> None:
     """Initialize ctx."""
     # ctx is incomplete thus need to 'hack' around it
     # see bug https://github.com/pallets/click/issues/942
-    if not hasattr(ctx, 'get_token'):
-        ctx.client = Configuration(tk=os.environ.get('VSS_TOKEN'))
-        ctx.client.server = os.environ.get(
-            'VSS_ENDPOINT', const.DEFAULT_ENDPOINT
-        )
-        ctx.client.password = os.environ.get(
-            'VSS_USER', None
-        )
-        ctx.client.password = os.environ.get(
-            'VSS_USER_PASS', None
-        )
-        ctx.client.timeout = int(
-            os.environ.get('VSS_TIMEOUT', str(const.DEFAULT_TIMEOUT))
-        )
-        # fallback to load configuration
-        ctx.client.load_config()
+    ctx.client = Configuration(tk=os.environ.get('VSS_TOKEN'))
+    ctx.client.endpoint = os.environ.get('VSS_ENDPOINT', None)
+    ctx.client.username = os.environ.get('VSS_USER', None)
+    ctx.client.password = os.environ.get('VSS_USER_PASS', None)
+    ctx.client.timeout = int(
+        os.environ.get('VSS_TIMEOUT', str(const.DEFAULT_TIMEOUT))
+    )
+    ctx.client.config = os.environ.get('VSS_CONFIG', const.DEFAULT_CONFIG)
+    # fallback to load configuration
+    ctx.client.load_config()
 
 
 def table_formats(
@@ -79,11 +74,7 @@ def virtual_machines(
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for vm in response:
-            completions.append(
-                (
-                    vm['uuid'], vm['name']
-                )
-            )
+            completions.append((vm['uuid'], vm['name']))
 
         completions.sort()
 
@@ -103,11 +94,7 @@ def domains(
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    obj['moref'], obj['name']
-                )
-            )
+            completions.append((obj['moref'], obj['name']))
 
         completions.sort()
 
@@ -127,11 +114,7 @@ def folders(
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    obj['moref'], obj['path']
-                )
-            )
+            completions.append((obj['moref'], obj['path']))
 
         completions.sort()
 
@@ -151,11 +134,7 @@ def networks(
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    obj['moref'], obj['name']
-                )
-            )
+            completions.append((obj['moref'], obj['name']))
 
         completions.sort()
 
@@ -168,21 +147,14 @@ def operating_systems(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_os(
-            show_all=True,
-            sort='guestId,desc'
-        )
+        response = ctx.client.get_os(show_all=True, sort='guestId,desc')
     except (HTTPError, VssError):
         response = []
 
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    obj['guestId'], obj['guestFullName']
-                )
-            )
+            completions.append((obj['guestId'], obj['guestFullName']))
 
         completions.sort()
 
@@ -196,8 +168,7 @@ def vss_services(
     _init_ctx(ctx)
     try:
         response = ctx.client.get_vss_services(
-            show_all=True,
-            sort='label,desc'
+            show_all=True, sort='label,desc'
         )
     except (HTTPError, VssError):
         response = []
@@ -205,11 +176,7 @@ def vss_services(
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    f"\"{obj['label']}\"", f"{obj['id']}"
-                )
-            )
+            completions.append((f"\"{obj['label']}\"", f"{obj['id']}"))
 
         completions.sort()
 
@@ -222,24 +189,15 @@ def isos(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_isos(
-            show_all=True,
-            sort='name,desc'
-        )
-        response.extend(
-            ctx.client.get_user_isos()
-        )
+        response = ctx.client.get_isos(show_all=True, sort='name,desc')
+        response.extend(ctx.client.get_user_isos())
     except (HTTPError, VssError):
         response = []
 
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    obj['name'], obj['path']
-                )
-            )
+            completions.append((obj['name'], obj['path']))
 
         completions.sort()
 
@@ -252,24 +210,15 @@ def vm_images(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_images(
-            show_all=True,
-            sort='name,desc'
-        )
-        response.extend(
-            ctx.client.get_user_vm_images()
-        )
+        response = ctx.client.get_images(show_all=True, sort='name,desc')
+        response.extend(ctx.client.get_user_vm_images())
     except (HTTPError, VssError):
         response = []
 
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    obj['name'], obj['path']
-                )
-            )
+            completions.append((obj['name'], obj['path']))
 
         completions.sort()
 
@@ -291,11 +240,7 @@ def inventory_properties(
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    obj['key'], obj['value']
-                )
-            )
+            completions.append((obj['key'], obj['value']))
 
         completions.sort()
 
@@ -308,9 +253,7 @@ def inventory_requests(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_inventory_requests(
-            sort='created_on,desc'
-        )
+        response = ctx.client.get_inventory_requests(sort='created_on,desc')
     except (HTTPError, VssError):
         response = []
 
@@ -318,10 +261,7 @@ def inventory_requests(
     if response:
         for obj in response:
             completions.append(
-                (
-                    f"{obj['id']}",
-                    f"{obj['name']} ({obj['created_on']})"
-                )
+                (f"{obj['id']}", f"{obj['name']} ({obj['created_on']})")
             )
 
         completions.sort()
@@ -335,9 +275,7 @@ def change_requests(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_change_requests(
-            sort='created_on,desc'
-        )
+        response = ctx.client.get_change_requests(sort='created_on,desc')
     except (HTTPError, VssError):
         response = []
 
@@ -347,7 +285,8 @@ def change_requests(
             completions.append(
                 (
                     f"{obj['id']}",
-                    f"{obj['vm_uuid']} ({obj['vm_name']}) - {obj['attribute']}"
+                    f"{obj['vm_uuid']} ({obj['vm_name']}) "
+                    f"- {obj['attribute']}",
                 )
             )
 
@@ -362,9 +301,7 @@ def export_requests(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_export_requests(
-            sort='created_on,desc'
-        )
+        response = ctx.client.get_export_requests(sort='created_on,desc')
     except (HTTPError, VssError):
         response = []
 
@@ -372,10 +309,7 @@ def export_requests(
     if response:
         for obj in response:
             completions.append(
-                (
-                    f"{obj['id']}",
-                    f"{obj['vm_uuid']} ({obj['vm_name']})"
-                )
+                (f"{obj['id']}", f"{obj['vm_uuid']} ({obj['vm_name']})")
             )
 
         completions.sort()
@@ -389,9 +323,7 @@ def folder_requests(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_folder_requests(
-            sort='created_on,desc'
-        )
+        response = ctx.client.get_folder_requests(sort='created_on,desc')
     except (HTTPError, VssError):
         response = []
 
@@ -399,10 +331,7 @@ def folder_requests(
     if response:
         for obj in response:
             completions.append(
-                (
-                    f"{obj['id']}",
-                    f"{obj['moref']} ({obj['action']})"
-                )
+                (f"{obj['id']}", f"{obj['moref']} ({obj['action']})")
             )
 
         completions.sort()
@@ -416,21 +345,14 @@ def image_sync_requests(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_image_sync_requests(
-            sort='created_on,desc'
-        )
+        response = ctx.client.get_image_sync_requests(sort='created_on,desc')
     except (HTTPError, VssError):
         response = []
 
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
-            completions.append(
-                (
-                    f"{obj['id']}",
-                    f"{obj['type']}"
-                )
-            )
+            completions.append((f"{obj['id']}", f"{obj['type']}"))
 
         completions.sort()
 
@@ -443,9 +365,7 @@ def snapshot_requests(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_snapshot_requests(
-            sort='created_on,desc'
-        )
+        response = ctx.client.get_snapshot_requests(sort='created_on,desc')
     except (HTTPError, VssError):
         response = []
 
@@ -453,10 +373,7 @@ def snapshot_requests(
     if response:
         for obj in response:
             completions.append(
-                (
-                    f"{obj['id']}",
-                    f"{obj['vm_uuid']} ({obj['vm_name']})"
-                )
+                (f"{obj['id']}", f"{obj['vm_uuid']} ({obj['vm_name']})")
             )
 
         completions.sort()
@@ -470,9 +387,7 @@ def account_messages(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_user_messages(
-            sort='created_on,desc'
-        )
+        response = ctx.client.get_user_messages(sort='created_on,desc')
     except (HTTPError, VssError):
         response = []
 
@@ -480,10 +395,7 @@ def account_messages(
     if response:
         for obj in response:
             completions.append(
-                (
-                    f"{obj['id']}",
-                    f"{obj['kind']} ({obj['subject']})"
-                )
+                (f"{obj['id']}", f"{obj['kind']} ({obj['subject']})")
             )
 
         completions.sort()
