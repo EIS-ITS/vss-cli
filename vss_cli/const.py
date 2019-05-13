@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.1.5-dev0"
+__version__ = "0.1.5-dev1"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -409,6 +409,7 @@ COLUMNS_VM_HW = [
     ("STATUS", "status"),
     ("UPGRADE_POLICY", "upgrade_policy.upgradePolicy"),
 ]
+COLUMNS_EXTRA_CONFIG = [("KEY", "key"), ("VALUE", "value")]
 COLUMNS_VSS_OPTIONS = [("OPTIONS", "[*]")]
 COLUMNS_GROUP = [
     ("NAME", "cn"),
