@@ -329,13 +329,13 @@ def compute_vm_get_events(ctx: Configuration, window):
     click.echo(format_output(ctx, obj, columns=columns))
 
 
-@compute_vm_get.command('extra-config', short_help='GuestInfo extra configs')
+@compute_vm_get.command('extra-cfg', short_help='GuestInfo extra configs')
 @pass_context
 def compute_vm_get_extra_config(ctx: Configuration):
     """Get virtual machine guest info via VMware Tools."""
-    obj = ctx.get_vm_extra_config(ctx.uuid)
-    columns = ctx.columns or const.COLUMNS_DEFAULT
-    click.echo(format_output(ctx, obj, columns=columns))
+    objs = ctx.get_vm_extra_cfg_options(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_EXTRA_CONFIG
+    click.echo(format_output(ctx, objs, columns=columns))
 
 
 @compute_vm_get.command('floppy', short_help='Floppy configuration')
@@ -1016,6 +1016,133 @@ def compute_vm_set_custom_spec(
     # process request
     # submit custom_spec
     obj = ctx.create_vm_custom_spec(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set.group(
+    'extra-cfg', short_help='GuestInfo extra config entries.'
+)
+@pass_context
+def compute_vm_set_extra_config(ctx: Configuration):
+    """Manage VMware **guestinfo** interface options, which are
+    available to the VM guest operating system via VMware Tools:
+
+      vmtoolsd --cmd "info-get guestinfo.<option>"
+    """
+    pass
+
+
+@compute_vm_set_extra_config.command(
+    'mk', short_help='Create guestInfo extra config entries.'
+)
+@click.argument('key-value', type=click.STRING, required=True, nargs=-1)
+@pass_context
+def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
+    """Create **guestinfo** interface extra configuration options:
+
+    vss-cli compute vm set <name-or-uuid> extra-cfg mk key1=value2 key2=value2
+
+    """
+    # process input
+    try:
+        _options = to_tuples(','.join(key_value))
+        options = dict(_options)
+    except Exception as ex:
+        _LOGGING.error(ex)
+        raise click.BadArgumentUsage('Argument must be key=value strings')
+    # assemble payload
+    payload = dict(uuid=ctx.uuid, options=options)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_extra_cfg_options(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set_extra_config.command(
+    'up', short_help='Update guestInfo extra config entries.'
+)
+@click.argument('key-value', type=click.STRING, required=True, nargs=-1)
+@click.option(
+    '--check/--no-check',
+    is_flag=True,
+    default=False,
+    help='Check if options to update exist.',
+)
+@pass_context
+def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
+    """Update **guestinfo** interface extra configuration options:
+
+    vss-cli compute vm set <name-or-uuid> extra-cfg up key1=value2 key2=value2
+
+    """
+    # process input
+    try:
+        _options = to_tuples(','.join(key_value))
+        options = dict(_options)
+    except Exception as ex:
+        _LOGGING.error(ex)
+        raise click.BadArgumentUsage('Argument must be key=value strings')
+    # check if key exists
+    if check:
+        ex_opts = [
+            i['key'].replace('guestinfo.', '')
+            for i in ctx.get_vm_extra_cfg_options(ctx.uuid)
+        ]
+        no_opts = [k for k in options if k not in ex_opts]
+        if list(no_opts):
+            _LOGGING.warning(
+                f'Extra config options will be ignored: {", ".join(no_opts)}'
+            )
+    # assemble payload
+    payload = dict(uuid=ctx.uuid, options=options)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_extra_cfg_options(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set_extra_config.command(
+    'rm', short_help='Remove guestInfo extra config option keys.'
+)
+@click.argument('key', type=click.STRING, required=True, nargs=-1)
+@click.option(
+    '--check/--no-check',
+    is_flag=True,
+    default=False,
+    help='Check if options to update exist.',
+)
+@pass_context
+def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
+    """Remove **guestinfo** interface extra configuration options:
+
+    vss-cli compute vm set <name-or-uuid> extra-cfg rm key1 key2 keyN
+
+    """
+    # check if key exists
+    if check:
+        ex_opts = [
+            i['key'].replace('guestinfo.', '')
+            for i in ctx.get_vm_extra_cfg_options(ctx.uuid)
+        ]
+        no_opts = [k for k in key if k not in ex_opts]
+        if list(no_opts):
+            _LOGGING.warning(
+                f'Extra config options will be ignored: {", ".join(no_opts)}'
+            )
+    # assemble payload
+    payload = dict(uuid=ctx.uuid, options=key)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.delete_vm_extra_cfg_options(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
