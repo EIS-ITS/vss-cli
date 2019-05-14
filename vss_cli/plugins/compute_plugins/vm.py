@@ -199,7 +199,8 @@ def compute_vm_get_client_notes(ctx):
     '--client',
     type=click.Choice(['html5', 'flash', 'vmrc']),
     help='Client type to generate link.',
-    default='html5',
+    default='flash',
+    show_default=True,
 )
 @pass_context
 def compute_vm_get_console(ctx: Configuration, launch, client):
