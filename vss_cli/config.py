@@ -320,6 +320,11 @@ class Configuration(VssManager):
                         _LOGGING.debug(
                             f'Loading endpoint settings from {self.config}'
                         )
+                        _LOGGING.debug(
+                            f'Looking for endpoint={self.endpoint},'
+                            f' default_endpoint_name='
+                            f'{self.default_endpoint_name}'
+                        )
                         # 1. provided by input
                         if self.endpoint:
                             msg = (
