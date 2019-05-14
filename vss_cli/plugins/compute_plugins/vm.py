@@ -190,12 +190,19 @@ def compute_vm_get_client_notes(ctx):
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
-@compute_vm_get.command('console', short_help='HTML console link')
+@compute_vm_get.command('console', short_help='Virtual machine console link')
 @click.option(
-    '-l', '--launch', is_flag=True, help='Launch link in default browser'
+    '-l', '--launch', is_flag=True, help='Launch link to default handler'
+)
+@click.option(
+    '-c',
+    '--client',
+    type=click.Choice(['html5', 'flash', 'vmrc']),
+    help='Client type to generate link.',
+    default='html5',
 )
 @pass_context
-def compute_vm_get_console(ctx: Configuration, launch):
+def compute_vm_get_console(ctx: Configuration, launch, client):
     """'Get one-time HTML link to access console"""
     username = ctx.username or click.prompt(
         'Username', default=os.environ.get('VSS_USER', '')
@@ -208,7 +215,7 @@ def compute_vm_get_console(ctx: Configuration, launch):
         confirmation_prompt=True,
     )
     auth = (username.decode(), password.decode())
-    obj = ctx.get_vm_console(ctx.uuid, auth=auth)
+    obj = ctx.get_vm_console(ctx.uuid, auth=auth, client=client)
     link = obj.get('value')
     # print
     columns = ctx.columns or [('VALUE', 'value')]
