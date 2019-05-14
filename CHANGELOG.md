@@ -1,47 +1,68 @@
 # Changelog 📝
 
+## [v0.1.5](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.5) (2019-05-14)
+
+**Improvements:**
+
+- [#90](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/90): `compute vm get spec`: generates a VSS-CLI specification: by [jm.lopez]
+- [#91](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/91): `compute vm mk from-file`: checks for VSS CLI specification: by [jm.lopez]
+- [#92](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/92): `compute vm set extra-cfg mk`: create `guestinfo` option: by [jm.lopez]
+- [#92](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/92): `compute vm set extra-cfg up`: update `guestinfo` option: by [jm.lopez]
+- [#92](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/92): `compute vm set extra-cfg rm`: remove `guestinfo` option: by [jm.lopez]
+- [#95](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/95): `compute vm get console`: option to generate link for a given client (html5, flash, vmrc): by [jm.lopez]
+- [#96](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/96): `core`: ruamel.yaml upgrade from 0.15.92 -> 0.15.94: by [jm.lopez]
+- [#97](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/97): `core`: pyvss upgrade from 0.9.30 -> 0.9.32: by [jm.lopez]
+
+**Bug Fixes:**
+
+- [#93](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/93): `core`: autocompletion is not working properly with multi-endpoint configuration: by [jm.lopez]
+
 ## [v0.1.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.4) (2019-05-06)
 
 **Improvements:**
-- [#82](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/82): `core`: setup.cfg improvements [jm.lopez]
-- [#85](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/85): `core`: upgrade to py-vss v0.9.30 [jm.lopez]
-- [#86](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/86): `token`: ls/get columns [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `token`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `service`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `message`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `key`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute floppy`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute image`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute iso`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute os`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request change`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request new`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request export`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request folder`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request image`: ls standardizing relational options [jm.lopez]
-- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request inventory`: ls standardizing relational options [jm.lopez]
+
+- [#82](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/82): `core`: setup.cfg improvements: by [jm.lopez]
+- [#85](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/85): `core`: upgrade to py-vss v0.9.30: by [jm.lopez]
+- [#86](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/86): `token`: ls/get columns: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `token`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `service`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `message`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `key`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute floppy`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute image`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute iso`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `compute os`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request change`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request new`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request export`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request folder`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request image`: ls standardizing relational options: by [jm.lopez]
+- [#88](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88): `request inventory`: ls standardizing relational options: by [jm.lopez]
 
 **Bug Fixes:**
-- [#83](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/83): `ci`: CI/Docker Job Failed #17142 [jm.lopez]
-- [#87](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/87): `compute`: vm st snapshot rm - Unable to delete snapshot [jm.lopez]
+
+- [#83](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/83): `ci`: CI/Docker Job Failed #17142: by [jm.lopez]
+- [#87](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/87): `compute`: vm st snapshot rm - Unable to delete snapshot: by [jm.lopez]
 
 ## [v0.1.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.3) (2019-04-18)
 
 **Improvements:**
-- [#69](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/69): `core`: Implement ruamel.yaml for yaml mgmt [jm.lopez]
-- [#72](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/72): `core`: spinner improvements [jm.lopez]
-- [#78](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/78): `core`: emoji handling/rendering improvements  [jm.lopez]
-- [#79](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/79): `stor`: general improvements [jm.lopez]
+
+- [#69](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/69): `core`: Implement ruamel.yaml for yaml mgmt: by [jm.lopez]
+- [#72](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/72): `core`: spinner improvements: by [jm.lopez]
+- [#78](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/78): `core`: emoji handling/rendering improvements: by [jm.lopez]
+- [#79](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/79): `stor`: general improvements: by [jm.lopez]
 
 **Bug Fixes:**
-- [#68](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/68): `core`: options are overridden by configuration file [jm.lopez]
-- [#71](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/71): `upgrade`: stable does not occur due to a missing argument [jm.lopez]
-- [#73](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/73): `service`: missing column name in table format [jm.lopez]
-- [#74](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/74): `core`: config.py aka ctx does not match services available [jm.lopez]
-- [#75](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/75): `configure mk`: missing default endpoint [jm.lopez]
-- [#76](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/76): `configure migrate`: unhandled exception with invalid configuration file [jm.lopez]
-- [#77](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/77): `configure set`: cannot change default_endpoint_name when invalid endpoint is found [jm.lopez]
-- [#80](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/80): `status`: command fails when there's no input format selected. [jm.lopez]
+
+- [#68](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/68): `core`: options are overridden by configuration file: by [jm.lopez]
+- [#71](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/71): `upgrade`: stable does not occur due to a missing argument: by [jm.lopez]
+- [#73](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/73): `service`: missing column name in table format: by [jm.lopez]
+- [#74](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/74): `core`: config.py aka ctx does not match services available: by [jm.lopez]
+- [#75](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/75): `configure mk`: missing default endpoint: by [jm.lopez]
+- [#76](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/76): `configure migrate`: unhandled exception with invalid configuration file: by [jm.lopez]
+- [#77](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/77): `configure set`: cannot change default_endpoint_name when invalid endpoint is found: by [jm.lopez]
+- [#80](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/80): `status`: command fails when there's no input format selected.: by [jm.lopez]
 
 ## [v0.1.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.2) (2019-04-12)
 
@@ -60,7 +81,7 @@
 **Improvements:**
 
 - [#54](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/54): ``docs``: Windows installation steps: by [jm.lopez]
-- [#55](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/55): ``core``: Handle advanced configuration editable by users and via CLI : by [jm.lopez]
+- [#55](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/55): ``core``: Handle advanced configuration editable by users and via CLI: by [jm.lopez]
 - [#57](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/57): ``docs``: docs/Add man page build and deploy stage to pipeline: by [jm.lopez]
 
 **Bug Fixes:**

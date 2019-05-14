@@ -320,6 +320,11 @@ class Configuration(VssManager):
                         _LOGGING.debug(
                             f'Loading endpoint settings from {self.config}'
                         )
+                        _LOGGING.debug(
+                            f'Looking for endpoint={self.endpoint},'
+                            f' default_endpoint_name='
+                            f'{self.default_endpoint_name}'
+                        )
                         # 1. provided by input
                         if self.endpoint:
                             msg = (
@@ -858,7 +863,7 @@ class Configuration(VssManager):
             iso_ref = list(
                 filter(lambda i: i['id'] == iso_id, pub_isos)
             ) or list(filter(lambda i: i['id'] == iso_id, user_isos))
-        except ValueError as ex:
+        except (ValueError, TypeError) as ex:
             # not an integer
             _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
             # checking name or path
@@ -929,57 +934,91 @@ class Configuration(VssManager):
             return [img_ref[index]]
         return img_ref
 
-    def get_spec_payload(self, payload: dict, built: str) -> dict:
-        spec_payload = dict()
-        # sections
-        machine_section = payload['machine']
-        networking_section = payload['networking']
-        metadata_section = payload['metadata']
-        if built == 'os_install':
-            # machine section parse and update
-            spec_payload.update(machine_section)
-            # replace with valid values
-            spec_payload['os'] = self.get_os_by_name_or_guest(
-                machine_section['os']
-            )[0]['guestId']
-            spec_payload['iso'] = self.get_iso_by_name_or_guest(
-                machine_section['iso']
-            )[0]['path']
-            # folder
-            spec_payload['folder'] = self.get_folder_by_name_or_moref_path(
-                machine_section['folder']
-            )[0]['moref']
-            # networking
-            spec_payload['networks'] = [
-                self.get_network_by_name_or_moref(n['network'])[0]['moref']
-                for n in networking_section['interfaces']
-            ]
-            # metadata section
-            spec_payload.update(metadata_section)
-            spec_payload['built'] = built
-            spec_payload['bill_dept'] = metadata_section['billing']
-            # optional
-            if 'inform' in metadata_section:
-                spec_payload['inform'] = [
-                    validate_email(None, 'inform', i)
-                    for i in metadata_section['inform']
+    def get_cli_spec_from_api_spec(
+        self, payload: dict, template: dict
+    ) -> dict:
+        os_q = self.get_os(filter=f"guestId,eq,{payload.get('os')}")
+        machine_os = os_q[0]['guestFullName'] if os_q else payload.get('os')
+        fo_q = self.get_folder(payload.get('folder'))
+        machine_folder = fo_q['path'] if fo_q else payload.get('folder')
+        template['built'] = payload.get('built_from')
+        template['machine']['name'] = payload.get('name')
+        template['machine']['os'] = machine_os
+        template['machine']['cpu'] = payload.get('cpu')
+        template['machine']['memory'] = payload.get('memory')
+        template['machine']['folder'] = machine_folder
+        template['machine']['disks'] = payload.get('disks')
+        template['networking']['interfaces'] = [
+            {'network': self.get_network(v)['name']}
+            for v in payload.get('networks')
+        ]
+        template['metadata']['billing'] = payload.get('bill_dept')
+        template['metadata']['description'] = payload.get('description')
+        template['metadata']['usage'] = payload.get('usage')
+        template['metadata']['inform'] = payload.get('inform')
+        template['metadata']['admin'] = {
+            'name': payload.get('admin_name'),
+            'email': payload.get('admin_email'),
+            'phone': payload.get('admin_phone'),
+        }
+        template['metadata']['vss_service'] = payload.get('vss_service')
+        template['metadata']['vss_options'] = payload.get('vss_options')
+        return template
+
+    def get_api_spec_from_cli_spec(self, payload: dict, built: str) -> dict:
+        try:
+            spec_payload = dict()
+            # sections
+            machine_section = payload['machine']
+            networking_section = payload['networking']
+            metadata_section = payload['metadata']
+            if built == 'os_install':
+                # machine section parse and update
+                spec_payload.update(machine_section)
+                # replace with valid values
+                spec_payload['os'] = self.get_os_by_name_or_guest(
+                    machine_section['os']
+                )[0]['guestId']
+                spec_payload['iso'] = self.get_iso_by_name_or_guest(
+                    machine_section['iso']
+                )[0]['path']
+                # folder
+                spec_payload['folder'] = self.get_folder_by_name_or_moref_path(
+                    machine_section['folder']
+                )[0]['moref']
+                # networking
+                spec_payload['networks'] = [
+                    self.get_network_by_name_or_moref(n['network'])[0]['moref']
+                    for n in networking_section['interfaces']
                 ]
-            if 'vss_service' in metadata_section:
-                service = self.get_vss_service_by_name_label_or_id(
-                    metadata_section['vss_service']
-                )[0]['id']
-                spec_payload['vss_service'] = service
-            if 'admin' in metadata_section:
-                admin_name = metadata_section['admin']['name']
-                admin_email = metadata_section['admin']['email']
-                admin_phone = metadata_section['admin']['phone']
-                if admin_name and admin_email and admin_phone:
-                    validate_email(None, '', admin_email)
-                    validate_phone_number(None, '', admin_phone)
-                spec_payload['admin'] = (
-                    f"{admin_name}:" f"{admin_phone}:{admin_email}"
-                )
-        return spec_payload
+                # metadata section
+                spec_payload.update(metadata_section)
+                spec_payload['built'] = built
+                spec_payload['bill_dept'] = metadata_section['billing']
+                # optional
+                if 'inform' in metadata_section:
+                    spec_payload['inform'] = [
+                        validate_email(None, 'inform', i)
+                        for i in metadata_section['inform']
+                    ]
+                if 'vss_service' in metadata_section:
+                    service = self.get_vss_service_by_name_label_or_id(
+                        metadata_section['vss_service']
+                    )[0]['id']
+                    spec_payload['vss_service'] = service
+                if 'admin' in metadata_section:
+                    admin_name = metadata_section['admin']['name']
+                    admin_email = metadata_section['admin']['email']
+                    admin_phone = metadata_section['admin']['phone']
+                    if admin_name and admin_email and admin_phone:
+                        validate_email(None, '', admin_email)
+                        validate_phone_number(None, '', admin_phone)
+                    spec_payload['admin'] = (
+                        f"{admin_name}:" f"{admin_phone}:{admin_email}"
+                    )
+            return spec_payload
+        except KeyError as ex:
+            raise click.BadParameter(f'Invalid CLI specification: {ex}')
 
     def yaml(self) -> YAML:
         """Create default yaml parser."""

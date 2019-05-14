@@ -190,12 +190,20 @@ def compute_vm_get_client_notes(ctx):
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
-@compute_vm_get.command('console', short_help='HTML console link')
+@compute_vm_get.command('console', short_help='Virtual machine console link')
 @click.option(
-    '-l', '--launch', is_flag=True, help='Launch link in default browser'
+    '-l', '--launch', is_flag=True, help='Launch link to default handler'
+)
+@click.option(
+    '-c',
+    '--client',
+    type=click.Choice(['html5', 'flash', 'vmrc']),
+    help='Client type to generate link.',
+    default='flash',
+    show_default=True,
 )
 @pass_context
-def compute_vm_get_console(ctx: Configuration, launch):
+def compute_vm_get_console(ctx: Configuration, launch, client):
     """'Get one-time HTML link to access console"""
     username = ctx.username or click.prompt(
         'Username', default=os.environ.get('VSS_USER', '')
@@ -208,7 +216,7 @@ def compute_vm_get_console(ctx: Configuration, launch):
         confirmation_prompt=True,
     )
     auth = (username.decode(), password.decode())
-    obj = ctx.get_vm_console(ctx.uuid, auth=auth)
+    obj = ctx.get_vm_console(ctx.uuid, auth=auth, client=client)
     link = obj.get('value')
     # print
     columns = ctx.columns or [('VALUE', 'value')]
@@ -329,13 +337,13 @@ def compute_vm_get_events(ctx: Configuration, window):
     click.echo(format_output(ctx, obj, columns=columns))
 
 
-@compute_vm_get.command('extra-config', short_help='GuestInfo extra configs')
+@compute_vm_get.command('extra-cfg', short_help='GuestInfo extra configs')
 @pass_context
 def compute_vm_get_extra_config(ctx: Configuration):
     """Get virtual machine guest info via VMware Tools."""
-    obj = ctx.get_vm_extra_config(ctx.uuid)
-    columns = ctx.columns or const.COLUMNS_DEFAULT
-    click.echo(format_output(ctx, obj, columns=columns))
+    objs = ctx.get_vm_extra_cfg_options(ctx.uuid)
+    columns = ctx.columns or const.COLUMNS_EXTRA_CONFIG
+    click.echo(format_output(ctx, objs, columns=columns))
 
 
 @compute_vm_get.command('floppy', short_help='Floppy configuration')
@@ -490,8 +498,48 @@ def compute_vm_get_snapshot(ctx: Configuration, snapshot_id):
 
 
 @compute_vm_get.command(
+    'spec-api',
+    short_help='Cloud API configuration specification',
+    context_settings={"ignore_unknown_options": True},
+)
+@click.argument('spec_file', type=click.Path(), required=False)
+@click.option(
+    '-e', '--edit', is_flag=True, required=False, help='Edit before writing'
+)
+@pass_context
+def compute_vm_get_spec_api(ctx: Configuration, spec_file, edit):
+    """Cloud API  Virtual machine configuration specification."""
+    if ctx.output in ['auto', 'table']:
+        _LOGGING.warning(f'Input set to {ctx.output}. Falling back to yaml')
+        ctx.output = 'yaml'
+    f_name = spec_file or f'{ctx.uuid}-api-spec.{ctx.output}'
+    # get obj
+    obj = ctx.get_vm_spec(ctx.uuid)
+    new_raw = None
+    if edit:
+        obj_raw = raw_format_output(
+            ctx.output, obj, ctx.yaml(), highlighted=False
+        )
+        new_raw = click.edit(obj_raw, extension='.{}'.format(ctx.output))
+
+    if ctx.output == 'json':
+        import json
+
+        if new_raw:
+            obj = json.loads(new_raw)
+        with open(f_name, 'w') as fp:
+            json.dump(obj, fp=fp, indent=2, sort_keys=False)
+    else:
+        if new_raw:
+            obj = ctx.yaml_load(new_raw)
+        with open(f_name, 'w') as fp:
+            ctx.yaml_dump_stream(obj, stream=fp)
+    click.echo(f'Written to {f_name}')
+
+
+@compute_vm_get.command(
     'spec',
-    short_help='Configuration specification',
+    short_help='CLI configuration specification',
     context_settings={"ignore_unknown_options": True},
 )
 @click.argument('spec_file', type=click.Path(), required=False)
@@ -500,16 +548,20 @@ def compute_vm_get_snapshot(ctx: Configuration, snapshot_id):
 )
 @pass_context
 def compute_vm_get_spec(ctx: Configuration, spec_file, edit):
-    """Virtual machine configuration specification."""
-    if ctx.output in ['auto']:
-        raise click.UsageError(
-            'Output not supported. '
-            'Please specify '
-            '-o/--output either yaml or json'
-        )
-    f_name = spec_file or f'{ctx.uuid}.{ctx.output}'
+    """CLI Virtual machine configuration specification."""
+    if ctx.output in ['auto', 'table']:
+        _LOGGING.warning(f'Input set to {ctx.output}. Falling back to yaml')
+        ctx.output = 'yaml'
+    f_name = spec_file or f'{ctx.uuid}-cli-spec.{ctx.output}'
     # get obj
     obj = ctx.get_vm_spec(ctx.uuid)
+    file_spec = os.path.join(const.DEFAULT_DATA_PATH, 'shell.yaml')
+    # proceed to load file
+    with open(file_spec, 'r') as data_file:
+        raw = data_file.read()
+    template = ctx.yaml_load(raw)
+    # obj rewritten with cli spec
+    obj = ctx.get_cli_spec_from_api_spec(payload=obj, template=template)
     new_raw = None
     if edit:
         obj_raw = raw_format_output(
@@ -972,6 +1024,133 @@ def compute_vm_set_custom_spec(
     # process request
     # submit custom_spec
     obj = ctx.create_vm_custom_spec(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set.group(
+    'extra-cfg', short_help='GuestInfo extra config entries.'
+)
+@pass_context
+def compute_vm_set_extra_config(ctx: Configuration):
+    """Manage VMware **guestinfo** interface options, which are
+    available to the VM guest operating system via VMware Tools:
+
+      vmtoolsd --cmd "info-get guestinfo.<option>"
+    """
+    pass
+
+
+@compute_vm_set_extra_config.command(
+    'mk', short_help='Create guestInfo extra config entries.'
+)
+@click.argument('key-value', type=click.STRING, required=True, nargs=-1)
+@pass_context
+def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
+    """Create **guestinfo** interface extra configuration options:
+
+    vss-cli compute vm set <name-or-uuid> extra-cfg mk key1=value2 key2=value2
+
+    """
+    # process input
+    try:
+        _options = to_tuples(','.join(key_value))
+        options = dict(_options)
+    except Exception as ex:
+        _LOGGING.error(ex)
+        raise click.BadArgumentUsage('Argument must be key=value strings')
+    # assemble payload
+    payload = dict(uuid=ctx.uuid, options=options)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_extra_cfg_options(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set_extra_config.command(
+    'up', short_help='Update guestInfo extra config entries.'
+)
+@click.argument('key-value', type=click.STRING, required=True, nargs=-1)
+@click.option(
+    '--check/--no-check',
+    is_flag=True,
+    default=False,
+    help='Check if options to update exist.',
+)
+@pass_context
+def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
+    """Update **guestinfo** interface extra configuration options:
+
+    vss-cli compute vm set <name-or-uuid> extra-cfg up key1=value2 key2=value2
+
+    """
+    # process input
+    try:
+        _options = to_tuples(','.join(key_value))
+        options = dict(_options)
+    except Exception as ex:
+        _LOGGING.error(ex)
+        raise click.BadArgumentUsage('Argument must be key=value strings')
+    # check if key exists
+    if check:
+        ex_opts = [
+            i['key'].replace('guestinfo.', '')
+            for i in ctx.get_vm_extra_cfg_options(ctx.uuid)
+        ]
+        no_opts = [k for k in options if k not in ex_opts]
+        if list(no_opts):
+            _LOGGING.warning(
+                f'Extra config options will be ignored: {", ".join(no_opts)}'
+            )
+    # assemble payload
+    payload = dict(uuid=ctx.uuid, options=options)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.update_vm_extra_cfg_options(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set_extra_config.command(
+    'rm', short_help='Remove guestInfo extra config option keys.'
+)
+@click.argument('key', type=click.STRING, required=True, nargs=-1)
+@click.option(
+    '--check/--no-check',
+    is_flag=True,
+    default=False,
+    help='Check if options to update exist.',
+)
+@pass_context
+def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
+    """Remove **guestinfo** interface extra configuration options:
+
+    vss-cli compute vm set <name-or-uuid> extra-cfg rm key1 key2 keyN
+
+    """
+    # check if key exists
+    if check:
+        ex_opts = [
+            i['key'].replace('guestinfo.', '')
+            for i in ctx.get_vm_extra_cfg_options(ctx.uuid)
+        ]
+        no_opts = [k for k in key if k not in ex_opts]
+        if list(no_opts):
+            _LOGGING.warning(
+                f'Extra config options will be ignored: {", ".join(no_opts)}'
+            )
+    # assemble payload
+    payload = dict(uuid=ctx.uuid, options=key)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.delete_vm_extra_cfg_options(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
@@ -2074,7 +2253,7 @@ def compute_vm_mk(ctx: Configuration, user_meta: str):
 
 @compute_vm_mk.command(
     'from-file',
-    short_help='Create virtual machine ' 'from VSS CLI specification.',
+    short_help='Create virtual machine from VSS CLI specification.',
 )
 @click.argument('file-spec', type=click.File('r'), required=False)
 @click.option(
@@ -2085,14 +2264,37 @@ def compute_vm_mk(ctx: Configuration, user_meta: str):
     help='Specification template to load and edit.',
 )
 @click.option(
-    '--edit/--no-edit',
+    '-e',
+    '--edit',
+    is_flag=True,
     required=False,
-    default=True,
     help='Edit before submitting request',
 )
+@click.option(
+    '--save',
+    '-s',
+    required=False,
+    default=False,
+    help='Save file after editing.',
+)
 @pass_context
-def compute_vm_from_file(ctx: Configuration, file_spec, edit, spec_template):
+def compute_vm_from_file(
+    ctx: Configuration, file_spec, edit, spec_template, save
+):
     """Create virtual machine from VSS CLI file specification.
+
+    Run the following command to deploy a vm based on a
+    VSS CLI specification template:
+
+        vss-cli compute vm mk from-file -s -t shell -e vm.yaml
+
+    Or from an existing vm:
+
+        vss-cli compute vm get <vm_name_or_uuid> spec --edit vm.yaml
+
+    Edit vm.yaml file and deploy as follows:
+
+        vss-cli compute vm mk from-file <cli-spec>.json|yaml
 
     """
     import time
@@ -2120,16 +2322,15 @@ def compute_vm_from_file(ctx: Configuration, file_spec, edit, spec_template):
         # launch editor
         new_raw = click.edit(raw, extension='.yaml')
         # load object
-        if new_raw:
+        if new_raw and save:
             new_obj = ctx.yaml_load(new_raw)
             file_name = f'from-file-{int(time.time())}.yaml'
-            _LOGGING.debug(f'Saving spec in {file_name}')
+            _LOGGING.debug(f'Saving spec to {file_name}')
             with open(file_name, 'w') as fp:
                 ctx.yaml_dump_stream(new_obj, stream=fp)
             raw = new_raw
         else:
-            _LOGGING.warning('Nothing to save.')
-            raise click.UsageError('Input error')
+            _LOGGING.warning('Editor contents will not be saved.')
 
     payload = ctx.yaml_load(raw)
     _LOGGING.debug(f'Payload from raw: f{payload}')
@@ -2137,7 +2338,7 @@ def compute_vm_from_file(ctx: Configuration, file_spec, edit, spec_template):
     spec_payload = dict()
     spec_payload.update(ctx.payload_options)
     if payload['built'] == 'os_install':
-        spec_payload = ctx.get_spec_payload(
+        spec_payload = ctx.get_api_spec_from_cli_spec(
             payload=payload, built='os_install'
         )
     else:
