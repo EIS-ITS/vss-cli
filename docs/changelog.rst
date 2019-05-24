@@ -2,6 +2,18 @@
 Changelog
 =========
 
+`v0.1.6 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.6>`_ (2019-05-24)
+==================================================================================
+
+**Improvements:**
+
+- `#99 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/99>`_: update pyvss to 0.9.33: by `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#98 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/98>`_: ``compute vm get nic``: command missing network moref using table format: by `jm.lopez`_
+
+
 `v0.1.5 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.5>`_ (2019-05-14)
 ==================================================================================
 
