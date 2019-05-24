@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -295,14 +295,11 @@ COLUMNS_VM_NIC_MIN = [
     ("LABEL", "label"),
     ("MAC", "macAddress"),
     ("TYPE", "type"),
-    ("CONNECTED", "connected"),
-]
-COLUMNS_VM_NIC = [
-    *COLUMNS_VM_NIC_MIN,
-    ("START_CONNECTED", "startConnected"),
     ("NETWORK", "network.name"),
     ("NETWORK_MOREF", "network.moref"),
+    ("CONNECTED", "connected"),
 ]
+COLUMNS_VM_NIC = [*COLUMNS_VM_NIC_MIN, ("START_CONNECTED", "startConnected")]
 COLUMNS_OBJ_PERMISSION = [
     ("PRINCIPAL", "principal"),
     ("GROUP", "group"),
