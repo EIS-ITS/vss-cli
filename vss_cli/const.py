@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.1.7-dev0"
+__version__ = "0.1.7-dev1"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -264,6 +264,7 @@ COLUMNS_VM_INFO = [
     ("SNAPSHOT", "snapshot.exist"),
     ("DISKS", "hardware.devices.disks[*].unit"),
     ("NICS", "hardware.devices.nics[*].unit"),
+    ("FLOPPY", "hardware.devices.floppies[*].unit"),
 ]
 COLUMNS_VM_GUEST = [
     ("HOSTNAME", "hostName"),
