@@ -2,6 +2,20 @@
 Changelog
 =========
 
+`v0.1.7 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.7>`_ (2019-06-27)
+==================================================================================
+
+**Improvements:**
+
+- `#103 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/103>`_: ``core``: update pyvss to 0.9.34: by `jm.lopez`_
+- `#102 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/102>`_: ``compute vm get``: provide floppy attribute: by `jm.lopez`_
+- `#104 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/104>`_: ``compute vm set cd mk``: create cd/dvd devices: by `jm.lopez`_
+- `#104 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/104>`_: ``compute vm set cd up``: update cd/dvd devices: by `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#101 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/101>`_: ``compute floppy personal sync``: fails to sync floppy images: by `jm.lopez`_
+
 `v0.1.6 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.6>`_ (2019-05-24)
 ==================================================================================
 
