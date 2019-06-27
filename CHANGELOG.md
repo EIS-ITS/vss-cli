@@ -1,9 +1,20 @@
 # Changelog 📝
 
+## [v0.1.7](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.7) (2019-06-27)
+
+**Improvements:**
+- [#103](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/103): `core`: update pyvss to 0.9.34: by [jm.lopez]
+- [#102](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/102): `compute vm get`: provide floppy attribute: by [jm.lopez]
+- [#104](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/104): `compute vm set cd mk`: create cd/dvd devices: by [jm.lopez]
+- [#104](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/104): `compute vm set cd up`: update cd/dvd devices: by [jm.lopez]
+
+**Bug Fixes:**
+- [#101](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/101): `compute floppy personal sync`: fails to sync floppy images: by [jm.lopez]
+
 ## [v0.1.6](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.6) (2019-05-24)
 
 **Improvements:**
-- [#99](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/99): update pyvss to 0.9.33: by [jm.lopez]
+- [#99](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/99): `core`: update pyvss to 0.9.33: by [jm.lopez]
 
 **Bug Fixes:**
 - [#98](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/98): ``compute vm get nic``: command missing network moref using table format: by [jm.lopez]

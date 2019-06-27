@@ -94,8 +94,8 @@ def compute_floppy_personal_ls(ctx: Configuration, page):
 )
 @pass_context
 def compute_floppy_personal_sync(ctx: Configuration):
-    """Synchronize ISO images stored in your personal VSKEY-STOR space. Once
+    """Synchronize Floppy images stored in your personal VSKEY-STOR space. Once
     processed it should be listed with the ls command."""
-    obj = ctx.sync_user_isos()
+    obj = ctx.sync_user_floppies()
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))

@@ -827,26 +827,69 @@ def compute_vm_set_boot_delay(ctx: Configuration, delay_in_ms):
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
-@compute_vm_set.command('cd', short_help='CD/DVD backing')
+@compute_vm_set.group('cd', short_help='CD/DVD device management')
+@pass_context
+def compute_vm_set_cd(ctx: Configuration):
+    """Manage virtual CD/DVD devices.
+     Add and update CD/DVD backing"""
+    pass
+
+
+@compute_vm_set_cd.command('mk', short_help='Create CD/DVD unit')
+@click.option(
+    '-b',
+    '--backing',
+    type=click.STRING,
+    required=True,
+    multiple=True,
+    help='Update CD/DVD backing device to given ISO path or Client device.',
+    autocompletion=autocompletion.isos,
+)
+@pass_context
+def compute_vm_set_cd_mk(ctx: Configuration, backing):
+    """Create virtual machine CD/DVD unit with ISO or client backing.
+
+    vss-cli compute vm set <name-or-uuid> cd mk --backing <name-or-path-or-id>
+
+    vss-cli compute vm set <name-or-uuid> cd mk --backing client
+    """
+    p_backing = []
+    for b in backing:
+        # get iso reference
+        iso_ref = ctx.get_iso_by_name_or_guest(b)
+        _LOGGING.debug(f'Will create {iso_ref}')
+        p_backing.append(iso_ref[0]['id'])
+    # generate payload
+    payload = dict(uuid=ctx.uuid, backings=p_backing)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_cd(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set_cd.command('up', short_help='Update CD/DVD unit')
 @click.argument('unit', type=click.INT, required=True)
 @click.option(
-    '-i',
-    '--iso',
+    '-b',
+    '--backing',
     type=click.STRING,
     required=True,
     help='Update CD/DVD backing device ' 'to given ISO path or Client device.',
     autocompletion=autocompletion.isos,
 )
 @pass_context
-def compute_vm_set_cd(ctx: Configuration, unit, iso):
+def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
     """Update virtual machine CD/DVD backend to ISO or client.
 
-    vss-cli compute vm set <name-or-uuid> cd <unit> --iso <name-or-path-or-id>
+    vss-cli compute vm set <name-or-uuid> cd up <unit> -b <name-or-path-or-id>
 
-    vss-cli compute vm set <name-or-uuid> cd <unit> --iso client
+    vss-cli compute vm set <name-or-uuid> cd up <unit> -b client
     """
     # get iso reference
-    iso_ref = ctx.get_iso_by_name_or_guest(iso)
+    iso_ref = ctx.get_iso_by_name_or_guest(backing)
     _LOGGING.debug(f'Will mount {iso_ref}')
     # generate payload
     payload = dict(uuid=ctx.uuid, unit=unit, iso=iso_ref[0]['path'])
