@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.1.8"
+__version__ = "0.1.8-dev1"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -98,13 +98,15 @@ COLUMNS_NET_MIN = [
     *COLUMNS_MOID,
     ("DESCRIPTION", "description"),
     ("SUBNET", "subnet"),
-    ("PORTS", "ports"),
+    ("VLAN_ID", "vlan_id"),
+    ("VMS", "vms"),
 ]
 COLUMNS_NET = [
     *COLUMNS_NET_MIN,
-    ("ACCESSIBLE", "accessible"),
+    ("PORTS", "ports"),
     ("ADMIN", "admin"),
-    ("ADMIN", "client"),
+    ("CLIENT", "client"),
+    ("UPDATED_ON", "updated_on"),
 ]
 COLUMNS_PERMISSION = [
     ("PRINCIPAL", "principal"),
