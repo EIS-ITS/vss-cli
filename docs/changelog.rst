@@ -2,6 +2,23 @@
 Changelog
 =========
 
+`v0.1.8 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.8>`_ (2019-07-10)
+==================================================================================
+
+**Improvements:**
+
+- `#109 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/109>`_: ``core``: pyvss upgrade from 0.9.34 -> 0.9.35: by `jm.lopez`_
+- `#107 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/107>`_: ``compute net ls``: add new options to filter and sort: by `jm.lopez`_
+- `#108 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/108>`_: ``compute net get``: update vms command backend: by `jm.lopez`_
+- `#111 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/111>`_: ``compute vm set floppy``: improve image lookup and handling: by `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#106 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/106>`_: ``docs``: project links > documentation typo in project docs url: by `jm.lopez`_
+- `#110 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/110>`_: ``compute vm set nic mk``: error when creating cards: by `jm.lopez`_
+- `#112 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/112>`_: ``compute vm set client``: update_vm_vss_client missing positional argument: by `jm.lopez`_
+
+
 `v0.1.7 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.7>`_ (2019-06-27)
 ==================================================================================
 
