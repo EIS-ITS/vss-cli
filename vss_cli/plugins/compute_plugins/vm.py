@@ -911,7 +911,7 @@ def compute_vm_set_client(ctx: Configuration, client):
     vss-cli compute vm set <name-or-uuid> client <New-Client>
     """
     # generate payload
-    payload = dict(uuid=ctx.uuid, value=client)
+    payload = dict(uuid=ctx.uuid, client=client)
     # add common options
     payload.update(ctx.payload_options)
     # request
