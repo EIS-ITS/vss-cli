@@ -1752,6 +1752,7 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
     '--network',
     type=click.STRING,
     multiple=True,
+    required=True,
     help='Virtual network moref',
     autocompletion=autocompletion.networks,
 )
@@ -1766,26 +1767,16 @@ def compute_vm_set_nic_mk(ctx: Configuration, network):
     payload = dict(uuid=ctx.uuid)
     # add common options
     payload.update(ctx.payload_options)
-    # pull networks
-    networks = ctx.get_networks()
+    # generate payload
     networks_payload = []
     for net_name_or_moref in network:
-        # search by name or moref
-        net = list(
-            filter(lambda i: net_name_or_moref in i['name'], networks)
-        ) or list(filter(lambda i: net_name_or_moref in i['moref'], networks))
-        if not net:
-            _LOGGING.warning(
-                f'{net_name_or_moref} could not be found. ' f'Ignoring.'
-            )
-        net_count = len(net)
-        if len(net) > 1:
-            _LOGGING.warning(
-                f'{net_name_or_moref} returned {net_count} results. '
-                f'Narrow down by using specific name or moref.'
-            )
-        # adding to payload
-        networks_payload.append(net[0]['moref'])
+        try:
+            # search by name or moref
+            net = ctx.get_network_by_name_or_moref(net_name_or_moref)
+            # adding to payload
+            networks_payload.append(net[0]['moref'])
+        except click.BadParameter as ex:
+            _LOGGING.warning(f'{ex}. Ignoring.')
     # payload
     payload['networks'] = networks_payload
     # request
