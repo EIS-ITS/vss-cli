@@ -852,7 +852,54 @@ class Configuration(VssManager):
             return [svc_ref[index]]
         return svc_ref
 
-    def get_iso_by_name_or_guest(
+    def get_floppy_by_name_or_path(
+        self, name_or_path_or_id: Union[str, int]
+    ) -> List[Any]:
+        user_floppies = self.get_user_floppies()
+        pub_floppies = self.get_floppies()
+        try:
+            img_id = int(name_or_path_or_id)
+            # public or user
+            img_ref = list(
+                filter(lambda i: i['id'] == img_id, pub_floppies)
+            ) or list(filter(lambda i: i['id'] == img_id, user_floppies))
+        except (ValueError, TypeError) as ex:
+            # not an integer
+            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
+            # checking name or path
+            # check in public and user isos
+            img = str(name_or_path_or_id)
+            img = img.lower()
+            img_ref = (
+                list(filter(lambda i: img in i['name'].lower(), pub_floppies))
+                or list(
+                    filter(lambda i: img in i['path'].lower(), pub_floppies)
+                )
+                or list(
+                    filter(lambda i: img in i['name'].lower(), pub_floppies)
+                )
+                or list(
+                    filter(lambda i: img in i['path'].lower(), pub_floppies)
+                )
+            )
+        # check if there's no ref
+        if not img_ref:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} could not be found'
+            )
+        # count for dup results
+        o_count = len(img_ref)
+        if o_count > 1:
+            msg = f"Found {o_count} matches. Please select one:"
+            sel, index = pick(
+                title=msg,
+                indicator='=>',
+                options=[f"{i['name']}" for i in img_ref],
+            )
+            return [img_ref[index]]
+        return img_ref
+
+    def get_iso_by_name_or_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
         user_isos = self.get_user_isos()
@@ -979,7 +1026,7 @@ class Configuration(VssManager):
                 spec_payload['os'] = self.get_os_by_name_or_guest(
                     machine_section['os']
                 )[0]['guestId']
-                spec_payload['iso'] = self.get_iso_by_name_or_guest(
+                spec_payload['iso'] = self.get_iso_by_name_or_path(
                     machine_section['iso']
                 )[0]['path']
                 # folder
@@ -1019,6 +1066,18 @@ class Configuration(VssManager):
             return spec_payload
         except KeyError as ex:
             raise click.BadParameter(f'Invalid CLI specification: {ex}')
+
+    def update_vm_floppy(self, uuid, unit, image=None, **kwargs):
+        # TODO: remove when pyvss method is updated
+        payload = dict(attribute='img', value=image)
+        if not image:
+            payload['attribute'] = 'client'
+            payload['value'] = 'ph'
+        kwargs.update(kwargs)
+        data = self.request(
+            '/vm/%s/floppy/%s' % (uuid, unit), method=self.PUT, payload=payload
+        )
+        return data.get('data')
 
     def yaml(self) -> YAML:
         """Create default yaml parser."""

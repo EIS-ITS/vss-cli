@@ -51,7 +51,7 @@ PROJECT_LICENSE = 'MIT'
 PROJECT_AUTHOR = 'University of Toronto'
 PROJECT_COPYRIGHT = f' 2019-{dt.now().year}, {PROJECT_AUTHOR}'
 PROJECT_URL = 'https://gitlab-ee.eis.utoronto.ca/vss/vss-cli'
-PROJECT_DOCS = 'https://eis.utorotno.ca/~vss/vss-cli'
+PROJECT_DOCS = 'https://eis.utoronto.ca/~vss/vss-cli'
 PROJECT_EMAIL = 'vss-apps@eis.utoronto.ca'
 MAINTAINER_EMAIL = 'vss-py@eis.utoronto.ca'
 
@@ -66,7 +66,7 @@ DOWNLOAD_URL = f'{GITLAB_URL}/archive/{__VERSION__}.zip'
 PROJECT_URLS = {
     'Bug Reports': f'{GITLAB_URL}/issues',
     'Documentation': f'{PROJECT_DOCS}/',
-    'Source': f'{PROJECT_URL}'
+    'Source': f'{PROJECT_URL}',
 }
 
 TESTS_REQUIRE = [
@@ -76,20 +76,13 @@ TESTS_REQUIRE = [
     'pytz==2018.9',
     'wheel==0.33.1',  # Otherwise setup.py bdist_wheel does not work
 ]
-DEV_REQUIRE = [
-    *TESTS_REQUIRE,
-    'sphinx-rtd-theme==0.4.3',
-    'Sphinx==1.8.5'
-]
+DEV_REQUIRE = [*TESTS_REQUIRE, 'sphinx-rtd-theme==0.4.3', 'Sphinx==1.8.5']
 
 # Allow you to run
 # pip install .[test]
 # pip install .[dev]
 # to get test dependencies included
-EXTRAS_REQUIRE = {
-    'test': TESTS_REQUIRE,
-    'dev': DEV_REQUIRE
-}
+EXTRAS_REQUIRE = {'test': TESTS_REQUIRE, 'dev': DEV_REQUIRE}
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))
 

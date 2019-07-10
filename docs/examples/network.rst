@@ -44,15 +44,16 @@ a specific virtual network you have permission on.
 List
 ~~~~
 Run ``vss-cli compute net ls`` to list available networks. Filter list by
-name ``name <name>`` or ``moref <moref>``. For example:
+name using the option ``--filter-by/-f`` which is structured ``<field_name> <operator>,<value>``
+and available operators are **eq, ne, lt, le, gt, ge, like, in** as follows:
 
 .. code-block:: bash
 
-    vss-cli compute net ls -f name public
+    vss-cli compute net ls -f name like,%PUBLIC%
 
-    moref              name                description         subnet            ports
-    -----------------  ------------------  ------------------  --------------  -------
-    dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network  142.1.216.0/23       32
+    MOREF              NAME                DESCRIPTION                  SUBNET          VLAN_ID    VMS
+    -----------------  ------------------  ---------------------------  --------------  ---------  -----
+    dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network           142.1.216.0/23  1584       8
 
 
 
@@ -65,13 +66,16 @@ basic information of a given network:
 
     vss-cli compute net get dvportgroup-11052
 
-    Name                : VL-1584-VSS-PUBLIC
-    Accessible          : Yes
-    Ports               : 32
-    Description         : VSS Public network
-    Admin               : Jose Manuel Lopez Lujan:000-0000-000:email@eis.utoronto.ca
-    Subnet              : 142.1.216.0/23
-    Client              : EIS
+    MOREF               : dvportgroup-11052
+    NAME                : VL-1584-VSS-PUBLIC
+    DESCRIPTION         : VSS Public network
+    SUBNET              : 142.1.216.0/23
+    VLAN_ID             : 1584
+    VMS                 : 8
+    PORTS               : 32
+    ADMIN               : Jose Manuel Lopez Lujan:000-0000-000:email@eis.utoronto.ca
+    CLIENT              : EIS
+    UPDATED_ON          : 2019-07-09 Tue 16:00:05 EDT
 
 
 If you would like to get a list of your virtual machines available on a given
@@ -86,6 +90,7 @@ network, use the ``vss-cli compute net get <name-or-moref> vms`` command. A list
     ------------------------------------  -----------------------
     501220a5-a091-1866-9741-664236067142  1611T-ecstatic_mccarthy
     501220a5-a091-6652-3215-123456548798  1701T-ecstatic_torvalds
+
 
 Virtual Machine NICs
 --------------------

@@ -856,7 +856,7 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
     p_backing = []
     for b in backing:
         # get iso reference
-        iso_ref = ctx.get_iso_by_name_or_guest(b)
+        iso_ref = ctx.get_iso_by_name_or_path(b)
         _LOGGING.debug(f'Will create {iso_ref}')
         p_backing.append(iso_ref[0]['id'])
     # generate payload
@@ -889,7 +889,7 @@ def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
     vss-cli compute vm set <name-or-uuid> cd up <unit> -b client
     """
     # get iso reference
-    iso_ref = ctx.get_iso_by_name_or_guest(backing)
+    iso_ref = ctx.get_iso_by_name_or_path(backing)
     _LOGGING.debug(f'Will mount {iso_ref}')
     # generate payload
     payload = dict(uuid=ctx.uuid, unit=unit, iso=iso_ref[0]['path'])
@@ -911,7 +911,7 @@ def compute_vm_set_client(ctx: Configuration, client):
     vss-cli compute vm set <name-or-uuid> client <New-Client>
     """
     # generate payload
-    payload = dict(uuid=ctx.uuid, value=client)
+    payload = dict(uuid=ctx.uuid, client=client)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1362,39 +1362,18 @@ def compute_vm_set_export(ctx: Configuration):
     '-i',
     '--image',
     type=click.STRING,
-    required=True,
+    required=False,
+    default='client',
     help='Update floppy backing device to' ' given flp image path.',
 )
 @pass_context
 def compute_vm_set_floppy(ctx: Configuration, unit, image):
     """Update virtual machine floppy backend to Image or client"""
-    img_ref = {}
-    user_imgs = ctx.get_user_floppies()
-    try:
-        img_id = int(image)
-        # public or personal
-        img_ref = ctx.get_floppies(filter=f'id,eq,{img_id}') or list(
-            filter(lambda i: i['id'] == img_id, user_imgs)
-        )
-    except ValueError as ex:
-        # not an integer
-        _LOGGING.debug(f'iso is not an id {img_ref}: {ex}')
-        # checking name or path
-        # check in public and user images
-        img_ref = (
-            ctx.get_floppies(filter=f'name,like,%{image}%')
-            or ctx.get_floppies(filter=f'path,like,%{image}%')
-            or list(filter(lambda i: i['name'] == image, user_imgs))
-            or list(filter(lambda i: i['path'] == image, user_imgs))
-        )
-    # no iso ref
-    if not img_ref:
-        raise click.BadParameter(
-            '--image/-i should be a valid name, path or id'
-        )
+    img_ref = ctx.get_floppy_by_name_or_path(image)
     _LOGGING.debug(f'Will mount {img_ref}')
+    image = img_ref[0].get('path')
     # generate payload
-    payload = dict(uuid=ctx.uuid, floppy=unit, image=img_ref[0].get('path'))
+    payload = dict(uuid=ctx.uuid, unit=unit, image=image)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1752,6 +1731,7 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
     '--network',
     type=click.STRING,
     multiple=True,
+    required=True,
     help='Virtual network moref',
     autocompletion=autocompletion.networks,
 )
@@ -1766,26 +1746,16 @@ def compute_vm_set_nic_mk(ctx: Configuration, network):
     payload = dict(uuid=ctx.uuid)
     # add common options
     payload.update(ctx.payload_options)
-    # pull networks
-    networks = ctx.get_networks()
+    # generate payload
     networks_payload = []
     for net_name_or_moref in network:
-        # search by name or moref
-        net = list(
-            filter(lambda i: net_name_or_moref in i['name'], networks)
-        ) or list(filter(lambda i: net_name_or_moref in i['moref'], networks))
-        if not net:
-            _LOGGING.warning(
-                f'{net_name_or_moref} could not be found. ' f'Ignoring.'
-            )
-        net_count = len(net)
-        if len(net) > 1:
-            _LOGGING.warning(
-                f'{net_name_or_moref} returned {net_count} results. '
-                f'Narrow down by using specific name or moref.'
-            )
-        # adding to payload
-        networks_payload.append(net[0]['moref'])
+        try:
+            # search by name or moref
+            net = ctx.get_network_by_name_or_moref(net_name_or_moref)
+            # adding to payload
+            networks_payload.append(net[0]['moref'])
+        except click.BadParameter as ex:
+            _LOGGING.warning(f'{ex}. Ignoring.')
     # payload
     payload['networks'] = networks_payload
     # request
@@ -2760,7 +2730,7 @@ def compute_vm_mk_shell(
         payload['os'] = _os[0]['guestId']
     # iso
     if iso:
-        _iso = ctx.get_iso_by_name_or_guest(iso)
+        _iso = ctx.get_iso_by_name_or_path(iso)
         payload['iso'] = _iso[0]['path']
     # vss-service
     if vss_service:
