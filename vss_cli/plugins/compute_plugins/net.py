@@ -78,13 +78,12 @@ def network_get(ctx: Configuration, name_or_moref):
 @pass_context
 def net_get_vms(ctx: Configuration, page):
     """List virtual machines using current network."""
-    obj = ctx.get_network(ctx.moref, summary=1)
-    if not obj:
+    objs = ctx.get_vms_by_network(ctx.moref)
+    if not objs:
         raise VssCliError(
             f'Either network {ctx.moref} does not exist, '
             f'or you do not have permission to access.'
         )
-    objs = obj['vms']
     columns = ctx.columns or const.COLUMNS_VM_MIN
     output = format_output(ctx, objs, columns=columns)
     # page
