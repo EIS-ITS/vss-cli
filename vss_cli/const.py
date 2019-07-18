@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.1.9-dev2"
+__version__ = "0.1.9-dev3"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -93,8 +93,16 @@ COLUMNS_DEFAULT = [("ALL", "*")]
 COLUMNS_VM_MIN = [("UUID", "uuid"), ("NAME", "name")]
 COLUMNS_VIM_REQUEST = [("UUID", "vm_uuid"), ("NAME", "vm_name")]
 COLUMNS_MOID = [("MOREF", "moref"), ("NAME", "name")]
-COLUMNS_FOLDER_MIN = [*COLUMNS_MOID, ("PATH", "path"), ("PARENT", "parent.name")]
-COLUMNS_FOLDER = [*COLUMNS_FOLDER_MIN, ("PARENT_MOREF", "parent.moref"), ("HAS_CHILDREN", "has_children")]
+COLUMNS_FOLDER_MIN = [
+    *COLUMNS_MOID,
+    ("PATH", "path"),
+    ("PARENT", "parent.name"),
+]
+COLUMNS_FOLDER = [
+    *COLUMNS_FOLDER_MIN,
+    ("PARENT_MOREF", "parent.moref"),
+    ("HAS_CHILDREN", "has_children"),
+]
 COLUMNS_NET_MIN = [
     *COLUMNS_MOID,
     ("DESCRIPTION", "description"),
