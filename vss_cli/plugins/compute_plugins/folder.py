@@ -1,7 +1,7 @@
 import logging
 
 import click
-from vss_cli import const
+from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -26,41 +26,37 @@ def compute_folder(ctx):
     'ls',
     short_help='list folders'
 )
-@click.option(
-    '-f', '--filter',
-    multiple=True, type=(click.STRING, click.STRING),
-    help='filter list by name or moref'
-)
-@click.option(
-    '-s', '--sort', type=click.STRING,
-    help='sort by name or moref attributes.'
-)
-@click.option(
-    '-p', '--page',
-    is_flag=True,
-    help='page results in a less-like format')
+@so.filter_opt
+@so.sort_opt
+@so.all_opt
+@so.page_opt
 @pass_context
 def compute_folder_ls(
-        ctx: Configuration, filter, sort, page
+        ctx: Configuration, filter_by, show_all, sort, page
 ):
-    """List logical folders.
+    """ List logical folders based on:
 
-    Filter by path or name name=<name>, moref=<moref>, parent=<parent>.
-    For example:
+        Filter list in the following format <field_name> <operator>,<value>
+        where operator is eq, ne, lt, le, gt, ge, like, in.
 
-        vss-cli compute folder ls -f name Project
+        For example: name like,%Project%
+
+            vss-cli compute folder ls -f name like,%Project%
+
+        Sort list in the following format <field_name> <asc|desc>. For example:
+
+            vss-cli compute folder ls -s path desc
     """
-    query = dict(summary=1)
-    if filter:
-        for f in filter:
-            query[f[0]] = f[1]
-    if sort:
-        query['sort'] = sort
-    # query
+    params = dict(expand=1)
+    if all(filter_by):
+        params['filter'] = f'{filter_by[0]},{filter_by[1]}'
+    if all(sort):
+        params['sort'] = f'{sort[0]},{sort[1]}'
+    # get objects
     with ctx.spinner(disable=ctx.debug):
-        obj = ctx.get_folders(**query)
+        obj = ctx.get_folders(show_all=show_all, **params)
     # set columns
-    columns = ctx.columns or const.COLUMNS_FOLDER
+    columns = ctx.columns or const.COLUMNS_FOLDER_MIN
     # format
     output = format_output(
         ctx,

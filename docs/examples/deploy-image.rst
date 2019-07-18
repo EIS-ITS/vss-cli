@@ -191,7 +191,8 @@ Logical folders can be listed by running ``vss-cli compute folder ls``. Select t
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name API
+    vss-cli compute folder ls -f name like,API%
+
     moref        name     parent    path
     -----------  -------  --------  ----------------------------
     group-v6736  APIDemo  jm        jm > APIDemo

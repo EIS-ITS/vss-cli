@@ -35,24 +35,24 @@ a specific folder you have permission on.
 List
 ----
 Run ``vss-cli compute folder`` to list available logical folders. Filter list by
-name ``name <name>``, ``moref <moref>``, ``parent <parent>``. For example:
+name using the option ``--filter-by/-f`` which is structured ``<field_name> <operator>,<value>``
+and available operators are **eq, ne, lt, le, gt, ge, like, in** as follows:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name ut
+    vss-cli compute folder ls -f name like,ut%
 
-    moref        name              parent    path
+    MOREF        NAME              PARENT    PATH
     -----------  ----------------  --------  ----------------------------------------------
-    group-v8900  ut20170135153548  Testing   Development > Testing > ut20170135153548
-    group-v8919  ut20170333123312  Testing   Development > Testing > ut20170333123312
-    group-v8904  ut20170141154140  Testing   Development > Testing > ut20170141154140
-    group-v8890  ut20173144164425  Testing   Development > Testing > ut20173144164425
+    group-v8900  ut20170135153548  Testing   VSS > Development > Testing > ut20170135153548
+    group-v8923  ut20170621092129  Testing   VSS > Development > Testing > ut20170621092129
+
 
 Info
 ----
 
 Folder info, such as name, parent and path, children folders and
-contained virtual machines are available via
+stored virtual machines are available via
 ``vss-cli compute folder get <name-path-or-moref>`` command.
 
 .. code-block:: bash
