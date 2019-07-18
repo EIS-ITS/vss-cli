@@ -308,13 +308,12 @@ def compute_folder_get_vms(
         ctx: Configuration, page
 ):
     """List logical folder children virtual machines."""
-    obj = ctx.get_folder(ctx.moref, summary=1)
-    objs = obj['vms']
+    obj = ctx.get_vms_by_folder(ctx.moref)
     # format output
     columns = ctx.columns or const.COLUMNS_VM_MIN
     output = format_output(
         ctx,
-        objs,
+        obj,
         columns=columns
     )
     # page
