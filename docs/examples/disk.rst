@@ -83,20 +83,31 @@ There are three allowed actions to modify a given disk unit: remove, update and 
     Commands:
       mk  Create new disk
       rm  Remove disk from vm
-      up  Update disk capacity
+      up  Update disk capacity and controller
 
 
 Expand
 ~~~~~~
-In order to expand an existing disk, use ``vss-cli compute vm set <name-or-uuid> disk up -c <capacityGB> <unit>``
+In order to expand an existing disk, use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -c <capacityGB> ``
 as shown below:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up --capacity 50 1
+    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --capacity 50
+
+
+Controller
+~~~~~~~~~~
+SCSI controllers are also available to update via the CLI. Use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -s <bus_number> ``
+as follows:
+
+.. code-block:: bash
+
+    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --scsi 1
+
 
 Create
-~~~~~~
+------
 Creating a new virtual machine disk is as simple as updating, but switching the sub-command to ``mk``,
 for example:
 
@@ -105,7 +116,7 @@ for example:
     vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk mk --capacity 20
 
 Remove
-~~~~~~
+------
 Disk removal will ask for confirmation if flag ``-r/--rm`` is not provided. This is just as fail safe for
 mistakes that can happen and since disk removal is a one way action, it may end in data loss if
 not used carefully.

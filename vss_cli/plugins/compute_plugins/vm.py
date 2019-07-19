@@ -1279,20 +1279,38 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
     '-c',
     '--capacity',
     type=click.INT,
-    required=True,
+    required=False,
     help='Update given disk capacity in GB.',
 )
+@click.option(
+    '-s',
+    '--scsi',
+    type=click.INT,
+    required=False,
+    help='Update given disk SCSI adapter',
+)
 @pass_context
-def compute_vm_set_disk_up(ctx: Configuration, unit, capacity):
+def compute_vm_set_disk_up(ctx: Configuration, unit, capacity, scsi):
     """Update virtual machine disk capacity:
 
         vss-cli compute vm set <name-or-uuid> disk up --capacity 30 <unit>
+
+        vss-cli compute vm set <name-or-uuid> disk up --scsi=<bus> <unit>
     """
-    payload = dict(uuid=ctx.uuid, disk=unit, valueGB=capacity)
+    payload = dict(uuid=ctx.uuid, disk=unit)
     # add common options
     payload.update(ctx.payload_options)
-    # request
-    obj = ctx.update_vm_disk_capacity(**payload)
+    if capacity:
+        payload['valueGB'] = capacity
+        # request
+        obj = ctx.update_vm_disk_capacity(**payload)
+    elif scsi is not None:
+        payload['bus_number'] = scsi
+        obj = ctx.update_vm_disk_scsi(**payload)
+    else:
+        raise click.BadOptionUsage(
+            '', 'Either -c/--capacity or -s/--scsi is required.'
+        )
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
