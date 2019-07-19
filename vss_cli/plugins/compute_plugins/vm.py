@@ -247,17 +247,17 @@ def compute_vm_get_controllers(ctx: Configuration):
 
 
 @compute_vm_get_controllers.command('scsi', short_help='SCSI adapters')
-@click.argument('bus', type=int, required=False)
+@click.argument('bus', type=click.INT, required=False)
 @click.option('--disks', '-d', help='include disks attached', is_flag=True)
 @pass_context
 def compute_vm_get_controller_scsi(ctx: Configuration, bus, disks):
     """Virtual machine SCSI controllers and attached disks"""
     if bus is None:
-        obj = ctx.get_vm_controllers_scsi(ctx.uuid)
+        obj = ctx.get_vm_scsi_devices(ctx.uuid)
         columns = ctx.columns or const.COLUMNS_VM_CTRL_MIN
         click.echo(format_output(ctx, obj, columns=columns))
     else:
-        obj = ctx.get_vm_controller_scsi(ctx.uuid, bus, disks)
+        obj = ctx.get_vm_scsi_device(ctx.uuid, bus, disks)
         if disks:
             obj = obj.get('devices', [])
             columns = ctx.columns or const.COLUMNS_VM_CTRL_DISK
