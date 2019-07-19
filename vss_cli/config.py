@@ -1067,18 +1067,6 @@ class Configuration(VssManager):
         except KeyError as ex:
             raise click.BadParameter(f'Invalid CLI specification: {ex}')
 
-    def update_vm_floppy(self, uuid, unit, image=None, **kwargs):
-        # TODO: remove when pyvss method is updated
-        payload = dict(attribute='img', value=image)
-        if not image:
-            payload['attribute'] = 'client'
-            payload['value'] = 'ph'
-        kwargs.update(kwargs)
-        data = self.request(
-            '/vm/%s/floppy/%s' % (uuid, unit), method=self.PUT, payload=payload
-        )
-        return data.get('data')
-
     def yaml(self) -> YAML:
         """Create default yaml parser."""
         if self:

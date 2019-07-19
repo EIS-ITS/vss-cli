@@ -31,34 +31,38 @@ follows:
 
     vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1
 
-    Uuid                : 50128d83-0fcc-05e3-be71-d972ffdf3284
-    Label               : Hard disk 1
-    Capacity Gb         : 40
-    Provisioning        : Thin
-    Controller Type     : LSI Logic
-    Controller Virtual Device Node: SCSI controller 0:0
-    Shares Level        : normal
+    LABEL               : Hard disk 1
+    UNIT                : 1
+    CONTROLLER          : SCSI controller 0:0
+    CAPACITY_GB         : 20
+    SHARES              : normal
 
-Getting backing information of a particular disk is available by including the option ``-b/--backing``
+Getting backing information of a particular disk is available by including the sub-command ``backing``
 in the disk command:
 
 .. code-block:: bash
 
-    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 -b
+    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 backing
 
-    Uuid                : 50126ef0-3504-fc2d-b5ef-bd1fa13b20a8
-    Label               : Hard disk 1
-    Capacity Gb         : 13
-    Controller Type     : LSI Logic
-    Controller Virtual Device Node: SCSI controller 0:0
-    Shares Level        : normal
-    Descriptor File Name:
-    Device Name         :
-    Disk Mode           : persistent
-    File Name           : [CL-NSTOR47-NFS-vol33] 1806P-modest_davinci_66/1806P-modest_davinci_66.vmdk
-    Lun Uuid            :
-    Thin Provisioned    : Yes
-    Uuid                : 6000C291-b290-b14b-6606-6c2265b2b245
+    DESCRIPTOR          : None
+    DEVICE_NAME         : None
+    DISK_MODE           : persistent
+    FILE                : [CL-NSTOR47-NFS-vol33] 1806P-modest_davinci_66/1806P-modest_davinci_66.vmdk
+    LUN                 : None
+    THIN                : True
+
+
+Getting details of the SCSI controller of a particular disk is available by including the sub-command ``scsi``
+in the disk command:
+
+
+.. code-block:: bash
+
+    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 scsi
+
+    BUS_NUMBER          : 0
+    LABEL               : SCSI controller 0
+    TYPE                : VirtualLsiLogicController
 
 
 Update
@@ -79,20 +83,31 @@ There are three allowed actions to modify a given disk unit: remove, update and 
     Commands:
       mk  Create new disk
       rm  Remove disk from vm
-      up  Update disk capacity
+      up  Update disk capacity and controller
 
 
 Expand
 ~~~~~~
-In order to expand an existing disk, use ``vss-cli compute vm set <name-or-uuid> disk up -c <capacityGB> <unit>``
+In order to expand an existing disk, use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -c <capacityGB>``
 as shown below:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up --capacity 50 1
+    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --capacity 50
+
+
+Controller
+~~~~~~~~~~
+SCSI controllers are also available to update via the CLI. Use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -s <bus_number>``
+as follows:
+
+.. code-block:: bash
+
+    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --scsi 1
+
 
 Create
-~~~~~~
+------
 Creating a new virtual machine disk is as simple as updating, but switching the sub-command to ``mk``,
 for example:
 
@@ -101,7 +116,7 @@ for example:
     vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk mk --capacity 20
 
 Remove
-~~~~~~
+------
 Disk removal will ask for confirmation if flag ``-r/--rm`` is not provided. This is just as fail safe for
 mistakes that can happen and since disk removal is a one way action, it may end in data loss if
 not used carefully.

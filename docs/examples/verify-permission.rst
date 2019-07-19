@@ -25,7 +25,7 @@ folder ``moref`` can be queried by ``vss compute folder ls`` as follows:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name Folder
+    vss-cli compute folder ls -f name like,Folder%
 
     moref        name     parent    path
     -----------  -------  --------  ----------------------------
@@ -71,12 +71,13 @@ For instance, querying folder ``group-v1234`` permissions would look like:
 
 .. code-block:: bash
 
-    vss compute folder get group-v1234 perm
+    vss-cli compute folder get group-v1234 perm
     principal             group    propagate
     --------------------  -------  -----------
     VSKEY5\vc51-VSSPriv   True     True
     VSKEY5\vc51-VSSTest   True     True
     VSKEY5\jm1            False    True
+
 
 The output shows that ``vc51-VSSTest`` and ``vc51-VSSPriv`` group has been granted to access the folder
 and should **propagate** to any children contained, however members are not listed. On the other hand,
