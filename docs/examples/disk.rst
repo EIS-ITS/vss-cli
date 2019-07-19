@@ -88,7 +88,7 @@ There are three allowed actions to modify a given disk unit: remove, update and 
 
 Expand
 ~~~~~~
-In order to expand an existing disk, use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -c <capacityGB> ``
+In order to expand an existing disk, use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -c <capacityGB>``
 as shown below:
 
 .. code-block:: bash
@@ -98,7 +98,7 @@ as shown below:
 
 Controller
 ~~~~~~~~~~
-SCSI controllers are also available to update via the CLI. Use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -s <bus_number> ``
+SCSI controllers are also available to update via the CLI. Use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -s <bus_number>``
 as follows:
 
 .. code-block:: bash
