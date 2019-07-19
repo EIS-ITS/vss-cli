@@ -1248,7 +1248,7 @@ def compute_vm_set_disk(ctx: Configuration):
     pass
 
 
-@compute_vm_set_disk.command('mk', short_help='Create new disk(s)')
+@compute_vm_set_disk.command('mk', short_help='Create disk(s)')
 @click.option(
     '-c',
     '--capacity',
@@ -2198,6 +2198,144 @@ def compute_vm_set_vss_service(ctx: Configuration, label_name_or_id):
     # add common options
     payload.update(ctx.payload_options)
     obj = ctx.update_vm_vss_service(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set.group(
+    'controller', short_help='IDE/SCSI controller management'
+)
+@pass_context
+def compute_vm_set_controller(ctx: Configuration):
+    """Manage virtual machine IDE/SCSI controllers.
+     Add, update and remove controllers."""
+    pass
+
+
+@compute_vm_set_controller.group(
+    'scsi', short_help='SCSI controller management'
+)
+@pass_context
+def compute_vm_set_controller_scsi(ctx: Configuration):
+    """Manage virtual machine SCSI controllers.
+     Add, update and remove controllers."""
+    pass
+
+
+@compute_vm_set_controller_scsi.command(
+    'mk', short_help='Create SCSI controller(s)'
+)
+@click.option(
+    '-t',
+    '--scsi_type',
+    type=click.Choice(['paravirtual', 'lsilogic', 'lsilogicsas', 'buslogic']),
+    required=True,
+    multiple=True,
+    default='paravirtual',
+    help='Type of SCSI(s) Controller.',
+    show_default=True,
+)
+@pass_context
+def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
+    """Create virtual machine SCSI controllers:
+
+        vss-cli compute vm set <name-or-uuid> controller scsi mk
+        -t paravirtual -t lsilogic
+    """
+    payload = dict(uuid=ctx.uuid, types=scsi_type)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_scsi_device(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set_controller_scsi.command(
+    'up', short_help='Update SCSI controller'
+)
+@click.argument('bus_number', type=click.INT, required=True)
+@click.option(
+    '-t',
+    '--scsi_type',
+    type=click.Choice(['paravirtual', 'lsilogic', 'lsilogicsas', 'buslogic']),
+    required=True,
+    help='Type of SCSI(s) Controller.',
+)
+@pass_context
+def compute_vm_set_controller_scsi_up(
+    ctx: Configuration, bus_number, scsi_type
+):
+    """Update virtual machine SCSI controller type:
+
+        vss-cli compute vm set <name-or-uuid> controller scsi up
+        <bus> -t paravirtual
+
+    """
+    # validate if unit exists
+    bus = ctx.get_vm_scsi_device(ctx.uuid, bus_number)
+    if not bus:
+        raise click.BadOptionUsage('', 'SCSI bus could not be found.')
+    payload = dict(uuid=ctx.uuid, bus=bus_number, bus_type=scsi_type)
+    # add common options
+    payload.update(ctx.payload_options)
+    obj = ctx.update_vm_scsi_device_type(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_set_controller_scsi.command(
+    'rm', short_help='Remove SCSI controller(s)'
+)
+@click.argument('bus_number', type=click.INT, required=True, nargs=-1)
+@click.option(
+    '-r',
+    '--rm',
+    is_flag=True,
+    default=False,
+    help='Confirm controller removal',
+)
+@pass_context
+def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
+    """Remove virtual machine SCSI controllers.
+
+        vss-cli compute vm set <name-or-uuid> controller scsi rm <bus> ...
+    """
+    buses = list(bus_number)
+    for bus in buses:
+        # TODO: remove when get_vm_scsi_device is fixed
+        _bus = ctx.request('/vm/%s/controller/scsi/%s' % (ctx.uuid, bus))
+        if not _bus.get('data'):
+            buses.remove(bus)
+            _LOGGING.warning(
+                f'Ignoring SCSI Controller {bus}. ' f'Could not be found.'
+            )
+        else:
+            devices = ctx.get_vm_disk_by_scsi_device(ctx.uuid, bus)
+            if devices:
+                buses.remove(bus)
+                _LOGGING.warning(
+                    f'Ignoring SCSI Controller {bus}. '
+                    f'Device has {len(devices)} disk(s) attached.'
+                )
+    if not buses:
+        raise click.BadArgumentUsage(
+            'No valid SCSI Controllers could be found'
+        )
+    payload = dict(uuid=ctx.uuid, buses=buses)
+    # add common options
+    payload.update(ctx.payload_options)
+    # confirm
+    confirm = rm or click.confirm(
+        f'Are you sure you want to SCSI bus {buses}?'
+    )
+    if confirm:
+        obj = ctx.delete_vm_scsi_devices(**payload)
+    else:
+        raise click.ClickException('Cancelled by user.')
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
