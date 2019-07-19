@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.1.9-dev3"
+__version__ = "0.1.9-dev4"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -376,13 +376,17 @@ COLUMNS_VM_DISK = [
 ]
 
 COLUMNS_VM_DISK_BACKING = [
-    *COLUMNS_VM_DISK,
     ("DESCRIPTOR", "descriptorFileName"),
     ("DEVICE_NAME", "deviceName"),
     ("DISK_MODE", "diskMode"),
     ("FILE", "fileName"),
     ("LUN", "lunUuid"),
     ("THIN", "thinProvisioned"),
+]
+COLUMNS_VM_DISK_SCSI = [
+    ("BUS_NUMBER", "busNumber"),
+    ("LABEL", "label"),
+    ("TYPE", "type"),
 ]
 COLUMNS_VM_CTRL_DISK = [
     ("CONTROLLER", "controller.virtualDeviceNode"),

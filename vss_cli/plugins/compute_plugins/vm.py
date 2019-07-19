@@ -288,30 +288,53 @@ def compute_vm_get_description(ctx: Configuration):
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
-@compute_vm_get.command('disk', short_help='Disk configuration')
-@click.argument('unit', type=int, required=False)
-@click.option('--backing', '-b', help='include backing info', is_flag=True)
+@compute_vm_get.group(
+    'disk', short_help='Disk configuration', invoke_without_command=True
+)
+@click.argument('unit', type=click.INT, required=False)
 @pass_context
-def compute_vm_get_disks(ctx: Configuration, unit, backing):
+def compute_vm_get_disks(ctx: Configuration, unit):
     """Virtual machine Disk configuration."""
-    if unit:
-        obj = ctx.get_vm_disk(ctx.uuid, unit)
-        if obj:
-            if backing:
-                columns = ctx.columns or const.COLUMNS_VM_DISK_BACKING
-                _obj = ctx.get_vm_disk_backing(ctx.uuid, unit)
-                obj[0].update(_obj)
-            else:
+    ctx.unit = unit
+    if click.get_current_context().invoked_subcommand is None:
+        if ctx.unit:
+            obj = ctx.get_vm_disk(ctx.uuid, ctx.unit)
+            if obj:
                 columns = ctx.columns or const.COLUMNS_VM_DISK
-
-            click.echo(format_output(ctx, obj, columns=columns, single=True))
+                click.echo(
+                    format_output(ctx, obj, columns=columns, single=True)
+                )
+            else:
+                logging.error('Unit does not exist')
         else:
-            logging.error('Unit does not exist')
+            obj = ctx.get_vm_disks(ctx.uuid)
+            obj = [d.get('data') for d in obj] if obj else []
+            columns = ctx.columns or const.COLUMNS_VM_DISK_MIN
+            click.echo(format_output(ctx, obj, columns=columns))
+
+
+@compute_vm_get_disks.command('backing', short_help='backing info')
+@pass_context
+def compute_vm_get_disks_backing(ctx: Configuration):
+    """Virtual disk backing info"""
+    columns = ctx.columns or const.COLUMNS_VM_DISK_BACKING
+    obj = ctx.get_vm_disk_backing(ctx.uuid, ctx.unit)
+    if obj:
+        click.echo(format_output(ctx, [obj], columns=columns, single=True))
     else:
-        obj = ctx.get_vm_disks(ctx.uuid)
-        obj = [d.get('data') for d in obj] if obj else []
-        columns = ctx.columns or const.COLUMNS_VM_DISK_MIN
-        click.echo(format_output(ctx, obj, columns=columns))
+        logging.error('Disk %s backing could not be found' % ctx.unit)
+
+
+@compute_vm_get_disks.command('scsi', short_help='scsi controller info')
+@pass_context
+def compute_vm_get_disks_scsi(ctx: Configuration):
+    """Virtual disk SCSI controller info"""
+    columns = ctx.columns or const.COLUMNS_VM_DISK_SCSI
+    obj = ctx.get_vm_disk_scsi(ctx.uuid, ctx.unit)
+    if obj:
+        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    else:
+        logging.error('Disk %s SCSI controller could not be found' % ctx.unit)
 
 
 @compute_vm_get.command('domain', short_help='Running domain')

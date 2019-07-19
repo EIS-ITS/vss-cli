@@ -31,34 +31,38 @@ follows:
 
     vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1
 
-    Uuid                : 50128d83-0fcc-05e3-be71-d972ffdf3284
-    Label               : Hard disk 1
-    Capacity Gb         : 40
-    Provisioning        : Thin
-    Controller Type     : LSI Logic
-    Controller Virtual Device Node: SCSI controller 0:0
-    Shares Level        : normal
+    LABEL               : Hard disk 1
+    UNIT                : 1
+    CONTROLLER          : SCSI controller 0:0
+    CAPACITY_GB         : 20
+    SHARES              : normal
 
-Getting backing information of a particular disk is available by including the option ``-b/--backing``
+Getting backing information of a particular disk is available by including the sub-command ``backing``
 in the disk command:
 
 .. code-block:: bash
 
-    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 -b
+    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 backing
 
-    Uuid                : 50126ef0-3504-fc2d-b5ef-bd1fa13b20a8
-    Label               : Hard disk 1
-    Capacity Gb         : 13
-    Controller Type     : LSI Logic
-    Controller Virtual Device Node: SCSI controller 0:0
-    Shares Level        : normal
-    Descriptor File Name:
-    Device Name         :
-    Disk Mode           : persistent
-    File Name           : [CL-NSTOR47-NFS-vol33] 1806P-modest_davinci_66/1806P-modest_davinci_66.vmdk
-    Lun Uuid            :
-    Thin Provisioned    : Yes
-    Uuid                : 6000C291-b290-b14b-6606-6c2265b2b245
+    DESCRIPTOR          : None
+    DEVICE_NAME         : None
+    DISK_MODE           : persistent
+    FILE                : [CL-NSTOR47-NFS-vol33] 1806P-modest_davinci_66/1806P-modest_davinci_66.vmdk
+    LUN                 : None
+    THIN                : True
+
+
+Getting details of the SCSI controller of a particular disk is available by including the sub-command ``scsi``
+in the disk command:
+
+
+.. code-block:: bash
+
+    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 scsi
+
+    BUS_NUMBER          : 0
+    LABEL               : SCSI controller 0
+    TYPE                : VirtualLsiLogicController
 
 
 Update
