@@ -67,7 +67,7 @@ def virtual_machines(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_vms()
+        response = ctx.client.get_vms(short=1, show_all=True, per_page=2000)
     except (HTTPError, VssError):
         response = []
 

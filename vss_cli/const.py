@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.1.9"
+__version__ = "0.2.0-dev0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -253,8 +253,9 @@ COLUMNS_MESSAGE = [
 ]
 COLUMNS_VM = [
     *COLUMNS_VM_MIN,
-    ("FOLDER", "folder"),
+    ("FOLDER", "folder.path"),
     ("CPU", "cpuCount"),
+    ("IP_ADDRESS", "ipAddress"),
     ("MEMORY", "memoryGB"),
     ("POWER", "powerState"),
     ("GUEST", "guestFullName"),
