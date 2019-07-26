@@ -106,6 +106,28 @@ as follows:
     vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --scsi 1
 
 
+Backing Mode
+~~~~~~~~~~~~
+Disk backing modes can be updated via ``vss-cli compute vm set <name-or-uuid> disk up <unit> -m <disk-mode>``:
+
+
+.. code-block:: bash
+
+    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --backing-mode independent_persistent
+
+Refer to the following table to pick the right **backing mode**:
+
+=========================   ==================================================================================
+Name						Description
+=========================   ==================================================================================
+append						Changes are appended to the redo log; you revoke changes by removing the undo log.
+independent_nonpersistent	Same as nonpersistent, but not affected by snapshots.
+independent_persistent		Same as persistent, but not affected by snapshots.
+nonpersistent				Changes to virtual disk are made to a redo log and discarded at power off.
+persistent					Changes are immediately and permanently written to the virtual disk.
+undoable					Changes are made to a redo log, but you are given the option to commit or undo.
+=========================   ==================================================================================
+
 Create
 ------
 Creating a new virtual machine disk is as simple as updating, but switching the sub-command to ``mk``,

@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.0-dev1"
+__version__ = "0.2.0-dev2"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -483,3 +483,13 @@ COLUMNS_SSH_KEY = [
     ("FINGERPRINT", "fingerprint"),
     ("VALUE", "value"),
 ]
+
+VM_DISK_MODES = [
+    'persistent',
+    'nonpersistent',
+    'undoable',
+    'independent_persistent',
+    'independent_nonpersistent',
+    'append',
+]
+VM_SCSI_TYPES = ['paravirtual', 'lsilogic', 'lsilogicsas', 'buslogic']

@@ -1273,17 +1273,25 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
     '--capacity',
     type=click.INT,
     required=False,
-    help='Update given disk capacity in GB.',
+    help='Update disk capacity in GB.',
 )
 @click.option(
     '-s',
     '--scsi',
     type=click.INT,
     required=False,
-    help='Update given disk SCSI adapter',
+    help='Update disk SCSI adapter',
+)
+@click.option(
+    '-m',
+    '--backing-mode',
+    type=click.Choice(const.VM_DISK_MODES),
+    help='Update disk backing mode default [persistent]',
 )
 @pass_context
-def compute_vm_set_disk_up(ctx: Configuration, unit, capacity, scsi):
+def compute_vm_set_disk_up(
+    ctx: Configuration, unit, capacity, scsi, backing_mode
+):
     """Update virtual machine disk capacity:
 
         vss-cli compute vm set <name-or-uuid> disk up --capacity 30 <unit>
@@ -1300,6 +1308,9 @@ def compute_vm_set_disk_up(ctx: Configuration, unit, capacity, scsi):
     elif scsi is not None:
         payload['bus_number'] = scsi
         obj = ctx.update_vm_disk_scsi(**payload)
+    elif backing_mode is not None:
+        payload['mode'] = backing_mode
+        obj = ctx.update_vm_disk_backing_mode(**payload)
     else:
         raise click.BadOptionUsage(
             '', 'Either -c/--capacity or -s/--scsi is required.'
@@ -2222,7 +2233,7 @@ def compute_vm_set_controller_scsi(ctx: Configuration):
 @click.option(
     '-t',
     '--scsi_type',
-    type=click.Choice(['paravirtual', 'lsilogic', 'lsilogicsas', 'buslogic']),
+    type=click.Choice(const.VM_SCSI_TYPES),
     required=True,
     multiple=True,
     default='paravirtual',
