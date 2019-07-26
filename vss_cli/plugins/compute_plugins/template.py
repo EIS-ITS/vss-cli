@@ -36,7 +36,7 @@ def compute_template_ls(
 
         Simple name filtering:
 
-        vss-cli compute template ls -f name %vm-name% -o name desc
+        vss-cli compute template ls -f name %vm-name% -s name desc
 
     """
     params = dict(expand=1)

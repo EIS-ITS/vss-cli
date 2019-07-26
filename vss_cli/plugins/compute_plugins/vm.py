@@ -44,7 +44,7 @@ def compute_vm_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
 
         Simple name filtering:
 
-        vss-cli compute vm ls -f name %vm-name% -o name desc
+        vss-cli compute vm ls -f name %vm-name% -s name desc
 
     """
     params = dict(expand=1)

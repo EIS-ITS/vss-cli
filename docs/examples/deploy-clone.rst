@@ -31,7 +31,7 @@ example, we will be using a powered on virtual machine with Ubuntu installed.
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name cranky
+    vss-cli compute vm ls -f name %cranky%
 
     uuid                                  name
     ------------------------------------  ---------------------
@@ -95,7 +95,8 @@ have at least ``VL-1584-VSS-PUBLIC`` which is our public network.
 
 .. code-block:: bash
 
-    vss-cli compute net ls -f name public
+    vss-cli compute net ls -f name like,%PUBLIC%
+
     moref              name                description         subnet            ports
     -----------------  ------------------  ------------------  --------------  -------
     dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network  142.1.216.0/23       32
@@ -106,6 +107,7 @@ Save ``dvportgroup-11052`` in ``NET`` environment variable:
 .. code-block:: bash
 
     export NET=dvportgroup-11052
+
 
 Folder
 ~~~~~~
@@ -124,6 +126,7 @@ Logical folders can be listed by running ``vss-cli compute folder ls``. Select t
     moref        name     parent    path
     -----------  -------  --------  ----------------------------
     group-v6736  APIDemo  jm        jm > Demo
+
 
 Set the ``FOLDER`` environment variable to the target folder (the folder moref may vary):
 

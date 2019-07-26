@@ -46,10 +46,11 @@ and apply any filtering if required:
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name cranky
+    vss-cli compute vm ls -f name %cranky%
     uuid                                  name
     ------------------------------------  ---------------------
     50128577-2026-908a-7bb7-df5a34fea7bf  1610T-cranky_sinoussi
+
 
 Once you got the target virtual machine ``UUID`` proceed to scheduling the changes.
 

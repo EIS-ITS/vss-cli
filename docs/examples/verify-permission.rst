@@ -25,7 +25,7 @@ folder ``moref`` can be queried by ``vss compute folder ls`` as follows:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name like,Folder%
+    vss-cli compute folder ls -f name like,%Folder%
 
     moref        name     parent    path
     -----------  -------  --------  ----------------------------

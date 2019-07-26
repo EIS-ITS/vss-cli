@@ -36,7 +36,7 @@ as Master Copy of certain virtual machine, thus any virtual machine can be marke
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name ubuntu-16.04_x64
+    vss-cli compute vm ls -f name %ubuntu-16.04_x64%
 
     uuid                                  name
     ------------------------------------  ----------------------
