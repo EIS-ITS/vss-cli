@@ -49,10 +49,8 @@ with a short help column as shown below:
       vm         Manage virtual machines
 
 
-For instance, the ``vss-cli compute vm ls`` command, used to list your virtual machines
-hosted in the ITS Private Cloud, has a few options to filter ``--filter``,
-page ``--page``, avoid displaying header ``--no-header`` and just to
-display virtual machine Uuids ``--quiet``:
+For instance, the ``vss-cli compute vm ls`` command, is used to list your virtual machines
+hosted in the ITS Private Cloud, has the following usage:
 
 .. code-block:: bash
 
@@ -60,17 +58,22 @@ display virtual machine Uuids ``--quiet``:
 
       List virtual machine instances.
 
-      Filter and sort list by name, ip address dns or path. For example:
+      Filter and sort list by any attribute. For example:
 
-      vss-cli compute vm ls -f name VM -s -o name
+      vss-cli compute vm ls -f name like,%vm-name% -f version like,%13
+
+      Simple name filtering:
+
+      vss-cli compute vm ls -f name %vm-name% -s name desc
 
     Options:
-      -f, --filter <TEXT TEXT>...  Filter list by name, ip, dns or path.
-      -o, --sort TEXT              sort by name or uuid. If summary is enabled,
-                                   sort by more attributes.
-      -s, --summary                Display summary
-      -p, --page                   Page results in a less-like format
-      --help                       Show this message and exit.
+      -f, --filter-by <TEXT TEXT>...  filter list by <field_name>
+                                      <operator>,<value>
+      -a, --show-all                  show all results  [default: False]
+      -p, --page                      page results in a less-like format
+      -s, --sort <TEXT TEXT>...       sort by <field_name> <asc|desc>
+      -c, --count INTEGER             size of results
+      --help                          Show this message and exit.
 
 
 
@@ -78,10 +81,13 @@ An example of how to use filters and display virtual machine summary is shown be
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name ecstatic -s
-    uuid                                  name                     folder          cpuCount    memoryGB  powerState    guestFullName
-    ------------------------------------  -----------------------  ------------  ----------  ----------  ------------  ---------------------
-    501220a5-a091-1866-9741-664236067142  1611T-ecstatic_mccarthy  jm > APIDemo           1           1  poweredOff    Ubuntu Linux (64-bit)
+    vss-cli compute vm ls -f name %vm-% -s name desc
+
+    UUID                                  NAME        FOLDER                          CPU  IP_ADDRESS       MEMORY  POWER       GUEST                         VERSION
+    ------------------------------------  ----------  ----------------------------  -----  -------------  --------  ----------  ----------------------------  ---------
+    5012c585-98e5-088b-4c61-9b100a414fca  1905P-vm-1  VSS > Sandbox > jm > Desktop      2  192.168.2.100         5  poweredOn   Microsoft Windows 8 (64-bit)  vmx-13
+    50127974-aa4a-c215-f9f0-e1ab8a4ef050  1409P-vm-2  VSS > Sandbox > jm > Desktop      1                        3  poweredOff  Microsoft Windows 8 (64-bit)  vmx-10
+
 
 Command Structure
 -----------------
@@ -249,22 +255,24 @@ The ``table`` format presents the VSS CLI output into tab-delimited lines, helpf
 
 .. code-block:: bash
 
-    vss --output table compute vm ls -f name cocky
+    vss-cli --table-format=rst compute vm ls -f name %hoth% -s name desc
 
-    UUID                                  NAME
-    ------------------------------------  ----------------
-    50300d58-29dd-5781-a5a0-dc9937351090  1902D-TESTOVA123
-    5030d265-2c35-f3a9-e295-ebee8ced91d6  1902D-TEST132
+    ====================================  ==========  ============================  =====  ===============  ========  ==========  ============================  =========
+    UUID                                  NAME        FOLDER                          CPU  IP_ADDRESS         MEMORY  POWER       GUEST                         VERSION
+    ====================================  ==========  ============================  =====  ===============  ========  ==========  ============================  =========
+    5012c585-98e5-088b-4c61-9b100a414fca  1905P-vm-1  VSS > Sandbox > jm > Desktop      2  192.168.2.100           5  poweredOn   Microsoft Windows 8 (64-bit)  vmx-13
+    50127974-aa4a-c215-f9f0-e1ab8a4ef050  1409P-vm-2  VSS > Sandbox > jm > Desktop      1                          3  poweredOff  Microsoft Windows 8 (64-bit)  vmx-10
+    ====================================  ==========  ============================  =====  ===============  ========  ==========  ============================  =========
 
 
 You can also control the data shown with ``--columns`` providing a name and a `jsonpath`.
 
-If you for example just wanted the **UUID**, **NAME** and **PROVISIONED** GB per virtual machines,
+If you for example just wanted the **UUID**, **NAME** and **PROVISIONED GB** per virtual machines,
 you could do:
 
 .. code-block:: bash
 
-    vss-cli --columns=UUID=uuid,VMNAME=name,GB=provisionedGB compute vm ls -f name TEST -s
+    vss-cli --columns=UUID=uuid,VMNAME=name,GB=provisionedGB compute vm ls -f name %TEST%
 
     UUID                                  VMNAME               GB
     ------------------------------------  ----------------  -----
@@ -281,12 +289,9 @@ JSON processors such as `jq`_.
 
 .. code-block:: bash
 
-    vss --output json compute vm ls
+    vss --output=json compute vm ls
     [
         {
-            "_links": {
-                "self": "https://vss-api.eis.utoronto.ca/v2/vm/50124670-bfd4-95bc-1d6e-ea3c20ab0bbb"
-            },
             "name": "1610Q-cocky_torvalds",
             "uuid": "50124670-bfd4-95bc-1d6e-ea3c20ab0bbb"
         }
@@ -301,14 +306,11 @@ As with JSON, YAML can be easily decoded by many programming languages. The VSS 
 
 .. code-block:: bash
 
-    vss-cli --outpuy yaml compute vm ls -f name TEST
-    - _links:
-        self: https://vss-api-lab.eis.utoronto.ca/v2/vm/50300d58-29dd-5781-a5a0-dc9937351090
-      name: 1902D-TESTOVA123
+    vss-cli --output=yaml compute vm ls -f name %TEST% -s name desc
+
+    - name: 1902D-TESTOVA123
       uuid: 50300d58-29dd-5781-a5a0-dc9937351090
-    - _links:
-        self: https://vss-api-lab.eis.utoronto.ca/v2/vm/5030d265-2c35-f3a9-e295-ebee8ced91d6
-      name: 1902D-TEST132
+    - name: 1902D-TEST132
       uuid: 5030d265-2c35-f3a9-e295-ebee8ced91d6
 
 
@@ -383,7 +385,7 @@ To enter the shell just execute ``vss-cli shell`` and you will get the following
         \ \ / / __/ __|      API Endpoint: https://vss-api.eis.utoronto.ca/v2
          \ V /\__ \__ \      Tab-completion & suggestions
           \_/ |___/___/      Prefix external commands with "!"
-           CLI v0.1.0        History is saved: /Users/vss/.vss-cli/history
+           CLI v0.2.0        History is saved: /Users/vss/.vss-cli/history
 
         Exit shell with :exit, :q, :quit, ctrl+d
 
@@ -395,8 +397,8 @@ but do not include the ``vss`` command, for instance:
 
 .. code-block:: bash
 
-    vss (vss-api) > compute vm ls -f name ecs
-    uuid                                  name
+    vss (vss-api) > --columns=UUID=uuid,VMNAME=name compute vm ls -f name %ecs%
+    UUID                                  VMNAME
     ------------------------------------  -----------------------
     501220a5-a091-1866-9741-664236067142  1611T-ecstatic_mccarthy
 

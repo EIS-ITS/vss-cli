@@ -6,7 +6,7 @@ import click
 from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
 
-from vss_cli import const
+from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -29,51 +29,44 @@ def compute_vm(ctx: Configuration):
 
 
 @compute_vm.command('ls', short_help='List virtual machine')
-@click.option(
-    '-f',
-    '--filter',
-    multiple=True,
-    type=(click.STRING, click.STRING),
-    help='Filter list by name, ip, dns or path.',
-)
-@click.option(
-    '-o',
-    '--sort',
-    type=click.STRING,
-    help='sort by name or uuid. If summary is enabled, '
-    'sort by more attributes.',
-)
-@click.option('-s', '--summary', is_flag=True, help='Display summary')
-@click.option(
-    '-p', '--page', is_flag=True, help='Page results in a less-like format'
-)
+@so.filter_opt
+@so.all_opt
+@so.page_opt
+@so.sort_opt
+@so.count_opt
 @pass_context
-def compute_vm_ls(ctx: Configuration, filter, summary, page, sort):
+def compute_vm_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
     """List virtual machine instances.
 
-        Filter and sort list by name, ip address dns or path. For example:
+        Filter and sort list by any attribute. For example:
 
-        vss-cli compute vm ls -f name VM -s -o name
+        vss-cli compute vm ls -f name like,%vm-name% -f version like,%13
+
+        Simple name filtering:
+
+        vss-cli compute vm ls -f name %vm-name% -s name desc
 
     """
-    query = dict()
-    if summary:
-        query['summary'] = 1
-    if filter:
-        for f in filter:
-            query[f[0]] = f[1]
-    if sort:
-        query['sort'] = sort
+    params = dict(expand=1)
+    if all(filter_by):
+        ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
+        has_op = False
+        f = filter_by[1]
+        o = f.split(',')
+        if o:
+            if o[0] in ops:
+                has_op = True
+        if not has_op:
+            filter_by = list(filter_by)
+            filter_by.insert(1, 'like')
+        params['filter'] = ','.join(filter_by)
+    if all(sort):
+        params['sort'] = f'{sort[0]},{sort[1]}'
     # get templates
     with ctx.spinner(disable=ctx.debug):
-        obj = ctx.get_vms(**query)
+        obj = ctx.get_vms(show_all=show_all, per_page=count, **params)
     # including additional attributes?
-    if summary:
-        columns = ctx.columns or const.COLUMNS_VM
-        for t in obj:
-            t['folder'] = '{parent} > {name}'.format(**t['folder'])
-    else:
-        columns = ctx.columns or const.COLUMNS_VM_MIN
+    columns = ctx.columns or const.COLUMNS_VM
     # format output
     output = format_output(ctx, obj, columns=columns)
     # page
@@ -1280,17 +1273,25 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
     '--capacity',
     type=click.INT,
     required=False,
-    help='Update given disk capacity in GB.',
+    help='Update disk capacity in GB.',
 )
 @click.option(
     '-s',
     '--scsi',
     type=click.INT,
     required=False,
-    help='Update given disk SCSI adapter',
+    help='Update disk SCSI adapter',
+)
+@click.option(
+    '-m',
+    '--backing-mode',
+    type=click.Choice(const.VM_DISK_MODES),
+    help='Update disk backing mode default [persistent]',
 )
 @pass_context
-def compute_vm_set_disk_up(ctx: Configuration, unit, capacity, scsi):
+def compute_vm_set_disk_up(
+    ctx: Configuration, unit, capacity, scsi, backing_mode
+):
     """Update virtual machine disk capacity:
 
         vss-cli compute vm set <name-or-uuid> disk up --capacity 30 <unit>
@@ -1307,6 +1308,9 @@ def compute_vm_set_disk_up(ctx: Configuration, unit, capacity, scsi):
     elif scsi is not None:
         payload['bus_number'] = scsi
         obj = ctx.update_vm_disk_scsi(**payload)
+    elif backing_mode is not None:
+        payload['mode'] = backing_mode
+        obj = ctx.update_vm_disk_backing_mode(**payload)
     else:
         raise click.BadOptionUsage(
             '', 'Either -c/--capacity or -s/--scsi is required.'
@@ -2229,7 +2233,7 @@ def compute_vm_set_controller_scsi(ctx: Configuration):
 @click.option(
     '-t',
     '--scsi_type',
-    type=click.Choice(['paravirtual', 'lsilogic', 'lsilogicsas', 'buslogic']),
+    type=click.Choice(const.VM_SCSI_TYPES),
     required=True,
     multiple=True,
     default='paravirtual',
@@ -2553,6 +2557,14 @@ source_opt = click.option(
     type=click.STRING,
     required=True,
     autocompletion=autocompletion.virtual_machines,
+)
+source_template_opt = click.option(
+    '--source',
+    '-s',
+    help='Source virtual machine or template UUID.',
+    type=click.STRING,
+    required=True,
+    autocompletion=autocompletion.vm_templates,
 )
 description_opt = click.option(
     '--description',
@@ -2924,7 +2936,7 @@ def compute_vm_mk_shell(
 
 @compute_vm_mk.command('from-template', short_help='Create vm from template')
 @click.argument('name', type=click.STRING, required=False)
-@source_opt
+@source_template_opt
 @description_opt
 @bill_dept_opt
 @admin_opt

@@ -1,5 +1,13 @@
 # Changelog 📝
 
+## [v0.2.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.0) (2019-07-26)
+
+**Improvements:**
+- [#125](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/125): `core`: pyvss upgrade from 0.9.36 -> 0.9.38: by [jm.lopez]
+- [#124](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/124): `compute vm ls`: add options to filter and sort  [jm.lopez]
+- [#126](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/126): `compute template ls`: add options to filter and sort  [jm.lopez]
+- [#127](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/127): `compute vm set disk up --backing-mode`: updates scsi controller used by disk: by [jm.lopez]
+
 ## [v0.1.9](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.9) (2019-07-19)
 
 **Improvements:**
@@ -7,10 +15,10 @@
 - [#121](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/121): `core`: pyvss upgrade from 0.9.35 -> 0.9.36: by [jm.lopez]
 - [#119](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/119): `compute vm get controller scsi`: command update: by [jm.lopez]
 - [#118](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/118): `compute vm get disk scsi`: provides scsi controller used by disk: by [jm.lopez]
-- [#117](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/117): `compute vm set disk scsi`: updates scsi controller used by disk: by [jm.lopez]
+- [#117](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/117): `compute vm set disk up --scsi`: updates scsi controller used by disk: by [jm.lopez]
 - [#116](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/116): `compute folder get children`: gets children folder of a given folder: by [jm.lopez]
 - [#115](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/115): `compute folder get vm`: command update: by [jm.lopez]
-- [#114](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/114): `compute folder ls`: add options to filter and sort  
+- [#114](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/114): `compute folder ls`: add options to filter and sort  [jm.lopez]
 
 **New Features:**
 - [#120](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/120): `compute vm set controller scsi mk`: create vm scsi controllers: by [jm.lopez]

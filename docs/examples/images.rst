@@ -86,7 +86,7 @@ mount into a virtual machine. First, we should obtain the VM's UUID:
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name ubuntu
+    vss-cli compute vm ls -f name %ubuntu%
 
     uuid                                  name
     ------------------------------------  ------------------------------

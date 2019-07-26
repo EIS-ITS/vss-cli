@@ -2,6 +2,17 @@
 Changelog
 =========
 
+`v0.2.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.0>`_ (2019-07-26)
+==================================================================================
+
+**Improvements:**
+
+- `#125 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/125>`_: ``core``: pyvss upgrade from 0.9.36 -> 0.9.38: by `jm.lopez`_
+- `#124 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/124>`_: ``compute vm ls``: add options to filter and sort: by `jm.lopez`_
+- `#126 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/126>`_: ``compute template ls``: add options to filter and sort: by `jm.lopez`_
+- `#127 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/127>`_: ``compute vm set disk up --backing-mode``: updates scsi controller used by disk: by `jm.lopez`_
+
+
 `v0.1.9 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.9>`_ (2019-07-19)
 ==================================================================================
 
@@ -11,7 +22,7 @@ Changelog
 - `#121 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/121>`_: ``core``:` pyvss upgrade from 0.9.35 -> 0.9.36: by `jm.lopez`_
 - `#119 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/119>`_: ``compute vm get controller scsi``: command update: by `jm.lopez`_
 - `#118 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/118>`_: ``compute vm get disk scsi``: provides scsi controller used by disk: by `jm.lopez`_
-- `#117 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/117>`_: ``compute vm set disk scsi``: updates scsi controller used by disk: by `jm.lopez`_
+- `#117 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/117>`_: ``compute vm set disk up --scsi``: updates scsi controller used by disk: by `jm.lopez`_
 - `#116 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/116>`_: ``compute folder get children``: gets children folder of a given folder: by `jm.lopez`_
 - `#115 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/115>`_: ``compute folder get vm``: command update: by `jm.lopez`_
 - `#114 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/114>`_: ``compute folder ls``: add options to filter and sort  `jm.lopez`_
