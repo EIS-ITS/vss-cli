@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.0-dev0"
+__version__ = "0.2.0-dev1"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -250,6 +250,14 @@ COLUMNS_MESSAGE = [
     ("FROM", "user.username"),
     ("SUBJECT", "subject"),
     ("TEXT", "text"),
+]
+COLUMNS_VM_TEMPLATE = [
+    *COLUMNS_VM_MIN,
+    ("FOLDER", "folder.path"),
+    ("CPU", "cpuCount"),
+    ("MEMORY", "memoryGB"),
+    ("GUEST", "guestFullName"),
+    ("VERSION", "version"),
 ]
 COLUMNS_VM = [
     *COLUMNS_VM_MIN,

@@ -2547,6 +2547,14 @@ source_opt = click.option(
     required=True,
     autocompletion=autocompletion.virtual_machines,
 )
+source_template_opt = click.option(
+    '--source',
+    '-s',
+    help='Source virtual machine or template UUID.',
+    type=click.STRING,
+    required=True,
+    autocompletion=autocompletion.vm_templates,
+)
 description_opt = click.option(
     '--description',
     '-d',
@@ -2917,7 +2925,7 @@ def compute_vm_mk_shell(
 
 @compute_vm_mk.command('from-template', short_help='Create vm from template')
 @click.argument('name', type=click.STRING, required=False)
-@source_opt
+@source_template_opt
 @description_opt
 @bill_dept_opt
 @admin_opt

@@ -1,7 +1,8 @@
 import logging
 
 import click
-from vss_cli import const
+
+from vss_cli import const, rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -10,68 +11,56 @@ from vss_cli.plugins.compute import cli
 _LOGGING = logging.getLogger(__name__)
 
 
-@cli.group(
-    'template',
-    short_help='List virtual machine templates'
-)
+@cli.group('template', short_help='List virtual machine templates')
 @pass_context
 def compute_template(ctx):
     """List virtual machine templates"""
     pass
 
 
-@compute_template.command(
-    'ls',
-    short_help='List virtual machine templates'
-)
-@click.option(
-    '-f', '--filter',
-    multiple=True,
-    type=(click.STRING, click.STRING),
-    help='Filter list by name, ip, dns or path.'
-)
-@click.option(
-    '-s', '--summary', is_flag=True,
-    help='Display summary'
-)
-@click.option(
-    '-p', '--page', is_flag=True,
-    help='Page results in a less-like format'
-)
+@compute_template.command('ls', short_help='List virtual machine templates')
+@so.filter_opt
+@so.all_opt
+@so.page_opt
+@so.sort_opt
+@so.count_opt
 @pass_context
 def compute_template_ls(
-        ctx: Configuration,
-        filter, summary, page
+    ctx: Configuration, filter_by, show_all, sort, page, count
 ):
     """List virtual machine templates.
 
-    Filter list by name, ip address dns or path. For example:
+        Filter and sort list by any attribute. For example:
 
-        vss-cli compute template ls -f name VMTemplate1
+        vss-cli compute template ls -f name like,%vm-name% -f version like,%13
+
+        Simple name filtering:
+
+        vss-cli compute template ls -f name %vm-name% -o name desc
 
     """
-    query = dict()
-    if summary:
-        query['summary'] = 1
-    if filter:
-        for f in filter:
-            query[f[0]] = f[1]
+    params = dict(expand=1)
+    if all(filter_by):
+        ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
+        has_op = False
+        f = filter_by[1]
+        o = f.split(',')
+        if o:
+            if o[0] in ops:
+                has_op = True
+        if not has_op:
+            filter_by = list(filter_by)
+            filter_by.insert(1, 'like')
+        params['filter'] = ','.join(filter_by)
+    if all(sort):
+        params['sort'] = f'{sort[0]},{sort[1]}'
     # get templates
     with ctx.spinner(disable=ctx.debug):
-        obj = ctx.get_templates(**query)
+        obj = ctx.get_templates(show_all=show_all, per_page=count, **params)
     # including additional attributes?
-    if summary:
-        columns = ctx.columns or const.COLUMNS_VM
-        for t in obj:
-            t['folder'] = '{parent} > {name}'.format(**t['folder'])
-    else:
-        columns = ctx.columns or const.COLUMNS_VM_MIN
+    columns = ctx.columns or const.COLUMNS_VM_TEMPLATE
     # format output
-    output = format_output(
-        ctx,
-        obj,
-        columns=columns
-    )
+    output = format_output(ctx, obj, columns=columns)
     # page
     if page:
         click.echo_via_pager(output)

@@ -62,6 +62,28 @@ def table_formats(
     return [c for c in completions if incomplete in c[0]]
 
 
+def vm_templates(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    try:
+        response = ctx.client.get_templates(
+            short=1, show_all=True, per_page=2000
+        )
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for vm in response:
+            completions.append((vm['uuid'], vm['name']))
+
+        completions.sort()
+
+        return [c for c in completions if incomplete in c[0]]
+    return completions
+
+
 def virtual_machines(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
