@@ -103,15 +103,9 @@ This tutorial contain step by step guidance to change the Virtual Storage Contro
 
     vss-cli compute vm set <vm-name-or-uuid> state on
 
-13. Power on the virtual machine:
+13. Verify everything is working well.
 
-.. code-block:: bash
-
-    vss-cli compute vm set <vm-name-or-uuid> state on
-
-14. Verify everything is working well.
-
-15. (Optional) Remove Virtual Machine:
+14. (Optional) Remove Virtual Machine snapshot:
 
 .. code-block:: bash
 

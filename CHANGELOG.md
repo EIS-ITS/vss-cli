@@ -1,5 +1,15 @@
 # Changelog 📝
 
+## [v0.2.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.1) (2019-08-13)
+
+**Improvements:**
+- [#129](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/129): `core`: pyvss upgrade from 0.9.38 -> 0.9.39: by [jm.lopez]
+- [#131](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/131): `docs`: vmware paravirtual scsi migration how-to: by [jm.lopez]
+
+**Bug Fixes:**
+- [#130](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/130): `core`: `config.get_vm_by_uuid_or_name` cannot find templates: by [jm.lopez]
+
+
 ## [v0.2.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.0) (2019-07-26)
 
 **Improvements:**
@@ -127,12 +137,12 @@
 
 **Improvements:**
 
-- [#67](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/67): Provide user feedback while CLI processing [jm.lopez]
+- [#67](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/67): ``core``: Provide user feedback while CLI processing [jm.lopez]
 
 **Bug Fixes:**
 
-- [#65](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/65): configure command mismatch from autocompletion [jm.lopez]
-- [#66](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/66): configure upgrade missing description [jm.lopez]
+- [#65](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/65): ``core``: configure command mismatch from autocompletion [jm.lopez]
+- [#66](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/66): ``core``: configure upgrade missing description [jm.lopez]
 
 
 ## [v0.1.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.1) (2019-04-05)
