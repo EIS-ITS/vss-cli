@@ -684,9 +684,12 @@ class Configuration(VssManager):
             uuid = UUID(uuid_or_name)
             v = self.get_vm(str(uuid))
             if not v:
-                raise click.BadArgumentUsage(
-                    'uuid should be an existing Virtual Machine ' 'or template'
-                )
+                # try template
+                v = self.get_template(str(uuid))
+                if not v:
+                    raise click.BadArgumentUsage(
+                        'uuid should could not be found'
+                    )
             return [v]
         except ValueError:
             # not an uuid
@@ -700,7 +703,17 @@ class Configuration(VssManager):
                 filter(lambda i: uuid_or_name in i['name'].lower(), g_vms)
             )
             if not v:
-                raise click.BadParameter(f'{uuid_or_name} could not be found')
+                # try templates:
+                g_tmpls = self.get_templates()
+                v = list(
+                    filter(
+                        lambda i: uuid_or_name in i['name'].lower(), g_tmpls
+                    )
+                )
+                if not v:
+                    raise click.BadParameter(
+                        f'{uuid_or_name} could not be found'
+                    )
             v_count = len(v)
             if v_count > 1:
                 msg = f"Found {v_count} matches. Please select one:"
