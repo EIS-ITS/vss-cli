@@ -15,6 +15,8 @@ Changelog
 
 - `#130 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/130>`_: ``core``: `config.get_vm_by_uuid_or_name` cannot find templates: by `jm.lopez`_
 - `#132 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/132>`_: ``core``: `config.get_vm_by_uuid_or_name` cannot find vms: by `jm.lopez`_
+- `#134 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/134>`_: ``compute vm mk from-file``: `-s/--save` expects argument: by `jm.lopez`_
+
 
 `v0.2.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.0>`_ (2019-07-26)
 ==================================================================================

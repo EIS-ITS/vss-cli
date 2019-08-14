@@ -2469,8 +2469,8 @@ def compute_vm_mk(ctx: Configuration, user_meta: str):
 @click.option(
     '--save',
     '-s',
-    required=False,
     default=False,
+    is_flag=True,
     help='Save file after editing.',
 )
 @pass_context
