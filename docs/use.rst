@@ -406,10 +406,10 @@ but do not include the ``vss`` command, for instance:
 Known Issues
 ------------
 
-Terminal ``vt100`` does not support colors and the ``vss-cli`` thrown error
+Terminal ``vt100`` does not support colors and the ``vss-cli`` throws the exception
 ``_curses.error: use_default_colors() returned ERR`` since `pick`_ only works with
 terminals supporting colors. We have created `Pull Request #30`_ to address
-this issue, and until then, the following workarounds are proposed:
+this issue, and until is merged by the maintainer, the following workarounds are proposed:
 
 Use ``xterm-256color`` as terminal:
 
