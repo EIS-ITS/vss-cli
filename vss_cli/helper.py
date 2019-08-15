@@ -5,13 +5,14 @@ import json
 import logging
 import re
 import shlex
-from typing import Any, Dict, Generator, List, Optional, Tuple, cast
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union, cast
 
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
 from pygments.lexers import JsonLexer, YamlLexer
 from ruamel.yaml import YAML
 from tabulate import tabulate
+
 import vss_cli.const as const
 import vss_cli.yaml as yaml
 
@@ -62,8 +63,7 @@ def raw_format_output(
     """Format the raw output."""
     if output == 'auto':
         _LOGGING.debug(
-            "Output `auto` thus using %s",
-            const.DEFAULT_DATA_OUTPUT
+            "Output `auto` thus using %s", const.DEFAULT_DATA_OUTPUT
         )
         output = const.DEFAULT_DATA_OUTPUT
 
@@ -74,40 +74,24 @@ def raw_format_output(
         try:
             if highlighted:
                 return highlight(
-                    json.dumps(data, indent=2,
-                               sort_keys=False),
+                    json.dumps(data, indent=2, sort_keys=False),
                     JsonLexer(),
-                    TerminalFormatter()
+                    TerminalFormatter(),
                 )
             else:
-                return json.dumps(
-                    data, indent=2,
-                    sort_keys=False
-                )
+                return json.dumps(data, indent=2, sort_keys=False)
         except ValueError:
             return str(data)
     elif output == 'yaml':
         try:
             if highlighted:
                 return highlight(
-                    cast(
-                        str,
-                        yaml.dump_yaml(
-                            yamlparser,
-                            data
-                        )
-                    ),
+                    cast(str, yaml.dump_yaml(yamlparser, data)),
                     YamlLexer(),
-                    TerminalFormatter()
+                    TerminalFormatter(),
                 )
             else:
-                return cast(
-                    str,
-                    yaml.dump_yaml(
-                        yamlparser,
-                        data
-                    )
-                )
+                return cast(str, yaml.dump_yaml(yamlparser, data))
         except ValueError:
             return str(data)
     elif output == 'table':
@@ -167,7 +151,7 @@ def format_output(
     ctx,
     data: List[Dict[str, Any]],
     columns: Optional[List] = None,
-    single: Optional[bool] = False
+    single: Optional[bool] = False,
 ) -> str:
     """Format data to output based on settings in ctx/Context."""
     return raw_format_output(
@@ -178,7 +162,7 @@ def format_output(
         ctx.no_headers,
         ctx.table_format,
         ctx.sort_by,
-        single=single
+        single=single,
     )
 
 
@@ -220,8 +204,7 @@ def debug_requests() -> Generator:
 
 
 def get_hostname_from_url(
-        url: str,
-        hostname_regex: str = const.DEFAULT_HOST_REGEX
+    url: str, hostname_regex: str = const.DEFAULT_HOST_REGEX
 ) -> str:
     """Parse hostname from URL"""
     re_search = re.search(hostname_regex, url)
@@ -230,23 +213,16 @@ def get_hostname_from_url(
     return _host
 
 
-def capitalize(
-        value: str
-) -> str:
+def capitalize(value: str) -> str:
     """Capitalize string"""
-    return re.sub(
-        r"(\w)([A-Z])", r"\1 \2",
-        value
-    ).title()
+    return re.sub(r"(\w)([A-Z])", r"\1 \2", value).title()
 
 
 def str2bool(value: str) -> bool:
     return value.lower() in ("yes", "true", "t", "1", "y")
 
 
-def dump_object(
-        obj: Any, _key: str = None, _list: List[str] = None
-) -> None:
+def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
     """Dumps dictionary in kv fmt"""
     for key, value in obj.items():
         if isinstance(value, list):
@@ -254,14 +230,25 @@ def dump_object(
                 if isinstance(i, dict):
                     dump_object(i, key, _list)
                 else:
-                    _list.append(
-                        const.COLUMNS_TWO_FMT.format(key, i)
-                    )
+                    _list.append(const.COLUMNS_TWO_FMT.format(key, i))
         elif not isinstance(value, dict) and not isinstance(value, list):
             _k = _key + '.' + key
-            _list.append(
-                const.COLUMNS_TWO_FMT.format(
-                    _k, value)
-            )
+            _list.append(const.COLUMNS_TWO_FMT.format(_k, value))
         elif key not in ['_links']:
             dump_object(value, key, _list)
+
+
+def process_filters(filters: Union[List, Tuple]) -> List:
+    ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
+    wc = '%'
+    f = filters[1]
+    has_wc = wc in f
+    op_query = f.split(',')
+    filter_by = list(filters)
+    if op_query:
+        has_op = op_query[0] in ops
+        if not has_op:
+            filter_by.insert(1, 'like')
+        if not has_wc:
+            filter_by[2] = f'%{filter_by[2]}%'
+    return filter_by

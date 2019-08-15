@@ -7,6 +7,12 @@
 - [#131](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/131): `docs`: vmware paravirtual scsi migration how-to: by [jm.lopez]
 - [#133](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/133): `core`: `vss` command as an alias of `vss-cli`: by [jm.lopez]
 - [#135](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/135): `docs`: known issues in docs/use.rst : by [jm.lopez]
+- [#137](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/137): `compute vm ls`: improving filtering processing: by [jm.lopez]
+- [#138](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/138): `compute template ls`: improving filtering processing: by [jm.lopez]
+- [#139](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/139): `compute folder ls`: improving filtering processing: by [jm.lopez]
+- [#140](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/140): `compute net ls`: improving filtering processing: by [jm.lopez]
+- [#141](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/141): `compute os ls`: improving filtering processing: by [jm.lopez]
+- [#142](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/142): `compute iso public ls`: improving filtering processing: by [jm.lopez]
  
 **Bug Fixes:**
 - [#130](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/130): `core`: `config.get_vm_by_uuid_or_name` cannot find templates: by [jm.lopez]
@@ -17,8 +23,8 @@
 
 **Improvements:**
 - [#125](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/125): `core`: pyvss upgrade from 0.9.36 -> 0.9.38: by [jm.lopez]
-- [#124](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/124): `compute vm ls`: add options to filter and sort  [jm.lopez]
-- [#126](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/126): `compute template ls`: add options to filter and sort  [jm.lopez]
+- [#124](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/124): `compute vm ls`: add options to filter and sort: by  [jm.lopez]
+- [#126](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/126): `compute template ls`: add options to filter and sort: by  [jm.lopez]
 - [#127](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/127): `compute vm set disk up --backing-mode`: updates scsi controller used by disk: by [jm.lopez]
 
 ## [v0.1.9](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.9) (2019-07-19)

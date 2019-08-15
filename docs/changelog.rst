@@ -10,7 +10,13 @@ Changelog
 - `#129 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/129>`_: ``core``: pyvss upgrade from 0.9.38 -> 0.9.39: by `jm.lopez`_
 - `#131 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/131>`_: ``docs``: vmware paravirtual scsi migration how-to: by `jm.lopez`_
 - `#133 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/133>`_: ``core``: ``vss`` command as an alias of ``vss-cli``: by `jm.lopez`_
-- `#135 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/135>`_: ``docs``: known issues in `docs/use.rst` : by `jm.lopez`_
+- `#135 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/135>`_: ``docs``: known issues in `docs/use.rst`: by `jm.lopez`_
+- `#137 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/137>`_: ``compute vm ls``: improving filtering processing: by `jm.lopez`_
+- `#138 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/138>`_: ``compute template ls``: improving filtering processing: by `jm.lopez`_
+- `#139 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/139>`_: ``compute folder ls``: improving filtering processing: by `jm.lopez`_
+- `#140 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/140>`_: ``compute net ls``: improving filtering processing: by `jm.lopez`_
+- `#141 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/141>`_: ``compute os ls``: improving filtering processing: by `jm.lopez`_
+- `#142 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/142>`_: ``compute iso public ls``: improving filtering processing: by `jm.lopez`_
 
 **Bug Fixes:**
 
