@@ -2,6 +2,29 @@
 Changelog
 =========
 
+`v0.2.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.1>`_ (2019-08-15)
+==================================================================================
+
+**Improvements:**
+
+- `#129 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/129>`_: ``core``: pyvss upgrade from 0.9.38 -> 0.9.39: by `jm.lopez`_
+- `#131 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/131>`_: ``docs``: vmware paravirtual scsi migration how-to: by `jm.lopez`_
+- `#133 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/133>`_: ``core``: ``vss`` command as an alias of ``vss-cli``: by `jm.lopez`_
+- `#135 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/135>`_: ``docs``: known issues in `docs/use.rst`: by `jm.lopez`_
+- `#137 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/137>`_: ``compute vm ls``: improving filtering processing: by `jm.lopez`_
+- `#138 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/138>`_: ``compute template ls``: improving filtering processing: by `jm.lopez`_
+- `#139 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/139>`_: ``compute folder ls``: improving filtering processing: by `jm.lopez`_
+- `#140 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/140>`_: ``compute net ls``: improving filtering processing: by `jm.lopez`_
+- `#141 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/141>`_: ``compute os ls``: improving filtering processing: by `jm.lopez`_
+- `#142 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/142>`_: ``compute iso public ls``: improving filtering processing: by `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#130 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/130>`_: ``core``: `config.get_vm_by_uuid_or_name` cannot find templates: by `jm.lopez`_
+- `#132 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/132>`_: ``core``: `config.get_vm_by_uuid_or_name` cannot find vms: by `jm.lopez`_
+- `#134 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/134>`_: ``compute vm mk from-file``: `-s/--save` expects argument: by `jm.lopez`_
+
+
 `v0.2.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.0>`_ (2019-07-26)
 ==================================================================================
 

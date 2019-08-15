@@ -11,7 +11,8 @@ import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
-from vss_cli.helper import format_output, raw_format_output, to_tuples
+from vss_cli.helper import (
+    format_output, process_filters, raw_format_output, to_tuples)
 from vss_cli.plugins.compute import cli
 from vss_cli.validators import (
     validate_admin, validate_email, validate_inform, validate_json_type,
@@ -49,17 +50,7 @@ def compute_vm_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
     """
     params = dict(expand=1)
     if all(filter_by):
-        ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
-        has_op = False
-        f = filter_by[1]
-        o = f.split(',')
-        if o:
-            if o[0] in ops:
-                has_op = True
-        if not has_op:
-            filter_by = list(filter_by)
-            filter_by.insert(1, 'like')
-        params['filter'] = ','.join(filter_by)
+        params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):
         params['sort'] = f'{sort[0]},{sort[1]}'
     # get templates
@@ -2469,8 +2460,8 @@ def compute_vm_mk(ctx: Configuration, user_meta: str):
 @click.option(
     '--save',
     '-s',
-    required=False,
     default=False,
+    is_flag=True,
     help='Save file after editing.',
 )
 @pass_context

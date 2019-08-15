@@ -5,7 +5,7 @@ import click
 from vss_cli import const, rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
-from vss_cli.helper import format_output
+from vss_cli.helper import format_output, process_filters
 from vss_cli.plugins.compute import cli
 
 _LOGGING = logging.getLogger(__name__)
@@ -41,17 +41,7 @@ def compute_template_ls(
     """
     params = dict(expand=1)
     if all(filter_by):
-        ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
-        has_op = False
-        f = filter_by[1]
-        o = f.split(',')
-        if o:
-            if o[0] in ops:
-                has_op = True
-        if not has_op:
-            filter_by = list(filter_by)
-            filter_by.insert(1, 'like')
-        params['filter'] = ','.join(filter_by)
+        params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):
         params['sort'] = f'{sort[0]},{sort[1]}'
     # get templates

@@ -403,4 +403,27 @@ but do not include the ``vss`` command, for instance:
     501220a5-a091-1866-9741-664236067142  1611T-ecstatic_mccarthy
 
 
+Known Issues
+------------
+
+Terminal ``vt100`` does not support colors and the ``vss-cli`` throws the exception
+``_curses.error: use_default_colors() returned ERR`` since `pick`_ only works with
+terminals supporting colors. We have created `Pull Request #30`_ to address
+this issue, and until is merged by the maintainer, the following workarounds are proposed:
+
+Use ``xterm-256color`` as terminal:
+
+.. code-block:: bash
+
+    export TERM=xterm-256color
+
+
+Install updated `pick`_ library:
+
+.. code-block:: bash
+
+    pip3 install --upgrade git+https://github.com/jm66/pick@pick-nocolor
+
 .. _`jq`: https://stedolan.github.io/jq/
+.. _`pick`: https://github.com/wong2/pick
+.. _`Pull Request #30`: https://github.com/wong2/pick/pull/30

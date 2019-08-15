@@ -104,5 +104,10 @@ setup(
     tests_require=TESTS_REQUIRE,
     extras_require=EXTRAS_REQUIRE,
     python_requires=f'>={MIN_PY_VERSION}',
-    entry_points={'console_scripts': ['vss-cli = vss_cli.cli:run']},
+    entry_points={
+        'console_scripts': [
+            'vss-cli = vss_cli.cli:run',
+            'vss = vss_cli.cli:run',
+        ]
+    },
 )

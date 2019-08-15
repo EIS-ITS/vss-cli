@@ -21,3 +21,4 @@ please `open an issue <https://gitlab-ee.eis.utoronto.ca/vss/vsscli/issues/new>`
    export-vm
    schedule-change
    verify-permission
+   pvscsi
