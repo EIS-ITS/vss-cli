@@ -2,14 +2,15 @@
 Changelog
 =========
 
-`v0.2.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.1>`_ (2019-08-14)
+`v0.2.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.1>`_ (2019-08-15)
 ==================================================================================
 
 **Improvements:**
 
 - `#129 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/129>`_: ``core``: pyvss upgrade from 0.9.38 -> 0.9.39: by `jm.lopez`_
 - `#131 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/131>`_: ``docs``: vmware paravirtual scsi migration how-to: by `jm.lopez`_
-- `#133 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/133>`_:``core``: ``vss`` command as an alias of ``vss-cli``: by `jm.lopez`_
+- `#133 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/133>`_: ``core``: ``vss`` command as an alias of ``vss-cli``: by `jm.lopez`_
+- `#135 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/135>`_: ``docs``: known issues in `docs/use.rst` : by `jm.lopez`_
 
 **Bug Fixes:**
 
