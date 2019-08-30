@@ -667,7 +667,7 @@ class Configuration(VssManager):
         return True
 
     @staticmethod
-    def _filter_objs_by_attrs(
+    def _filter_objects_by_attrs(
         value, objects: List[dict], attrs: List[Tuple[Any, Any]]
     ) -> List[Any]:
         """
@@ -683,14 +683,38 @@ class Configuration(VssManager):
         for attr in attrs:
             attr_name = attr[0]
             attr_type = attr[1]
-            _objs = list(
-                filter(
-                    lambda i: attr_type(value) in i[attr_name].lower(), objects
-                )
-            )
+            try:
+                if attr_type in [str]:
+                    f = filter(
+                        lambda i: attr_type(value).lower()
+                        in i[attr_name].lower(),
+                        objects,
+                    )
+                elif attr_type in [int]:
+                    f = filter(
+                        lambda i: attr_type(value) == i[attr_name], objects
+                    )
+                else:
+                    f = filter(
+                        lambda i: attr_type(value) in i[attr_name], objects
+                    )
+                # cast list
+                _objs = list(f)
+            except ValueError as ex:
+                _LOGGING.debug(f'{value} ({type(value)}) error: {ex}')
+
             if _objs:
                 break
         return _objs
+
+    @staticmethod
+    def pick(objects: List[dict], options=None, indicator='=>'):
+        count = len(objects)
+        msg = f"Found {count} matches. Please select one:"
+        sel, index = pick(
+            title=msg, indicator=indicator, options=options or objects
+        )
+        return [objects[index]]
 
     def get_vskey_stor(self, **kwargs) -> bool:
         from webdav3 import client as wc
@@ -753,129 +777,92 @@ class Configuration(VssManager):
 
     def get_domain_by_name_or_moref(self, name_or_moref: str) -> List[Any]:
         g_domains = self.get_domains()
-        name_or_moref = name_or_moref.lower()
-        d = list(
-            filter(lambda i: name_or_moref in i['name'].lower(), g_domains)
-        ) or list(filter(lambda i: name_or_moref in i['moref'], g_domains))
-        if not d:
+        attributes = [('name', str), ('moref', str)]
+        objs = self._filter_objects_by_attrs(
+            name_or_moref, g_domains, attributes
+        )
+        if not objs:
             raise click.BadParameter(f'{name_or_moref} could not be found')
-        d_count = len(d)
+        d_count = len(objs)
         if d_count > 1:
-            msg = f"Found {d_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']} ({i['moref']})" for i in d],
+            return self.pick(
+                objs, options=[f"{i['name']} ({i['moref']})" for i in objs]
             )
-            return [d[index]]
-        return d
+        return objs
 
     def get_network_by_name_or_moref(self, name_or_moref: str) -> List[Any]:
-        g_networks = self.get_networks(sort='name')
-        name_or_moref = name_or_moref.lower()
-        # search by name or moref
-        n = list(
-            filter(lambda i: name_or_moref in i['name'].lower(), g_networks)
-        ) or list(
-            filter(lambda i: name_or_moref in i['moref'].lower(), g_networks)
+        g_networks = self.get_networks(
+            sort='name,desc', show_all=True, per_page=500
         )
-        if not n:
+        attributes = [('name', str), ('moref', str)]
+        objs = self._filter_objects_by_attrs(
+            name_or_moref, g_networks, attributes
+        )
+        if not objs:
             raise click.BadParameter(f'{name_or_moref} could not be found')
-        net_count = len(n)
+        net_count = len(objs)
         if net_count > 1:
-            msg = f"Found {net_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']} ({i['moref']})" for i in n],
+            return self.pick(
+                objs, options=[f"{i['name']} ({i['moref']})" for i in objs]
             )
-            return [n[index]]
-        return n
+        return objs
 
     def get_folder_by_name_or_moref_path(
         self, name_moref_path: str
     ) -> List[Any]:
-        g_folders = self.get_folders(per_page=2500)
+        g_folders = self.get_folders(
+            sort='path,desc', show_all=True, per_page=500
+        )
         # search by name or moref
-        name_moref_path = name_moref_path.lower()
         attributes = [('name', str), ('path', str), ('moref', str)]
-        objs = self._filter_objs_by_attrs(
+        objs = self._filter_objects_by_attrs(
             name_moref_path, g_folders, attributes
         )
         if not objs:
             raise click.BadParameter(f'{name_moref_path} could not be found')
         obj_count = len(objs)
         if obj_count > 1:
-            msg = f"Found {obj_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['path']} ({i['moref']})" for i in objs],
+            return self.pick(
+                objs, options=[f"{i['path']} ({i['moref']})" for i in objs]
             )
-            return [objs[index]]
         return objs
 
     def get_os_by_name_or_guest(self, name_or_guest: str) -> List[Any]:
-        g_os = self.get_os(sort='guestFullName,desc', per_page=200)
-        try:
-            o_f = list(filter(lambda i: int(name_or_guest) == i['id'], g_os))
-        except ValueError:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_or_guest}')
-            name_or_guest = name_or_guest.lower()
-            o_f = list(
-                filter(lambda i: name_or_guest in i['guestId'].lower(), g_os)
-            ) or list(
-                filter(
-                    lambda i: name_or_guest in i['guestFullName'].lower(), g_os
-                )
-            )
-        if not o_f:
+        g_os = self.get_os(
+            sort='guestFullName,desc', show_all=True, per_page=500
+        )
+        attributes = [('id', int), ('guestId', str), ('guestFullName', str)]
+        objs = self._filter_objects_by_attrs(name_or_guest, g_os, attributes)
+        if not objs:
             raise click.BadParameter(f'{name_or_guest} could not be found')
-        o_count = len(o_f)
+        o_count = len(objs)
         if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
+            return self.pick(
+                objs,
                 options=[
-                    f"{i['guestFullName']} ({i['guestId']})" for i in o_f
+                    f"{i['guestFullName']} ({i['guestId']})" for i in objs
                 ],
             )
-            return [o_f[index]]
-        return o_f
+        return objs
 
     def get_vss_service_by_name_label_or_id(
         self, name_label_or_id: Union[str, int]
     ) -> List[Any]:
-        vss_services = self.get_vss_services(show_all=True, per_page=200)
-        try:
-            svc_id = int(name_label_or_id)
-            svc_ref = list(filter(lambda i: i['id'] == svc_id, vss_services))
-        except ValueError as ex:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_label_or_id} ({ex})')
-            # checking name or label
-            svc = str(name_label_or_id).lower()
-            svc_ref = list(
-                filter(lambda i: svc in i['name'].lower(), vss_services)
-            ) or list(
-                filter(lambda i: svc in i['label'].lower(), vss_services)
-            )
+        vss_services = self.get_vss_services(
+            sort='label,desc', show_all=True, per_page=200
+        )
+        attributes = [('id', int), ('label', str), ('name', str)]
+        objs = self._filter_objects_by_attrs(
+            name_label_or_id, vss_services, attributes
+        )
         # check if there's no ref
-        if not svc_ref:
+        if not objs:
             raise click.BadParameter(f'{name_label_or_id} could not be found')
         # count for dup results
-        o_count = len(svc_ref)
+        o_count = len(objs)
         if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['label']}" for i in svc_ref],
-            )
-            return [svc_ref[index]]
-        return svc_ref
+            self.pick(objs, options=[f"{i['label']}" for i in objs])
+        return objs
 
     def get_floppy_by_name_or_path(
         self, name_or_path_or_id: Union[str, int]
