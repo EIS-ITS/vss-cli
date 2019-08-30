@@ -666,6 +666,32 @@ class Configuration(VssManager):
             self.write_config_file(new_endpoint=endpoint_cfg)
         return True
 
+    @staticmethod
+    def _filter_objs_by_attrs(
+        value, objects: List[dict], attrs: List[Tuple[Any, Any]]
+    ) -> List[Any]:
+        """
+        Filter objects by a given `value` based on attributes.
+        Attributes may be a list of tuples with attribute name, type.
+
+        :param value: value to filter
+        :param objects: list of dictionaries
+        :param attrs: list of tuple of attribute name, type
+        :return:
+        """
+        _objs = []
+        for attr in attrs:
+            attr_name = attr[0]
+            attr_type = attr[1]
+            _objs = list(
+                filter(
+                    lambda i: attr_type(value) in i[attr_name].lower(), objects
+                )
+            )
+            if _objs:
+                break
+        return _objs
+
     def get_vskey_stor(self, **kwargs) -> bool:
         from webdav3 import client as wc
 
@@ -769,39 +795,25 @@ class Configuration(VssManager):
     def get_folder_by_name_or_moref_path(
         self, name_moref_path: str
     ) -> List[Any]:
-        g_folders = self.get_folders(sort='path', summary=1)
+        g_folders = self.get_folders(per_page=2500)
         # search by name or moref
         name_moref_path = name_moref_path.lower()
-        f = (
-            list(
-                filter(
-                    lambda i: name_moref_path in i['name'].lower(), g_folders
-                )
-            )
-            or list(
-                filter(
-                    lambda i: name_moref_path in i['path'].lower(), g_folders
-                )
-            )
-            or list(
-                filter(
-                    lambda i: name_moref_path in i['moref'].lower(), g_folders
-                )
-            )
+        attributes = [('name', str), ('path', str), ('moref', str)]
+        objs = self._filter_objs_by_attrs(
+            name_moref_path, g_folders, attributes
         )
-
-        if not f:
+        if not objs:
             raise click.BadParameter(f'{name_moref_path} could not be found')
-        f_count = len(f)
-        if f_count > 1:
-            msg = f"Found {f_count} matches. Please select one:"
+        obj_count = len(objs)
+        if obj_count > 1:
+            msg = f"Found {obj_count} matches. Please select one:"
             sel, index = pick(
                 title=msg,
                 indicator='=>',
-                options=[f"{i['path']} ({i['moref']})" for i in f],
+                options=[f"{i['path']} ({i['moref']})" for i in objs],
             )
-            return [f[index]]
-        return f
+            return [objs[index]]
+        return objs
 
     def get_os_by_name_or_guest(self, name_or_guest: str) -> List[Any]:
         g_os = self.get_os(sort='guestFullName,desc', per_page=200)
