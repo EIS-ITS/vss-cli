@@ -129,7 +129,9 @@ def folders(
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
     try:
-        response = ctx.client.get_folders(summary=1)
+        response = ctx.client.get_folders(
+            show_all=True, per_page=500, short=1, sort='path,asc'
+        )
     except (HTTPError, VssError):
         response = []
 
@@ -138,9 +140,9 @@ def folders(
         for obj in response:
             completions.append((obj['moref'], obj['path']))
 
-        completions.sort()
+        completions.sort(key=lambda f: f[1])
 
-        return [c for c in completions if incomplete in c[0]]
+        return [c for c in completions if incomplete in c[1]]
     return completions
 
 
