@@ -6,7 +6,8 @@ import os
 import platform
 import shutil
 import sys
-from typing import Any, Dict, List, Optional, Tuple, Union, cast  # noqa: F401
+from typing import (  # noqa: F401
+    Any, Callable, List, Optional, Tuple, Union, cast)
 from uuid import UUID
 
 import click
@@ -861,137 +862,48 @@ class Configuration(VssManager):
         # count for dup results
         o_count = len(objs)
         if o_count > 1:
-            self.pick(objs, options=[f"{i['label']}" for i in objs])
+            return self.pick(objs, options=[f"{i['label']}" for i in objs])
+        return objs
+
+    def _get_images_by_name_path_or_id(
+        self, f: Callable, name_or_path_or_id: Union[int, str]
+    ):
+        g_img = f(show_all=True, per_page=500)
+        attributes = [('id', int), ('name', str), ('path', str)]
+        objs = self._filter_objects_by_attrs(
+            name_or_path_or_id, g_img, attributes
+        )
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} could not be found'
+            )
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(objs, options=[f"{i['name']}" for i in objs])
         return objs
 
     def get_floppy_by_name_or_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
-        user_floppies = self.get_user_floppies()
-        pub_floppies = self.get_floppies()
-        try:
-            img_id = int(name_or_path_or_id)
-            # public or user
-            img_ref = list(
-                filter(lambda i: i['id'] == img_id, pub_floppies)
-            ) or list(filter(lambda i: i['id'] == img_id, user_floppies))
-        except (ValueError, TypeError) as ex:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
-            # checking name or path
-            # check in public and user isos
-            img = str(name_or_path_or_id)
-            img = img.lower()
-            img_ref = (
-                list(filter(lambda i: img in i['name'].lower(), pub_floppies))
-                or list(
-                    filter(lambda i: img in i['path'].lower(), pub_floppies)
-                )
-                or list(
-                    filter(lambda i: img in i['name'].lower(), pub_floppies)
-                )
-                or list(
-                    filter(lambda i: img in i['path'].lower(), pub_floppies)
-                )
-            )
-        # check if there's no ref
-        if not img_ref:
-            raise click.BadParameter(
-                f'{name_or_path_or_id} could not be found'
-            )
-        # count for dup results
-        o_count = len(img_ref)
-        if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']}" for i in img_ref],
-            )
-            return [img_ref[index]]
-        return img_ref
+        return self._get_images_by_name_path_or_id(
+            self.get_floppies, name_or_path_or_id
+        )
 
     def get_iso_by_name_or_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
-        user_isos = self.get_user_isos()
-        pub_isos = self.get_isos(show_all=True, per_page=200)
-        try:
-            iso_id = int(name_or_path_or_id)
-            # public or user
-            iso_ref = list(
-                filter(lambda i: i['id'] == iso_id, pub_isos)
-            ) or list(filter(lambda i: i['id'] == iso_id, user_isos))
-        except (ValueError, TypeError) as ex:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
-            # checking name or path
-            # check in public and user isos
-            iso = str(name_or_path_or_id)
-            iso = iso.lower()
-            iso_ref = (
-                list(filter(lambda i: iso in i['name'].lower(), pub_isos))
-                or list(filter(lambda i: iso in i['path'].lower(), pub_isos))
-                or list(filter(lambda i: iso in i['name'].lower(), user_isos))
-                or list(filter(lambda i: iso in i['path'].lower(), user_isos))
-            )
-        # check if there's no ref
-        if not iso_ref:
-            raise click.BadParameter(
-                f'{name_or_path_or_id} could not be found'
-            )
-        # count for dup results
-        o_count = len(iso_ref)
-        if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']}" for i in iso_ref],
-            )
-            return [iso_ref[index]]
-        return iso_ref
+        return self._get_images_by_name_path_or_id(
+            self.get_isos, name_or_path_or_id
+        )
 
     def get_vm_image_by_name_or_id_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
-        user_imgs = self.get_user_vm_images()
-        pub_imgs = self.get_images(show_all=True, per_page=200)
-        try:
-            img_id = int(name_or_path_or_id)
-            # public or user
-            img_ref = list(
-                filter(lambda i: i['id'] == img_id, pub_imgs)
-            ) or list(filter(lambda i: i['id'] == img_id, user_imgs))
-        except ValueError as ex:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
-            # checking name or path
-            # check in public and user img
-            img = str(name_or_path_or_id)
-            img = img.lower()
-            img_ref = (
-                list(filter(lambda i: img in i['name'].lower(), pub_imgs))
-                or list(filter(lambda i: img in i['path'].lower(), pub_imgs))
-                or list(filter(lambda i: img in i['name'].lower(), user_imgs))
-                or list(filter(lambda i: img in i['path'].lower(), user_imgs))
-            )
-        # check if there's no ref
-        if not img_ref:
-            raise click.BadParameter(
-                f'{name_or_path_or_id} could not be found'
-            )
-        # count for dup results
-        o_count = len(img_ref)
-        if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']}" for i in img_ref],
-            )
-            return [img_ref[index]]
-        return img_ref
+        return self._get_images_by_name_path_or_id(
+            self.get_images, name_or_path_or_id
+        )
 
     def get_cli_spec_from_api_spec(
         self, payload: dict, template: dict
