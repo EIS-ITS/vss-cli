@@ -9,7 +9,7 @@ click-repl==0.1.6
 prompt-toolkit==2.0.8
 Pygments==2.4.2
 pyvss>=0.9.40
-webdavclient3==0.12
+webdavclient3==0.10
 pick==0.6.4
 dataclasses-json==0.2.2
 validators==0.12.4
