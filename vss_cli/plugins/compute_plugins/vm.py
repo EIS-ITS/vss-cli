@@ -1400,7 +1400,8 @@ def compute_vm_set_export(ctx: Configuration):
     type=click.STRING,
     required=False,
     default='client',
-    help='Update floppy backing device to' ' given flp image path.',
+    help='Update floppy backing device to given flp image path.',
+    autocompletion=autocompletion.floppies,
 )
 @pass_context
 def compute_vm_set_floppy(ctx: Configuration, unit, image):
