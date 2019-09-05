@@ -28,3 +28,6 @@ count_opt = click.option(
 page_opt = click.option(
     '-p', '--page', is_flag=True, help='page results in a less-like format'
 )
+wait_opt = click.option(
+    '--wait', is_flag=True, help='wait for request to complete'
+)

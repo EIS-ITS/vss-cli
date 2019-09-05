@@ -6,6 +6,7 @@ import os
 import platform
 import shutil
 import sys
+from time import sleep
 from typing import (  # noqa: F401
     Any, Callable, List, Optional, Tuple, Union, cast)
 from uuid import UUID
@@ -14,13 +15,15 @@ import click
 from click_spinner import spinner
 from pick import pick
 from pyvss.const import __version__ as pyvss_version
+from pyvss.enums import RequestStatus
 from pyvss.manager import VssManager
 from ruamel.yaml import YAML
 
 import vss_cli.const as const
 from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
-from vss_cli.helper import debug_requests_on, get_hostname_from_url
+from vss_cli.helper import (
+    debug_requests_on, format_output, get_hostname_from_url)
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.validators import validate_email, validate_phone_number
 import vss_cli.yaml as yaml
@@ -1008,3 +1011,113 @@ class Configuration(VssManager):
         self, data: Any, stream: Any = None, **kw: Any
     ) -> Optional[str]:
         return yaml.dump_yaml(self.yaml(), data, stream, **kw)
+
+    def download_inventory_file(
+        self, request_id: int, directory: str = ''
+    ) -> dict:
+        with self.spinner(disable=self.debug):
+            file_path = self.download_inventory_result(
+                request_id=request_id, directory=directory
+            )
+        obj = {'file': file_path}
+
+        self.echo(
+            format_output(self, [obj], columns=[('FILE', 'file')], single=True)
+        )
+        return obj
+
+    def wait_for_request_to(
+        self,
+        obj,
+        required: List[str] = (
+            RequestStatus.PROCESSED.name,
+            RequestStatus.SCHEDULED.name,
+        ),
+        wait: int = 5,
+        max_tries: int = 720,
+    ) -> Optional[bool]:
+        # wait
+        request_status = False
+        timed_out = False
+        invalid_response = False
+        self.secho(
+            f'{EMOJI_UNICODE.get(":hourglass_not_done:")} '
+            f'Waiting for request to complete. ',
+            fg='green',
+            nl=False,
+        )
+        with self.spinner(disable=self.debug):
+            if 199 < obj['status'] < 300:
+                r_url = obj['_links']['request']
+                tries = 0
+                while True:
+                    request = self.request(r_url)
+                    if 'data' in request:
+                        status = request['data']['status']
+                        request_message = request['data']['message']
+                        if status in required:
+                            request_status = True
+                            break
+                        if status in [
+                            RequestStatus.ERROR.name,
+                            RequestStatus.ERROR_RETRY.name,
+                            RequestStatus.CANCELLED.name,
+                        ]:
+                            request_status = False
+                            break
+                        elif status in [
+                            RequestStatus.PENDING.name,
+                            RequestStatus.IN_PROGRESS.name,
+                            RequestStatus.APPROVAL_REQUIRED.name,
+                        ]:
+                            pass
+                    else:
+                        request_status = False
+                        break
+                    if tries >= max_tries:
+                        timed_out = True
+                        break
+                    tries += 1
+                    sleep(wait)
+            else:
+                invalid_response = True
+        # clear screen to focus on results
+        click.clear()
+        if invalid_response:
+            raise VssCliError(f'Invalid response from the API.')
+        if timed_out:
+            raise VssCliError(
+                f'Wait for request timed out after {max_tries * wait} seconds.'
+            )
+        # check result status
+        if request_status:
+            self.secho(
+                f'{EMOJI_UNICODE.get(":party_popper:")} '
+                f'Request completed successfully.',
+                fg='green',
+            )
+            self.echo(
+                format_output(
+                    self,
+                    [request_message],
+                    columns=const.COLUMNS_REQUEST_WAIT,
+                    single=True,
+                )
+            )
+        else:
+            self.secho(
+                f'{EMOJI_UNICODE.get(":worried_face:")} '
+                f'Sorry, something went wrong: ',
+                fg='red',
+                err=True,
+            )
+            self.echo(
+                format_output(
+                    self,
+                    [request_message],
+                    columns=const.COLUMNS_REQUEST_WAIT,
+                    single=True,
+                )
+            )
+            return False
+        return True
