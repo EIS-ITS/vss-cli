@@ -711,8 +711,11 @@ def compute_vm_get_vss_service(ctx: Configuration):
     required=False,
     default=None,
 )
+@so.wait_opt
 @pass_context
-def compute_vm_set(ctx: Configuration, uuid_or_name, schedule, user_meta: str):
+def compute_vm_set(
+    ctx: Configuration, uuid_or_name, schedule, user_meta: str, wait: bool
+):
     """Manage virtual machine attributes such as cpu,
     memory, disk, network backing, cd, etc.."""
     _vm = ctx.get_vm_by_uuid_or_name(uuid_or_name)
@@ -721,6 +724,7 @@ def compute_vm_set(ctx: Configuration, uuid_or_name, schedule, user_meta: str):
     ctx.payload_options = dict()
     ctx.user_meta = dict(to_tuples(user_meta))
     ctx.schedule = schedule
+    ctx.wait = wait
     # set additional props
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
@@ -756,6 +760,9 @@ def compute_vm_set_admin(ctx: Configuration, name, email, phone):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('alarm', short_help='Acknowledge or clear alarms')
@@ -787,6 +794,9 @@ def compute_vm_set_alarm(ctx: Configuration, action, alarm_moref):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command(
@@ -814,6 +824,9 @@ def compute_vm_set_boot_bios(ctx: Configuration, on):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('boot-delay', short_help='Boot delay in milliseconds')
@@ -832,6 +845,9 @@ def compute_vm_set_boot_delay(ctx: Configuration, delay_in_ms):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group('cd', short_help='CD/DVD device management')
@@ -875,6 +891,9 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_cd.command('up', short_help='Update CD/DVD unit')
@@ -907,6 +926,9 @@ def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('client', short_help='Client (Metadata)')
@@ -926,6 +948,9 @@ def compute_vm_set_client(ctx: Configuration, client):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('client-note', short_help='Client note (Metadata)')
@@ -957,6 +982,9 @@ def compute_vm_set_client_note(ctx: Configuration, notes, replace):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('consolidate', short_help='Disk consolidation')
@@ -975,6 +1003,9 @@ def compute_vm_set_consolidate(ctx: Configuration):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group('cpu')
@@ -998,6 +1029,9 @@ def compute_vm_set_cpu_count(ctx: Configuration, cpu_count):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_cpu.command('hot-add', short_help='Enable/disable CPU hot add')
@@ -1013,6 +1047,9 @@ def compute_vm_set_cpu_hot_add(ctx: Configuration, status):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('custom-spec', short_help='Custom specification')
@@ -1077,6 +1114,9 @@ def compute_vm_set_custom_spec(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group(
@@ -1119,6 +1159,9 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_extra_config.command(
@@ -1165,6 +1208,9 @@ def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_extra_config.command(
@@ -1204,6 +1250,9 @@ def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('description', short_help='Description (Metadata)')
@@ -1222,6 +1271,9 @@ def compute_vm_set_description(ctx: Configuration, description):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group('disk', short_help='Disk management')
@@ -1255,6 +1307,9 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_disk.command('up', short_help='Update disk capacity')
@@ -1309,6 +1364,9 @@ def compute_vm_set_disk_up(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_disk.command('rm', short_help='Remove disk from vm')
@@ -1336,6 +1394,9 @@ def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('domain', short_help='Domain migration')
@@ -1373,6 +1434,9 @@ def compute_vm_set_domain(ctx: Configuration, domain_moref, force, on):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('export', short_help='Export to OVF')
@@ -1390,6 +1454,9 @@ def compute_vm_set_export(ctx: Configuration):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('floppy', short_help='Floppy backing')
@@ -1418,6 +1485,9 @@ def compute_vm_set_floppy(ctx: Configuration, unit, image):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('folder', short_help='Logical folder')
@@ -1446,6 +1516,9 @@ def compute_vm_set_folder(ctx: Configuration, name_moref_path):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('guest-cmd', short_help='Execute command on OS host')
@@ -1514,6 +1587,9 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('guest-os', short_help='Update guest operating system')
@@ -1547,6 +1623,9 @@ def compute_vm_set_guest_os(ctx: Configuration, guest_id):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('ha-group', short_help='HA Group (Metadata)')
@@ -1583,6 +1662,9 @@ def compute_vm_set_ha_group(ctx: Configuration, uuid, replace):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command(
@@ -1614,6 +1696,9 @@ def compute_vm_set_inform(ctx: Configuration, email, replace):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group('memory')
@@ -1642,6 +1727,9 @@ def compute_vm_set_memory_size(ctx: Configuration, memory_gb):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_memory.command(
@@ -1665,6 +1753,9 @@ def compute_vm_set_memory_hot_add(ctx: Configuration, status):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('name', short_help='Logical name')
@@ -1685,6 +1776,9 @@ def compute_vm_set_name(ctx: Configuration, name):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group('nic', short_help='Network adapter management')
@@ -1760,6 +1854,9 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_nic.command('mk', short_help='Create NIC unit')
@@ -1800,6 +1897,9 @@ def compute_vm_set_nic_mk(ctx: Configuration, network):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_nic.command('rm', short_help='Remove NIC unit')
@@ -1847,6 +1947,9 @@ def compute_vm_set_nic_rm(ctx: Configuration, unit, confirm):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group('snapshot', short_help='Snapshot management')
@@ -1915,6 +2018,9 @@ def compute_vm_set_snapshot_mk(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_snapshot.command('rm', short_help='Remove snapshot')
@@ -1938,6 +2044,9 @@ def compute_vm_set_snapshot_rm(ctx: Configuration, snapshot_id):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_snapshot.command('re', short_help='Revert snapshot')
@@ -1961,6 +2070,9 @@ def compute_vm_set_snapshot_re(ctx: Configuration, snapshot_id):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('state', short_help='Power state')
@@ -2028,6 +2140,9 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command(
@@ -2054,6 +2169,9 @@ def compute_vm_set_template(ctx: Configuration, on):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('tools', short_help='Manage VMware Tools')
@@ -2075,6 +2193,9 @@ def compute_vm_set_tools(ctx: Configuration, action):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('usage', short_help='Usage (Metadata)')
@@ -2097,6 +2218,9 @@ def compute_vm_set_usage(ctx: Configuration, usage):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group('version')
@@ -2126,6 +2250,9 @@ def compute_vm_set_version_policy_vmx(ctx: Configuration, vmx):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_version.command(
@@ -2148,6 +2275,9 @@ def compute_vm_set_version_policy(ctx: Configuration, policy):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command(
@@ -2174,6 +2304,9 @@ def compute_vm_set_vss_option(ctx: Configuration, vss_option, on):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.command('vss-service', short_help='VSS Service name or ID')
@@ -2197,6 +2330,9 @@ def compute_vm_set_vss_service(ctx: Configuration, label_name_or_id):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set.group(
@@ -2247,6 +2383,9 @@ def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_controller_scsi.command(
@@ -2281,6 +2420,9 @@ def compute_vm_set_controller_scsi_up(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_set_controller_scsi.command(
@@ -2335,6 +2477,9 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm.group(
@@ -2427,12 +2572,14 @@ def compute_vm_rm(ctx: Configuration, uuid, force, max_del, show_info):
     required=False,
     default=None,
 )
+@so.wait_opt
 @pass_context
-def compute_vm_mk(ctx: Configuration, user_meta: str):
+def compute_vm_mk(ctx: Configuration, user_meta: str, wait: bool):
     """Manage virtual machine attributes such as cpu,
     memory, disk, network backing, cd, etc.."""
     ctx.payload_options = dict()
     ctx.user_meta = dict(to_tuples(user_meta))
+    ctx.wait = wait
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
     if click.get_current_context().invoked_subcommand is None:
@@ -2536,6 +2683,9 @@ def compute_vm_from_file(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 """
@@ -2790,6 +2940,9 @@ def compute_vm_mk_spec(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command('shell', short_help='Create empty virtual machine')
@@ -2924,6 +3077,9 @@ def compute_vm_mk_shell(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command('from-template', short_help='Create vm from template')
@@ -3022,6 +3178,9 @@ def compute_vm_mk_template(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command('from-clone', short_help='Create vm from clone')
@@ -3119,6 +3278,9 @@ def compute_vm_mk_clone(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command(
@@ -3268,3 +3430,6 @@ def compute_vm_mk_image(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
