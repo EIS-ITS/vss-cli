@@ -63,11 +63,13 @@ def compute_folder_ls(ctx: Configuration, filter_by, show_all, sort, page):
 @click.argument(
     'moref_or_name', type=click.STRING, autocompletion=autocompletion.domains
 )
+@so.wait_opt
 @pass_context
-def compute_folder_set(ctx, moref_or_name):
+def compute_folder_set(ctx, moref_or_name: str, wait: bool):
     """Update given folder attribute."""
     _folder = ctx.get_folder_by_name_or_moref_path(moref_or_name)
     ctx.moref = _folder[0]['moref']
+    ctx.wait = wait
 
 
 @compute_folder_set.command('parent', short_help='move folder')
@@ -90,6 +92,9 @@ def compute_folder_set_parent(ctx: Configuration, parent_name_or_moref):
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_folder_set.command('name', short_help='rename folder')
@@ -109,6 +114,9 @@ def compute_folder_set_name(ctx: Configuration, name):
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_folder.command('rm', short_help='remove folder')
@@ -133,6 +141,9 @@ def compute_folder_rm(ctx, moref):
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_folder.command('mk', short_help='create folder')

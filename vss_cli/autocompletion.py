@@ -1,6 +1,6 @@
 """Details for the auto-completion."""
 import os
-from typing import Any, Dict, List, Tuple  # NOQA
+from typing import Callable, Dict, List, Tuple  # NOQA
 
 from requests.exceptions import HTTPError
 
@@ -23,6 +23,39 @@ def _init_ctx(ctx: Configuration) -> None:
     ctx.client.config = os.environ.get('VSS_CONFIG', const.DEFAULT_CONFIG)
     # fallback to load configuration
     ctx.client.load_config()
+
+
+def _autocomplete(
+    f: Callable,
+    incomplete: str,
+    attrs: List[str],
+    f_kwargs: Dict = None,
+    sort_index: int = 0,
+    complete_index: int = 0,
+) -> List[Tuple[str, str]]:
+    try:
+        _f_args = dict(show_all=True, sort='path,desc')
+        if f_kwargs:
+            _f_args.update(f_kwargs)
+        response = f(**_f_args)
+    except (HTTPError, VssError):
+        response = []
+
+    completions = []  # type: List[Tuple[str, str]]
+    if response:
+        for obj in response:
+            sub_attrs = []
+            # start iterating in second item (index 1)
+            for attr in attrs[1:]:
+                sub_attrs.append(str(obj.get(attr, 'N/A')))
+            # first item (index 0) is always the key
+            r = (str(obj[attrs[0]]), ' - '.join(sub_attrs))
+            completions.append(r)
+
+        completions.sort(key=lambda x: x[sort_index])
+
+        return [c for c in completions if incomplete in c[complete_index]]
+    return completions
 
 
 def table_formats(
@@ -66,186 +99,137 @@ def vm_templates(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_templates(
-            short=1, show_all=True, per_page=2000
-        )
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for vm in response:
-            completions.append((vm['uuid'], vm['name']))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_templates,
+        incomplete,
+        ['uuid', 'name'],
+        complete_index=1,
+        sort_index=1,
+        f_kwargs={"short": 1, "show_all": True, "per_page": 2000},
+    )
 
 
 def virtual_machines(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_vms(short=1, show_all=True, per_page=2000)
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for vm in response:
-            completions.append((vm['uuid'], vm['name']))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_vms,
+        incomplete,
+        ['uuid', 'name'],
+        complete_index=1,
+        sort_index=1,
+        f_kwargs={"short": 1, "show_all": True, "per_page": 2000},
+    )
 
 
 def domains(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_domains()
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append((obj['moref'], obj['name']))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_domains,
+        incomplete,
+        ['moref', 'name'],
+        sort_index=1,
+        complete_index=1,
+    )
 
 
 def folders(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_folders(summary=1)
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append((obj['moref'], obj['path']))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_folders,
+        incomplete,
+        ['moref', 'path'],
+        sort_index=1,
+        complete_index=1,
+        f_kwargs={"sort": "path,desc", "per_page": 500, "short": 1},
+    )
 
 
 def networks(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_networks()
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append((obj['moref'], obj['name']))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_networks,
+        incomplete,
+        ['moref', 'label'],
+        sort_index=1,
+        complete_index=1,
+        f_kwargs={"sort": "label,desc", "per_page": 500},
+    )
 
 
 def operating_systems(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_os(show_all=True, sort='guestId,desc')
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append((obj['guestId'], obj['guestFullName']))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_os,
+        incomplete,
+        ['guestId', 'guestFullName'],
+        f_kwargs={"sort": "guestId,desc", "per_page": 500},
+    )
 
 
 def vss_services(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_vss_services(
-            show_all=True, sort='label,desc'
-        )
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append((f"\"{obj['label']}\"", f"{obj['id']}"))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_vss_services,
+        incomplete,
+        ['id', 'label'],
+        sort_index=1,
+        complete_index=1,
+        f_kwargs={"sort": "label,desc", "per_page": 500},
+    )
 
 
 def isos(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_isos(show_all=True, sort='name,desc')
-        response.extend(ctx.client.get_user_isos())
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append((obj['name'], obj['path']))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_isos,
+        incomplete,
+        attrs=['id', 'path'],
+        sort_index=1,
+        complete_index=1,
+        f_kwargs={"sort": "path,desc", "per_page": 500},
+    )
 
 
 def vm_images(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_images(show_all=True, sort='name,desc')
-        response.extend(ctx.client.get_user_vm_images())
-    except (HTTPError, VssError):
-        response = []
+    return _autocomplete(
+        ctx.client.get_images,
+        incomplete,
+        attrs=['id', 'path'],
+        sort_index=1,
+        complete_index=1,
+        f_kwargs={"sort": "path,desc", "per_page": 500},
+    )
 
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append((obj['name'], obj['path']))
 
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+def floppies(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_floppies,
+        incomplete,
+        attrs=['id', 'path'],
+        sort_index=1,
+        complete_index=1,
+        f_kwargs={"sort": "path,desc", "per_page": 500},
+    )
 
 
 def inventory_properties(
@@ -274,153 +258,81 @@ def inventory_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_inventory_requests(sort='created_on,desc')
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append(
-                (f"{obj['id']}", f"{obj['name']} ({obj['created_on']})")
-            )
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_inventory_requests,
+        incomplete,
+        attrs=['id', 'created_on', 'name'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
 
 
 def change_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_change_requests(sort='created_on,desc')
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append(
-                (
-                    f"{obj['id']}",
-                    f"{obj['vm_uuid']} ({obj['vm_name']}) "
-                    f"- {obj['attribute']}",
-                )
-            )
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_change_requests,
+        incomplete,
+        attrs=['id', 'vm_uuid', 'vm_name', 'attribute'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
 
 
 def export_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_export_requests(sort='created_on,desc')
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append(
-                (f"{obj['id']}", f"{obj['vm_uuid']} ({obj['vm_name']})")
-            )
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_export_requests,
+        incomplete,
+        attrs=['id', 'vm_uuid', 'vm_name'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
 
 
 def folder_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_folder_requests(sort='created_on,desc')
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append(
-                (f"{obj['id']}", f"{obj['moref']} ({obj['action']})")
-            )
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_folder_requests,
+        incomplete,
+        attrs=['id', 'moref', 'action'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
 
 
 def image_sync_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_image_sync_requests(sort='created_on,desc')
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append((f"{obj['id']}", f"{obj['type']}"))
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_folder_requests,
+        incomplete,
+        attrs=['id', 'type'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
 
 
 def snapshot_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_snapshot_requests(sort='created_on,desc')
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append(
-                (f"{obj['id']}", f"{obj['vm_uuid']} ({obj['vm_name']})")
-            )
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_snapshot_requests,
+        incomplete,
+        attrs=['id', 'vm_uuid', 'vm_name'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
 
 
 def account_messages(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     _init_ctx(ctx)
-    try:
-        response = ctx.client.get_user_messages(sort='created_on,desc')
-    except (HTTPError, VssError):
-        response = []
-
-    completions = []  # type: List[Tuple[str, str]]
-    if response:
-        for obj in response:
-            completions.append(
-                (f"{obj['id']}", f"{obj['kind']} ({obj['subject']})")
-            )
-
-        completions.sort()
-
-        return [c for c in completions if incomplete in c[0]]
-    return completions
+    return _autocomplete(
+        ctx.client.get_user_messages,
+        incomplete,
+        attrs=['id', 'kind', 'subject'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )

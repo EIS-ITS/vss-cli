@@ -6,20 +6,24 @@ import os
 import platform
 import shutil
 import sys
-from typing import Any, Dict, List, Optional, Tuple, Union, cast  # noqa: F401
+from time import sleep
+from typing import (  # noqa: F401
+    Any, Callable, List, Optional, Tuple, Union, cast)
 from uuid import UUID
 
 import click
 from click_spinner import spinner
 from pick import pick
 from pyvss.const import __version__ as pyvss_version
+from pyvss.enums import RequestStatus
 from pyvss.manager import VssManager
 from ruamel.yaml import YAML
 
 import vss_cli.const as const
 from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
-from vss_cli.helper import debug_requests_on, get_hostname_from_url
+from vss_cli.helper import (
+    debug_requests_on, format_output, get_hostname_from_url)
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.validators import validate_email, validate_phone_number
 import vss_cli.yaml as yaml
@@ -666,6 +670,56 @@ class Configuration(VssManager):
             self.write_config_file(new_endpoint=endpoint_cfg)
         return True
 
+    @staticmethod
+    def _filter_objects_by_attrs(
+        value, objects: List[dict], attrs: List[Tuple[Any, Any]]
+    ) -> List[Any]:
+        """
+        Filter objects by a given `value` based on attributes.
+        Attributes may be a list of tuples with attribute name, type.
+
+        :param value: value to filter
+        :param objects: list of dictionaries
+        :param attrs: list of tuple of attribute name, type
+        :return:
+        """
+        _objs = []
+        for attr in attrs:
+            attr_name = attr[0]
+            attr_type = attr[1]
+            try:
+                if attr_type in [str]:
+                    f = filter(
+                        lambda i: attr_type(value).lower()
+                        in i[attr_name].lower(),
+                        objects,
+                    )
+                elif attr_type in [int]:
+                    f = filter(
+                        lambda i: attr_type(value) == i[attr_name], objects
+                    )
+                else:
+                    f = filter(
+                        lambda i: attr_type(value) in i[attr_name], objects
+                    )
+                # cast list
+                _objs = list(f)
+            except ValueError as ex:
+                _LOGGING.debug(f'{value} ({type(value)}) error: {ex}')
+
+            if _objs:
+                break
+        return _objs
+
+    @staticmethod
+    def pick(objects: List[dict], options=None, indicator='=>'):
+        count = len(objects)
+        msg = f"Found {count} matches. Please select one:"
+        sel, index = pick(
+            title=msg, indicator=indicator, options=options or objects
+        )
+        return [objects[index]]
+
     def get_vskey_stor(self, **kwargs) -> bool:
         from webdav3 import client as wc
 
@@ -727,272 +781,132 @@ class Configuration(VssManager):
 
     def get_domain_by_name_or_moref(self, name_or_moref: str) -> List[Any]:
         g_domains = self.get_domains()
-        name_or_moref = name_or_moref.lower()
-        d = list(
-            filter(lambda i: name_or_moref in i['name'].lower(), g_domains)
-        ) or list(filter(lambda i: name_or_moref in i['moref'], g_domains))
-        if not d:
+        attributes = [('name', str), ('moref', str)]
+        objs = self._filter_objects_by_attrs(
+            name_or_moref, g_domains, attributes
+        )
+        if not objs:
             raise click.BadParameter(f'{name_or_moref} could not be found')
-        d_count = len(d)
+        d_count = len(objs)
         if d_count > 1:
-            msg = f"Found {d_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']} ({i['moref']})" for i in d],
+            return self.pick(
+                objs, options=[f"{i['name']} ({i['moref']})" for i in objs]
             )
-            return [d[index]]
-        return d
+        return objs
 
     def get_network_by_name_or_moref(self, name_or_moref: str) -> List[Any]:
-        g_networks = self.get_networks(sort='name')
-        name_or_moref = name_or_moref.lower()
-        # search by name or moref
-        n = list(
-            filter(lambda i: name_or_moref in i['name'].lower(), g_networks)
-        ) or list(
-            filter(lambda i: name_or_moref in i['moref'].lower(), g_networks)
+        g_networks = self.get_networks(
+            sort='name,desc', show_all=True, per_page=500
         )
-        if not n:
+        attributes = [('name', str), ('moref', str)]
+        objs = self._filter_objects_by_attrs(
+            name_or_moref, g_networks, attributes
+        )
+        if not objs:
             raise click.BadParameter(f'{name_or_moref} could not be found')
-        net_count = len(n)
+        net_count = len(objs)
         if net_count > 1:
-            msg = f"Found {net_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']} ({i['moref']})" for i in n],
+            return self.pick(
+                objs, options=[f"{i['name']} ({i['moref']})" for i in objs]
             )
-            return [n[index]]
-        return n
+        return objs
 
     def get_folder_by_name_or_moref_path(
         self, name_moref_path: str
     ) -> List[Any]:
-        g_folders = self.get_folders(sort='path', summary=1)
-        # search by name or moref
-        name_moref_path = name_moref_path.lower()
-        f = (
-            list(
-                filter(
-                    lambda i: name_moref_path in i['name'].lower(), g_folders
-                )
-            )
-            or list(
-                filter(
-                    lambda i: name_moref_path in i['path'].lower(), g_folders
-                )
-            )
-            or list(
-                filter(
-                    lambda i: name_moref_path in i['moref'].lower(), g_folders
-                )
-            )
+        g_folders = self.get_folders(
+            sort='path,desc', show_all=True, per_page=500
         )
-
-        if not f:
+        # search by name or moref
+        attributes = [('name', str), ('path', str), ('moref', str)]
+        objs = self._filter_objects_by_attrs(
+            name_moref_path, g_folders, attributes
+        )
+        if not objs:
             raise click.BadParameter(f'{name_moref_path} could not be found')
-        f_count = len(f)
-        if f_count > 1:
-            msg = f"Found {f_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['path']} ({i['moref']})" for i in f],
+        obj_count = len(objs)
+        if obj_count > 1:
+            return self.pick(
+                objs, options=[f"{i['path']} ({i['moref']})" for i in objs]
             )
-            return [f[index]]
-        return f
+        return objs
 
     def get_os_by_name_or_guest(self, name_or_guest: str) -> List[Any]:
-        g_os = self.get_os(sort='guestFullName,desc', per_page=200)
-        try:
-            o_f = list(filter(lambda i: int(name_or_guest) == i['id'], g_os))
-        except ValueError:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_or_guest}')
-            name_or_guest = name_or_guest.lower()
-            o_f = list(
-                filter(lambda i: name_or_guest in i['guestId'].lower(), g_os)
-            ) or list(
-                filter(
-                    lambda i: name_or_guest in i['guestFullName'].lower(), g_os
-                )
-            )
-        if not o_f:
+        g_os = self.get_os(
+            sort='guestFullName,desc', show_all=True, per_page=500
+        )
+        attributes = [('id', int), ('guestId', str), ('guestFullName', str)]
+        objs = self._filter_objects_by_attrs(name_or_guest, g_os, attributes)
+        if not objs:
             raise click.BadParameter(f'{name_or_guest} could not be found')
-        o_count = len(o_f)
+        o_count = len(objs)
         if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
+            return self.pick(
+                objs,
                 options=[
-                    f"{i['guestFullName']} ({i['guestId']})" for i in o_f
+                    f"{i['guestFullName']} ({i['guestId']})" for i in objs
                 ],
             )
-            return [o_f[index]]
-        return o_f
+        return objs
 
     def get_vss_service_by_name_label_or_id(
         self, name_label_or_id: Union[str, int]
     ) -> List[Any]:
-        vss_services = self.get_vss_services(show_all=True, per_page=200)
-        try:
-            svc_id = int(name_label_or_id)
-            svc_ref = list(filter(lambda i: i['id'] == svc_id, vss_services))
-        except ValueError as ex:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_label_or_id} ({ex})')
-            # checking name or label
-            svc = str(name_label_or_id).lower()
-            svc_ref = list(
-                filter(lambda i: svc in i['name'].lower(), vss_services)
-            ) or list(
-                filter(lambda i: svc in i['label'].lower(), vss_services)
-            )
+        vss_services = self.get_vss_services(
+            sort='label,desc', show_all=True, per_page=200
+        )
+        attributes = [('id', int), ('label', str), ('name', str)]
+        objs = self._filter_objects_by_attrs(
+            name_label_or_id, vss_services, attributes
+        )
         # check if there's no ref
-        if not svc_ref:
+        if not objs:
             raise click.BadParameter(f'{name_label_or_id} could not be found')
         # count for dup results
-        o_count = len(svc_ref)
+        o_count = len(objs)
         if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['label']}" for i in svc_ref],
+            return self.pick(objs, options=[f"{i['label']}" for i in objs])
+        return objs
+
+    def _get_images_by_name_path_or_id(
+        self, f: Callable, name_or_path_or_id: Union[int, str]
+    ):
+        g_img = f(show_all=True, per_page=500)
+        attributes = [('id', int), ('name', str), ('path', str)]
+        objs = self._filter_objects_by_attrs(
+            name_or_path_or_id, g_img, attributes
+        )
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(
+                f'{name_or_path_or_id} could not be found'
             )
-            return [svc_ref[index]]
-        return svc_ref
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(objs, options=[f"{i['name']}" for i in objs])
+        return objs
 
     def get_floppy_by_name_or_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
-        user_floppies = self.get_user_floppies()
-        pub_floppies = self.get_floppies()
-        try:
-            img_id = int(name_or_path_or_id)
-            # public or user
-            img_ref = list(
-                filter(lambda i: i['id'] == img_id, pub_floppies)
-            ) or list(filter(lambda i: i['id'] == img_id, user_floppies))
-        except (ValueError, TypeError) as ex:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
-            # checking name or path
-            # check in public and user isos
-            img = str(name_or_path_or_id)
-            img = img.lower()
-            img_ref = (
-                list(filter(lambda i: img in i['name'].lower(), pub_floppies))
-                or list(
-                    filter(lambda i: img in i['path'].lower(), pub_floppies)
-                )
-                or list(
-                    filter(lambda i: img in i['name'].lower(), pub_floppies)
-                )
-                or list(
-                    filter(lambda i: img in i['path'].lower(), pub_floppies)
-                )
-            )
-        # check if there's no ref
-        if not img_ref:
-            raise click.BadParameter(
-                f'{name_or_path_or_id} could not be found'
-            )
-        # count for dup results
-        o_count = len(img_ref)
-        if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']}" for i in img_ref],
-            )
-            return [img_ref[index]]
-        return img_ref
+        return self._get_images_by_name_path_or_id(
+            self.get_floppies, name_or_path_or_id
+        )
 
     def get_iso_by_name_or_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
-        user_isos = self.get_user_isos()
-        pub_isos = self.get_isos(show_all=True, per_page=200)
-        try:
-            iso_id = int(name_or_path_or_id)
-            # public or user
-            iso_ref = list(
-                filter(lambda i: i['id'] == iso_id, pub_isos)
-            ) or list(filter(lambda i: i['id'] == iso_id, user_isos))
-        except (ValueError, TypeError) as ex:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
-            # checking name or path
-            # check in public and user isos
-            iso = str(name_or_path_or_id)
-            iso = iso.lower()
-            iso_ref = (
-                list(filter(lambda i: iso in i['name'].lower(), pub_isos))
-                or list(filter(lambda i: iso in i['path'].lower(), pub_isos))
-                or list(filter(lambda i: iso in i['name'].lower(), user_isos))
-                or list(filter(lambda i: iso in i['path'].lower(), user_isos))
-            )
-        # check if there's no ref
-        if not iso_ref:
-            raise click.BadParameter(
-                f'{name_or_path_or_id} could not be found'
-            )
-        # count for dup results
-        o_count = len(iso_ref)
-        if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']}" for i in iso_ref],
-            )
-            return [iso_ref[index]]
-        return iso_ref
+        return self._get_images_by_name_path_or_id(
+            self.get_isos, name_or_path_or_id
+        )
 
     def get_vm_image_by_name_or_id_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
-        user_imgs = self.get_user_vm_images()
-        pub_imgs = self.get_images(show_all=True, per_page=200)
-        try:
-            img_id = int(name_or_path_or_id)
-            # public or user
-            img_ref = list(
-                filter(lambda i: i['id'] == img_id, pub_imgs)
-            ) or list(filter(lambda i: i['id'] == img_id, user_imgs))
-        except ValueError as ex:
-            # not an integer
-            _LOGGING.debug(f'not an id {name_or_path_or_id} ({ex})')
-            # checking name or path
-            # check in public and user img
-            img = str(name_or_path_or_id)
-            img = img.lower()
-            img_ref = (
-                list(filter(lambda i: img in i['name'].lower(), pub_imgs))
-                or list(filter(lambda i: img in i['path'].lower(), pub_imgs))
-                or list(filter(lambda i: img in i['name'].lower(), user_imgs))
-                or list(filter(lambda i: img in i['path'].lower(), user_imgs))
-            )
-        # check if there's no ref
-        if not img_ref:
-            raise click.BadParameter(
-                f'{name_or_path_or_id} could not be found'
-            )
-        # count for dup results
-        o_count = len(img_ref)
-        if o_count > 1:
-            msg = f"Found {o_count} matches. Please select one:"
-            sel, index = pick(
-                title=msg,
-                indicator='=>',
-                options=[f"{i['name']}" for i in img_ref],
-            )
-            return [img_ref[index]]
-        return img_ref
+        return self._get_images_by_name_path_or_id(
+            self.get_images, name_or_path_or_id
+        )
 
     def get_cli_spec_from_api_spec(
         self, payload: dict, template: dict
@@ -1097,3 +1011,113 @@ class Configuration(VssManager):
         self, data: Any, stream: Any = None, **kw: Any
     ) -> Optional[str]:
         return yaml.dump_yaml(self.yaml(), data, stream, **kw)
+
+    def download_inventory_file(
+        self, request_id: int, directory: str = ''
+    ) -> dict:
+        with self.spinner(disable=self.debug):
+            file_path = self.download_inventory_result(
+                request_id=request_id, directory=directory
+            )
+        obj = {'file': file_path}
+
+        self.echo(
+            format_output(self, [obj], columns=[('FILE', 'file')], single=True)
+        )
+        return obj
+
+    def wait_for_request_to(
+        self,
+        obj,
+        required: List[str] = (
+            RequestStatus.PROCESSED.name,
+            RequestStatus.SCHEDULED.name,
+        ),
+        wait: int = 5,
+        max_tries: int = 720,
+    ) -> Optional[bool]:
+        # wait
+        request_status = False
+        timed_out = False
+        invalid_response = False
+        self.secho(
+            f'{EMOJI_UNICODE.get(":hourglass_not_done:")} '
+            f'Waiting for request to complete. ',
+            fg='green',
+            nl=False,
+        )
+        with self.spinner(disable=self.debug):
+            if 199 < obj['status'] < 300:
+                r_url = obj['_links']['request']
+                tries = 0
+                while True:
+                    request = self.request(r_url)
+                    if 'data' in request:
+                        status = request['data']['status']
+                        request_message = request['data']['message']
+                        if status in required:
+                            request_status = True
+                            break
+                        if status in [
+                            RequestStatus.ERROR.name,
+                            RequestStatus.ERROR_RETRY.name,
+                            RequestStatus.CANCELLED.name,
+                        ]:
+                            request_status = False
+                            break
+                        elif status in [
+                            RequestStatus.PENDING.name,
+                            RequestStatus.IN_PROGRESS.name,
+                            RequestStatus.APPROVAL_REQUIRED.name,
+                        ]:
+                            pass
+                    else:
+                        request_status = False
+                        break
+                    if tries >= max_tries:
+                        timed_out = True
+                        break
+                    tries += 1
+                    sleep(wait)
+            else:
+                invalid_response = True
+        # clear screen to focus on results
+        click.clear()
+        if invalid_response:
+            raise VssCliError(f'Invalid response from the API.')
+        if timed_out:
+            raise VssCliError(
+                f'Wait for request timed out after {max_tries * wait} seconds.'
+            )
+        # check result status
+        if request_status:
+            self.secho(
+                f'{EMOJI_UNICODE.get(":party_popper:")} '
+                f'Request completed successfully.',
+                fg='green',
+            )
+            self.echo(
+                format_output(
+                    self,
+                    [request_message],
+                    columns=const.COLUMNS_REQUEST_WAIT,
+                    single=True,
+                )
+            )
+        else:
+            self.secho(
+                f'{EMOJI_UNICODE.get(":worried_face:")} '
+                f'Sorry, something went wrong: ',
+                fg='red',
+                err=True,
+            )
+            self.echo(
+                format_output(
+                    self,
+                    [request_message],
+                    columns=const.COLUMNS_REQUEST_WAIT,
+                    single=True,
+                )
+            )
+            return False
+        return True

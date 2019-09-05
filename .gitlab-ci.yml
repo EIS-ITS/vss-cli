@@ -137,6 +137,22 @@ release-dist-develop:
   tags:
    - python-3
 
+release-checkin-develop:
+  image: python:3-alpine
+  stage: release
+  script:
+    - python -V
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev curl
+    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - python setup.py install
+    - export VSSCLI_VERSION=$(python -c "from vss_cli.const import __version__; print(__version__)")
+    - "curl -X PUT $_VSS_API_CI_ENDPOINT_DEV -d '{\"version\": \"'\"${VSSCLI_VERSION}\"'\", \"git_sha\": \"'\"${CI_COMMIT_SHA}\"'\"}' -H \"Authorization: Bearer $_VSS_API_CI_TOKEN_DEV\""
+  tags:
+    - python-3
+  only:
+    - develop
+  when: manual
+
 release-docs-develop:
   image: python:3
   stage: release
@@ -284,6 +300,21 @@ release-dist-tag:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/
   tags:
    - python-3
+
+release-checkin-tag:
+  image: python:3-alpine
+  stage: release
+  script:
+    - python -V
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev curl
+    - python setup.py install
+    - export VSSCLI_VERSION=$(python -c "from vss_cli.const import __version__; print(__version__)")
+    - "curl -X PUT $_VSS_API_CI_ENDPOINT_PROD -d '{\"version\": \"'\"${VSSCLI_VERSION}\"'\", \"git_sha\": \"'\"${CI_COMMIT_SHA}\"'\"}' -H \"Authorization: Bearer $_VSS_API_CI_TOKEN_PROD\""
+  tags:
+    - python-3
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
+  when: manual
 
 build-docs-tag:
   image: python:3-alpine
