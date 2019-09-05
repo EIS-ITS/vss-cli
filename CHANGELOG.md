@@ -1,5 +1,26 @@
 # Changelog 📝
 
+## [v0.2.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.2) (2019-09-05)
+
+**Improvements:**
+- [#145](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/145): `core`: pyvss upgrade from 0.9.39 -> 0.9.40: by [jm.lopez]
+- [#147](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/147): `core`: ruamel.yaml upgrade to 0.16.5: by [jm.lopez]
+- [#148](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/148): `core`: Pygments upgrade to 2.4.2: by [jm.lopez]
+- [#149](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/149): `core`: click-plugins upgrade to 1.1.1: by [jm.lopez]
+- [#151](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/151): `core`: update `Configuration.get_images` attribute methods: by [jm.lopez]
+- [#152](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/152): `core`: autocompletion improvements: by [jm.lopez]
+- [#154](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/154): `ci`: check-in version and git SHA on VSS API: by [jm.lopez]
+
+**Bug Fixes:**
+- [#143](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/143): `core`: `config.get_folder_by_name_or_moref_path` cannot find folder: by [jm.lopez]
+- [#150](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/150): `core`: autocompletion not populating all folders: by [jm.lopez]
+
+**New Features:**
+- [#153](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153): `compute vm set`: Add a `--wait` flag to commands which generate requests: by [jm.lopez]
+- [#153](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153): `compute vm mk`: Add a `--wait` flag to commands which generate requests: by [jm.lopez]
+- [#153](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153): `compute folder set`: Add a `--wait` flag to commands which generate requests: by [jm.lopez]
+- [#153](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153): `compute inventory mk`: Add a `--wait` flag to commands which generate requests: by [jm.lopez]
+
 ## [v0.2.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.1) (2019-08-15)
 
 **Improvements:**

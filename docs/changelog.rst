@@ -2,6 +2,31 @@
 Changelog
 =========
 
+`v0.2.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.2>`_ (2019-09-05)
+==================================================================================
+
+**Improvements:**
+
+- `#145 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/145>`_: ``core``: pyvss upgrade from 0.9.39 -> 0.9.40: by `jm.lopez`_
+- `#147 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/147>`_: ``core``: ruamel.yaml upgrade to 0.16.5: by `jm.lopez`_
+- `#148 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/148>`_: ``core``: Pygments upgrade to 2.4.2: by `jm.lopez`_
+- `#149 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/149>`_: ``core``: click-plugins upgrade to 1.1.1: by `jm.lopez`_
+- `#151 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/151>`_: ``core``: update ``Configuration.get_images`` attribute methods: by `jm.lopez`_
+- `#152 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/152>`_: ``core``: autocompletion improvements: by `jm.lopez`_
+- `#154 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/154>`_: ``ci``: check-in version and git SHA on VSS API: by `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#143 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/143>`_: ``core``: ``config.get_folder_by_name_or_moref_path`` cannot find folder: by `jm.lopez`_
+- `#150 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/150>`_: ``core``: autocompletion not populating all folders: by `jm.lopez`_
+
+**New Features:**
+
+- `#153 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153>`_: ``compute vm set``: Add a ``--wait`` flag to commands which generate requests: by `jm.lopez`_
+- `#153 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153>`_: ``compute vm mk``: Add a ``--wait`` flag to commands which generate requests: by `jm.lopez`_
+- `#153 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153>`_: ``compute folder set``: Add a ``--wait`` flag to commands which generate requests: by `jm.lopez`_
+- `#153 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153>`_: ``compute inventory mk``: Add a ``--wait`` flag to commands which generate requests: by `jm.lopez`_
+
 `v0.2.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.1>`_ (2019-08-15)
 ==================================================================================
 
