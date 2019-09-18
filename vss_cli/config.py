@@ -835,7 +835,7 @@ class Configuration(VssManager):
         g_os = self.get_os(
             sort='guestFullName,desc', show_all=True, per_page=500
         )
-        attributes = [('id', int), ('guestId', str), ('guestFullName', str)]
+        attributes = [('id', int), ('guest_id', str), ('full_name', str)]
         objs = self._filter_objects_by_attrs(name_or_guest, g_os, attributes)
         if not objs:
             raise click.BadParameter(f'{name_or_guest} could not be found')
@@ -843,9 +843,7 @@ class Configuration(VssManager):
         if o_count > 1:
             return self.pick(
                 objs,
-                options=[
-                    f"{i['guestFullName']} ({i['guestId']})" for i in objs
-                ],
+                options=[f"{i['full_name']} ({i['guest_id']})" for i in objs],
             )
         return objs
 
@@ -929,7 +927,7 @@ class Configuration(VssManager):
     def get_cli_spec_from_api_spec(
         self, payload: dict, template: dict
     ) -> dict:
-        os_q = self.get_os(filter=f"guestId,eq,{payload.get('os')}")
+        os_q = self.get_os(filter=f"guest_id,eq,{payload.get('os')}")
         machine_os = os_q[0]['guestFullName'] if os_q else payload.get('os')
         fo_q = self.get_folder(payload.get('folder'))
         machine_folder = fo_q['path'] if fo_q else payload.get('folder')
@@ -970,7 +968,7 @@ class Configuration(VssManager):
                 # replace with valid values
                 spec_payload['os'] = self.get_os_by_name_or_guest(
                     machine_section['os']
-                )[0]['guestId']
+                )[0]['guest_id']
                 spec_payload['iso'] = self.get_iso_by_name_or_path(
                     machine_section['iso']
                 )[0]['path']

@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.3-dev2"
+__version__ = "0.2.3-dev3"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -134,7 +134,7 @@ COLUMNS_VSS_SERVICE = [
     ("GROUP", "group.name"),
 ]
 COLUMNS_IMAGE = [("ID", "id"), ("PATH", "path"), ("NAME", "name")]
-COLUMNS_OS = [("ID", "id"), ("GUESTID", "guestId"), ("NAME", "guestFullName")]
+COLUMNS_OS = [("id",), ("guest_id",), ("full_name",), ("family",)]
 COLUMNS_REQUEST = [*COLUMNS_MIN, ("STATUS", "status")]
 COLUMNS_REQUEST_WAIT = [('WARNINGS', 'warnings[*]'), ('ERRORS', 'errors[*]')]
 COLUMNS_REQUEST_MAX = [

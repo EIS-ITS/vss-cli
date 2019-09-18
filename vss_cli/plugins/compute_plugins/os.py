@@ -33,14 +33,14 @@ def compute_os_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: status eq,PROCESSED
 
-            vss-cli compute os ls -f guestFullName like,CentOS%
+            vss-cli compute os ls -f full_name like,CentOS%
 
         Sort list in the following format <field_name> <asc|desc>. For example:
 
-            vss-cli compute os ls -s guestId asc
+            vss-cli compute os ls -s guest_id asc
 
     """
-    params = dict(expand=1)
+    params = dict(expand=1, sort='guest_id,asc')
     if all(filter_by):
         params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):

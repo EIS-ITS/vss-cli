@@ -173,8 +173,8 @@ def operating_systems(
     return _autocomplete(
         ctx.client.get_os,
         incomplete,
-        ['guestId', 'guestFullName'],
-        f_kwargs={"show_all": True, "sort": "guestId,desc", "per_page": 500},
+        ['guest_id', 'full_name'],
+        f_kwargs={"show_all": True, "sort": "guest_id,desc", "per_page": 500},
     )
 
 

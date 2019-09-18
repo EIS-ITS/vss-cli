@@ -1603,14 +1603,14 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
 def compute_vm_set_guest_os(ctx: Configuration, guest_id):
     """Update guest operating system configuration:
 
-        vss-cli compute os ls -f guestId,like,cent%
+        vss-cli compute os ls -f guest_id cent
 
         or
 
-        vss-cli compute os ls -f guestFullName,like,Cent%
+        vss-cli compute os ls -f full_name Cent
 
     """
-    if not ctx.get_os(filter=f'guestId,eq,{guest_id}'):
+    if not ctx.get_os(filter=f'guest_id,eq,{guest_id}'):
         raise click.BadParameter(
             'OS not found. Please try: "vss-cli compute os ls"'
         )
@@ -2936,7 +2936,7 @@ def compute_vm_mk_spec(
     # os
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guestId']
+        payload['os'] = _os[0]['guest_id']
     # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
@@ -3071,7 +3071,7 @@ def compute_vm_mk_shell(
     # os
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guestId']
+        payload['os'] = _os[0]['guest_id']
     # iso
     if iso:
         _iso = ctx.get_iso_by_name_or_path(iso)
@@ -3176,7 +3176,7 @@ def compute_vm_mk_template(
     # os
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guestId']
+        payload['os'] = _os[0]['guest_id']
     # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
@@ -3276,7 +3276,7 @@ def compute_vm_mk_clone(
     # os
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guestId']
+        payload['os'] = _os[0]['guest_id']
     # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
@@ -3428,7 +3428,7 @@ def compute_vm_mk_image(
     # os
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guestId']
+        payload['os'] = _os[0]['guest_id']
     # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
