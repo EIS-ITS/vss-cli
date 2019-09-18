@@ -40,12 +40,12 @@ and available operators are **eq, ne, lt, le, gt, ge, like, in** as follows:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name like,ut%
+    vss-cli compute folder ls -f name ut
 
-    MOREF        NAME              PARENT    PATH
-    -----------  ----------------  --------  ----------------------------------------------
-    group-v8900  ut20170135153548  Testing   VSS > Development > Testing > ut20170135153548
-    group-v8923  ut20170621092129  Testing   VSS > Development > Testing > ut20170621092129
+    moref        name              parent.name  path
+    -----------  ----------------  -----------  ----------------------------------------------
+    group-v8900  ut20170135153548  Testing      VSS > Development > Testing > ut20170135153548
+    group-v8923  ut20170621092129  Testing      VSS > Development > Testing > ut20170621092129
 
 
 Info
@@ -59,9 +59,12 @@ stored virtual machines are available via
 
     vss-cli compute folder get group-v8900
 
-    Path                : Development > Testing > ut20170135153548
-    Parent              : Testing
-    Name                : ut20170135153548
+    moref               : group-v905
+    name                : ut20170135153548
+    path                : Development > Testing > ut20170135153548
+    parent.name         : Testing
+    parent.moref        : group-v8900
+    has_children        : False
 
 
 Create

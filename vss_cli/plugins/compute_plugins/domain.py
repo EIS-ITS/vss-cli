@@ -1,6 +1,7 @@
 import logging
 
 import click
+
 from vss_cli import const
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
@@ -12,10 +13,7 @@ from vss_cli.plugins.compute import cli
 _LOGGING = logging.getLogger(__name__)
 
 
-@cli.group(
-    'domain',
-    short_help='List compute domains.'
-)
+@cli.group('domain', short_help='List compute domains.')
 @pass_context
 def cli(ctx: Configuration):
     """A fault domain consists of one or more ESXI hosts and
@@ -23,23 +21,20 @@ def cli(ctx: Configuration):
     physical location in the datacenter."""
 
 
-@cli.command(
-    'ls',
-    short_help='list fault domains'
-)
+@cli.command('ls', short_help='list fault domains')
 @click.option(
-    '-f', '--filter',
+    '-f',
+    '--filter',
     multiple=True,
     type=(click.STRING, click.STRING),
-    help='filter list by name or moref'
+    help='filter list by name or moref',
 )
-@click.option('-p', '--page', is_flag=True,
-              help='page results in a less-like format')
+@click.option(
+    '-p', '--page', is_flag=True, help='page results in a less-like format'
+)
 @pass_context
-def domain_ls(
-        ctx: Configuration, filter, page
-):
-    columns = ctx.columns or const.COLUMNS_MOID
+def domain_ls(ctx: Configuration, filter, page):
+    columns = ctx.columns or const.COLUMNS_MOREF
     query_params = dict(summary=1)
     if filter:
         for f in filter:
@@ -48,11 +43,7 @@ def domain_ls(
     with ctx.spinner(disable=ctx.debug):
         objs = ctx.get_domains(**query_params)
     # format output
-    output = format_output(
-        ctx,
-        objs,
-        columns=columns,
-    )
+    output = format_output(ctx, objs, columns=columns)
     # page results
     if page:
         click.echo_via_pager(output)
@@ -60,48 +51,30 @@ def domain_ls(
         click.echo(output)
 
 
-@cli.group(
-    'get',
-    help='Given domain info.',
-    invoke_without_command=True
-)
+@cli.group('get', help='Given domain info.', invoke_without_command=True)
 @click.argument(
     'name_or_moref',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.domains
+    autocompletion=autocompletion.domains,
 )
 @pass_context
 def domain_get(ctx: Configuration, name_or_moref):
-    _domain = ctx.get_domain_by_name_or_moref(
-        name_or_moref
-    )
+    _domain = ctx.get_domain_by_name_or_moref(name_or_moref)
     ctx.moref = _domain[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
-        columns = ctx.columns or const.COLUMNS_MOID
+        columns = ctx.columns or const.COLUMNS_MOREF
         if not ctx.columns:
-            columns.extend([
-                ('HOSTS', 'hostsCount'),
-                ('STATUS', 'status')
-            ])
+            columns.extend([('HOSTS', 'hosts_count'), ('STATUS', 'status')])
         with ctx.spinner(disable=ctx.debug):
             obj = ctx.get_domain(ctx.moref)
-        click.echo(
-            format_output(
-                ctx,
-                [obj],
-                columns=columns,
-                single=True
-            )
-        )
+        click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
-@domain_get.command(
-    'vms',
-    help='Given domain vms.'
+@domain_get.command('vms', help='Given domain vms.')
+@click.option(
+    '-p', '--page', is_flag=True, help='page results in a less-like format'
 )
-@click.option('-p', '--page', is_flag=True,
-              help='page results in a less-like format')
 @pass_context
 def domain_get_vms(ctx: Configuration, page):
     with ctx.spinner(disable=ctx.debug):
@@ -112,11 +85,7 @@ def domain_get_vms(ctx: Configuration, page):
             f'or you do not have permission to access.'
         )
     objs = obj['vms']
-    output = format_output(
-        ctx,
-        objs,
-        columns=const.COLUMNS_VM_MIN
-    )
+    output = format_output(ctx, objs, columns=const.COLUMNS_VM_MIN)
     # page results
     if page:
         click.echo_via_pager(output)

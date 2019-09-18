@@ -18,11 +18,11 @@ the following virtual machine has two virtual disks configured:
 
     vss-cli compute vm get VMName disk
 
-    Uuid                : 50128d83-0fcc-05e3-be71-d972ffdf3284
-    Label               : Hard disk 1
-    Capacity Gb         : 40
-    Label               : Hard disk 2
-    Capacity Gb         : 2
+    label          unit  controller.virtual_device_node
+    -----------  ------  --------------------------------
+    Hard disk 1       1  SCSI controller 0:0
+    Hard disk 2       2  SCSI controller 1:1
+    Hard disk 3       3  SCSI controller 1:0
 
 Getting specific information of a given disk unit, run ``vss-cli compute vm get <name-or-uuid> disk <unit>`` as
 follows:
@@ -31,11 +31,11 @@ follows:
 
     vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1
 
-    LABEL               : Hard disk 1
-    UNIT                : 1
-    CONTROLLER          : SCSI controller 0:0
-    CAPACITY_GB         : 20
-    SHARES              : normal
+    label               : Hard disk 1
+    unit                : 1
+    virtual_device_node : SCSI controller 0:0
+    capacity_gb         : 8
+    shares.level        : normal
 
 Getting backing information of a particular disk is available by including the sub-command ``backing``
 in the disk command:
@@ -44,12 +44,12 @@ in the disk command:
 
     vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 backing
 
-    DESCRIPTOR          : None
-    DEVICE_NAME         : None
-    DISK_MODE           : persistent
-    FILE                : [CL-NSTOR47-NFS-vol33] 1806P-modest_davinci_66/1806P-modest_davinci_66.vmdk
-    LUN                 : None
-    THIN                : True
+    descriptor_file_name: None
+    device_name         : None
+    disk_mode           : persistent
+    file_name           : [CL-NSTOR47-NFS-vol33] 1806P-modest_davinci_66/1806P-modest_davinci_66.vmdk
+    lun_uuid            : None
+    thin_provisioned    : True
 
 
 Getting details of the SCSI controller of a particular disk is available by including the sub-command ``scsi``
@@ -60,9 +60,9 @@ in the disk command:
 
     vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 scsi
 
-    BUS_NUMBER          : 0
-    LABEL               : SCSI controller 0
-    TYPE                : VirtualLsiLogicController
+    bus_number          : 0
+    label               : SCSI controller 0
+    type                : VirtualLsiLogicController
 
 
 Update

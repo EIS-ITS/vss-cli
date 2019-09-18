@@ -25,7 +25,7 @@ folder ``moref`` can be queried by ``vss compute folder ls`` as follows:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name like,%Folder%
+    vss-cli compute folder ls -f name Folder
 
     moref        name     parent    path
     -----------  -------  --------  ----------------------------
@@ -72,6 +72,7 @@ For instance, querying folder ``group-v1234`` permissions would look like:
 .. code-block:: bash
 
     vss-cli compute folder get group-v1234 perm
+
     principal             group    propagate
     --------------------  -------  -----------
     VSKEY5\vc51-VSSPriv   True     True
@@ -95,12 +96,13 @@ To get group basic info, use ``vss-cli account get group <group_name>`` as follo
 .. code-block:: bash
 
     vss-cli account get group vc51-VSSTest
-    dn                  : -
-    description         : VSS Development Testing and Continuos Integration
-    modifyTimestamp     : 20170303022113Z
-    createTimestamp     : 20170303022113Z
-    uniqueMemberCount   : 2
+
     cn                  : vc51-VSSTest
+    description         : VSS Development Testing and Continuous Integration
+    create_timestamp    : 20170303022113Z
+    modify_timestamp    : 20180712175916Z
+    unique_member_count : 5
+    unique_member       : ....
 
 If you do are not member of a given group, expect the following output:
 
@@ -108,16 +110,5 @@ If you do are not member of a given group, expect the following output:
 
     vss-cli account get group vc51-VSSPriv --member
     Error: status: 401; message: User has no membership on vc51-VSSPriv; error: unauthorized
-
-List group members by using the ``--member`` option in the ``vss account get group <group_name>`` command:
-
-.. code-block:: bash
-
-    vss-cli account get group vc51-VSSTest --member
-    uid     cn
-    ------  ---------------
-    jm1     JM Lopez Lujan
-    jdoe    John Doe
-
 
 .. note:: If one of the group members is no longer authorized to access, please let us know ASAP.

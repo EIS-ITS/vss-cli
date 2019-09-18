@@ -37,7 +37,7 @@ def compute_iso_public_ls(ctx: Configuration, filter_by, show_all, sort, page):
 
         vss-cli compute iso public ls -f name like,Cent% -s path asc
     """
-    params = dict(expand=1)
+    params = dict(expand=1, sort='name,asc')
     if all(filter_by):
         params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):

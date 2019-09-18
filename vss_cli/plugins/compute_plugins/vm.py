@@ -48,7 +48,7 @@ def compute_vm_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
         vss-cli compute vm ls -f name %vm-name% -s name desc
 
     """
-    params = dict(expand=1)
+    params = dict(expand=1, sort='name,asc')
     if all(filter_by):
         params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):
@@ -158,7 +158,7 @@ def compute_vm_get_client(ctx: Configuration):
     Part of the VSS metadata.
     """
     obj = ctx.get_vm_vss_client(ctx.uuid)
-    columns = ctx.columns or [('VALUE', 'value')]
+    columns = ctx.columns or [('value',)]
     obj = obj or {}
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
@@ -169,7 +169,7 @@ def compute_vm_get_client_notes(ctx):
     """Virtual machine client notes. Part of the
     VM metadata."""
     obj = ctx.get_vm_notes(ctx.uuid)
-    columns = ctx.columns or [('VALUE', 'value')]
+    columns = ctx.columns or [('value',)]
     obj = obj or {}
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
@@ -203,7 +203,7 @@ def compute_vm_get_console(ctx: Configuration, launch, client):
     obj = ctx.get_vm_console(ctx.uuid, auth=auth, client=client)
     link = obj.get('value')
     # print
-    columns = ctx.columns or [('VALUE', 'value')]
+    columns = ctx.columns or [('value',)]
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
     # launch
     if launch:
@@ -215,7 +215,7 @@ def compute_vm_get_console(ctx: Configuration, launch, client):
 def compute_vm_get_consolidate(ctx):
     """Virtual Machine disk consolidation status."""
     obj = ctx.get_vm_consolidation(ctx.uuid)
-    columns = ctx.columns or [('REQUIRE', 'requireDiskConsolidation')]
+    columns = ctx.columns or const.COLUMNS_VM_CONSOLIDATION
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -226,7 +226,7 @@ def compute_vm_get_controllers(ctx: Configuration):
     if click.get_current_context().invoked_subcommand is None:
         obj = ctx.get_vm_controllers(ctx.uuid)
         obj = obj or {}
-        columns = ctx.columns or [('SCSI', 'scsi.count')]
+        columns = ctx.columns or const.COLUMNS_VM_CONTROLLERS
         click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -268,7 +268,7 @@ def compute_vm_get_description(ctx: Configuration):
     VSS metadata."""
     obj = ctx.get_vm_vss_description(ctx.uuid)
     # print
-    columns = ctx.columns or [('VALUE', 'value')]
+    columns = ctx.columns or [('value',)]
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -435,7 +435,7 @@ def compute_vm_get_inform(ctx: Configuration):
     obj = ctx.get_vm_vss_inform(ctx.uuid)
     if obj:
         obj = dict(inform=obj)
-    columns = ctx.columns or [('INFORM', 'inform.[*]')]
+    columns = ctx.columns or [('inform', 'inform.[*]')]
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -453,7 +453,7 @@ def compute_vm_get_memory(ctx: Configuration):
 def compute_vm_get_name(ctx: Configuration):
     """Virtual machine human readable name."""
     obj = ctx.get_vm_name(ctx.uuid)
-    columns = ctx.columns or [('NAME', 'name')]
+    columns = ctx.columns or [('name',)]
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -629,7 +629,7 @@ def compute_vm_get_stats(ctx: Configuration, kind):
 def compute_vm_get_template(ctx: Configuration):
     """Virtual machine template state."""
     obj = ctx.is_vm_template(ctx.uuid)
-    columns = ctx.columns or [('ISTEMPLATE', 'isTemplate')]
+    columns = ctx.columns or [('is_template',)]
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -652,7 +652,7 @@ def compute_vm_get_usage(ctx: Configuration):
     whether it will be hosting a Production, Development,
     QA, or Testing system."""
     obj = ctx.get_vm_vss_usage(ctx.uuid)
-    columns = ctx.columns or [('USAGE', 'value')]
+    columns = ctx.columns or [('usage', 'value')]
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
