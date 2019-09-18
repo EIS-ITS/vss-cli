@@ -39,7 +39,7 @@ def compute_image_public_ls(
 
         vss-cli compute image public ls -f name like,Cent% -s path asc
     """
-    params = dict(expand=1)
+    params = dict(expand=1, sort='name,asc')
     if all(filter_by):
         params['filter'] = f'{filter_by[0]},{filter_by[1]}'
     if all(sort):

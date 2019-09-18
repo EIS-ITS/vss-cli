@@ -39,7 +39,7 @@ def compute_template_ls(
         vss-cli compute template ls -f name %vm-name% -s name desc
 
     """
-    params = dict(expand=1)
+    params = dict(expand=1, sort='name,asc')
     if all(filter_by):
         params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):

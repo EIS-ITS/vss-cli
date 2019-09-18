@@ -49,10 +49,10 @@ This tutorial contain step by step guidance to change the Virtual Storage Contro
 
     vss-cli compute vm get <vm-name-or-uuid> controller scsi
 
-    LABEL                BUS_NUM  TYPE
-    -----------------  ---------  ----------------------------
-    SCSI controller 0          0  VirtualLsiLogicSASController
-    SCSI controller 1          1  ParaVirtualSCSIController
+    label                bus_number  type
+    -----------------  ------------  ----------------------------
+    SCSI controller 0             0  VirtualLsiLogicSASController
+    SCSI controller 1             1  ParaVirtualSCSIController
 
 5. Power On the virtual machine.
 
@@ -86,10 +86,10 @@ This tutorial contain step by step guidance to change the Virtual Storage Contro
 
     vss-cli compute vm get <vm-name-or-uuid> controller scsi
 
-    LABEL                BUS_NUM  TYPE
-    -----------------  ---------  -------------------------
-    SCSI controller 0          0  ParaVirtualSCSIController
-    SCSI controller 1          1  ParaVirtualSCSIController
+    label              bus_number    type
+    -----------------  ------------  ----------------------------
+    SCSI controller 0             0  ParaVirtualSCSIController
+    SCSI controller 1             1  ParaVirtualSCSIController
 
 11. Remove temporary SCSI controller
 

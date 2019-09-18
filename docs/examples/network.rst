@@ -49,9 +49,9 @@ and available operators are **eq, ne, lt, le, gt, ge, like, in** as follows:
 
 .. code-block:: bash
 
-    vss-cli compute net ls -f name like,%PUBLIC%
+    vss-cli compute net ls -f name PUBLIC
 
-    MOREF              NAME                DESCRIPTION                  SUBNET          VLAN_ID    VMS
+    moref              name                description                  subnet          vlan_id    vms
     -----------------  ------------------  ---------------------------  --------------  ---------  -----
     dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network           142.1.216.0/23  1584       8
 
@@ -66,16 +66,16 @@ basic information of a given network:
 
     vss-cli compute net get dvportgroup-11052
 
-    MOREF               : dvportgroup-11052
-    NAME                : VL-1584-VSS-PUBLIC
-    DESCRIPTION         : VSS Public network
-    SUBNET              : 142.1.216.0/23
-    VLAN_ID             : 1584
-    VMS                 : 8
-    PORTS               : 32
-    ADMIN               : Jose Manuel Lopez Lujan:000-0000-000:email@eis.utoronto.ca
-    CLIENT              : EIS
-    UPDATED_ON          : 2019-07-09 Tue 16:00:05 EDT
+    moref               : dvportgroup-11052
+    name                : VL-1584-VSS-PUBLIC
+    description         : VSS Public network
+    subnet              : 142.1.216.0/23
+    vlan_id             : 1584
+    vms                 : 8
+    ports               : 32
+    admin               : Jose Manuel Lopez Lujan:000-0000-000:email@eis.utoronto.ca
+    client              : EIS
+    updated_on          : 2019-07-09 Tue 16:00:05 EDT
 
 
 If you would like to get a list of your virtual machines available on a given
@@ -139,14 +139,14 @@ provide further information about the given unit as follows:
 
     vss-cli compute vm get 501220a5-a091-1866-9741-664236067142 nic 1
 
-    Uuid                : 501220a5-a091-1866-9741-664236067142
-    Label               : Network adapter 1
-    Type                : vmxnet3
-    Connected           : No
-    Start Connected     : Yes
-    Mac Address         : 00:50:56:00:00:00
-    Network Name        : VL-1584-VSS-PUBLIC
-    Network Moref       : dvportgroup-11052
+
+    label               : Network adapter 1
+    mac_address         : 00:50:56:00:00:00
+    type                : vmxnet3
+    network.name        : VL-1584-VSS-PUBLIC
+    network.moref       : dvportgroup-11052
+    connected           : True
+    start_connected     : True
 
 
 Update
