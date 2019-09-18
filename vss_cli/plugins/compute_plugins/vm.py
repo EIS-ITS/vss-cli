@@ -1603,19 +1603,13 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
 def compute_vm_set_guest_os(ctx: Configuration, guest_id):
     """Update guest operating system configuration:
 
-        vss-cli compute os ls -f guest_id cent
-
-        or
-
-        vss-cli compute os ls -f full_name Cent
+        vss-cli compute vm set <name-or-uuid> guest-os <name-or-name>
 
     """
-    if not ctx.get_os(filter=f'guest_id,eq,{guest_id}'):
-        raise click.BadParameter(
-            'OS not found. Please try: "vss-cli compute os ls"'
-        )
+    g_os = ctx.get_os_by_name_or_guest(guest_id)
+    g_id = g_os[0]['guest_id']
     # create payload
-    payload = dict(uuid=ctx.uuid, os=guest_id)
+    payload = dict(uuid=ctx.uuid, os=g_id)
     # add common options
     payload.update(ctx.payload_options)
     # request
