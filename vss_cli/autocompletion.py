@@ -34,10 +34,7 @@ def _autocomplete(
     complete_index: int = 0,
 ) -> List[Tuple[str, str]]:
     try:
-        _f_args = dict(show_all=True, sort='path,desc')
-        if f_kwargs:
-            _f_args.update(f_kwargs)
-        response = f(**_f_args)
+        response = f(**f_kwargs)
     except (HTTPError, VssError):
         response = []
 
@@ -119,7 +116,7 @@ def virtual_machines(
         ['uuid', 'name'],
         complete_index=1,
         sort_index=1,
-        f_kwargs={"short": 1, "show_all": True, "per_page": 2000},
+        f_kwargs={"show_all": True, "short": 1, "per_page": 2000},
     )
 
 
@@ -146,7 +143,12 @@ def folders(
         ['moref', 'path'],
         sort_index=1,
         complete_index=1,
-        f_kwargs={"sort": "path,desc", "per_page": 500, "short": 1},
+        f_kwargs={
+            "show_all": True,
+            "sort": "path,desc",
+            "per_page": 500,
+            "short": 1,
+        },
     )
 
 
@@ -160,7 +162,7 @@ def networks(
         ['moref', 'label'],
         sort_index=1,
         complete_index=1,
-        f_kwargs={"sort": "label,desc", "per_page": 500},
+        f_kwargs={"show_all": True, "sort": "label,desc", "per_page": 500},
     )
 
 
@@ -172,7 +174,7 @@ def operating_systems(
         ctx.client.get_os,
         incomplete,
         ['guestId', 'guestFullName'],
-        f_kwargs={"sort": "guestId,desc", "per_page": 500},
+        f_kwargs={"show_all": True, "sort": "guestId,desc", "per_page": 500},
     )
 
 
@@ -186,7 +188,7 @@ def vss_services(
         ['id', 'label'],
         sort_index=1,
         complete_index=1,
-        f_kwargs={"sort": "label,desc", "per_page": 500},
+        f_kwargs={"show_all": True, "sort": "label,desc", "per_page": 500},
     )
 
 
@@ -200,7 +202,7 @@ def isos(
         attrs=['id', 'path'],
         sort_index=1,
         complete_index=1,
-        f_kwargs={"sort": "path,desc", "per_page": 500},
+        f_kwargs={"show_all": True, "sort": "path,desc", "per_page": 500},
     )
 
 
@@ -214,7 +216,7 @@ def vm_images(
         attrs=['id', 'path'],
         sort_index=1,
         complete_index=1,
-        f_kwargs={"sort": "path,desc", "per_page": 500},
+        f_kwargs={"show_all": True, "sort": "path,desc", "per_page": 500},
     )
 
 
@@ -228,7 +230,7 @@ def floppies(
         attrs=['id', 'path'],
         sort_index=1,
         complete_index=1,
-        f_kwargs={"sort": "path,desc", "per_page": 500},
+        f_kwargs={"show_all": True, "sort": "path,desc", "per_page": 500},
     )
 
 
@@ -335,4 +337,16 @@ def account_messages(
         incomplete,
         attrs=['id', 'kind', 'subject'],
         f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
+
+
+def virtual_nic_types(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_nic_types,
+        incomplete,
+        attrs=['type', 'description'],
+        f_kwargs={"only_type": False},
     )

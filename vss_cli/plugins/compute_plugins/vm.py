@@ -1786,8 +1786,6 @@ def compute_vm_set_name(ctx: Configuration, name):
 def compute_vm_set_nic(ctx: Configuration):
     """Add, remove or update virtual machine network adapters
 
-        vss-cli compute vm set <name-or-uuid> nic mk --network <net-moref>
-
     """
     pass
 
@@ -1862,19 +1860,26 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
 @compute_vm_set_nic.command('mk', short_help='Create NIC unit')
 @click.option(
     '-n',
-    '--network',
+    '--nic-network',
     type=click.STRING,
-    multiple=True,
     required=True,
     help='Virtual network moref',
     autocompletion=autocompletion.networks,
 )
+@click.option(
+    '-t',
+    '--nic-type',
+    type=click.STRING,
+    required=True,
+    help='Network adapter type',
+    default='vmxnet3',
+    autocompletion=autocompletion.virtual_nic_types,
+)
 @pass_context
-def compute_vm_set_nic_mk(ctx: Configuration, network):
-    """Add network adapter specifying backing network.
+def compute_vm_set_nic_mk(ctx: Configuration, nic_network: str, nic_type: str):
+    """Add network adapter specifying backing network and adapter type.
 
-        vss-cli compute vm set <name-or-uuid> nic mk -n <moref-or-name>
-        -n <moref-or-name>
+        vss-cli compute vm set <name-or-uuid> nic mk -n <network> -t <type>
     """
     # create payload
     payload = dict(uuid=ctx.uuid)
@@ -1882,14 +1887,14 @@ def compute_vm_set_nic_mk(ctx: Configuration, network):
     payload.update(ctx.payload_options)
     # generate payload
     networks_payload = []
-    for net_name_or_moref in network:
-        try:
-            # search by name or moref
-            net = ctx.get_network_by_name_or_moref(net_name_or_moref)
-            # adding to payload
-            networks_payload.append(net[0]['moref'])
-        except click.BadParameter as ex:
-            _LOGGING.warning(f'{ex}. Ignoring.')
+    # search by name or moref
+    n_net = ctx.get_network_by_name_or_moref(nic_network)
+    # search type by name
+    n_type = ctx.get_vm_nic_type_by_name(nic_type)
+    # adding to payload
+    networks_payload.append(
+        {'network': n_net[0]['moref'], 'type': n_type[0]['type']}
+    )
     # payload
     payload['networks'] = networks_payload
     # request

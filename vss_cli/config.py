@@ -908,6 +908,24 @@ class Configuration(VssManager):
             self.get_images, name_or_path_or_id
         )
 
+    def get_vm_nic_type_by_name(self, name: Union[str, int]):
+        g_types = self.get_supported_nic_types(only_type=False)
+        attributes = [('type', str)]
+        objs = self._filter_objects_by_attrs(name, g_types, attributes)
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(f'{name} could not be found')
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(
+                objs,
+                options=[
+                    f"{i['type']} - {i['description'][:100]}..." for i in objs
+                ],
+            )
+        return objs
+
     def get_cli_spec_from_api_spec(
         self, payload: dict, template: dict
     ) -> dict:
