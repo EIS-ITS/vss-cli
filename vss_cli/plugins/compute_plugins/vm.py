@@ -1808,16 +1808,18 @@ def compute_vm_set_nic(ctx: Configuration):
 @click.option(
     '-a',
     '--adapter',
-    type=click.Choice(['VMXNET2', 'VMXNET3', 'E1000', 'E1000e']),
+    type=click.STRING,
     help='Updates nic adapter type',
+    autocompletion=autocompletion.virtual_nic_types,
 )
 @pass_context
 def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
     """Update network adapter backing network, type or state
 
-        vss-cli compute vm set <name-or-uuid> nic up --adapter VMXNET3 <unit>
-        vss-cli compute vm set <name-or-uuid> nic
-        up --network <name-or-moref> <unit>
+        vss-cli compute vm set <name-or-uuid> nic up <unit> --adapter <type>
+
+
+        vss-cli compute vm set <name-or-uuid> nic up <unit> --network <network>
     """
     # create payload
     payload = dict(uuid=ctx.uuid, nic=unit)
@@ -1835,15 +1837,16 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
         net = ctx.get_network_by_name_or_moref(network)
         attr = 'network'
         value = net[0]['moref']
-        _LOGGING.debug(f'Update NIC {unit} to {net}')
     elif state:
         attr = 'state'
         value = state
     elif adapter:
+        n_type = ctx.get_vm_nic_type_by_name(adapter)
         attr = 'type'
-        value = adapter
+        value = n_type[0]['type']
     else:
         raise click.UsageError('Select at least one setting to change')
+    _LOGGING.debug(f'Update NIC {unit} {attr} to {value}')
     # lookup function to call
     f = lookup[attr]
     payload[attr] = value
