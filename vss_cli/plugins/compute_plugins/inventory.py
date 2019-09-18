@@ -62,17 +62,28 @@ def compute_inventory_dl(ctx: Configuration, request_id, directory, launch):
     '--fmt',
     type=click.Choice(['json', 'csv']),
     default='csv',
-    help='hide header',
+    help='report format',
+    show_default=True,
+)
+@click.option(
+    '--transfer/--no-transfer',
+    default=False,
+    help='Transfer report to personal store',
+    show_default=True,
 )
 @click.option('-a', '--all', is_flag=True, help='include all attributes')
 @so.wait_opt
 @pass_context
 def compute_inventory_mk(
-    ctx: Configuration, fmt: str, all: bool, attribute: List[str], wait: bool
+    ctx: Configuration,
+    fmt: str,
+    all: bool,
+    attribute: List[str],
+    wait: bool,
+    transfer: bool,
 ):
-    """Submits an inventory report request resulting in a file with your
-    virtual machines and more than 30 attributes in either JSON or CSV
-    format.
+    """Submits an inventory report request to generate file in JSON or CSV
+    of your virtual machines.
 
     The following attributes can be requested in the report:
 
@@ -85,7 +96,9 @@ def compute_inventory_mk(
     """
     ctx.wait = wait
     attributes = ctx.get_inventory_properties() if all else list(attribute)
-    obj = ctx.create_inventory_file(fmt=fmt, props=attributes)
+    obj = ctx.create_inventory_file(
+        fmt=fmt, props=attributes, transfer=transfer
+    )
     # format output
     click.echo(
         format_output(
