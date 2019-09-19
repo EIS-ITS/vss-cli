@@ -8,16 +8,15 @@ from pkg_resources import iter_entry_points
 
 from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
-from vss_cli.autocompletion import _init_ctx
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
     format_output, process_filters, raw_format_output, to_tuples)
 from vss_cli.plugins.compute import cli
+from vss_cli.plugins.compute_plugins import rel_opts as c_so
 from vss_cli.validators import (
-    validate_admin, validate_email, validate_inform, validate_json_type,
-    validate_phone_number)
+    validate_email, validate_json_type, validate_phone_number)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -1856,45 +1855,20 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
 
 
 @compute_vm_set_nic.command('mk', short_help='Create NIC unit')
-@click.option(
-    '-n',
-    '--nic-network',
-    type=click.STRING,
-    required=True,
-    help='Virtual network moref',
-    autocompletion=autocompletion.networks,
-)
-@click.option(
-    '-t',
-    '--nic-type',
-    type=click.STRING,
-    required=True,
-    help='Network adapter type',
-    default='vmxnet3',
-    autocompletion=autocompletion.virtual_nic_types,
-)
+@c_so.networks_opt
 @pass_context
-def compute_vm_set_nic_mk(ctx: Configuration, nic_network: str, nic_type: str):
+def compute_vm_set_nic_mk(ctx: Configuration, net):
     """Add network adapter specifying backing network and adapter type.
 
-        vss-cli compute vm set <name-or-uuid> nic mk -n <network> -t <type>
+        vss-cli compute vm set <name-or-uuid> nic mk
+        -n <moref-or-name>=<nic-type> -n <moref-or-name>
     """
     # create payload
     payload = dict(uuid=ctx.uuid)
     # add common options
     payload.update(ctx.payload_options)
-    # generate payload
-    networks_payload = []
-    # search by name or moref
-    n_net = ctx.get_network_by_name_or_moref(nic_network)
-    # search type by name
-    n_type = ctx.get_vm_nic_type_by_name(nic_type)
-    # adding to payload
-    networks_payload.append(
-        {'network': n_net[0]['moref'], 'type': n_type[0]['type']}
-    )
     # payload
-    payload['networks'] = networks_payload
+    payload['networks'] = net
     # request
     obj = ctx.create_vm_nic(**payload)
     # print
@@ -2127,8 +2101,8 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
     # included - just checking
     guest_info = ctx.get_vm_guest(ctx.uuid)
     ip_addresses = (
-        ', '.join(guest_info.get('ipAddress'))
-        if guest_info.get('ipAddress')
+        ', '.join(guest_info.get('ip_address'))
+        if guest_info.get('ip_address')
         else ''
     )
     # confirmation string
@@ -2539,8 +2513,8 @@ def compute_vm_rm(ctx: Configuration, uuid, force, max_del, show_info):
             name = ctx.get_vm_name(vm)
             guest_info = ctx.get_vm_guest(vm)
             ip_addresses = (
-                ', '.join(guest_info.get('ipAddress'))
-                if guest_info.get('ipAddress')
+                ', '.join(guest_info.get('ip_address'))
+                if guest_info.get('ip_address')
                 else ''
             )
 
@@ -2691,203 +2665,25 @@ def compute_vm_from_file(
         ctx.wait_for_request_to(obj)
 
 
-"""
-callback
-"""
-
-
-def process_networks_opt(ctx: Configuration, param, value):
-    _init_ctx(ctx)
-    if value is not None:
-        networks = list()
-        for nic in value:
-            _nic = to_tuples(nic)[0]
-            _network = _nic[0]
-            if len(_nic) > 1:
-                _type = ctx.client.get_vm_nic_type_by_name(_nic[1])
-                _type = _type[0]['type']
-            else:
-                _type = 'vmxnet3'
-            _net = ctx.client.get_network_by_name_or_moref(_network)
-            networks.append({'network': _net[0]['moref'], 'type': _type})
-        return networks
-
-
-"""
-Reusable options for vm mk command
-"""
-
-source_opt = click.option(
-    '--source',
-    '-s',
-    help='Source virtual machine or template UUID.',
-    type=click.STRING,
-    required=True,
-    autocompletion=autocompletion.virtual_machines,
-)
-source_template_opt = click.option(
-    '--source',
-    '-s',
-    help='Source virtual machine or template UUID.',
-    type=click.STRING,
-    required=True,
-    autocompletion=autocompletion.vm_templates,
-)
-description_opt = click.option(
-    '--description',
-    '-d',
-    help='Vm description.',
-    type=click.STRING,
-    required=True,
-)
-bill_dept_opt = click.option(
-    '--bill-dept',
-    '-b',
-    help='Billing department.',
-    type=click.STRING,
-    required=False,
-)
-admin_opt = click.option(
-    '--admin',
-    '-a',
-    help='Admin name, phone number and email separated by '
-    '`:` i.e. "John Doe:416-123-1234:john.doe@utoronto.ca"',
-    type=click.STRING,
-    callback=validate_admin,
-    required=False,
-)
-inform_opt = click.option(
-    '--inform',
-    '-r',
-    help='Informational contact emails in comma separated',
-    type=click.STRING,
-    callback=validate_inform,
-    required=False,
-)
-usage_opt = click.option(
-    '--usage',
-    '-u',
-    help='Vm usage.',
-    type=click.Choice(['Test', 'Prod', 'Dev', 'QA']),
-    required=False,
-    default='Test',
-)
-os_opt = click.option(
-    '--os',
-    '-o',
-    help='Guest operating system id.',
-    type=click.STRING,
-    required=False,
-    autocompletion=autocompletion.operating_systems,
-)
-memory_opt = click.option(
-    '--memory', '-m', help='Memory in GB.', type=click.INT, required=False
-)
-cpu_opt = click.option(
-    '--cpu', '-c', help='Cpu count.', type=click.INT, required=False
-)
-folder_opt = click.option(
-    '--folder',
-    '-f',
-    help='Logical folder moref.',
-    type=click.STRING,
-    required=False,
-    autocompletion=autocompletion.folders,
-)
-disks_opt = click.option(
-    '--disk',
-    '-i',
-    help='Disks in GB.',
-    type=click.INT,
-    multiple=True,
-    required=False,
-)
-networks_opt = click.option(
-    '--net',
-    '-n',
-    help='Network adapter <moref-or-name>=<nic-type>.',
-    type=click.STRING,
-    multiple=True,
-    required=False,
-    callback=process_networks_opt,
-    autocompletion=autocompletion.networks,
-)
-domain_opt = click.option(
-    '--domain',
-    '-t',
-    help='Target fault domain name or moref.',
-    type=click.STRING,
-    required=False,
-    autocompletion=autocompletion.domains,
-)
-notes_opt = click.option(
-    '--notes', '-t', help='Custom notes.', type=click.STRING, required=False
-)
-custom_spec_opt = click.option(
-    '--custom-spec',
-    '-p',
-    help='Guest OS custom specification in JSON format.',
-    type=click.STRING,
-    required=False,
-    callback=validate_json_type,
-)
-iso_opt = click.option(
-    '--iso',
-    '-s',
-    help='ISO image path to be mounted after creation',
-    type=click.STRING,
-    required=False,
-    autocompletion=autocompletion.isos,
-)
-high_io_opt = click.option(
-    '--high-io',
-    '-h',
-    help='VM will be created with a ' 'VMware Paravirtual SCSIController.',
-    is_flag=True,
-    required=False,
-)
-extra_config_opt = click.option(
-    '--extra-config',
-    '-e',
-    help='VMWare Guest Info Interface in JSON format.',
-    type=click.STRING,
-    required=False,
-    callback=validate_json_type,
-)
-user_data_opt = click.option(
-    '--user-data',
-    help='Cloud-init user_data YML file path to '
-    'pre-configure guest os upon first boot.',
-    type=click.File('r'),
-    required=False,
-)
-vss_service_opt = click.option(
-    '--vss-service',
-    help='VSS Service related to VM',
-    autocompletion=autocompletion.vss_services,
-    required=False,
-)
-
-
 @compute_vm_mk.command(
     'from-spec', short_help='Create vm from another vm spec'
 )
+@c_so.source_opt
+@c_so.description_opt
+@c_so.bill_dept_nr_opt
+@c_so.admin_opt
+@c_so.inform_opt
+@c_so.usage_opt
+@c_so.os_nr_opt
+@c_so.memory_opt
+@c_so.cpu_opt
+@c_so.folder_nr_opt
+@c_so.disks_nr_opt
+@c_so.networks_nr_opt
+@c_so.domain_opt
+@c_so.notes_opt
+@c_so.vss_service_opt
 @click.argument('name', type=click.STRING, required=True)
-@source_opt
-@description_opt
-@bill_dept_opt
-@admin_opt
-@inform_opt
-@usage_opt
-@os_opt
-@memory_opt
-@cpu_opt
-@folder_opt
-@disks_opt
-@networks_opt
-@domain_opt
-@notes_opt
-@vss_service_opt
 @pass_context
 def compute_vm_mk_spec(
     ctx: Configuration,
@@ -2968,50 +2764,24 @@ def compute_vm_mk_spec(
 
 
 @compute_vm_mk.command('shell', short_help='Create empty virtual machine')
-@description_opt
-@inform_opt
-@usage_opt
-@admin_opt
-@memory_opt
-@cpu_opt
-@domain_opt
-@notes_opt
-@iso_opt
-@high_io_opt
+@c_so.description_opt
+@c_so.bill_dept_opt
+@c_so.admin_opt
+@c_so.inform_opt
+@c_so.usage_opt
+@c_so.os_opt
+@c_so.memory_opt
+@c_so.cpu_opt
+@c_so.folder_opt
+@c_so.disks_opt
+@c_so.networks_opt
+@c_so.domain_opt
+@c_so.notes_opt
+@c_so.iso_opt
+@c_so.high_io_opt
+@c_so.extra_config_opt
+@c_so.vss_service_opt
 @click.argument('name', type=click.STRING, required=True)
-@click.option(
-    '--bill-dept',
-    '-b',
-    help='Billing department.',
-    type=click.STRING,
-    required=True,
-)
-@click.option(
-    '--os',
-    '-o',
-    help='Guest operating system id or name.',
-    type=click.STRING,
-    required=True,
-    autocompletion=autocompletion.operating_systems,
-)
-@click.option(
-    '--folder',
-    '-f',
-    help='Logical folder moref.',
-    type=click.STRING,
-    required=True,
-    autocompletion=autocompletion.folders,
-)
-@click.option(
-    '--disk',
-    '-i',
-    help='Disks in GB.',
-    type=click.INT,
-    multiple=True,
-    required=True,
-)
-@networks_opt
-@vss_service_opt
 @pass_context
 def compute_vm_mk_shell(
     ctx: Configuration,
@@ -3031,6 +2801,7 @@ def compute_vm_mk_shell(
     net,
     domain,
     os,
+    extra_config,
     vss_service,
 ):
     """Create a new virtual machine with no operating system
@@ -3063,6 +2834,8 @@ def compute_vm_mk_shell(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
+    if extra_config:
+        payload['extra_config'] = extra_config
     # network
     if net:
         payload['networks'] = net
@@ -3093,23 +2866,24 @@ def compute_vm_mk_shell(
 
 
 @compute_vm_mk.command('from-template', short_help='Create vm from template')
+@c_so.source_template_opt
+@c_so.description_opt
+@c_so.bill_dept_nr_opt
+@c_so.admin_opt
+@c_so.inform_opt
+@c_so.usage_opt
+@c_so.os_nr_opt
+@c_so.memory_opt
+@c_so.cpu_opt
+@c_so.folder_nr_opt
+@c_so.disks_nr_opt
+@c_so.networks_nr_opt
+@c_so.domain_opt
+@c_so.notes_opt
+@c_so.custom_spec_opt
+@c_so.extra_config_opt
+@c_so.vss_service_opt
 @click.argument('name', type=click.STRING, required=False)
-@source_template_opt
-@description_opt
-@bill_dept_opt
-@admin_opt
-@inform_opt
-@usage_opt
-@os_opt
-@memory_opt
-@cpu_opt
-@folder_opt
-@disks_opt
-@networks_opt
-@domain_opt
-@notes_opt
-@custom_spec_opt
-@vss_service_opt
 @pass_context
 def compute_vm_mk_template(
     ctx: Configuration,
@@ -3129,6 +2903,7 @@ def compute_vm_mk_template(
     domain,
     os,
     custom_spec,
+    extra_config,
     vss_service,
 ):
     """Deploy virtual machine from template"""
@@ -3164,6 +2939,8 @@ def compute_vm_mk_template(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
+    if extra_config:
+        payload['extra_config'] = extra_config
     # network
     if net:
         payload['networks'] = net
@@ -3190,23 +2967,23 @@ def compute_vm_mk_template(
 
 
 @compute_vm_mk.command('from-clone', short_help='Create vm from clone')
+@c_so.source_opt
+@c_so.description_opt
+@c_so.bill_dept_nr_opt
+@c_so.admin_opt
+@c_so.inform_opt
+@c_so.usage_opt
+@c_so.os_nr_opt
+@c_so.memory_opt
+@c_so.cpu_opt
+@c_so.folder_nr_opt
+@c_so.disks_nr_opt
+@c_so.networks_nr_opt
+@c_so.domain_opt
+@c_so.notes_opt
+@c_so.custom_spec_opt
+@c_so.vss_service_opt
 @click.argument('name', type=click.STRING, required=False)
-@source_opt
-@description_opt
-@bill_dept_opt
-@admin_opt
-@inform_opt
-@usage_opt
-@os_opt
-@memory_opt
-@cpu_opt
-@folder_opt
-@disks_opt
-@networks_opt
-@domain_opt
-@notes_opt
-@custom_spec_opt
-@vss_service_opt
 @pass_context
 def compute_vm_mk_clone(
     ctx: Configuration,
@@ -3289,67 +3066,24 @@ def compute_vm_mk_clone(
     'from-image', short_help='Create vm from OVA/OVF image.'
 )
 @click.argument('name', type=click.STRING, required=False)
-@description_opt
-@admin_opt
-@inform_opt
-@usage_opt
-@memory_opt
-@cpu_opt
-@networks_opt
-@domain_opt
-@notes_opt
-@custom_spec_opt
-@extra_config_opt
-@user_data_opt
-@vss_service_opt
-@click.option(
-    '--bill-dept',
-    '-b',
-    help='Billing department.',
-    type=click.STRING,
-    required=True,
-)
-@click.option(
-    '--os',
-    '-o',
-    help='Guest operating system id, name or path.',
-    type=click.STRING,
-    required=True,
-    autocompletion=autocompletion.operating_systems,
-)
-@click.option(
-    '--folder',
-    '-f',
-    help='Logical folder moref.',
-    type=click.STRING,
-    required=True,
-    autocompletion=autocompletion.folders,
-)
-@click.option(
-    '--disk',
-    '-i',
-    help='Disks in GB.',
-    type=click.INT,
-    multiple=True,
-    required=True,
-)
-@click.option(
-    '--net',
-    '-n',
-    help='Networks moref or name mapped to NICs.',
-    type=click.STRING,
-    multiple=True,
-    required=True,
-    autocompletion=autocompletion.networks,
-)
-@click.option(
-    '--source',
-    '-s',
-    help='Source Virtual Machine OVA/OVF id, name or path.',
-    type=click.STRING,
-    required=True,
-    autocompletion=autocompletion.vm_images,
-)
+@c_so.source_image_opt
+@c_so.description_opt
+@c_so.bill_dept_opt
+@c_so.admin_opt
+@c_so.inform_opt
+@c_so.usage_opt
+@c_so.os_opt
+@c_so.memory_opt
+@c_so.cpu_opt
+@c_so.folder_opt
+@c_so.disks_opt
+@c_so.networks_opt
+@c_so.domain_opt
+@c_so.notes_opt
+@c_so.custom_spec_opt
+@c_so.extra_config_opt
+@c_so.user_data_opt
+@c_so.vss_service_opt
 @pass_context
 def compute_vm_mk_image(
     ctx: Configuration,

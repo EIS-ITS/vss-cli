@@ -199,28 +199,29 @@ given the requirements. To perform a state change execute
 Create
 ~~~~~~
 Create a new virtual machine network adapter by using the sub command ``mk`` and providing the
-backing network ``-n/--nic-network`` and ``-t/--nic-type``.
+backing network and type separated by the ``=`` sign in the option. i.e. ``<moref-or-name>=<nic_type>``.
 
 .. code-block:: bash
 
     Usage: vss-cli compute vm set nic mk [OPTIONS]
 
-      Add network adapter specifying backing network and adapter type.
+      Add network adapters specifying backing network and adapter type.
 
-      vss-cli compute vm set <name-or-uuid> nic mk -n <network> -t <type>
+      vss-cli compute vm set <name-or-uuid> nic mk -n <moref-or-name>=<nic-type> -n <moref-or-name>
 
     Options:
-      -n, --nic-network TEXT  Virtual network moref  [required]
-      -t, --nic-type TEXT     Network adapter type  [required]
-      --help                  Show this message and exit.
+      -n, --net TEXT  Network adapter <moref-or-name>=<nic-type>.  [required]
+      --help          Show this message and exit.
 
+
+.. note:: If no adapter is set, ``vmxnet3`` is used.
 
 
 For example:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 1909P-WEB nic mk --nic-network VSS-PUBLIC --nic-type vmxnet3
+    vss-cli compute vm set 1909P-WEB nic mk -n dvportgroup-1083=vmxnet2 -n dvportgroup-1094
 
 
 Remove

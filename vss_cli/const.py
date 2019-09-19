@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.3.dev7"
+__version__ = "0.2.3.dev8"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -63,25 +63,25 @@ DEFAULT_HOST_REGEX = (
 )
 
 DEFAULT_NIC_DEL_MSG = (
-    "Network adapter:\t{unit}\n"
-    "Mac address:\t\t{macAddress}\n"
+    "Network adapter:\t{unit} ({type})\n"
+    "Mac address:\t\t{mac_address}\n"
     "Network:\t\t{network[name]} ({network[moref]})\n"
     "Connected:\t\t{connected}\n"
 )
 
 DEFAULT_STATE_MSG = (
-    "Host Name:\t{hostName} ({os[guestFullName]})\n"
+    "Host Name:\t{hostname} ({os[full_name]})\n"
     "IP Address:\t{ip_addresses}\n"
     "Are you sure you want to change the state from "
-    '"{guestState} to {state}" '
+    '"{guest_state} to {state}" '
     "of the above VM?"
 )
 
 DEFAULT_VM_DEL_MSG = (
     "Name:\t\t{name[name]}\n"
     "Folder:\t\t{folder_info[path]}\n"
-    "Host Name:\t{hostName} "
-    "({os[guestFullName]})\n"
+    "Host Name:\t{hostname} "
+    "({os[full_name]})\n"
     "IP Address:\t{ip_addresses}\n"
     "Are you sure you want to delete "
     "the above VM?"
