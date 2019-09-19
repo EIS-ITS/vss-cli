@@ -928,7 +928,7 @@ class Configuration(VssManager):
         self, payload: dict, template: dict
     ) -> dict:
         os_q = self.get_os(filter=f"guest_id,eq,{payload.get('os')}")
-        machine_os = os_q[0]['guestFullName'] if os_q else payload.get('os')
+        machine_os = os_q[0]['full_name'] if os_q else payload.get('os')
         fo_q = self.get_folder(payload.get('folder'))
         machine_folder = fo_q['path'] if fo_q else payload.get('folder')
         template['built'] = payload.get('built_from')
@@ -939,7 +939,10 @@ class Configuration(VssManager):
         template['machine']['folder'] = machine_folder
         template['machine']['disks'] = payload.get('disks')
         template['networking']['interfaces'] = [
-            {'network': self.get_network(v)['name']}
+            {
+                'network': self.get_network(v['network'])['name'],
+                'type': v['type'],
+            }
             for v in payload.get('networks')
         ]
         template['metadata']['billing'] = payload.get('bill_dept')
@@ -978,7 +981,12 @@ class Configuration(VssManager):
                 )[0]['moref']
                 # networking
                 spec_payload['networks'] = [
-                    self.get_network_by_name_or_moref(n['network'])[0]['moref']
+                    {
+                        'network': self.get_network_by_name_or_moref(
+                            n['network']
+                        )[0]['moref'],
+                        'type': n['type'],
+                    }
                     for n in networking_section['interfaces']
                 ]
                 # metadata section

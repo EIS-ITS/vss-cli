@@ -17,6 +17,7 @@ machine:
 networking:
   interfaces:
     - network: VSS-PUBLIC # Required: Network name or network ID.
+      type: vmxnet3       # Optional: Defaults to vmxnet3
 # metadata required
 metadata:
   billing: Department     # Required: Billing department

@@ -8,6 +8,7 @@ from pkg_resources import iter_entry_points
 
 from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
+from vss_cli.autocompletion import _init_ctx
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
@@ -2691,6 +2692,28 @@ def compute_vm_from_file(
 
 
 """
+callback
+"""
+
+
+def process_networks_opt(ctx: Configuration, param, value):
+    _init_ctx(ctx)
+    if value is not None:
+        networks = list()
+        for nic in value:
+            _nic = to_tuples(nic)[0]
+            _network = _nic[0]
+            if len(_nic) > 1:
+                _type = ctx.client.get_vm_nic_type_by_name(_nic[1])
+                _type = _type[0]['type']
+            else:
+                _type = 'vmxnet3'
+            _net = ctx.client.get_network_by_name_or_moref(_network)
+            networks.append({'network': _net[0]['moref'], 'type': _type})
+        return networks
+
+
+"""
 Reusable options for vm mk command
 """
 
@@ -2782,16 +2805,17 @@ disks_opt = click.option(
 networks_opt = click.option(
     '--net',
     '-n',
-    help='Networks moref mapped to NICs.',
+    help='Network adapter <moref-or-name>=<nic-type>.',
     type=click.STRING,
     multiple=True,
     required=False,
+    callback=process_networks_opt,
     autocompletion=autocompletion.networks,
 )
 domain_opt = click.option(
     '--domain',
     '-t',
-    help='Target fault domain.',
+    help='Target fault domain name or moref.',
     type=click.STRING,
     required=False,
     autocompletion=autocompletion.domains,
@@ -2918,11 +2942,7 @@ def compute_vm_mk_spec(
         payload['inform'] = inform
     # network
     if net:
-        networks = list()
-        for network in net:
-            _net = ctx.get_network_by_name_or_moref(network)
-            networks.append(_net[0]['moref'])
-        payload['networks'] = networks
+        payload['networks'] = net
     # domain
     if domain:
         _domain = ctx.get_domain_by_name_or_moref(domain)
@@ -2990,15 +3010,7 @@ def compute_vm_mk_spec(
     multiple=True,
     required=True,
 )
-@click.option(
-    '--net',
-    '-n',
-    help='Networks moref or name mapped to NICs.',
-    type=click.STRING,
-    multiple=True,
-    required=True,
-    autocompletion=autocompletion.networks,
-)
+@networks_opt
 @vss_service_opt
 @pass_context
 def compute_vm_mk_shell(
@@ -3053,11 +3065,7 @@ def compute_vm_mk_shell(
         payload['inform'] = inform
     # network
     if net:
-        networks = list()
-        for network in net:
-            _net = ctx.get_network_by_name_or_moref(network)
-            networks.append(_net[0]['moref'])
-        payload['networks'] = networks
+        payload['networks'] = net
     # domain
     if domain:
         _domain = ctx.get_domain_by_name_or_moref(domain)
@@ -3158,11 +3166,7 @@ def compute_vm_mk_template(
         payload['inform'] = inform
     # network
     if net:
-        networks = list()
-        for network in net:
-            _net = ctx.get_network_by_name_or_moref(network)
-            networks.append(_net[0]['moref'])
-        payload['networks'] = networks
+        payload['networks'] = net
     # domain
     if domain:
         _domain = ctx.get_domain_by_name_or_moref(domain)
@@ -3258,11 +3262,7 @@ def compute_vm_mk_clone(
         payload['inform'] = inform
     # network
     if net:
-        networks = list()
-        for network in net:
-            _net = ctx.get_network_by_name_or_moref(network)
-            networks.append(_net[0]['moref'])
-        payload['networks'] = networks
+        payload['networks'] = net
     # domain
     if domain:
         _domain = ctx.get_domain_by_name_or_moref(domain)
@@ -3410,11 +3410,7 @@ def compute_vm_mk_image(
         payload['user_data'] = user_data.read()
     # network
     if net:
-        networks = list()
-        for network in net:
-            _net = ctx.get_network_by_name_or_moref(network)
-            networks.append(_net[0]['moref'])
-        payload['networks'] = networks
+        payload['networks'] = net
     # domain
     if domain:
         _domain = ctx.get_domain_by_name_or_moref(domain)

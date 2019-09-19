@@ -23,6 +23,7 @@ networking:
     - 128.100.100.128     # (Custom Spec) Required (if dhcp:false): Remove if using VSS-PUBLIC or any other DHCP based network
   interfaces:
     - network:            # Optional: Network name or network ID (default: source vm network)
+      type: vmxnet3       # Optional: Defaults to vmxnet3
       dhcp: false         # (Custom Spec) Required: Whether to use DHCP for interface configuration (default: no)
       ip_addr:            # (Custom Spec) Required (if dhcp:false): CIDR format. Remove if using VSS-PUBLIC or any other DHCP based network
       gw_addr:            # (Custom Spec) Required (if dhcp:false): Remove if using VSS-PUBLIC or any other DHCP based network
