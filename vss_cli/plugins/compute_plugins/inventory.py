@@ -85,14 +85,6 @@ def compute_inventory_mk(
     """Submits an inventory report request to generate file in JSON or CSV
     of your virtual machines.
 
-    The following attributes can be requested in the report:
-
-    status, domain, diskCount, uuid, nics, state, hostName, vmtRunning,
-    memory, provisionedSpace, osId, folder, snapshot,
-    requested, networkIds, hardwareVersion, changeLog,
-    haGroup, usedSpace, nicCount, uncommittedSpace,
-    name, admin, disks, vmtVersion, inform, client,
-    guestOsId, clientNotes, ipAddress, cpu
     """
     ctx.wait = wait
     attributes = ctx.get_inventory_properties() if all else list(attribute)

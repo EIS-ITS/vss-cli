@@ -13,6 +13,7 @@ please `open an issue <https://gitlab-ee.eis.utoronto.ca/vss/vsscli/issues/new>`
    deploy-template
    deploy-image
    images
+   inventory
    snapshot
    folder
    network
