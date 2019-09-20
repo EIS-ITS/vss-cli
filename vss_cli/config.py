@@ -1106,7 +1106,7 @@ class Configuration(VssManager):
             else:
                 invalid_response = True
         # clear screen to focus on results
-        click.clear()
+        # click.clear()
         if invalid_response:
             raise VssCliError(f'Invalid response from the API.')
         if timed_out:

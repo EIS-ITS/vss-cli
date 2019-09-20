@@ -35,6 +35,11 @@ Changelog
 - `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_: ``compute net public ls``: command sorts by `name,asc`: by `jm.lopez`_
 - `#164 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/164>`_: ``docs``: inventory example: by `jm.lopez`_
 - `#166 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/166>`_: ``core``: ``pyvss`` upgrade from 0.9.40 -> 0.9.41: by `jm.lopez`_
+- `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_: ``compute vm set``: avoid clear screen when ``--wait`` flag is set:  `jm.lopez`_
+- `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_: ``compute vm mk``: avoid clear screen when ``--wait`` flag is set:  `jm.lopez`_
+- `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_: ``compute folder set``: avoid clear screen when ``--wait`` flag is set:  `jm.lopez`_
+- `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_: ``compute inventory mk``: avoid clear screen when ``--wait`` flag is set:  `jm.lopez`_
+
 
 `v0.2.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.2>`_ (2019-09-05)
 ==================================================================================
