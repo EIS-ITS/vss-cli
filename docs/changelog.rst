@@ -2,6 +2,45 @@
 Changelog
 =========
 
+`v0.2.3 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.3>`_ (2019-09-20)
+==================================================================================
+
+**Improvements:**
+
+- `#156 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/156>`_: ``compute inventory mk``: add ``--transfer/--no-transfer`` option to enable/disable transfer to vskey-stor: by `jm.lopez`_
+- `#157 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/157>`_: ``compute mk set nic mk``: support for nic type in option ``-n <net-moref-name>=<nic-type>``: by `jm.lopez`_
+- `#158 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/158>`_: ``compute vm set nic up``: support for new adapter type format ``--adapter``: by `jm.lopez`_
+- `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_: ``compute os ls``: updating camelCase to snake_case attributes: ``guestId``->``guest_id``: by `jm.lopez`_
+- `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_: ``compute vm set guest-os``: updating camelCase to snake_case attributes: ``guestId``->``guest_id``: by `jm.lopez`_
+- `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_: ``compute vm mk shell``: updating camelCase to snake_case attributes: ``guestId``->``guest_id``: by `jm.lopez`_
+- `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_: ``compute vm mk from-template``: updating camelCase to snake_case attributes: ``guestId``->``guest_id``: by `jm.lopez`_
+- `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_: ``compute vm mk from-clone``: updating camelCase to snake_case attributes: ``guestId``->``guest_id``: by `jm.lopez`_
+- `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_: ``compute vm mk from-image``: updating camelCase to snake_case attributes: ``guestId``->``guest_id``: by `jm.lopez`_
+- `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_: ``compute vm mk from-spec``: updating camelCase to snake_case attributes: ``guestId``->``guest_id``: by `jm.lopez`_
+- `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_: ``compute vm mk from-file``: updating camelCase to snake_case attributes: ``guestId``->``guest_id``: by `jm.lopez`_
+- `#160 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/160>`_: ``compute vm set guest-os``: adding interactive options: by `jm.lopez`_
+- `#161 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/161>`_: ``core``: update columns to match attributes in snake_case: by `jm.lopez`_
+- `#162 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/162>`_: ``compute vm mk shell``: support for nic type in option ``-n <net-moref-name>=<nic-type>``: by `jm.lopez`_
+- `#162 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/162>`_: ``compute vm mk from-template``: support for nic type in option ``-n <net-moref-name>=<nic-type>``: by `jm.lopez`_
+- `#162 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/162>`_: ``compute vm mk from-clone``: support for nic type in option ``-n <net-moref-name>=<nic-type>``: by `jm.lopez`_
+- `#162 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/162>`_: ``compute vm mk from-image``: support for nic type in option ``-n <net-moref-name>=<nic-type>``: by `jm.lopez`_
+- `#162 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/162>`_: ``compute vm mk from-spec``: support for nic type in option ``-n <net-moref-name>=<nic-type>``: by `jm.lopez`_
+- `#162 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/162>`_: ``compute vm mk from-file``: support for nic type in option ``-n <net-moref-name>=<nic-type>``: by `jm.lopez`_
+- `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_: ``compute folder ls``: command sorts by `path,asc`: by `jm.lopez`_
+- `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_: ``compute template ls``: command sorts by `name,asc`: by `jm.lopez`_
+- `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_: ``compute vm ls``: command sorts by `name,asc`: by `jm.lopez`_
+- `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_: ``compute image public ls``: command sorts by `name,asc`: by `jm.lopez`_
+- `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_: ``compute iso public ls``: command sorts by `name,asc`: by `jm.lopez`_
+- `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_: ``compute floppy public ls``: command sorts by `name,asc`: by `jm.lopez`_
+- `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_: ``compute net public ls``: command sorts by `name,asc`: by `jm.lopez`_
+- `#164 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/164>`_: ``docs``: inventory example: by `jm.lopez`_
+- `#166 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/166>`_: ``core``: ``pyvss`` upgrade from 0.9.40 -> 0.9.41: by `jm.lopez`_
+- `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_: ``compute vm set``: avoid clear screen when ``--wait`` flag is set:  `jm.lopez`_
+- `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_: ``compute vm mk``: avoid clear screen when ``--wait`` flag is set:  `jm.lopez`_
+- `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_: ``compute folder set``: avoid clear screen when ``--wait`` flag is set:  `jm.lopez`_
+- `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_: ``compute inventory mk``: avoid clear screen when ``--wait`` flag is set:  `jm.lopez`_
+
+
 `v0.2.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.2>`_ (2019-09-05)
 ==================================================================================
 

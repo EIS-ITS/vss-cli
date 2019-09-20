@@ -134,19 +134,25 @@ systems, use the ``--filter-by/-f`` option which is structured
 the following filter:
 
 .. note:: This version of the VSS CLI supports providing OS reference
-    not only using the guestId, but also the guestFullName or Id.
+    not only using the ``guest_id``, but also the ``full_name`` or Id.
     In case of multiple results, the CLI prompts to select the right instance.
 
 .. code-block:: bash
 
-    vss-cli compute os ls --filter-by guestFullName like,CentOS%
-      id  guestId        guestFullName
-    ----  -------------  -------------------
-       8  centosGuest    CentOS 4/5
-      11  centos64Guest  CentOS 4/5 (64-bit)
+    vss-cli compute os ls --filter-by full_name CentOS
+
+      id  guest_id         full_name            family
+    ----  ---------------  -------------------  ----------
+      24  centos64Guest    CentOS 4/5 (64-bit)  linuxGuest
+      70  centos6_64Guest  CentOS 6 (64-bit)    linuxGuest
+      26  centos6Guest     CentOS 6             linuxGuest
+      15  centos7_64Guest  CentOS 7 (64-bit)    linuxGuest
+      78  centos7Guest     CentOS 7             linuxGuest
+      95  centos8_64Guest  CentOS 8 (64-bit)    linuxGuest
+       2  centosGuest      CentOS 4/5           linuxGuest
 
 
-Set the ``OS`` environment variable to ``centos64Guest`` to save the ``guestId``:
+Set the ``OS`` environment variable to ``centos64Guest`` to save the ``guest_id``:
 
 .. code-block:: bash
 
@@ -177,6 +183,15 @@ Save ``dvportgroup-11052`` in ``NET`` environment variable:
 .. code-block:: bash
 
     export NET=dvportgroup-11052
+
+By default, the network adapter will use **vmxnet3** which provides ideal performance,
+however a few legacy operating systems does not have the drivers. In such case, you can
+specify which adapter type between: **e1000e***, **e1000**, **vmxnet2** or **vmxnet3**.
+To do so, append the adapter type to the network adapter network as follows:
+
+.. code-block:: bash
+
+    export NET=dvportgroup-11052=e1000e
 
 
 Folder

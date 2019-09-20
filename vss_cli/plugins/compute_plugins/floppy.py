@@ -39,7 +39,7 @@ def compute_floppy_public_ls(
 
         vss-cli compute floppy ls -f name like,pv% -s path asc
     """
-    params = dict(expand=1)
+    params = dict(expand=1, sort='name,asc')
     if all(filter_by):
         params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):

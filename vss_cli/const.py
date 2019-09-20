@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -63,25 +63,25 @@ DEFAULT_HOST_REGEX = (
 )
 
 DEFAULT_NIC_DEL_MSG = (
-    "Network adapter:\t{unit}\n"
-    "Mac address:\t\t{macAddress}\n"
+    "Network adapter:\t{unit} ({type})\n"
+    "Mac address:\t\t{mac_address}\n"
     "Network:\t\t{network[name]} ({network[moref]})\n"
     "Connected:\t\t{connected}\n"
 )
 
 DEFAULT_STATE_MSG = (
-    "Host Name:\t{hostName} ({os[guestFullName]})\n"
+    "Host Name:\t{hostname} ({os[full_name]})\n"
     "IP Address:\t{ip_addresses}\n"
     "Are you sure you want to change the state from "
-    '"{guestState} to {state}" '
+    '"{guest_state} to {state}" '
     "of the above VM?"
 )
 
 DEFAULT_VM_DEL_MSG = (
     "Name:\t\t{name[name]}\n"
     "Folder:\t\t{folder_info[path]}\n"
-    "Host Name:\t{hostName} "
-    "({os[guestFullName]})\n"
+    "Host Name:\t{hostname} "
+    "({os[full_name]})\n"
     "IP Address:\t{ip_addresses}\n"
     "Are you sure you want to delete "
     "the above VM?"
@@ -89,401 +89,320 @@ DEFAULT_VM_DEL_MSG = (
 
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
-COLUMNS_DEFAULT = [("ALL", "*")]
-COLUMNS_VM_MIN = [("UUID", "uuid"), ("NAME", "name")]
-COLUMNS_VIM_REQUEST = [("UUID", "vm_uuid"), ("NAME", "vm_name")]
-COLUMNS_MOID = [("MOREF", "moref"), ("NAME", "name")]
-COLUMNS_FOLDER_MIN = [
-    *COLUMNS_MOID,
-    ("PATH", "path"),
-    ("PARENT", "parent.name"),
-]
-COLUMNS_FOLDER = [
-    *COLUMNS_FOLDER_MIN,
-    ("PARENT_MOREF", "parent.moref"),
-    ("HAS_CHILDREN", "has_children"),
-]
+COLUMNS_DEFAULT = [("all", "*")]
+COLUMNS_VM_MIN = [("uuid",), ("name",)]
+COLUMNS_VIM_REQUEST = [("vm_uuid", "vm_uuid"), ("vm_name", "vm_name")]
+COLUMNS_MOREF = [("moref",), ("name",)]
+COLUMNS_FOLDER_MIN = [*COLUMNS_MOREF, ("path",), ("parent.name",)]
+COLUMNS_FOLDER = [*COLUMNS_FOLDER_MIN, ("parent.moref",), ("has_children",)]
 COLUMNS_NET_MIN = [
-    *COLUMNS_MOID,
-    ("DESCRIPTION", "description"),
-    ("SUBNET", "subnet"),
-    ("VLAN_ID", "vlan_id"),
-    ("VMS", "vms"),
+    *COLUMNS_MOREF,
+    ("description",),
+    ("subnet",),
+    ("vlan_id",),
+    ("vms",),
 ]
 COLUMNS_NET = [
     *COLUMNS_NET_MIN,
-    ("PORTS", "ports"),
-    ("ADMIN", "admin"),
-    ("CLIENT", "client"),
-    ("UPDATED_ON", "updated_on"),
+    ("ports",),
+    ("admin",),
+    ("client",),
+    ("updated_on",),
 ]
-COLUMNS_PERMISSION = [
-    ("PRINCIPAL", "principal"),
-    ("GROUP", "group"),
-    ("PROPAGATE", "propagate"),
-]
-COLUMNS_MIN = [
-    ("ID", "id"),
-    ("CREATED", "created_on"),
-    ("UPDATED", "updated_on"),
-]
-COLUMNS_VSS_SERVICE = [
-    ("ID", "id"),
-    ("LABEL", "label"),
-    ("NAME", "name"),
-    ("GROUP", "group.name"),
-]
-COLUMNS_IMAGE = [("ID", "id"), ("PATH", "path"), ("NAME", "name")]
-COLUMNS_OS = [("ID", "id"), ("GUESTID", "guestId"), ("NAME", "guestFullName")]
-COLUMNS_REQUEST = [*COLUMNS_MIN, ("STATUS", "status")]
-COLUMNS_REQUEST_WAIT = [('WARNINGS', 'warnings[*]'), ('ERRORS', 'errors[*]')]
+COLUMNS_PERMISSION = [("principal",), ("group",), ("propagate",)]
+COLUMNS_MIN = [("id",), ("created_on",), ("updated_on",)]
+COLUMNS_VSS_SERVICE = [("id",), ("label",), ("name",), ("group.name",)]
+COLUMNS_IMAGE = [("id",), ("path",), ("name",)]
+COLUMNS_OS = [("id",), ("guest_id",), ("full_name",), ("family",)]
+COLUMNS_REQUEST = [*COLUMNS_MIN, ("status",)]
+COLUMNS_REQUEST_WAIT = [('warnings', 'warnings[*]'), ('errors', 'errors[*]')]
 COLUMNS_REQUEST_MAX = [
-    ("ERRORS", "message.errors[*]"),
-    ("WARNINGS", "message.warnings[*]"),
-    ("TASK", "task_id"),
-    ("USER", "user.username"),
+    ("errors", "message.errors[*]"),
+    ("warnings", "message.warnings[*]"),
+    ("task_id", "task_id"),
+    ("user.username",),
 ]
-COLUMNS_REQUEST_IMAGE_SYNC_MIN = [*COLUMNS_REQUEST, ("TYPE", "type")]
+COLUMNS_REQUEST_IMAGE_SYNC_MIN = [*COLUMNS_REQUEST, ("type",)]
 COLUMNS_REQUEST_IMAGE_SYNC = [
     *COLUMNS_REQUEST,
-    ("TYPE", "type"),
-    ("DELETED", "deleted"),
-    ("ADDED", "added"),
+    ("type",),
+    ("deleted",),
+    ("added",),
     *COLUMNS_REQUEST_MAX,
 ]
 COLUMNS_REQUEST_SUBMITTED = [
-    ("ID", "request.id"),
-    ("STATUS", "request.status"),
-    ("TASK ID", "request.task_id"),
-    ("MESSAGE", "message"),
+    ("id", "request.id"),
+    ("status", "request.status"),
+    ("task_id", "request.task_id"),
+    ("message",),
 ]
 COLUMNS_REQUEST_SNAP = [
-    ("DESCRIPTION", "snapshot.description"),
-    ("ID", "snapshot.snap_id"),
-    ("EXTENSIONS", "extensions"),
-    ("ACTION", "action"),
+    ("snapshot.description",),
+    ("snapshot.snap_id",),
+    ("extensions",),
+    ("action",),
     *COLUMNS_VIM_REQUEST,
     *COLUMNS_REQUEST_MAX,
 ]
 COLUMNS_REQUEST_CHANGE_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,
-    ("APPROVED", "approval.approved"),
-    ("ATTRIBUTE", "attribute"),
+    ("approval.approved",),
+    ("attribute",),
 ]
 COLUMNS_REQUEST_CHANGE = [
     *COLUMNS_REQUEST_CHANGE_MIN,
-    ("VALUE", "value[*]"),
-    ("SCHEDULED", "scheduled_datetime"),
+    ("value", "value[*]"),
+    ("scheduled_datetime",),
     *COLUMNS_REQUEST_MAX,
 ]
 COLUMNS_REQUEST_EXPORT_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,
-    ("TRANSFERRED", "transferred"),
+    ("transferred",),
 ]
 COLUMNS_REQUEST_EXPORT = [
     *COLUMNS_REQUEST_EXPORT_MIN,
-    ("FILES", "files[*]"),
+    ("files", "files[*]"),
     *COLUMNS_REQUEST_MAX,
 ]
-COLUMNS_REQUEST_FOLDER_MIN = [
-    *COLUMNS_REQUEST,
-    ("ACTION", "action"),
-    ("MOREF", "moref"),
-]
+COLUMNS_REQUEST_FOLDER_MIN = [*COLUMNS_REQUEST, ("action",), ("moref",)]
 COLUMNS_REQUEST_FOLDER = [*COLUMNS_REQUEST_FOLDER_MIN, *COLUMNS_REQUEST_MAX]
 COLUMNS_REQUEST_INVENTORY_MIN = [
     *COLUMNS_REQUEST,
-    ("NAME", "name"),
-    ("FORMAT", "format"),
+    ("name",),
+    ("format",),
+    ("transfer",),
 ]
 COLUMNS_REQUEST_INVENTORY = [
     *COLUMNS_REQUEST_INVENTORY_MIN,
-    ("PROPS", "properties.data[*]"),
-    ("FILTERS", "filters"),
-    ("HITS", "hits"),
+    ("properties", "properties.data[*]"),
+    ("filters",),
+    ("transfer",),
+    ("transferred",),
     *COLUMNS_REQUEST_MAX,
 ]
 COLUMNS_REQUEST_NEW_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,
-    ("APPROVED", "approval.approved"),
-    ("BUILT", "built_from"),
+    ("approval.approved",),
+    ("built_from",),
 ]
 COLUMNS_REQUEST_NEW = [
     *COLUMNS_REQUEST_NEW_MIN,
-    ("DOMAIN", "domain"),
-    ("SOURCE", "source_vm"),
-    ("SOURCE", "source_template"),
-    ("SOURCE", "source_image"),
-    ("FOLDER", "folder"),
-    ("CPU", "cpu"),
-    ("MEMORY", "memory"),
-    ("DISKS", "disks[*]"),
-    ("NETWORKS", "networks[*]"),
+    ("domain",),
+    ("source_vm",),
+    ("source_template",),
+    ("source_image",),
+    ("folder",),
+    ("cpu",),
+    ("memory",),
+    ("disks", "disks[*]"),
+    ("networks", "networks[*]"),
     *COLUMNS_REQUEST_MAX,
 ]
 COLUMNS_TK_MIN = [
-    ("ID", "id"),
-    ("CREATED", "created_on"),
-    ("UPDATED", "updated_on"),
-    ("LAST ACCESS", "last_access"),
-    ("LAST IP", "ip_address"),
-    ("VALID", "valid"),
+    ("id",),
+    ("created_on",),
+    ("updated_on",),
+    ("last_access",),
+    ("ip_address",),
+    ("valid",),
 ]
-COLUMNS_TK = [
-    *COLUMNS_TK_MIN,
-    ("TYPE", "type"),
-    ("EXPIRATION", "expiration"),
-    ("DURATION", "duration"),
-]
-COLUMNS_MESSAGE_MIN = [
-    *COLUMNS_MIN,
-    ("KIND", "kind"),
-    ("SUBJECT", "subject"),
-    ("STATUS", "status"),
-]
+COLUMNS_TK = [*COLUMNS_TK_MIN, ("type",), ("expiration",), ("duration",)]
+COLUMNS_MESSAGE_MIN = [*COLUMNS_MIN, ("kind",), ("subject",), ("status",)]
 COLUMNS_MESSAGE = [
     *COLUMNS_MIN,
-    ("KIND", "kind"),
-    ("STATUS", "status"),
-    ("FROM", "user.username"),
-    ("SUBJECT", "subject"),
-    ("TEXT", "text"),
+    ("kind",),
+    ("status",),
+    ("user.username",),
+    ("subject",),
+    ("text",),
 ]
 COLUMNS_VM_TEMPLATE = [
     *COLUMNS_VM_MIN,
-    ("FOLDER", "folder.path"),
-    ("CPU", "cpuCount"),
-    ("MEMORY", "memoryGB"),
-    ("GUEST", "guestFullName"),
-    ("VERSION", "version"),
+    ("folder.path",),
+    ("cpu_count",),
+    ("memory_gb",),
 ]
-COLUMNS_VM = [
-    *COLUMNS_VM_MIN,
-    ("FOLDER", "folder.path"),
-    ("CPU", "cpuCount"),
-    ("IP_ADDRESS", "ipAddress"),
-    ("MEMORY", "memoryGB"),
-    ("POWER", "powerState"),
-    ("GUEST", "guestFullName"),
-    ("VERSION", "version"),
-]
+COLUMNS_VM = [*COLUMNS_VM_TEMPLATE, ("power_state",), ("ip_address",)]
 COLUMNS_VM_INFO = [
-    ("UUID", "uuid"),
-    ("NAME", "name.full_name"),
-    ("FOLDER", "folder.path"),
-    ("GUEST OS", "config.os.guestId"),
-    ("VERSION", "hardware.version"),
-    ("STATUS", "state.overallStatus"),
-    ("STATE", "state.powerState"),
-    ("ALARMS", "state.alarms"),
-    ("CPU", "hardware.cpu.cpuCount"),
-    ("MEMORY (GB)", "hardware.memory.memoryGB"),
-    ("PROVISIONED (GB)", "storage.provisionedGB"),
-    ("SNAPSHOT", "snapshot.exist"),
-    ("DISKS", "hardware.devices.disks[*].unit"),
-    ("NICS", "hardware.devices.nics[*].unit"),
-    ("FLOPPY", "hardware.devices.floppies[*].unit"),
+    ("uuid",),
+    ("name", "name.full_name"),
+    ("folder.path", "folder.path"),
+    ("guest_id", "config.os.guest_id"),
+    ("version", "hardware.version"),
+    ("overall_status", "state.overall_status"),
+    ("power_state", "state.power_state"),
+    ("alarms", "state.alarms"),
+    ("cpu", "hardware.cpu.cpu_count"),
+    ("memory_gb", "hardware.memory.memory_gb"),
+    ("provisioned_gb", "storage.provisioned_gb"),
+    ("snapshot", "snapshot.exist"),
+    ("disks", "hardware.devices.disks[*].unit"),
+    ("nics", "hardware.devices.nics[*].unit"),
+    ("floppies", "hardware.devices.floppies[*].unit"),
 ]
 COLUMNS_VM_GUEST = [
-    ("HOSTNAME", "hostName"),
-    ("IP", "ipAddress[*]"),
-    ("GUEST_NAME", "os.guestFullName"),
-    ("GUEST_ID", "os.guestId"),
-    ("TOOLS", "tools.runningStatus"),
+    ("hostname",),
+    ("ip_address", "ip_address[*]"),
+    ("full_name", "os.full_name"),
+    ("guest_id", "os.guest_id"),
+    ("running_status", "tools.running_status"),
 ]
 COLUMNS_VM_GUEST_OS = [
-    ("FAMILY", "guestFamily"),
-    ("NAME", "guestFullName"),
-    ("ID", "guestId"),
+    ("family", "guest_family"),
+    ("full_name", "guest_full_name"),
+    ("id", "guest_id"),
 ]
 COLUMNS_VM_GUEST_IP = [
-    ("IP", "ipAddress"),
-    ("MAC", "macAddress"),
-    ("ORIGIN", "origin"),
-    ("STATE", "state"),
+    ("ip_address", "ip_address"),
+    ("mac_address", "mac_address"),
+    ("origin",),
+    ("state",),
 ]
 COLUMNS_VM_HAGROUP = [*COLUMNS_VM_MIN, ("VALID", "valid")]
 COLUMNS_VM_MEMORY = [
-    ("MEMORY_GB", "memoryGB"),
-    ("HOTADD", "hotAdd.enabled"),
-    ("HOTADD_LIMIT", "hotAdd.limitGB"),
-    ("QUICKSTATS_BALLOONED", "quickStats.balloonedMemoryMB"),
-    ("QUICKSTATS_USAGE", "quickStats.guestMemoryUsageMB"),
+    ("memory_gb",),
+    ("hot_add.enabled",),
+    ("hot_add.limit_gb",),
+    ("ballooned_memory_mb", "quick_stats.ballooned_memory_mb"),
+    ("guest_memory_usage_mb", "quick_stats.guest_memory_usage_mb"),
 ]
 COLUMNS_VM_NIC_MIN = [
-    ("LABEL", "label"),
-    ("MAC", "macAddress"),
-    ("TYPE", "type"),
-    ("NETWORK", "network.name"),
-    ("NETWORK_MOREF", "network.moref"),
-    ("CONNECTED", "connected"),
+    ("label",),
+    ("mac_address",),
+    ("type",),
+    ("network.name",),
+    ("network.moref",),
+    ("connected",),
 ]
-COLUMNS_VM_NIC = [*COLUMNS_VM_NIC_MIN, ("START_CONNECTED", "startConnected")]
-COLUMNS_OBJ_PERMISSION = [
-    ("PRINCIPAL", "principal"),
-    ("GROUP", "group"),
-    ("PROPAGATE", "propagate"),
-]
-COLUMNS_VM_SNAP_MIN = [("ID", "id"), ("NAME", "name")]
+COLUMNS_VM_NIC = [*COLUMNS_VM_NIC_MIN, ("start_connected",)]
+COLUMNS_OBJ_PERMISSION = [("principal",), ("group",), ("propagate",)]
+COLUMNS_VM_SNAP_MIN = [("id",), ("name",)]
 COLUMNS_VM_SNAP = [
     *COLUMNS_VM_SNAP_MIN,
-    ("SIZE_GB", "sizeGB"),
-    ("DESCRIPTION", "description"),
-    ("CREATED", "createTime"),
-    ("AGE", "age"),
+    ("power_state",),
+    ("quiesced",),
+    ("size_gb",),
+    ("description",),
+    ("create_time",),
+    ("age",),
 ]
-COLUMNS_VM_ADMIN = [("NAME", "name"), ("EMAIL", "email"), ("PHONE", "phone")]
-COLUMNS_VM_ALARM_MIN = [
-    *COLUMNS_MOID,
-    ("STATUS", "overallStatus"),
-    ("DATETIME", "dateTime"),
-]
+COLUMNS_VM_ADMIN = [("name",), ("email",), ("phone",)]
+COLUMNS_VM_ALARM_MIN = [*COLUMNS_MOREF, ("overall_status",), ("date_time",)]
 COLUMNS_VM_ALARM = [
     *COLUMNS_VM_ALARM_MIN,
-    ("ACK", "acknowledged"),
-    ("ACKBY", "acknowledgedByUser"),
-    ("ACKDATE", "acknowledgedDateTime"),
+    ("acknowledged",),
+    ("acknowledged_by_user",),
+    ("acknowledged_date_time",),
 ]
 COLUMNS_VM_BOOT = [
-    ("ENTER_BIOS", "enterBIOSSetup"),
-    ("BOOTRETRYDELAY", "bootRetryDelayMs"),
-    ("BOOTDELAY", "bootDelayMs"),
+    ("enter_bios_setup",),
+    ("boot_retry_delay_ms",),
+    ("boot_delay_ms",),
 ]
-COLUMNS_VM_CD_MIN = [
-    ("LABEL", "label"),
-    ("BACKING", "backing"),
-    ("CONNECTED", "connected"),
-]
+COLUMNS_VM_CD_MIN = [("label",), ("backing",), ("connected",)]
 COLUMNS_VM_CD = [
     *COLUMNS_VM_CD_MIN,
-    ("CONTROLLER_TYPE", "controller.type"),
-    ("CONTROLLER_NODE", "controller.virtualDeviceNode"),
+    ("controller.type",),
+    ("controller.virtual_device_node",),
 ]
-COLUMNS_VM_CTRL_MIN = [
-    ("LABEL", "label"),
-    ("BUS_NUM", "busNumber"),
-    ("TYPE", "type"),
-]
+COLUMNS_VM_CTRL_MIN = [("label",), ("bus_number",), ("type",)]
 COLUMNS_VM_CTRL = [
     *COLUMNS_VM_CTRL_MIN,
-    ("CTRL KEY", "controllerKey"),
-    ("SUMMARY", "summary"),
-    ("SHARED_BUS", "sharedBus"),
-    ("HOTADDREMOVE", "hotAddRemove"),
+    ("controller_key",),
+    ("summary",),
+    ("shared_bus",),
+    ("hot_add_rmove",),
 ]
 COLUMNS_VM_DISK_MIN = [
-    ("LABEL", "label"),
-    ("UNIT", "unit"),
-    ("CONTROLLER", "controller.virtualDeviceNode"),
+    ("label",),
+    ("unit",),
+    ("controller.virtual_device_node",),
 ]
-COLUMNS_VM_DISK = [
-    *COLUMNS_VM_DISK_MIN,
-    ("CAPACITY_GB", "capacityGB"),
-    ("SHARES", "shares.level"),
-]
+COLUMNS_VM_DISK = [*COLUMNS_VM_DISK_MIN, ("capacity_gb",), ("shares.level",)]
 
 COLUMNS_VM_DISK_BACKING = [
-    ("DESCRIPTOR", "descriptorFileName"),
-    ("DEVICE_NAME", "deviceName"),
-    ("DISK_MODE", "diskMode"),
-    ("FILE", "fileName"),
-    ("LUN", "lunUuid"),
-    ("THIN", "thinProvisioned"),
+    ("descriptor_file_name",),
+    ("device_name",),
+    ("disk_mode",),
+    ("file_name",),
+    ("lun_uuid",),
+    ("thin_provisioned",),
 ]
-COLUMNS_VM_DISK_SCSI = [
-    ("BUS_NUMBER", "busNumber"),
-    ("LABEL", "label"),
-    ("TYPE", "type"),
-]
+COLUMNS_VM_DISK_SCSI = [("bus_number",), ("label",), ("type",)]
 COLUMNS_VM_CTRL_DISK = [
-    ("CONTROLLER", "controller.virtualDeviceNode"),
+    ("controller.virtual_device_node",),
     *COLUMNS_VM_DISK_MIN,
-    ("CAPACITY_GB", "capacityGB"),
+    ("capacity_gb",),
 ]
 COLUMNS_VM_CPU = [
-    ("CPU", "cpu"),
-    ("CORES/SOCKET", "coresPerSocket"),
-    ("HOTADD", "hotAdd.enabled"),
-    ("HOTREMOVE", "hotRemove.enabled"),
-    ("QUICKSTATS_DEMAND", "quickStats.overallCpuDemandMHz"),
-    ("QUICKSTATS_USAGE", "quickStats.overallCpuUsageMHz"),
+    ("cpu",),
+    ("cores_per_socket",),
+    ("hot_add.enabled",),
+    ("hot_remove.enabled",),
+    ("overall_cpu_demand_mhz", "quick_stats.overall_cpu_demand_mhz"),
+    ("overall_cpu_usage_mhz", "quick_stats.overall_cpu_usage_mhz"),
 ]
-COLUMNS_VM_EVENT = [
-    ("USERNAME", "userName"),
-    ("CREATED", "createdTime"),
-    ("MESSAGE", "message"),
-]
+COLUMNS_VM_EVENT = [("user_name",), ("created_time",), ("message",)]
 COLUMNS_VM_STATE = [
-    ("POWER", "powerState"),
-    ("BOOT", "bootTime"),
-    ("CONNECTION", "connectionState"),
-    ("DOMAIN", "domain.name"),
+    ("power_state",),
+    ("boot_time",),
+    ("connection_state",),
+    ("domain.name",),
 ]
-COLUMNS_VM_TOOLS = [
-    ("VERSION", "version"),
-    ("STATUS", "versionStatus"),
-    ("RUNNING", "runningStatus"),
-]
+COLUMNS_VM_TOOLS = [("version",), ("version_status",), ("running_status",)]
 COLUMNS_VM_HW = [
-    ("VALUE", "value"),
-    ("STATUS", "status"),
-    ("UPGRADE_POLICY", "upgrade_policy.upgradePolicy"),
+    ("value",),
+    ("status",),
+    ("upgrade_policy", "upgrade_policy.upgrade_policy"),
 ]
-COLUMNS_EXTRA_CONFIG = [("KEY", "key"), ("VALUE", "value")]
-COLUMNS_VSS_OPTIONS = [("OPTIONS", "[*]")]
+COLUMNS_VM_CONSOLIDATION = [("require_disk_consolidation",)]
+COLUMNS_VM_CONTROLLERS = [('scsi.count',)]
+COLUMNS_EXTRA_CONFIG = [("key",), ("value",)]
+COLUMNS_VSS_OPTIONS = [("options", "[*]")]
 COLUMNS_GROUP = [
-    ("NAME", "cn"),
-    ("DESCRIPTION", "description"),
-    ("CREATED", "createTimestamp"),
-    ("MODIFIED", "modifyTimestamp"),
-    ("MEMBERS", "uniqueMemberCount"),
-    ("MEMBER", "uniqueMember[*].uid"),
+    ("cn",),
+    ("description",),
+    ("create_timestamp",),
+    ("modify_timestamp",),
+    ("unique_member_count",),
+    ("unique_member", "unique_member[*].uid"),
 ]
-COLUMNS_GROUPS = [("GROUPS", "groups[*]")]
+COLUMNS_GROUPS = [("groups", "groups[*]")]
 COLUMNS_ROLE = [
-    ("NAME", "name"),
-    ("DESCRIPTION", "description"),
-    ("ENTITLEMENTS", "entitlements[*]"),
+    ("name",),
+    ("description",),
+    ("entitlements", "entitlements[*]"),
 ]
 COLUMNS_USER_PERSONAL = [
-    ("USERNAME", "username"),
-    ("NAME", "full_name"),
-    ("EMAIL", "email"),
-    ("PHONE", "phone"),
-    ("AUTH", "authTimestamp"),
-    ("PWDCHANGE", "pwdChangeTime"),
-    ("LOCKED", "pwdAccountLockedTime"),
+    ("username",),
+    ("full_name",),
+    ("email",),
+    ("phone",),
+    ("auth_timestamp",),
+    ("pwd_change_time",),
+    ("pwd_account_locked_time",),
 ]
 COLUMNS_USER_STATUS = [
-    ("CREATED", "created_on"),
-    ("UPDATED", "updated_on"),
-    ("LAST ACCESS", "last_access"),
-    ("LAST IP", "ip_address"),
+    ("created_on",),
+    ("updated_on",),
+    ("last_access",),
+    ("ip_address",),
 ]
-COLUMNS_MESSAGE_DIGEST = [("MESSAGE", "message")]
+COLUMNS_MESSAGE_DIGEST = [("message",)]
 COLUMNS_NOT_REQUEST = [
-    ("ALL", "all"),
-    ("NONE", "none"),
-    ("COMPLETION", "completion"),
-    ("ERROR", "error"),
-    ("SUBMISSION", "submission"),
+    ("all",),
+    ("none",),
+    ("completion",),
+    ("error",),
+    ("submission",),
 ]
-COLUMNS_WEBDAV = [("FILES", "[*]")]
-COLUMNS_WEBDAV_INFO = [
-    ("CREATED", "created"),
-    ("MODIFIED", "modified"),
-    ("NAME", "name"),
-    ("SIZE", "size"),
-]
-COLUMNS_SSH_KEY_MIN = [*COLUMNS_MIN, ("TYPE", "type"), ("COMMENT", "comment")]
-COLUMNS_SSH_KEY = [
-    *COLUMNS_SSH_KEY_MIN,
-    ("FINGERPRINT", "fingerprint"),
-    ("VALUE", "value"),
-]
+COLUMNS_WEBDAV = [("files", "[*]")]
+COLUMNS_WEBDAV_INFO = [("created",), ("modified",), ("name",), ("size",)]
+COLUMNS_SSH_KEY_MIN = [*COLUMNS_MIN, ("type",), ("comment",)]
+COLUMNS_SSH_KEY = [*COLUMNS_SSH_KEY_MIN, ("fingerprint",), ("value",)]
 
 VM_DISK_MODES = [
     'persistent',

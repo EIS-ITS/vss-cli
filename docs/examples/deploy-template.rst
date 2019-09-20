@@ -36,7 +36,7 @@ as Master Copy of certain virtual machine, thus any virtual machine can be marke
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name %ubuntu-16.04_x64%
+    vss-cli compute vm ls -f name ubuntu-16.04_x64
 
     uuid                                  name
     ------------------------------------  ----------------------
@@ -128,6 +128,17 @@ Save ``dvportgroup-11052`` in ``NET`` environment variable:
 .. code-block:: bash
 
     export NET=dvportgroup-11052
+
+
+By default, the network adapter will use **vmxnet3** which provides ideal performance,
+however a few legacy operating systems does not have the drivers. In such case, you can
+specify which adapter type between: **e1000e***, **e1000**, **vmxnet2** or **vmxnet3**.
+To do so, append the adapter type to the network adapter network as follows:
+
+.. code-block:: bash
+
+    export NET=dvportgroup-11052=e1000e
+
 
 
 Folder

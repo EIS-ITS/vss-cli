@@ -835,7 +835,7 @@ class Configuration(VssManager):
         g_os = self.get_os(
             sort='guestFullName,desc', show_all=True, per_page=500
         )
-        attributes = [('id', int), ('guestId', str), ('guestFullName', str)]
+        attributes = [('id', int), ('guest_id', str), ('full_name', str)]
         objs = self._filter_objects_by_attrs(name_or_guest, g_os, attributes)
         if not objs:
             raise click.BadParameter(f'{name_or_guest} could not be found')
@@ -843,9 +843,7 @@ class Configuration(VssManager):
         if o_count > 1:
             return self.pick(
                 objs,
-                options=[
-                    f"{i['guestFullName']} ({i['guestId']})" for i in objs
-                ],
+                options=[f"{i['full_name']} ({i['guest_id']})" for i in objs],
             )
         return objs
 
@@ -908,11 +906,29 @@ class Configuration(VssManager):
             self.get_images, name_or_path_or_id
         )
 
+    def get_vm_nic_type_by_name(self, name: Union[str, int]):
+        g_types = self.get_supported_nic_types(only_type=False)
+        attributes = [('type', str)]
+        objs = self._filter_objects_by_attrs(name, g_types, attributes)
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(f'{name} could not be found')
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(
+                objs,
+                options=[
+                    f"{i['type']} - {i['description'][:100]}..." for i in objs
+                ],
+            )
+        return objs
+
     def get_cli_spec_from_api_spec(
         self, payload: dict, template: dict
     ) -> dict:
-        os_q = self.get_os(filter=f"guestId,eq,{payload.get('os')}")
-        machine_os = os_q[0]['guestFullName'] if os_q else payload.get('os')
+        os_q = self.get_os(filter=f"guest_id,eq,{payload.get('os')}")
+        machine_os = os_q[0]['full_name'] if os_q else payload.get('os')
         fo_q = self.get_folder(payload.get('folder'))
         machine_folder = fo_q['path'] if fo_q else payload.get('folder')
         template['built'] = payload.get('built_from')
@@ -923,7 +939,10 @@ class Configuration(VssManager):
         template['machine']['folder'] = machine_folder
         template['machine']['disks'] = payload.get('disks')
         template['networking']['interfaces'] = [
-            {'network': self.get_network(v)['name']}
+            {
+                'network': self.get_network(v['network'])['name'],
+                'type': v['type'],
+            }
             for v in payload.get('networks')
         ]
         template['metadata']['billing'] = payload.get('bill_dept')
@@ -952,7 +971,7 @@ class Configuration(VssManager):
                 # replace with valid values
                 spec_payload['os'] = self.get_os_by_name_or_guest(
                     machine_section['os']
-                )[0]['guestId']
+                )[0]['guest_id']
                 spec_payload['iso'] = self.get_iso_by_name_or_path(
                     machine_section['iso']
                 )[0]['path']
@@ -962,7 +981,12 @@ class Configuration(VssManager):
                 )[0]['moref']
                 # networking
                 spec_payload['networks'] = [
-                    self.get_network_by_name_or_moref(n['network'])[0]['moref']
+                    {
+                        'network': self.get_network_by_name_or_moref(
+                            n['network']
+                        )[0]['moref'],
+                        'type': n['type'],
+                    }
                     for n in networking_section['interfaces']
                 ]
                 # metadata section
@@ -1082,7 +1106,7 @@ class Configuration(VssManager):
             else:
                 invalid_response = True
         # clear screen to focus on results
-        click.clear()
+        # click.clear()
         if invalid_response:
             raise VssCliError(f'Invalid response from the API.')
         if timed_out:

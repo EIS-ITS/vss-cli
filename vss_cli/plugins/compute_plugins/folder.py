@@ -40,7 +40,7 @@ def compute_folder_ls(ctx: Configuration, filter_by, show_all, sort, page):
 
             vss-cli compute folder ls -s path desc
     """
-    params = dict(expand=1)
+    params = dict(expand=1, sort='path,asc')
     if all(filter_by):
         params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):

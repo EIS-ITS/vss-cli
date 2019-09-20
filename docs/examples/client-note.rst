@@ -91,7 +91,7 @@ virtual machines with the ``front`` string in their names:
 
 .. code-block:: bash
 
-    vss-cli compute vm ls --filter-by name %front%
+    vss-cli compute vm ls --filter-by name front
     uuid                                  name
     ------------------------------------  -----------------
     5012b89f-fae3-168e-7f44-9a23b8e65074  1709T-Front_end_1
@@ -103,8 +103,7 @@ command as follows:
 
     vss-cli compute vm get Front_end_1 client-note
 
-    Uuid                : 5012b89f-fae3-168e-7f44-9a23b8e65074
-    Value               : Project: Enterprise CMS
+    value               : Project: Enterprise CMS
                           ToDo: Backup, Recovery
 
 
@@ -124,8 +123,7 @@ And query to validate any change:
 
     vss-cli compute vm get Front_end_1 client-note
 
-    Uuid                : 5012b89f-fae3-168e-7f44-9a23b8e65074
-    Value               : Project: Enterprise CMS
+    value               : Project: Enterprise CMS
                           ToDo: Backup, Recovery
                           Billing Code: 1234
 
@@ -141,5 +139,4 @@ And query to validate any change:
 
     vss-cli compute vm get Front_end_1 client-note
 
-    Uuid                : 5012b89f-fae3-168e-7f44-9a23b8e65074
     Value               : Billing Code: 1234

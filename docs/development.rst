@@ -156,8 +156,8 @@ Now, the plugin package ``new_plugin`` contains ``__init__.py`` and ``core.py``:
                 ctx,
                 vms,
                 columns=[
-                   ('UUID', 'uuid'), ('NAME', 'name'),
-                   ('IP', 'ipAddress')
+                   ('uuid',), ('name',),
+                   ('ip_address',)
                 ],
             )
         )

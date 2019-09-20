@@ -49,9 +49,9 @@ and available operators are **eq, ne, lt, le, gt, ge, like, in** as follows:
 
 .. code-block:: bash
 
-    vss-cli compute net ls -f name like,%PUBLIC%
+    vss-cli compute net ls -f name PUBLIC
 
-    MOREF              NAME                DESCRIPTION                  SUBNET          VLAN_ID    VMS
+    moref              name                description                  subnet          vlan_id    vms
     -----------------  ------------------  ---------------------------  --------------  ---------  -----
     dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network           142.1.216.0/23  1584       8
 
@@ -66,16 +66,16 @@ basic information of a given network:
 
     vss-cli compute net get dvportgroup-11052
 
-    MOREF               : dvportgroup-11052
-    NAME                : VL-1584-VSS-PUBLIC
-    DESCRIPTION         : VSS Public network
-    SUBNET              : 142.1.216.0/23
-    VLAN_ID             : 1584
-    VMS                 : 8
-    PORTS               : 32
-    ADMIN               : Jose Manuel Lopez Lujan:000-0000-000:email@eis.utoronto.ca
-    CLIENT              : EIS
-    UPDATED_ON          : 2019-07-09 Tue 16:00:05 EDT
+    moref               : dvportgroup-11052
+    name                : VL-1584-VSS-PUBLIC
+    description         : VSS Public network
+    subnet              : 142.1.216.0/23
+    vlan_id             : 1584
+    vms                 : 8
+    ports               : 32
+    admin               : Jose Manuel Lopez Lujan:000-0000-000:email@eis.utoronto.ca
+    client              : EIS
+    updated_on          : 2019-07-09 Tue 16:00:05 EDT
 
 
 If you would like to get a list of your virtual machines available on a given
@@ -92,8 +92,9 @@ network, use the ``vss-cli compute net get <name-or-moref> vms`` command. A list
     501220a5-a091-6652-3215-123456548798  1701T-ecstatic_torvalds
 
 
-Virtual Machine NICs
---------------------
+Virtual Machine Network Adapters
+--------------------------------
+
 Virtual machine network interface cards backing is always a virtual network. Virtual
 machine NICs can be manage by ``vss-cli compute vm <name-or-uuid> <set|get> nic <unit>``. Both
 `get` and `set` commands have similar arguments `<unit>` and `set` has a few properties
@@ -118,8 +119,6 @@ to set as shown below:
 
       Add, remove or update virtual machine network adapters
 
-      vss-cli compute vm set <name-or-uuid> nic mk --network <net-name-or-moref>
-
     Options:
       --help  Show this message and exit.
 
@@ -128,9 +127,6 @@ to set as shown below:
       rm  Remove NIC unit
       up  Update NIC unit
 
-
-As described in the help section of the ``set`` command, you are able to create ``mk``,
-remove ``rm`` and update ``up`` a given nic unit.
 
 List
 ~~~~
@@ -143,14 +139,14 @@ provide further information about the given unit as follows:
 
     vss-cli compute vm get 501220a5-a091-1866-9741-664236067142 nic 1
 
-    Uuid                : 501220a5-a091-1866-9741-664236067142
-    Label               : Network adapter 1
-    Type                : VMXNET3
-    Connected           : No
-    Start Connected     : Yes
-    Mac Address         : 00:50:56:00:00:00
-    Network Name        : VL-1584-VSS-PUBLIC
-    Network Moref       : dvportgroup-11052
+
+    label               : Network adapter 1
+    mac_address         : 00:50:56:00:00:00
+    type                : vmxnet3
+    network.name        : VL-1584-VSS-PUBLIC
+    network.moref       : dvportgroup-11052
+    connected           : True
+    start_connected     : True
 
 
 Update
@@ -160,32 +156,35 @@ Update a given virtual machine network interface card backing network by running
 ``vss-cli compute vm <name-or-uuid> nic up --network <name-or-moref> <unit>``
 where ``uuid`` is the virtual machine UUID or name, ``unit`` is the nic labeled unit and
 `moref` is the virtual network identifier or name.
+
 For example, if a given nic needs to be updated to network ``dvportgroup-0000``,
 the command to use would be:
 
 .. code-block:: bash
 
     vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --network dvportgroup-0000 1
+
     # or
+
     vss-cli compute vm set TEST nic up --network VL-0000-NETWORK 1
 
-New virtual machines by default are provisioned using the ``VMXNET3`` virtual adapter controller,
+New virtual machines by default are provisioned using the ``vmxnet3`` virtual adapter controller,
 designed to deliver high performance in virtual machines, but there are rare cases, the operating
-system does not include the ``VMXNET<2|3>`` drivers and the only way of getting them is online, a virtual
-machine network adapter should be modified with a more generic controller, such as ``E1000`` or ``E1000e``.
-To do so, run ``vss-cli compute vm set <name-or-uuid> nic up --type <E1000|E1000e> 1``, for example:
+system does not include the ``vmxnet<2|3>`` drivers and the only way of getting them is online, a virtual
+machine network adapter should be modified with a more generic controller, such as ``e1000`` or ``e1000e``.
+To do so, run ``vss-cli compute vm set <name-or-uuid> nic up --type <e1000|e1000e> 1``, for example:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --type E1000e 1
+    vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --type e1000e 1
 
-After downloading **OpenVM Tools** which contain the drivers, change back to the ``VMXNET3``
-controller by performing the same bas operation but replacing ``E1000e`` with ``VMXNET3`` as
+After downloading **OpenVM Tools** which contain the drivers, change back to the ``vmxnet3``
+controller by performing the same bas operation but replacing ``e1000e`` with ``vmxnet3`` as
 shown below:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --type VMXNET3 1
+    vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --type vmxnet3 1
 
 
 Network interface connection states can also be updated to either ``connect`` or ``disconnect``
@@ -200,11 +199,29 @@ given the requirements. To perform a state change execute
 Create
 ~~~~~~
 Create a new virtual machine network adapter by using the sub command ``mk`` and providing the
-backing network. For example:
+backing network and type separated by the ``=`` sign in the option. i.e. ``<moref-or-name>=<nic_type>``.
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 nic mk --network dvportgroup-0000
+    Usage: vss-cli compute vm set nic mk [OPTIONS]
+
+      Add network adapters specifying backing network and adapter type.
+
+      vss-cli compute vm set <name-or-uuid> nic mk -n <moref-or-name>=<nic-type> -n <moref-or-name>
+
+    Options:
+      -n, --net TEXT  Network adapter <moref-or-name>=<nic-type>.  [required]
+      --help          Show this message and exit.
+
+
+.. note:: If no adapter is set, ``vmxnet3`` is used.
+
+
+For example:
+
+.. code-block:: bash
+
+    vss-cli compute vm set 1909P-WEB nic mk -n dvportgroup-1083=vmxnet2 -n dvportgroup-1094
 
 
 Remove
