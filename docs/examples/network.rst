@@ -172,11 +172,11 @@ New virtual machines by default are provisioned using the ``vmxnet3`` virtual ad
 designed to deliver high performance in virtual machines, but there are rare cases, the operating
 system does not include the ``vmxnet<2|3>`` drivers and the only way of getting them is online, a virtual
 machine network adapter should be modified with a more generic controller, such as ``e1000`` or ``e1000e``.
-To do so, run ``vss-cli compute vm set <name-or-uuid> nic up --type <e1000|e1000e> 1``, for example:
+To do so, run ``vss-cli compute vm set <name-or-uuid> nic up --adapter <e1000|e1000e> 1``, for example:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --type e1000e 1
+    vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --adapter e1000e 1
 
 After downloading **OpenVM Tools** which contain the drivers, change back to the ``vmxnet3``
 controller by performing the same bas operation but replacing ``e1000e`` with ``vmxnet3`` as
@@ -184,7 +184,7 @@ shown below:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --type vmxnet3 1
+    vss-cli compute vm set 501220a5-a091-1866-9741-664236067142 nic up --adapter vmxnet3 1
 
 
 Network interface connection states can also be updated to either ``connect`` or ``disconnect``
