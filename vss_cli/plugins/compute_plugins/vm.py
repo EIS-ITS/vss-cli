@@ -618,9 +618,9 @@ def compute_vm_get_stats(ctx: Configuration, kind):
     }
 
     if not ctx.is_powered_on_vm(ctx.uuid):
-        raise VssCliError('Cannot perform operation in ' 'current power state')
+        raise VssCliError('Cannot perform operation in current power state')
     obj = lookup[kind](ctx.uuid)
-    columns = ctx.columns or [(i.upper(), i) for i in obj.keys()]
+    columns = ctx.columns or [(i,) for i in obj.keys()]
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -881,7 +881,7 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
         # get iso reference
         iso_ref = ctx.get_iso_by_name_or_path(b)
         _LOGGING.debug(f'Will create {iso_ref}')
-        p_backing.append(iso_ref[0]['id'])
+        p_backing.append(str(iso_ref[0]['id']))
     # generate payload
     payload = dict(uuid=ctx.uuid, backings=p_backing)
     # add common options
