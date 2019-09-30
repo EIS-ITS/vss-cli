@@ -5,7 +5,7 @@ from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
-from vss_cli.helper import format_output
+from vss_cli.helper import format_output, process_filters
 
 
 @click.group('message', short_help='Manage VSS Messages.')
@@ -38,9 +38,9 @@ def message_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 
     """
     columns = ctx.columns or const.COLUMNS_MESSAGE_MIN
-    params = dict()
+    params = dict(expand=1, sort='status,asc')
     if all(filter_by):
-        params['filter'] = f'{filter_by[0]},{filter_by[1]}'
+        params['filter'] = ','.join(process_filters(filter_by))
     if all(sort):
         params['sort'] = f'{sort[0]},{sort[1]}'
     # make request
