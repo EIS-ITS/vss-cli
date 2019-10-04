@@ -204,3 +204,10 @@ vss_service_opt = click.option(
     autocompletion=autocompletion.vss_services,
     required=False,
 )
+instances = click.option(
+    '--instances',
+    help='Number of instances to deploy',
+    type=click.INT,
+    default=1,
+    show_default=True,
+)

@@ -2883,6 +2883,7 @@ def compute_vm_mk_shell(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.vss_service_opt
+@c_so.instances
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_template(
@@ -2905,6 +2906,7 @@ def compute_vm_mk_template(
     custom_spec,
     extra_config,
     vss_service,
+    instances,
 ):
     """Deploy virtual machine from template"""
     # get source from uuid or name
@@ -2957,9 +2959,15 @@ def compute_vm_mk_template(
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
     # request
-    obj = ctx.deploy_vm_from_template(**payload)
+    if instances > 1:
+        payload['count'] = instances
+        obj = ctx.deploy_vms_from_template(**payload)
+        _columns = const.COLUMNS_REQUEST_MULT_SUBMITTED
+    else:
+        obj = ctx.deploy_vm_from_template(**payload)
+        _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
-    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    columns = ctx.columns or _columns
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
