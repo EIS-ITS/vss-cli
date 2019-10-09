@@ -15,3 +15,4 @@ dataclasses-json==0.2.2
 validators==0.12.4
 click-spinner==0.1.8
 ruamel.yaml==0.16.5
+click-threading==0.4.4

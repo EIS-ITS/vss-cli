@@ -1,5 +1,6 @@
 """Configuration for VSS CLI (vss-cli)."""
 from base64 import b64decode, b64encode
+import functools
 import json
 import logging
 import os
@@ -25,6 +26,7 @@ from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
     debug_requests_on, format_output, get_hostname_from_url)
 from vss_cli.utils.emoji import EMOJI_UNICODE
+from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import validate_email, validate_phone_number
 import vss_cli.yaml as yaml
 
@@ -488,9 +490,7 @@ class Configuration(VssManager):
                 )
                 self.secho('Run ', fg='green', nl=False)
                 self.secho(
-                    'vss-cli message ls -f status,eq,Created',
-                    fg='red',
-                    nl=False,
+                    'vss-cli message ls -f status Created', fg='red', nl=False
                 )
                 self.secho(' to list unread messages.', fg='green')
             else:
@@ -1050,7 +1050,7 @@ class Configuration(VssManager):
         )
         return obj
 
-    def wait_for_request_to(
+    def wait_for_requests_to(
         self,
         obj,
         required: List[str] = (
@@ -1059,89 +1059,118 @@ class Configuration(VssManager):
         ),
         wait: int = 5,
         max_tries: int = 720,
+    ):
+        objs = [
+            dict(
+                _links=dict(request=r_url),
+                status=obj['status'],
+                request=dict(id=os.path.basename(r_url)),
+            )
+            for r_url in obj['_links']['request']
+        ]
+        wq = WorkerQueue(max_workers=len(objs))
+
+        with wq.join(debug=self.debug):
+            for obj in objs:
+                wq.put(
+                    functools.partial(
+                        self.wait_for_request_to,
+                        obj=obj,
+                        required=required,
+                        wait=wait,
+                        max_tries=max_tries,
+                        threaded=True,
+                    )
+                )
+                wq.spawn_worker()
+
+    def wait_for_request_to(
+        self,
+        obj: dict,
+        required: List[str] = (
+            RequestStatus.PROCESSED.name,
+            RequestStatus.SCHEDULED.name,
+        ),
+        wait: int = 5,
+        max_tries: int = 720,
+        threaded: bool = False,
     ) -> Optional[bool]:
         # wait
-        request_status = False
-        timed_out = False
-        invalid_response = False
+        request_message = {}
+        err_status = [
+            RequestStatus.ERROR.name,
+            RequestStatus.ERROR_RETRY.name,
+            RequestStatus.CANCELLED.name,
+        ]
+        wait_status = [
+            RequestStatus.PENDING.name,
+            RequestStatus.IN_PROGRESS.name,
+            RequestStatus.APPROVAL_REQUIRED.name,
+        ]
+        _LOGGING.debug(
+            f'max tries={max_tries}, wait={wait}, '
+            f'required status={",".join(required)}'
+        )
+        request_id = obj["request"]["id"]
         self.secho(
             f'{EMOJI_UNICODE.get(":hourglass_not_done:")} '
-            f'Waiting for request to complete. ',
+            f'Waiting for request {request_id} to complete... ',
             fg='green',
-            nl=False,
+            nl=True,
         )
-        with self.spinner(disable=self.debug):
-            if 199 < obj['status'] < 300:
-                r_url = obj['_links']['request']
-                tries = 0
-                while True:
-                    request = self.request(r_url)
-                    if 'data' in request:
-                        status = request['data']['status']
-                        request_message = request['data']['message']
-                        if status in required:
-                            request_status = True
-                            break
-                        if status in [
-                            RequestStatus.ERROR.name,
-                            RequestStatus.ERROR_RETRY.name,
-                            RequestStatus.CANCELLED.name,
-                        ]:
-                            request_status = False
-                            break
-                        elif status in [
-                            RequestStatus.PENDING.name,
-                            RequestStatus.IN_PROGRESS.name,
-                            RequestStatus.APPROVAL_REQUIRED.name,
-                        ]:
-                            pass
-                    else:
+        # check for request status
+        if 199 < obj['status'] < 300:
+            pass
+        else:
+            raise VssCliError(f'Invalid response from the API.')
+        with self.spinner(disable=self.debug or threaded):
+            r_url = obj['_links']['request']
+            tries = 0
+            while True:
+                request = self.request(r_url)
+                if 'data' in request:
+                    status = request['data']['status']
+                    request_message = request['data']['message']
+                    if status in required:
+                        request_status = True
+                        break
+                    if status in err_status:
                         request_status = False
                         break
-                    if tries >= max_tries:
-                        timed_out = True
-                        break
-                    tries += 1
-                    sleep(wait)
-            else:
-                invalid_response = True
-        # clear screen to focus on results
-        # click.clear()
-        if invalid_response:
-            raise VssCliError(f'Invalid response from the API.')
-        if timed_out:
-            raise VssCliError(
-                f'Wait for request timed out after {max_tries * wait} seconds.'
-            )
+                    elif status in wait_status:
+                        pass
+                else:
+                    request_status = False
+                    break
+                if tries >= max_tries:
+                    raise VssCliError(
+                        f'Wait for request timed out after '
+                        f'{max_tries * wait} seconds.'
+                    )
+                tries += 1
+                sleep(wait)
         # check result status
+        request_message_str = format_output(
+            self,
+            [request_message],
+            columns=const.COLUMNS_REQUEST_WAIT,
+            single=True,
+        )
+        sys.stdout.flush()
         if request_status:
             self.secho(
                 f'{EMOJI_UNICODE.get(":party_popper:")} '
-                f'Request completed successfully.',
+                f'Request {request_id} completed successfully:',
                 fg='green',
             )
-            self.echo(
-                format_output(
-                    self,
-                    [request_message],
-                    columns=const.COLUMNS_REQUEST_WAIT,
-                    single=True,
-                )
-            )
+            self.echo(f'{request_message_str}')
         else:
             self.secho(
                 f'{EMOJI_UNICODE.get(":worried_face:")} '
-                f'Sorry, something went wrong: ',
-                fg='red',
+                f'Request {request_id} completed with errors:',
                 err=True,
+                fg='red',
             )
-            self.echo(
-                format_output(
-                    self,
-                    [request_message],
-                    columns=const.COLUMNS_REQUEST_WAIT,
-                    single=True,
-                )
-            )
+            self.echo(f'{request_message_str}')
             return False
         return True

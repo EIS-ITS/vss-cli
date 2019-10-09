@@ -618,9 +618,9 @@ def compute_vm_get_stats(ctx: Configuration, kind):
     }
 
     if not ctx.is_powered_on_vm(ctx.uuid):
-        raise VssCliError('Cannot perform operation in ' 'current power state')
+        raise VssCliError('Cannot perform operation in current power state')
     obj = lookup[kind](ctx.uuid)
-    columns = ctx.columns or [(i.upper(), i) for i in obj.keys()]
+    columns = ctx.columns or [(i,) for i in obj.keys()]
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -881,7 +881,7 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
         # get iso reference
         iso_ref = ctx.get_iso_by_name_or_path(b)
         _LOGGING.debug(f'Will create {iso_ref}')
-        p_backing.append(iso_ref[0]['id'])
+        p_backing.append(str(iso_ref[0]['id']))
     # generate payload
     payload = dict(uuid=ctx.uuid, backings=p_backing)
     # add common options
@@ -2883,6 +2883,7 @@ def compute_vm_mk_shell(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.vss_service_opt
+@c_so.instances
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_template(
@@ -2905,6 +2906,7 @@ def compute_vm_mk_template(
     custom_spec,
     extra_config,
     vss_service,
+    instances,
 ):
     """Deploy virtual machine from template"""
     # get source from uuid or name
@@ -2957,13 +2959,22 @@ def compute_vm_mk_template(
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
     # request
-    obj = ctx.deploy_vm_from_template(**payload)
+    if instances > 1:
+        payload['count'] = instances
+        obj = ctx.deploy_vms_from_template(**payload)
+        _columns = const.COLUMNS_REQUEST_MULT_SUBMITTED
+    else:
+        obj = ctx.deploy_vm_from_template(**payload)
+        _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
-    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    columns = ctx.columns or _columns
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
-        ctx.wait_for_request_to(obj)
+        if instances > 1:
+            ctx.wait_for_requests_to(obj)
+        else:
+            ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command('from-clone', short_help='Create vm from clone')
