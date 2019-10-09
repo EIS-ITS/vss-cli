@@ -155,27 +155,30 @@ command takes:
       Create a new virtual machine with no operating system pre-installed.
 
     Options:
-      -d, --description TEXT          Vm description.  [required]
-      -r, --inform TEXT               Informational contact emails in comma
-                                      separated
-      -u, --usage [Test|Prod|Dev|QA]  Vm usage.
+      -d, --description TEXT          A brief description.  [required]
+      -b, --bill-dept TEXT            Billing department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
+      -r, --inform TEXT               Informational contact emails in comma
+                                      separated
+      -u, --usage [Test|Prod|Dev|QA]  Vm usage.
+      -o, --os TEXT                   Guest operating system id.  [required]
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
-      -t, --domain TEXT               Target fault domain.
+      -f, --folder TEXT               Logical folder moref name or path.
+                                      [required]
+      -i, --disk INTEGER              Disks in GB.  [required]
+      -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
+                                      [required]
+      -t, --domain TEXT               Target fault domain name or moref.
       -t, --notes TEXT                Custom notes.
       -s, --iso TEXT                  ISO image path to be mounted after creation
       -h, --high-io                   VM will be created with a VMware Paravirtual
                                       SCSIController.
-      -b, --bill-dept TEXT            Billing department.  [required]
-      -o, --os TEXT                   Guest operating system id or name.
-                                      [required]
-      -f, --folder TEXT               Logical folder moref.  [required]
-      -i, --disk INTEGER              Disks in GB.  [required]
-      -n, --net TEXT                  Networks moref or name mapped to NICs.
-                                      [required]
+      -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      --vss-service TEXT              VSS Service related to VM
+      --instances INTEGER             Number of instances to deploy  [default: 1]
       --help                          Show this message and exit.
 
 
@@ -195,6 +198,11 @@ The following command will also work:
     vss-cli compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os centos \
     --memory 1 --cpu 1 --folder APIDemo --disk 20 --net PUBLIC --iso CentOS-7.0-1406-x86_64-DVD.iso \
     --notes 'Project: CMS' FrontEnd_1
+
+.. note::
+
+    Deploy multiple instances with the ``--instances`` flag.
+
 
 A confirmation email will be sent and the command will return the request ``id`` and
 ``task_id`` as follows:

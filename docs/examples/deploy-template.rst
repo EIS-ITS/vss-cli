@@ -83,7 +83,7 @@ Run ``vss-cli compute vm mk from-template --help`` to obtain the list of argumen
     Options:
       -s, --source TEXT               Source virtual machine or template UUID.
                                       [required]
-      -d, --description TEXT          Vm description.  [required]
+      -d, --description TEXT          A brief description.  [required]
       -b, --bill-dept TEXT            Billing department.
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
@@ -94,13 +94,16 @@ Run ``vss-cli compute vm mk from-template --help`` to obtain the list of argumen
       -o, --os TEXT                   Guest operating system id.
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
-      -f, --folder TEXT               Logical folder moref.
-      -i, --disk INTEGER              Disks in GB.
-      -n, --net TEXT                  Networks moref mapped to NICs.
-      -t, --domain TEXT               Target fault domain.
+      -f, --folder TEXT               Logical folder moref name or path.
+      -i, --disk INTEGER              Virtual disks in GB.
+      -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
+      -t, --domain TEXT               Target fault domain name or moref.
       -t, --notes TEXT                Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
+      -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      --vss-service TEXT              VSS Service related to VM
+      --instances INTEGER             Number of instances to deploy  [default: 1]
       --help                          Show this message and exit.
 
 
@@ -232,6 +235,11 @@ command to submit a deployment request. For this example, the request is made fo
     --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
     --description "Docker node" docker-node1
 
+.. note::
+
+    To wait for the deployment to complete, you could use the ``--wait`` flag at the ``mk`` command level:
+    i.e. ``vss-cli compute vm mk --wait from-template ...```
+
 The following command will also work:
 
 .. code-block:: bash
@@ -240,6 +248,10 @@ The following command will also work:
     --folder APIDemo --disk 40 --disk 40 --net VSS-PUBLIC \
     --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
     --description "Docker node" docker-node1
+
+.. note::
+
+    Deploy multiple instances with the ``--instances`` flag.
 
 
 To verify the state of the new request, run ``vss-cli request new ls`` as follows:

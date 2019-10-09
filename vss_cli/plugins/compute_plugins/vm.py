@@ -2781,6 +2781,7 @@ def compute_vm_mk_spec(
 @c_so.high_io_opt
 @c_so.extra_config_opt
 @c_so.vss_service_opt
+@c_so.instances
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_shell(
@@ -2803,6 +2804,7 @@ def compute_vm_mk_shell(
     os,
     extra_config,
     vss_service,
+    instances,
 ):
     """Create a new virtual machine with no operating system
     pre-installed."""
@@ -2856,13 +2858,22 @@ def compute_vm_mk_shell(
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
     # request
-    obj = ctx.create_vm(**payload)
+    if instances > 1:
+        payload['count'] = instances
+        obj = ctx.create_vms(**payload)
+        _columns = const.COLUMNS_REQUEST_MULT_SUBMITTED
+    else:
+        obj = ctx.create_vm(**payload)
+        _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
-    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    columns = ctx.columns or _columns
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
-        ctx.wait_for_request_to(obj)
+        if instances > 1:
+            ctx.wait_for_requests_to(obj)
+        else:
+            ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command('from-template', short_help='Create vm from template')
