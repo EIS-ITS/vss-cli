@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.4-dev3"
+__version__ = "0.2.4-dev4"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -138,8 +138,8 @@ COLUMNS_REQUEST_SUBMITTED = [
 ]
 COLUMNS_REQUEST_MULT_SUBMITTED = [
     ("id", "request.id[*]"),
-    ("status", "request.status"),
-    ("task_id", "request.task_id"),
+    ("status", "request.status[*]"),
+    ("task_id", "request.task_id[*]"),
     ("message",),
 ]
 COLUMNS_REQUEST_SNAP = [
