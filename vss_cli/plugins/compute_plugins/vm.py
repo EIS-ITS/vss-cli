@@ -2971,7 +2971,10 @@ def compute_vm_mk_template(
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
-        ctx.wait_for_request_to(obj)
+        if instances > 1:
+            ctx.wait_for_requests_to(obj)
+        else:
+            ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command('from-clone', short_help='Create vm from clone')
