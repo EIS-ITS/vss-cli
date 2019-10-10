@@ -204,6 +204,9 @@ At this point, we have all requirements to run ``vss-cli compute vm mk from-clon
 command to submit a deployment request. For this example, the request is made for
 2GB of memory, 2 vCPU, 2x40GB disks and  to reconfigure the hostname and domain.
 
+.. note::
+
+    Deploy multiple instances with the ``--instances`` flag.
 
 .. code-block:: bash
 
@@ -211,6 +214,11 @@ command to submit a deployment request. For this example, the request is made fo
     --folder $FOLDER --disk 40 --disk 40 --net $NET \
     --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
     --description "Docker node" docker-node1
+
+.. note::
+
+    To wait for the deployment to complete, you could use the ``--wait`` flag at the ``mk`` command level:
+    i.e. ``vss-cli compute vm mk --wait from-clone ...```
 
 To verify the state of the new request, run ``vss-cli request new ls`` as follows:
 

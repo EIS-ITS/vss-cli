@@ -3005,6 +3005,7 @@ def compute_vm_mk_template(
 @c_so.notes_opt
 @c_so.custom_spec_opt
 @c_so.vss_service_opt
+@c_so.instances
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_clone(
@@ -3026,6 +3027,7 @@ def compute_vm_mk_clone(
     os,
     custom_spec,
     vss_service,
+    instances,
 ):
     """Clone virtual machine from running or powered off vm.
     If name argument is not specified, -clone suffix will be added to
@@ -3074,14 +3076,23 @@ def compute_vm_mk_clone(
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
-    # request
-    obj = ctx.create_vm_from_clone(**payload)
+    if instances > 1:
+        payload['count'] = instances
+        obj = ctx.create_vms_from_clone(**payload)
+        _columns = const.COLUMNS_REQUEST_MULT_SUBMITTED
+    else:
+        # request
+        obj = ctx.create_vm_from_clone(**payload)
+        _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
-    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    columns = ctx.columns or _columns
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
-        ctx.wait_for_request_to(obj)
+        if instances > 1:
+            ctx.wait_for_requests_to(obj)
+        else:
+            ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command(
