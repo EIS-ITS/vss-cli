@@ -158,7 +158,7 @@ domain_opt = click.option(
     autocompletion=autocompletion.domains,
 )
 notes_opt = click.option(
-    '--notes', '-t', help='Custom notes.', type=click.STRING, required=False
+    '--notes', help='Custom notes.', type=click.STRING, required=False
 )
 custom_spec_opt = click.option(
     '--custom-spec',
@@ -171,7 +171,7 @@ custom_spec_opt = click.option(
 iso_opt = click.option(
     '--iso',
     '-s',
-    help='ISO image path to be mounted after creation',
+    help='ISO image to be mounted after creation',
     type=click.STRING,
     required=False,
     autocompletion=autocompletion.isos,
