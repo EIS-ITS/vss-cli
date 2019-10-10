@@ -2682,7 +2682,9 @@ def compute_vm_from_file(
 @c_so.networks_nr_opt
 @c_so.domain_opt
 @c_so.notes_opt
+@c_so.extra_config_opt
 @c_so.vss_service_opt
+@c_so.instances
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_spec(
@@ -2702,9 +2704,11 @@ def compute_vm_mk_spec(
     net,
     domain,
     os,
+    extra_config,
     vss_service,
+    instances,
 ):
-    """Create virtual machine based on another  virtual machine
+    """Create virtual machine based on another virtual machine
      configuration specification. This command takes the vm
      machine specification (memory, disk, networking, etc) as a
      base for a new VM."""
@@ -2736,6 +2740,8 @@ def compute_vm_mk_spec(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
+    if extra_config:
+        payload['extra_config'] = extra_config
     # network
     if net:
         payload['networks'] = net
@@ -2754,13 +2760,22 @@ def compute_vm_mk_spec(
     # updating spec with new vm spec
     s_payload.update(payload)
     # request
-    obj = ctx.create_vm(**s_payload)
+    if instances > 1:
+        payload['count'] = instances
+        obj = ctx.create_vms(**payload)
+        _columns = const.COLUMNS_REQUEST_MULT_SUBMITTED
+    else:
+        obj = ctx.create_vm(**payload)
+        _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
-    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    columns = ctx.columns or _columns
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
-        ctx.wait_for_request_to(obj)
+        if instances > 1:
+            ctx.wait_for_requests_to(obj)
+        else:
+            ctx.wait_for_request_to(obj)
 
 
 @compute_vm_mk.command('shell', short_help='Create empty virtual machine')
@@ -3004,6 +3019,7 @@ def compute_vm_mk_template(
 @c_so.domain_opt
 @c_so.notes_opt
 @c_so.custom_spec_opt
+@c_so.extra_config_opt
 @c_so.vss_service_opt
 @c_so.instances
 @click.argument('name', type=click.STRING, required=False)
@@ -3026,6 +3042,7 @@ def compute_vm_mk_clone(
     domain,
     os,
     custom_spec,
+    extra_config,
     vss_service,
     instances,
 ):
@@ -3037,7 +3054,7 @@ def compute_vm_mk_clone(
     vm_uuid = _vm[0]['uuid']
     # payload
     payload = dict(
-        description=description, name=name, usage=usage, source_vm=vm_uuid
+        description=description, name=name, usage=usage, source=vm_uuid
     )
     if memory:
         payload['memory'] = memory
@@ -3061,6 +3078,8 @@ def compute_vm_mk_clone(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
+    if extra_config:
+        payload['extra_config'] = extra_config
     # network
     if net:
         payload['networks'] = net
