@@ -94,32 +94,32 @@ options and arguments specified in the command, as follows:
       Deploy virtual machine from image
 
     Options:
-      -d, --description TEXT          Vm description.  [required]
+      -s, --source TEXT               Source Virtual Machine OVA/OVF id, name or
+                                      path.  [required]
+      -d, --description TEXT          A brief description.  [required]
+      -b, --bill-dept TEXT            Billing department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
+      -o, --os TEXT                   Guest operating system id.  [required]
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
-      -n, --net TEXT                  Networks moref mapped to NICs.
-      -t, --domain TEXT               Target fault domain.
-      -t, --notes TEXT                Custom notes.
+      -f, --folder TEXT               Logical folder moref name or path.
+                                      [required]
+      -i, --disk INTEGER              Disks in GB.  [required]
+      -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
+                                      [required]
+      -t, --domain TEXT               Target fault domain name or moref.
+      --notes TEXT                    Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
       -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
-      -s, --user-data FILENAME        Cloud-init user_data YML file path to pre-
+      --user-data FILENAME            Cloud-init user_data YML file path to pre-
                                       configure guest os upon first boot.
-      -b, --bill-dept TEXT            Billing department.  [required]
-      -o, --os TEXT                   Guest operating system id, name or path.
-                                      [required]
-      -f, --folder TEXT               Logical folder moref.  [required]
-      -i, --disk INTEGER              Disks in GB.  [required]
-      -n, --net TEXT                  Networks moref or name mapped to NICs.
-                                      [required]
-      -s, --source TEXT               Source Virtual Machine OVA/OVF id, name or
-                                      path.  [required]
+      --vss-service TEXT              VSS Service related to VM
       --help                          Show this message and exit.
 
 

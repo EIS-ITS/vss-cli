@@ -62,7 +62,7 @@ Run ``vss-cli compute vm mk from-clone --help`` to obtain the list of arguments 
     Options:
       -s, --source TEXT               Source virtual machine or template UUID.
                                       [required]
-      -d, --description TEXT          Vm description.  [required]
+      -d, --description TEXT          A brief description.  [required]
       -b, --bill-dept TEXT            Billing department.
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
@@ -73,13 +73,16 @@ Run ``vss-cli compute vm mk from-clone --help`` to obtain the list of arguments 
       -o, --os TEXT                   Guest operating system id.
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
-      -f, --folder TEXT               Logical folder moref.
-      -i, --disk INTEGER              Disks in GB.
-      -n, --net TEXT                  Networks moref mapped to NICs.
-      -t, --domain TEXT               Target fault domain.
-      -t, --notes TEXT                Custom notes.
+      -f, --folder TEXT               Logical folder moref name or path.
+      -i, --disk INTEGER              Virtual disks in GB.
+      -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
+      -t, --domain TEXT               Target fault domain name or moref.
+      --notes TEXT                    Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
+      -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      --vss-service TEXT              VSS Service related to VM
+      --instances INTEGER             Number of instances to deploy  [default: 1]
       --help                          Show this message and exit.
 
 

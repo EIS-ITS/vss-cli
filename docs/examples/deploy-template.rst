@@ -98,7 +98,7 @@ Run ``vss-cli compute vm mk from-template --help`` to obtain the list of argumen
       -i, --disk INTEGER              Virtual disks in GB.
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
       -t, --domain TEXT               Target fault domain name or moref.
-      -t, --notes TEXT                Custom notes.
+      --notes TEXT                    Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
       -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.

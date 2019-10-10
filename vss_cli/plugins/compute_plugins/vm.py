@@ -2682,6 +2682,7 @@ def compute_vm_from_file(
 @c_so.networks_nr_opt
 @c_so.domain_opt
 @c_so.notes_opt
+@c_so.iso_opt
 @c_so.extra_config_opt
 @c_so.vss_service_opt
 @c_so.instances
@@ -2701,6 +2702,7 @@ def compute_vm_mk_spec(
     notes,
     admin,
     inform,
+    iso,
     net,
     domain,
     os,
@@ -2720,17 +2722,31 @@ def compute_vm_mk_spec(
     payload = dict(
         description=description, name=name, usage=usage, built=built
     )
+    # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if disk:
+        payload['disks'] = list(disk)
+    if net:
+        payload['networks'] = net
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guest_id']
+    if iso:
+        _iso = ctx.get_iso_by_name_or_path(iso)
+        payload['iso'] = _iso[0]['path']
+    # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
         payload['folder'] = _folder[0]['moref']
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # Metadata
     if bill_dept:
         payload['bill_dept'] = bill_dept
-    if disk:
-        payload['disks'] = list(disk)
     if notes:
         payload['notes'] = notes
     if admin:
@@ -2740,25 +2756,18 @@ def compute_vm_mk_spec(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
-    if extra_config:
-        payload['extra_config'] = extra_config
-    # network
-    if net:
-        payload['networks'] = net
-    # domain
-    if domain:
-        _domain = ctx.get_domain_by_name_or_moref(domain)
-        payload['domain'] = _domain[0]['moref']
-    # os
-    if os:
-        _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guest_id']
-    # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
+    # Advanced
+    if extra_config:
+        payload['extra_config'] = extra_config
     # updating spec with new vm spec
     s_payload.update(payload)
+    _LOGGING.debug(f'source={s_payload}')
+    _LOGGING.debug(f'spec={payload}')
+    payload = s_payload
+    _LOGGING.debug(f'final spec={payload}')
     # request
     if instances > 1:
         payload['count'] = instances
@@ -2831,17 +2840,31 @@ def compute_vm_mk_shell(
         built=built,
         high_io=high_io,
     )
+    # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if disk:
+        payload['disks'] = list(disk)
+    if net:
+        payload['networks'] = net
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guest_id']
+    if iso:
+        _iso = ctx.get_iso_by_name_or_path(iso)
+        payload['iso'] = _iso[0]['path']
+    # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
         payload['folder'] = _folder[0]['moref']
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # Metadata
     if bill_dept:
         payload['bill_dept'] = bill_dept
-    if disk:
-        payload['disks'] = list(disk)
     if notes:
         payload['notes'] = notes
     if admin:
@@ -2851,27 +2874,12 @@ def compute_vm_mk_shell(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
-    if extra_config:
-        payload['extra_config'] = extra_config
-    # network
-    if net:
-        payload['networks'] = net
-    # domain
-    if domain:
-        _domain = ctx.get_domain_by_name_or_moref(domain)
-        payload['domain'] = _domain[0]['moref']
-    # os
-    if os:
-        _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guest_id']
-    # iso
-    if iso:
-        _iso = ctx.get_iso_by_name_or_path(iso)
-        payload['iso'] = _iso[0]['path']
-    # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
+    # Advanced
+    if extra_config:
+        payload['extra_config'] = extra_config
     # request
     if instances > 1:
         payload['count'] = instances
@@ -2945,21 +2953,30 @@ def compute_vm_mk_template(
         usage=usage,
         source_template=vm_uuid,
     )
+    # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if disk:
+        payload['disks'] = list(disk)
+    if net:
+        payload['networks'] = net
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guest_id']
+    # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
         payload['folder'] = _folder[0]['moref']
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # Metadata
     if bill_dept:
         payload['bill_dept'] = bill_dept
-    if disk:
-        payload['disks'] = list(disk)
     if notes:
         payload['notes'] = notes
-    if custom_spec:
-        payload['custom_spec'] = custom_spec
     if admin:
         name, phone, email = admin.split(':')
         payload['admin_email'] = email
@@ -2967,23 +2984,14 @@ def compute_vm_mk_template(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
-    if extra_config:
-        payload['extra_config'] = extra_config
-    # network
-    if net:
-        payload['networks'] = net
-    # domain
-    if domain:
-        _domain = ctx.get_domain_by_name_or_moref(domain)
-        payload['domain'] = _domain[0]['moref']
-    # os
-    if os:
-        _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guest_id']
-    # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
+    # Advanced
+    if extra_config:
+        payload['extra_config'] = extra_config
+    if custom_spec:
+        payload['custom_spec'] = custom_spec
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3056,21 +3064,30 @@ def compute_vm_mk_clone(
     payload = dict(
         description=description, name=name, usage=usage, source=vm_uuid
     )
+    # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if disk:
+        payload['disks'] = list(disk)
+    if net:
+        payload['networks'] = net
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guest_id']
+    # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
         payload['folder'] = _folder[0]['moref']
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # Metadata
     if bill_dept:
         payload['bill_dept'] = bill_dept
-    if disk:
-        payload['disks'] = list(disk)
     if notes:
         payload['notes'] = notes
-    if custom_spec:
-        payload['custom_spec'] = custom_spec
     if admin:
         name, phone, email = admin.split(':')
         payload['admin_email'] = email
@@ -3078,23 +3095,14 @@ def compute_vm_mk_clone(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
-    if extra_config:
-        payload['extra_config'] = extra_config
-    # network
-    if net:
-        payload['networks'] = net
-    # domain
-    if domain:
-        _domain = ctx.get_domain_by_name_or_moref(domain)
-        payload['domain'] = _domain[0]['moref']
-    # os
-    if os:
-        _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guest_id']
-    # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
+    # Advanced
+    if extra_config:
+        payload['extra_config'] = extra_config
+    if custom_spec:
+        payload['custom_spec'] = custom_spec
     if instances > 1:
         payload['count'] = instances
         obj = ctx.create_vms_from_clone(**payload)
@@ -3170,19 +3178,28 @@ def compute_vm_mk_image(
         bill_dept=bill_dept,
         image=image_ref[0]['path'],
     )
+    # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if disk:
+        payload['disks'] = list(disk)
+    if net:
+        payload['networks'] = net
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guest_id']
+    # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
         payload['folder'] = _folder[0]['moref']
-    if disk:
-        payload['disks'] = list(disk)
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # Metadata
     if notes:
         payload['notes'] = notes
-    if custom_spec:
-        payload['custom_spec'] = custom_spec
     if admin:
         name, phone, email = admin.split(':')
         payload['admin_email'] = email
@@ -3190,25 +3207,16 @@ def compute_vm_mk_image(
         payload['admin_name'] = name
     if inform:
         payload['inform'] = inform
-    if extra_config:
-        payload['extra_config'] = extra_config
-    if user_data:
-        payload['user_data'] = user_data.read()
-    # network
-    if net:
-        payload['networks'] = net
-    # domain
-    if domain:
-        _domain = ctx.get_domain_by_name_or_moref(domain)
-        payload['domain'] = _domain[0]['moref']
-    # os
-    if os:
-        _os = ctx.get_os_by_name_or_guest(os)
-        payload['os'] = _os[0]['guest_id']
-    # vss-service
     if vss_service:
         _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
         payload['vss_service'] = _svc[0]['id']
+    # Advanced
+    if extra_config:
+        payload['extra_config'] = extra_config
+    if custom_spec:
+        payload['custom_spec'] = custom_spec
+    if user_data:
+        payload['user_data'] = user_data.read()
     # request
     obj = ctx.create_vm_from_image(**payload)
     # print

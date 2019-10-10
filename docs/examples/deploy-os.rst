@@ -172,7 +172,7 @@ command takes:
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
                                       [required]
       -t, --domain TEXT               Target fault domain name or moref.
-      -t, --notes TEXT                Custom notes.
+      --notes TEXT                    Custom notes.
       -s, --iso TEXT                  ISO image path to be mounted after creation
       -h, --high-io                   VM will be created with a VMware Paravirtual
                                       SCSIController.
