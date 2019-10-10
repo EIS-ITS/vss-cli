@@ -1,5 +1,29 @@
 # Changelog 📝
 
+## [v0.2.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.4) (2019-10-10)
+
+**Improvements:**
+- [#174](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/174): `core`: pyvss upgrade from 0.9.41 -> 0.9.42: by [jm.lopez]
+- [#172](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/172): `compute vm set`: `--wait` flag support for multiple requests: by [jm.lopez]
+- [#172](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/172): `compute vm mk`: `--wait` flag support for multiple requests: by [jm.lopez]
+- [#172](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/172): `compute folder set`: `--wait` flag support for multiple requests: by [jm.lopez]
+- [#172](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/172): `compute inventory mk`: `--wait` flag support for multiple requests: by [jm.lopez]
+- [#179](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/179): `compute vm mk `: sub-command standardization: by [jm.lopez]
+
+**Bug Fixes:**
+- [#168](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/168): `docs`: network invalid option to change network adapter: by [jm.lopez]
+- [#169](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/169): `compute vm set cd mk`: schema exception when creating a cd: by [jm.lopez]
+- [#170](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/170): `message ls --filter`: filters do not work properly: by [jm.lopez]
+- [#177](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/177): `compute vm mk from-clone`: `--extra-config` flag missing: by [jm.lopez]
+- [#178](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/178): `compute vm mk `: `--notes/-s` duplicated: by [jm.lopez]
+
+**New Features:**
+- [#171](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/171): `compute vm mk from-template`: `--instances` flag to deploy multiple instances concurrently: by [jm.lopez]
+- [#173](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/173): `compute vm mk shell`: `--instances` flag to deploy multiple instances concurrently: by [jm.lopez]
+- [#175](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/175): `compute vm mk from-clone`: `--instances` flag to deploy multiple instances concurrently: by [jm.lopez]
+- [#176](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/176): `compute vm mk from-spec`: `--instances` flag to deploy multiple instances concurrently: by [jm.lopez]
+
+
 ## [v0.2.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.3) (2019-09-20)
 
 **Improvements:**
