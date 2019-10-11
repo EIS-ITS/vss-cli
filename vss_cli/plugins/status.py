@@ -2,6 +2,7 @@
 import logging
 
 import click
+
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -11,9 +12,7 @@ _LOGGING = logging.getLogger(__name__)
 
 
 @click.group(
-    'status',
-    invoke_without_command=True,
-    short_help='Check VSS Status.'
+    'status', invoke_without_command=True, short_help='Check VSS Status.'
 )
 @pass_context
 def cli(ctx: Configuration):
@@ -21,23 +20,16 @@ def cli(ctx: Configuration):
     ctx.set_defaults()
     with ctx.spinner(disable=ctx.debug):
         obj = check_status()
-    ctx.status = obj
+    ctx.system_status = obj
     if click.get_current_context().invoked_subcommand is None:
         columns = [
             ('NAME', 'component.name'),
             ('DESCRIPTION', 'component.description'),
             ('STATUS', 'component.status'),
             ('UPDATED', 'component.updated_at'),
-            ('MAINTENANCE', 'upcoming_maintenances[*].name')
+            ('MAINTENANCE', 'upcoming_maintenances[*].name'),
         ]
-        click.echo(
-            format_output(
-                ctx,
-                [obj],
-                columns=columns,
-                single=True
-            )
-        )
+        click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @cli.command('maint')
@@ -48,15 +40,9 @@ def get_maintenance(ctx: Configuration):
         ('IMPACT', 'impact'),
         ('STATUS', 'status'),
         ('DESCRIPTION', 'description[0:100]'),
-        ('SCHEDULED', 'scheduled_for')
+        ('SCHEDULED', 'scheduled_for'),
     ]
     columns = ctx.columns or columns
-    if ctx.status:
-        dat = ctx.status.get('upcoming_maintenances')
-        click.echo(
-            format_output(
-                ctx,
-                dat,
-                columns=columns,
-            )
-        )
+    if ctx.system_status:
+        dat = ctx.system_status.get('upcoming_maintenances')
+        click.echo(format_output(ctx, dat, columns=columns))
