@@ -94,12 +94,13 @@ mount into a virtual machine. First, we should obtain the VM's UUID:
     503081c3-6935-8086-683c-0a2b705d9efb  1811D-ubuntu-2
 
 
-Finally, to submit the change request to mount the ISO, execute ``vss-cli compute vm set <name-or-uuid> cd <unit> --iso <id-name-or-path>``
+Finally, to submit the change request to mount the ISO, execute
+``vss-cli compute vm set <name-or-uuid> cd up <unit> -b <name-or-path-or-id>``
 as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm set ubuntu cd 1 --iso Linux/Ubuntu/ubuntu-18.04-live-server-amd64.iso
+    vss-cli compute vm set ubuntu cd up 1 -b ubuntu-18.04-live-server-amd64.iso
 
      Found 2 matches. Please select one:
 
@@ -145,15 +146,15 @@ To list just execute ``vss-cli compute iso personal ls`` and the output should l
 
 
 The process of mounting the image to a VM is the same: first get the VM UUID and then execute
-``vss-cli compute vm set <name-or-uuid> cd <unit> --iso <id-path-or-name>`` as shown below:
+``vss-cli compute vm set <name-or-uuid> cd up <unit> -b <name-or-path-or-id>`` as shown below:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 501257e0-81f5-9c2a-84e5-e900212fef76 cd 1 --iso "[vssUser-xfers] jm/isos/CentOS-7-x86_64-NetInstall-1804.iso"
+    vss-cli compute vm set 501257e0-81f5-9c2a-84e5-e900212fef76 cd up 1 -b CentOS-7-x86_64-NetInstall-1804.iso
 
     # or with name search
 
-    vss-cli compute vm set ubuntu cd 1 --iso CentOS-7
+    vss-cli compute vm set ubuntu cd up 1 -b CentOS-7
 
      Found 2 matches. Please select one:
 
