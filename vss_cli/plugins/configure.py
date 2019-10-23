@@ -6,6 +6,7 @@ from typing import Any
 
 import click
 from ruamel.yaml.parser import ParserError
+
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
@@ -30,25 +31,26 @@ def cli(ctx: Configuration):
     ctx.auto_output('table')
 
 
-@cli.command(
-    'upgrade',
-    short_help='Upgrade legacy configuration.'
-)
+@cli.command('upgrade', short_help='Upgrade legacy configuration.')
 @click.argument(
     'legacy_config',
     envvar='VSS_CONFIG',
     type=click.Path(exists=True),
-    default=const.LEGACY_CONFIG
+    default=const.LEGACY_CONFIG,
 )
 @click.option(
-    '-c', '--confirm',
-    is_flag=True, default=False,
-    help='Proceed with migration without prompting confirmation.'
+    '-c',
+    '--confirm',
+    is_flag=True,
+    default=False,
+    help='Proceed with migration without prompting confirmation.',
 )
 @click.option(
-    '-o', '--overwrite',
-    is_flag=True, default=False,
-    help='Overwrite if target file exists.'
+    '-o',
+    '--overwrite',
+    is_flag=True,
+    default=False,
+    help='Overwrite if target file exists.',
 )
 @pass_context
 def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
@@ -64,8 +66,11 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
                 f'Found {n_ep} endpoints. Migrating to new configuration file.'
             )
             for ep_k, ep_v in legacy_endpoints.items():
-                t_ep = {'url': ep_k, 'auth': ep_v['auth'],
-                        'token': ep_v['token']}
+                t_ep = {
+                    'url': ep_k,
+                    'auth': ep_v['auth'],
+                    'token': ep_v['token'],
+                }
                 ep = ConfigEndpoint.from_json(json.dumps(t_ep))
                 endpoints.append(ep)
             ep = len(endpoints)
@@ -86,16 +91,17 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
                 # check if target exists
                 target_exists = os.path.isfile(ctx.config)
                 if target_exists:
-                    if not (overwrite or click.confirm(
-                            f'\nOverwrite {ctx.config}?'
-                    )):
+                    if not (
+                        overwrite
+                        or click.confirm(f'\nOverwrite {ctx.config}?')
+                    ):
                         raise click.Abort('Cancelled by user')
                 # all ok
                 ctx.write_config_file(new_config_file=config_file)
                 ctx.secho(
                     f'\nSuccessfully migrated {legacy_config} {ej_tada}',
                     fg='green',
-                    nl=True
+                    nl=True,
                 )
             else:
                 raise click.Abort('Cancelled by user')
@@ -103,7 +109,7 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
             _LOGGING.warning('No endpoints found in configuration file.')
             cfg_exc = True
     except KeyError as ex:
-        _LOGGING.warning(f'Missing {str(ex)} in endpoint configuration.', )
+        _LOGGING.warning(f'Missing {str(ex)} in endpoint configuration.')
         cfg_exc = True
     except (TypeError, ParserError) as ex:
         _LOGGING.warning(f'{str(ex)}')
@@ -116,20 +122,20 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
             )
 
 
-@cli.command(
-    'mk',
-    short_help='Create new endpoint configuration.'
+@cli.command('mk', short_help='Create new endpoint configuration.')
+@click.option(
+    '-r',
+    '--replace',
+    is_flag=True,
+    default=False,
+    help='Replace existing configuration',
 )
 @click.option(
-    '-r', '--replace',
-    is_flag=True, default=False,
-    help='Replace existing configuration'
-)
-@click.option(
-    '-e', '--endpoint-name',
+    '-e',
+    '--endpoint-name',
     type=click.STRING,
     help='Custom endpoint name. Default to endpoint hostname.',
-    required=False
+    required=False,
 )
 @pass_context
 def mk(ctx: Configuration, replace: bool, endpoint_name: str):
@@ -138,19 +144,16 @@ def mk(ctx: Configuration, replace: bool, endpoint_name: str):
         'Endpoint',
         default=const.DEFAULT_ENDPOINT,
         type=click.STRING,
-        show_default=True
+        show_default=True,
     )
     endpoint_name = endpoint_name or click.prompt(
         'Endpoint Name',
         default=ctx.endpoint_name,
         type=click.STRING,
-        show_default=True
+        show_default=True,
     )
     username = ctx.username or click.prompt(
-        'Username',
-        default=ctx.username,
-        show_default=True,
-        type=click.STRING
+        'Username', default=ctx.username, show_default=True, type=click.STRING
     )
     password = ctx.password or click.prompt(
         'Password',
@@ -158,25 +161,22 @@ def mk(ctx: Configuration, replace: bool, endpoint_name: str):
         show_default=False,
         hide_input=True,
         type=click.STRING,
-        confirmation_prompt=True
+        confirmation_prompt=True,
     )
     is_configured = ctx.configure(
         username=username,
         password=password,
         endpoint=new_endpoint,
         replace=replace,
-        endpoint_name=endpoint_name
+        endpoint_name=endpoint_name,
     )
     if is_configured:
         # feedback message
-        ctx.secho(
-            f'You are ready to use the vss-cli {ej_rkt}',
-            fg='green'
-        )
+        ctx.secho(f'You are ready to use the vss-cli {ej_rkt}', fg='green')
     else:
         _LOGGING.warning(
             f'Houston, we have a problem {ej_warn}. '
-            f'Could not create configuration.',
+            f'Could not create configuration.'
         )
 
 
@@ -191,19 +191,9 @@ COLUMNS_DETAILS = [
 ]
 
 
-@cli.command(
-    'set',
-    short_help='Update general settings attribute.'
-)
-@click.argument(
-    'setting',
-    type=click.Choice(
-        const.GENERAL_SETTINGS.keys()
-    ),
-)
-@click.argument(
-    'value',
-)
+@cli.command('set', short_help='Update general settings attribute.')
+@click.argument('setting', type=click.Choice(const.GENERAL_SETTINGS.keys()))
+@click.argument('value', type=click.STRING)
 @pass_context
 def set_cfg(ctx: Configuration, setting: str, value: Any):
     ctx.load_config(validate=False)
@@ -224,23 +214,19 @@ def set_cfg(ctx: Configuration, setting: str, value: Any):
                 )
         setattr(ctx.config_file.general, setting, to)
     except ValueError:
-        _LOGGING.warning(
-            f'{setting} value must be {data_type}'
-        )
+        _LOGGING.warning(f'{setting} value must be {data_type}')
     ctx.secho(f"Updating {setting} from {was} -> {to}.")
     ctx.write_config_file(config_general=ctx.config_file.general)
     ctx.secho(f"{ctx.config} updated {ej_save}", fg='green')
     return
 
 
-@cli.command(
-    'ls',
-    short_help='List existing endpoint configuration'
-)
+@cli.command('ls', short_help='List existing endpoint configuration')
 @pass_context
 def ls(ctx: Configuration):
     """List existing configuration"""
     from base64 import b64decode
+
     cfg_endpoints = list()
     try:
         config_file = ctx.load_config_file()
@@ -249,8 +235,7 @@ def ls(ctx: Configuration):
         endpoints = config_file.endpoints or []
         # checking profiles
         for endpoint in endpoints:
-            is_default = ej_check \
-                if default_endpoint == endpoint.name else ''
+            is_default = ej_check if default_endpoint == endpoint.name else ''
             token = ''
             user = ''
             pwd = ''
@@ -272,15 +257,12 @@ def ls(ctx: Configuration):
                     'user': user,
                     'pass': masked_pwd[:8],
                     'token': token,
-                    'source': 'config file'
+                    'source': 'config file',
                 }
             )
     except FileNotFoundError as ex:
         _LOGGING.error(f'{str(ex)}')
-        ctx.secho(
-            f'Have you run '
-            f'"vss-cli configure mk"?', fg='green'
-        )
+        ctx.secho(f'Have you run ' f'"vss-cli configure mk"?', fg='green')
 
     # checking env vars
     envs = [e for e in os.environ if 'VSS_' in e]
@@ -289,37 +271,26 @@ def ls(ctx: Configuration):
         pwd = os.environ.get('VSS_USER_PASS', '')
         masked_pwd = ''.join(['*' for i in range(len(pwd))])
         tk = os.environ.get('VSS_TOKEN', '')
-        endpoint = os.environ.get(
-            'VSS_ENDPOINT',
-            const.DEFAULT_ENDPOINT
-        )
+        endpoint = os.environ.get('VSS_ENDPOINT', const.DEFAULT_ENDPOINT)
         source = 'env'
         cfg_endpoints.append(
-            {'endpoint': endpoint,
-             'user': user, 'pass': masked_pwd,
-             'token': '{}...{}'.format(tk[:10], tk[-10:]),
-             'source': source}
+            {
+                'endpoint': endpoint,
+                'user': user,
+                'pass': masked_pwd,
+                'token': '{}...{}'.format(tk[:10], tk[-10:]),
+                'source': source,
+            }
         )
     if cfg_endpoints:
-        click.echo(
-            format_output(
-                ctx,
-                cfg_endpoints,
-                columns=COLUMNS_DETAILS,
-            )
-        )
+        click.echo(format_output(ctx, cfg_endpoints, columns=COLUMNS_DETAILS))
     else:
         ctx.echo('No configuration was found')
 
 
-@cli.command(
-    'edit',
-    short_help='Edit configuration file.'
-)
+@cli.command('edit', short_help='Edit configuration file.')
 @click.option(
-    '-l', '--launch',
-    is_flag=True,
-    help='Open config file with default editor'
+    '-l', '--launch', is_flag=True, help='Open config file with default editor'
 )
 @pass_context
 def edit(ctx: Configuration, launch):
@@ -332,17 +303,12 @@ def edit(ctx: Configuration, launch):
         with open(ctx.config, 'r') as data_file:
             raw = data_file.read()
         # launch editor
-        new_raw = click.edit(
-            raw,
-            extension='.yaml'
-        )
+        new_raw = click.edit(raw, extension='.yaml')
         if new_raw is not None:
             ctx.secho(f"Updating {ctx.config} {ej_save}", fg='green')
             new_obj = ctx.yaml_load(new_raw)
             with open(ctx.config, 'w') as fp:
-                ctx.yaml_dump_stream(
-                    new_obj, stream=fp
-                )
+                ctx.yaml_dump_stream(new_obj, stream=fp)
         else:
             ctx.echo("No edits/changes returned from editor.")
             return

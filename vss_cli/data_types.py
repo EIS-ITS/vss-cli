@@ -4,6 +4,7 @@ from typing import List, Optional, Union
 
 from dataclasses_json import dataclass_json
 from validators import url as is_url
+
 import vss_cli.const as const
 from vss_cli.exceptions import ValidationError
 
@@ -27,6 +28,7 @@ class ConfigFileGeneral:
     table_format: str = 'simple'
     timeout: int = const.DEFAULT_TIMEOUT
     verbose: bool = False
+    columns_width: int = -1
 
 
 @dataclass_json
@@ -39,14 +41,14 @@ class ConfigEndpoint:
 
     def __post_init__(self):
         def get_hostname_from_url(
-                url: str,
-                hostname_regex: str = const.DEFAULT_HOST_REGEX
+            url: str, hostname_regex: str = const.DEFAULT_HOST_REGEX
         ) -> str:
             """Parse hostname from URL"""
             re_search = re.search(hostname_regex, url)
             _, _hostname = re_search.groups() if re_search else ('', '')
             _host = _hostname.split('.')[0] if _hostname.split('.') else ''
             return _host
+
         if not self.name:
             self.name = get_hostname_from_url(self.url)
 
@@ -59,9 +61,7 @@ class ConfigFile:
         default_factory=lambda: []
     )
 
-    def get_endpoint(
-            self, ep_name_or_url: str
-    ) -> List[ConfigEndpoint]:
+    def get_endpoint(self, ep_name_or_url: str) -> List[ConfigEndpoint]:
         if self.endpoints:
             ep = list(
                 filter(lambda i: ep_name_or_url == i.name, self.endpoints)
@@ -73,7 +73,7 @@ class ConfigFile:
             return []
 
     def update_endpoint(
-            self, endpoint: ConfigEndpoint
+        self, endpoint: ConfigEndpoint
     ) -> List[ConfigEndpoint]:
         if self.endpoints:
             for idx, val in enumerate(self.endpoints):
@@ -86,8 +86,9 @@ class ConfigFile:
         self.endpoints.append(endpoint)
         return self.endpoints
 
-    def update_endpoints(self, *endpoints: List[ConfigEndpoint]
-                         ) -> List[ConfigEndpoint]:
+    def update_endpoints(
+        self, *endpoints: List[ConfigEndpoint]
+    ) -> List[ConfigEndpoint]:
         for endpoint in endpoints:
             self.update_endpoint(endpoint)
         return self.endpoints

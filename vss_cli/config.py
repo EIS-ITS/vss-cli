@@ -43,7 +43,7 @@ class Configuration(VssManager):
             extensions=f'pyvss/{pyvss_version}'
         )
         self.verbose = False  # type: bool
-        self.default_endpoint_name = None  # type: str
+        self.default_endpoint_name = None  # type: Optional[str]
         # start of endpoint settings
         self._endpoint = const.DEFAULT_ENDPOINT  # type: str
         self.base_endpoint = self.endpoint  # type: str
@@ -58,14 +58,15 @@ class Configuration(VssManager):
         self._debug = False  # type: Optional[bool]
         self.showexceptions = False  # type: bool
         self.columns = None  # type: Optional[List[Tuple[str, str]]]
+        self.columns_width = None  # type: Optional[int]
         self.no_headers = False
         self.table_format = None  # type: Optional[str]
         self.sort_by = None
-        self.output = None  # type: str
-        self.config = None  # type: str
+        self.output = None
+        self.config = None
         self.check_for_updates = None  # type: Optional[bool]
         self.check_for_messages = None  # type: Optional[bool]
-        self.config_file = None  # type: ConfigFile
+        self.config_file = None  # type: Optional[ConfigFile]
         self.spinner = spinner
 
     @property
