@@ -120,6 +120,18 @@ def virtual_machines(
     )
 
 
+def vm_controller_scsi_types(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_scsi_controllers,
+        incomplete,
+        ['type', 'description'],
+        f_kwargs={'only_type': False},
+    )
+
+
 def vm_disk_backing_modes(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:

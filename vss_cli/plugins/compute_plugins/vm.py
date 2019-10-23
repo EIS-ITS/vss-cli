@@ -2378,12 +2378,12 @@ def compute_vm_set_controller_scsi(ctx: Configuration):
 )
 @click.option(
     '-t',
-    '--scsi_type',
-    type=click.Choice(const.VM_SCSI_TYPES),
+    '--scsi-type',
     required=True,
     multiple=True,
+    autocompletion=autocompletion.vm_controller_scsi_types,
     default='paravirtual',
-    help='Type of SCSI(s) Controller.',
+    help='Type of SCSI Controllers.',
     show_default=True,
 )
 @pass_context
@@ -2412,10 +2412,10 @@ def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
 @click.argument('bus_number', type=click.INT, required=True)
 @click.option(
     '-t',
-    '--scsi_type',
-    type=click.Choice(['paravirtual', 'lsilogic', 'lsilogicsas', 'buslogic']),
+    '--scsi-type',
+    autocompletion=autocompletion.vm_controller_scsi_types,
     required=True,
-    help='Type of SCSI(s) Controller.',
+    help='Type of SCSI Controllers.',
 )
 @pass_context
 def compute_vm_set_controller_scsi_up(
