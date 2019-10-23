@@ -1344,7 +1344,7 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
 @click.option(
     '-m',
     '--backing-mode',
-    type=click.Choice(const.VM_DISK_MODES),
+    autocompletion=autocompletion.vm_disk_backing_modes,
     help='Update disk backing mode default [persistent]',
 )
 @pass_context

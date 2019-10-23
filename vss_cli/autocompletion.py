@@ -120,6 +120,18 @@ def virtual_machines(
     )
 
 
+def vm_disk_backing_modes(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_disk_backing_modes,
+        incomplete,
+        ['type', 'description'],
+        f_kwargs={'only_type': False},
+    )
+
+
 def domains(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
