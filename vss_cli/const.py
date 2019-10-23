@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.5-dev1"
+__version__ = "0.2.6-dev0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -409,6 +409,7 @@ COLUMNS_WEBDAV = [("files", "[*]")]
 COLUMNS_WEBDAV_INFO = [("created",), ("modified",), ("name",), ("size",)]
 COLUMNS_SSH_KEY_MIN = [*COLUMNS_MIN, ("type",), ("comment",)]
 COLUMNS_SSH_KEY = [*COLUMNS_SSH_KEY_MIN, ("fingerprint",), ("value",)]
+COLUMNS_VMRC = [("enabled",), ("options",)]
 
 VM_DISK_MODES = [
     'persistent',

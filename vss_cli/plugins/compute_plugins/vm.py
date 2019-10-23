@@ -665,6 +665,19 @@ def compute_vm_get_version(ctx: Configuration):
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@compute_vm_get.command(
+    'vmrc-copy-paste', short_help='Get VMRC copy/paste settings status'
+)
+@click.option(
+    '-o', '--options', is_flag=True, required=False, help='Include options'
+)
+@pass_context
+def compute_vm_get_vmrc_copy_paste(ctx: Configuration, options):
+    obj = ctx.get_vm_vmrc_copy_paste(ctx.uuid, options=options)
+    columns = ctx.columns or const.COLUMNS_VMRC
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
 @compute_vm_get.command('vss-option', short_help='Get VSS Option status')
 @pass_context
 def compute_vm_get_vss_option(ctx: Configuration):
@@ -2249,6 +2262,34 @@ def compute_vm_set_version_policy(ctx: Configuration, policy):
     payload.update(ctx.payload_options)
     # request
     obj = ctx.update_vm_version_policy(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command(
+    'vmrc-copy-paste', short_help='Enable or disable VMRC copy-paste settings'
+)
+@click.option(
+    '--on/--off',
+    help='Enable or disable VMRC copy-paste settings',
+    default=None,
+)
+@pass_context
+def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
+    """Enable or disable copy/paste between VMRC and VM OS"""
+    # create payload
+    payload = dict(uuid=ctx.uuid)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    if on:
+        obj = ctx.enable_vm_vmrc_copy_paste(**payload)
+    else:
+        obj = ctx.disable_vm_vmrc_copy_paste(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
