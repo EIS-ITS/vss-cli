@@ -181,9 +181,9 @@ def compute_vm_get_client_notes(ctx):
 @click.option(
     '-c',
     '--client',
-    type=click.Choice(['html5', 'flash', 'vmrc']),
+    type=click.Choice(['html5', 'flex', 'vmrc']),
     help='Client type to generate link.',
-    default='flash',
+    default='flex',
     show_default=True,
 )
 @pass_context
