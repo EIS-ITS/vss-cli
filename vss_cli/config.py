@@ -722,7 +722,13 @@ class Configuration(VssManager):
         return [objects[index]]
 
     def get_vskey_stor(self, **kwargs) -> bool:
-        from webdav3 import client as wc
+        try:
+            from webdav3 import client as wc
+        except ImportError:
+            raise VssCliError(
+                'webdavclient3 dependency not found. '
+                'try running "pip install vss-cli[stor]"'
+            )
 
         options = dict(
             webdav_login=self.username,
