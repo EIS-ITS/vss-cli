@@ -1,5 +1,23 @@
 # Changelog 📝
 
+## [v0.2.5](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.5) (2019-10-25)
+
+**Improvements:**
+- [#185](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/185): `core`: pyvss upgrade from 0.9.42 -> 0.9.43: by [jm.lopez]
+- [#186](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/186): `compute vm set disk up`: `--mode` auto completion by api: by [jm.lopez]
+- [#187](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/187): `compute vm set controller scsi mk|up`: `--scsi-type` auto completion from API: by [jm.lopez]
+- [#188](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/188): `compute vm get console`: update client type: by [jm.lopez]
+- [#189](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/189): `core` :`webdavclient3` dependency to optional: by [jm.lopez]
+- [#190](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/190): `compute domain ls`: command update based on `pyvss`: by [jm.lopez]
+
+**Bug Fixes:**
+- [#181](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/181): `status`: command failed: by [jm.lopez]
+- [#182](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/182): `docs`: some typos or outdated information:  by [jm.lopez]
+
+**New Features:**
+- [#183](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/183): `core`: `--columns-width` option to truncate column values based on user input or terminal size: by [jm.lopez]
+- [#184](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/184): `compute vm set vmrc-copy-paste on|off`: by [jm.lopez]
+
 ## [v0.2.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.4) (2019-10-10)
 
 **Improvements:**

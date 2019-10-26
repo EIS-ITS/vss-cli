@@ -284,7 +284,7 @@ you could do:
 The option ``--columns-width`` allows you to set a maximum column width for a
 given output:
 
-.. code-block::
+.. code-block:: bash
 
     vss-cli --columns-width 0 compute vm ls -f name Pi -c 2
 
@@ -296,7 +296,7 @@ given output:
 ``--columns-width`` can be set to `0` in order to let the ``vss-cli`` to calculate the proper
 column size based on your terminal:
 
-.. code-block::
+.. code-block:: bash
 
     vss-cli --columns-width 15 compute vm ls -f name Pi -c 2
 
