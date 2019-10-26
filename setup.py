@@ -68,21 +68,31 @@ PROJECT_URLS = {
     'Documentation': f'{PROJECT_DOCS}/',
     'Source': f'{PROJECT_URL}',
 }
-
+STOR_REQUIRE = ['webdavclient3==0.12']
 TESTS_REQUIRE = [
     'flake8==3.7.7',
     'nose==1.3.7',
     'coverage==4.5.3',
     'pytz==2018.9',
     'wheel==0.33.1',  # Otherwise setup.py bdist_wheel does not work
+    *STOR_REQUIRE,
 ]
-DEV_REQUIRE = [*TESTS_REQUIRE, 'sphinx-rtd-theme==0.4.3', 'Sphinx==1.8.5']
+DEV_REQUIRE = [
+    *TESTS_REQUIRE,
+    *STOR_REQUIRE,
+    'sphinx-rtd-theme==0.4.3',
+    'Sphinx==1.8.5',
+]
 
 # Allow you to run
 # pip install .[test]
 # pip install .[dev]
 # to get test dependencies included
-EXTRAS_REQUIRE = {'test': TESTS_REQUIRE, 'dev': DEV_REQUIRE}
+EXTRAS_REQUIRE = {
+    'test': TESTS_REQUIRE,
+    'dev': DEV_REQUIRE,
+    'stor': STOR_REQUIRE,
+}
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))
 

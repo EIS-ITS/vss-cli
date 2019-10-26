@@ -125,7 +125,7 @@ General settings can be updated with the ``vss-cli configure set <setting>`` com
 
     Usage: vss-cli configure set [OPTIONS] [check_for_messages|check_for_updates|d
                                  ebug|verbose|default_endpoint_name|output|table_f
-                                 ormat|timeout] VALUE
+                                 ormat|timeout|columns_width] VALUE
 
     Options:
       --help  Show this message and exit.
@@ -138,7 +138,14 @@ For instance, to update the ``timeout`` value, execute:
     vss-cli configure set timeout 60
 
     Updating timeout from 120 -> 60.
-    /Users/josem/.vss-cli/config.yaml updated 💾
+    /Users/username/.vss-cli/config.yaml updated 💾
+
+Or disable ``columns_width`` calculation:
+
+    vss-cli configure set columns_width -- -1
+
+    Updating columns_width from 0 -> -1.
+    /Users/username/.vss-cli/config.yaml updated 💾
 
 
 Boolean values for ``check_for_updates``, ``verbose``, ``debug``, etc. can be enabled (``true``) by using any of the following
@@ -149,12 +156,12 @@ values "yes", "true", "t", "1", "y", everything else is taken as ``false``.
     vss-cli configure set verbose no
 
     Updating verbose from True -> False.
-    /Users/josem/.vss-cli/config.yaml updated 💾
+    /Users/username/.vss-cli/config.yaml updated 💾
 
     vss-cli configure set verbose yes
 
     Updating verbose from False -> True.
-    /Users/josem/.vss-cli/config.yaml updated 💾
+    /Users/username/.vss-cli/config.yaml updated 💾
 
 
 Add/Update endpoints
@@ -173,6 +180,7 @@ same endpoint. For example, adding a different account:
     Repeat for confirmation:
     Successfully configured credentials for https://cloud-api.eis.utoronto.ca.
     You are ready to use the vss-cli 🚀
+
 
 List endpoints
 ~~~~~~~~~~~~~~
@@ -238,6 +246,8 @@ The following table summarizes the environment variables supported by the ``vss-
 +------------------+----------------------------------------------------------------------------------+
 | VSS_TABLE        | Table format to be used by tabulate.                                             |
 +------------------+----------------------------------------------------------------------------------+
+| VSS_COL_WIDTH    | ``0`` to auto. ``-1`` to disable or any other positive number.                   |
++------------------+----------------------------------------------------------------------------------+
 
 If you would like to have a stateless configuration, set ``VSS_USER`` and ``VSS_USER_PASS``
 or ``VSS_TOKEN`` with a token generated manually:
@@ -273,6 +283,10 @@ The following table summarizes the command line input options supported by the `
 | ``-o``/``--output``       | Output format. Either ``yaml``, ``table`` or ``json``.                           |
 +---------------------------+----------------------------------------------------------------------------------+
 | ``--table-format``        | Table format to be used by tabulate.                                             |
++---------------------------+----------------------------------------------------------------------------------+
+| ``--columns``             | Custom columns key=value list.                                                   |
++---------------------------+----------------------------------------------------------------------------------+
+| ``--columns-width``       | Truncates column values (0: auto, -1: disable)                                   |
 +---------------------------+----------------------------------------------------------------------------------+
 
 The ``vss-cli`` configuration file can be configured using a mix of both user input and command line options as follows:

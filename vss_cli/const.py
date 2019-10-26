@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -16,6 +16,10 @@ DEFAULT_WEBDAV_SERVER = "https://vskey-stor.eis.utoronto.ca"
 _LEGACY_CONFIG = ("~", ".vss-cli", "config.json")
 _DEFAULT_CONFIG = ("~", ".vss-cli", "config.yaml")
 _DEFAULT_HISTORY = ("~", ".vss-cli", "history")
+
+COLUMNS_WIDTH_DEFAULT = -1
+COLUMNS_WIDTH_STR = "\u2026"
+
 LEGACY_CONFIG = os.path.expanduser(os.path.join(*_LEGACY_CONFIG))
 DEFAULT_CONFIG = os.path.expanduser(os.path.join(*_DEFAULT_CONFIG))
 DEFAULT_HISTORY = os.path.expanduser(os.path.join(*_DEFAULT_HISTORY))
@@ -53,6 +57,7 @@ GENERAL_SETTINGS = {
     "output": str,
     "table_format": str,
     "timeout": int,
+    "columns_width": int,
 }
 
 DEFAULT_HOST_REGEX = (
@@ -409,13 +414,4 @@ COLUMNS_WEBDAV = [("files", "[*]")]
 COLUMNS_WEBDAV_INFO = [("created",), ("modified",), ("name",), ("size",)]
 COLUMNS_SSH_KEY_MIN = [*COLUMNS_MIN, ("type",), ("comment",)]
 COLUMNS_SSH_KEY = [*COLUMNS_SSH_KEY_MIN, ("fingerprint",), ("value",)]
-
-VM_DISK_MODES = [
-    'persistent',
-    'nonpersistent',
-    'undoable',
-    'independent_persistent',
-    'independent_nonpersistent',
-    'append',
-]
-VM_SCSI_TYPES = ['paravirtual', 'lsilogic', 'lsilogicsas', 'buslogic']
+COLUMNS_VMRC = [("enabled",), ("options",)]

@@ -120,6 +120,30 @@ def virtual_machines(
     )
 
 
+def vm_controller_scsi_types(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_scsi_controllers,
+        incomplete,
+        ['type', 'description'],
+        f_kwargs={'only_type': False},
+    )
+
+
+def vm_disk_backing_modes(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_disk_backing_modes,
+        incomplete,
+        ['type', 'description'],
+        f_kwargs={'only_type': False},
+    )
+
+
 def domains(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -128,8 +152,9 @@ def domains(
         ctx.client.get_domains,
         incomplete,
         ['moref', 'name'],
-        sort_index=1,
         complete_index=1,
+        sort_index=1,
+        f_kwargs={"short": 1, "show_all": True, "per_page": 2000}
     )
 
 

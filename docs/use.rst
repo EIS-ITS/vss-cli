@@ -255,15 +255,15 @@ The ``table`` format presents the VSS CLI output into tab-delimited lines, helpf
 
 .. code-block:: bash
 
-    vss-cli --table-format=rst compute vm ls -f name %hoth% -s name desc
+    vss-cli --table-format=rst compute vm ls -f name %Pi% -s name desc
 
-    ====================================  ==========  ============================  =====  ===============  ========  ==========  ============================  =========
-    UUID                                  NAME        FOLDER                          CPU  IP_ADDRESS         MEMORY  POWER       GUEST                         VERSION
-    ====================================  ==========  ============================  =====  ===============  ========  ==========  ============================  =========
-    5012c585-98e5-088b-4c61-9b100a414fca  1905P-vm-1  VSS > Sandbox > jm > Desktop      2  192.168.2.100           5  poweredOn   Microsoft Windows 8 (64-bit)  vmx-13
-    50127974-aa4a-c215-f9f0-e1ab8a4ef050  1409P-vm-2  VSS > Sandbox > jm > Desktop      1                          3  poweredOff  Microsoft Windows 8 (64-bit)  vmx-10
-    ====================================  ==========  ============================  =====  ===============  ========  ==========  ============================  =========
-
+    ====================================  ===============  ================  ===========  ===========  =============  =========================================
+    uuid                                  name             folder.path         cpu_count    memory_gb  power_state    ip_address
+    ====================================  ===============  ================  ===========  ===========  =============  =========================================
+    50305559-f3df-05b7-aa62-2cffa28807ac  1909T-Pi-Lab-10  Public > dev123             1            1  poweredOff
+    503076e4-3473-1474-aaeb-25504ab9c823  1908T-Pi-Lab-2   Public > dev1235            1            1  poweredOn      192.168.130.252 fe80::fd35:a67d:6542:c5ac
+    5030fb03-9f20-ab19-c6dd-d4ac51601665  1904T-Pi-Lab     Public > Dev                2            2  poweredOn
+    ====================================  ===============  ================  ===========  ===========  =============  =========================================
 
 You can also control the data shown with ``--columns`` providing a name and a `jsonpath`.
 
@@ -272,13 +272,38 @@ you could do:
 
 .. code-block:: bash
 
-    vss-cli --columns=UUID=uuid,VMNAME=name,GB=provisionedGB compute vm ls -f name %TEST%
+    vss-cli --columns=UUID=uuid,VMNAME=name,GB=provisioned_gb compute vm ls -f name Pi
 
-    UUID                                  VMNAME               GB
-    ------------------------------------  ----------------  -----
-    50300d58-29dd-5781-a5a0-dc9937351090  1902D-TESTOVA123  81.69
-    5030d265-2c35-f3a9-e295-ebee8ced91d6  1902D-TEST132      2.18
+    UUID                                  VMNAME              GB
+    ------------------------------------  ---------------  -----
+    5030fb03-9f20-ab19-c6dd-d4ac51601665  1904T-Pi-Lab     15.65
+    503076e4-3473-1474-aaeb-25504ab9c823  1908T-Pi-Lab-2    8
+    50305559-f3df-05b7-aa62-2cffa28807ac  1909T-Pi-Lab-10  11.18
 
+
+The option ``--columns-width`` allows you to set a maximum column width for a
+given output:
+
+.. code-block:: bash
+
+    vss-cli --columns-width 0 compute vm ls -f name Pi -c 2
+
+    uuid                     name            folder.path         cpu_count    memory_gb  power_state    ip_address
+    -----------------------  --------------  ----------------  -----------  -----------  -------------  -----------------------
+    5030fb03-9f20-ab19-c6d…  1904T-Pi-Lab    Public > Dev                2            2  poweredOn
+    503076e4-3473-1474-aae…  1908T-Pi-Lab-2  Public > dev1235            1            1  poweredOn      128.100.228.207 fe80::…
+
+``--columns-width`` can be set to `0` in order to let the ``vss-cli`` to calculate the proper
+column size based on your terminal:
+
+.. code-block:: bash
+
+    vss-cli --columns-width 15 compute vm ls -f name Pi -c 2
+
+    uuid             name            folder.path        cpu_count    memory_gb  power_state    ip_address
+    ---------------  --------------  ---------------  -----------  -----------  -------------  ---------------
+    5030fb03-9f20-…  1904T-Pi-Lab    Public > Dev               2            2  poweredOn
+    503076e4-3473-…  1908T-Pi-Lab-2  Public > dev12…            1            1  poweredOn      128.100.228.20
 
 JSON
 ~~~~
@@ -392,12 +417,12 @@ To enter the shell just execute ``vss-cli shell`` and you will get the following
     vss (vss-api) >
 
 
-Every VSS CLI command, option and argument is available in the shell context,
-but do not include the ``vss`` command, for instance:
+Every VSS CLI command, option and argument is available in the shell context.
+Just exclude the ``vss-cli`` command, for instance:
 
 .. code-block:: bash
 
-    vss (vss-api) > --columns=UUID=uuid,VMNAME=name compute vm ls -f name %ecs%
+    vss (vss-api) > --columns=UUID=uuid,VMNAME=name compute vm ls -f name ecs
     UUID                                  VMNAME
     ------------------------------------  -----------------------
     501220a5-a091-1866-9741-664236067142  1611T-ecstatic_mccarthy

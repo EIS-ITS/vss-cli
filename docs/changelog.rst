@@ -2,6 +2,29 @@
 Changelog
 =========
 
+`v0.2.5 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.5>`_ (2019-10-25)
+==================================================================================
+
+**Improvements:**
+
+- `#185 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/185>`_: ``core``: pyvss upgrade from 0.9.42 -> 0.9.43: by `jm.lopez`_
+- `#186 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/186>`_: ``compute vm set disk up``: ``--mode`` auto completion by api: by `jm.lopez`_
+- `#187 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/187>`_: ``compute vm set controller scsi mk|up``: ``--scsi-type`` auto completion from API: by `jm.lopez`_
+- `#188 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/188>`_: ``compute vm get console``: update client type: by `jm.lopez`_
+- `#189 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/189>`_: ``core`` :``webdavclient3`` dependency to optional: by `jm.lopez`_
+- `#190 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/190>`_: ``compute domain ls``: command update based on ``pyvss``: by `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#181 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/181>`_: ``status``: command failed: by `jm.lopez`_
+- `#182 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/182>`_: ``docs``: some typos or outdated information:  by `jm.lopez`_
+
+**New Features:**
+
+- `#183 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/183>`_: ``core``: ``--columns-width`` option to truncate column values based on user input or terminal size: by `jm.lopez`_
+- `#184 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/184>`_: ``compute vm set vmrc-copy-paste on|off``: by `jm.lopez`_
+
+
 `v0.2.4 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.4>`_ (2019-10-10)
 ==================================================================================
 
@@ -336,7 +359,7 @@ Changelog
 - `#23 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/23>`_: ``shell``: REPL interactive shell: by `jm.lopez`_
 - `#18 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/18>`_: ``stor``: Manage your personal storage space: by `jm.lopez`_
 - `#12 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/12>`_: ``status``: Check VSS Status: by `jm.lopez`_
-- `#14 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/14>`_: ``upgrade``: Upgrade VSS CLI and dependencies (experimental): by `jm.lopez`_
+- `#14 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/14>`_: ``upgrade``: Upgrade VSS CLI and dependencies (experimental>`_: by `jm.lopez`_
 - `#1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/1>`_ : ``request``: Manage your different requests history: by `jm.lopez`_
 - `#15 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/15>`_: ``token``: Manage your API tokens: by `jm.lopez`_
 - `#17 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/17>`_: ``account``: Manage your VSS account: by `jm.lopez`_

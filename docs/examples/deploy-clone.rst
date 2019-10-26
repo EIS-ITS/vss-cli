@@ -192,7 +192,7 @@ Serializing the above JSON structure would be something like:
 
 .. code-block:: text
 
-   '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": ["dhcp": true]}'
+   '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}'
 
 .. note:: Passing above JSON data structure to ``--custom-spec`` in Linux, macOS, or Unix and
   Windows PowerShell use the single quote ``'`` to enclose it. On the Windows command prompt,

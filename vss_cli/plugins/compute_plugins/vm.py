@@ -181,9 +181,9 @@ def compute_vm_get_client_notes(ctx):
 @click.option(
     '-c',
     '--client',
-    type=click.Choice(['html5', 'flash', 'vmrc']),
+    type=click.Choice(['html5', 'flex', 'vmrc']),
     help='Client type to generate link.',
-    default='flash',
+    default='flex',
     show_default=True,
 )
 @pass_context
@@ -662,6 +662,19 @@ def compute_vm_get_version(ctx: Configuration):
     """Get VMX hardware version"""
     obj = ctx.get_vm_version(ctx.uuid)
     columns = ctx.columns or const.COLUMNS_VM_HW
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_get.command(
+    'vmrc-copy-paste', short_help='Get VMRC copy/paste settings status'
+)
+@click.option(
+    '-o', '--options', is_flag=True, required=False, help='Include options'
+)
+@pass_context
+def compute_vm_get_vmrc_copy_paste(ctx: Configuration, options):
+    obj = ctx.get_vm_vmrc_copy_paste(ctx.uuid, options=options)
+    columns = ctx.columns or const.COLUMNS_VMRC
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
@@ -1331,7 +1344,7 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
 @click.option(
     '-m',
     '--backing-mode',
-    type=click.Choice(const.VM_DISK_MODES),
+    autocompletion=autocompletion.vm_disk_backing_modes,
     help='Update disk backing mode default [persistent]',
 )
 @pass_context
@@ -2258,6 +2271,34 @@ def compute_vm_set_version_policy(ctx: Configuration, policy):
 
 
 @compute_vm_set.command(
+    'vmrc-copy-paste', short_help='Enable or disable VMRC copy-paste settings'
+)
+@click.option(
+    '--on/--off',
+    help='Enable or disable VMRC copy-paste settings',
+    default=None,
+)
+@pass_context
+def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
+    """Enable or disable copy/paste between VMRC and VM OS"""
+    # create payload
+    payload = dict(uuid=ctx.uuid)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    if on:
+        obj = ctx.enable_vm_vmrc_copy_paste(**payload)
+    else:
+        obj = ctx.disable_vm_vmrc_copy_paste(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command(
     'vss-option', short_help='Enable or disable given vss-option'
 )
 @click.argument(
@@ -2337,12 +2378,12 @@ def compute_vm_set_controller_scsi(ctx: Configuration):
 )
 @click.option(
     '-t',
-    '--scsi_type',
-    type=click.Choice(const.VM_SCSI_TYPES),
+    '--scsi-type',
     required=True,
     multiple=True,
+    autocompletion=autocompletion.vm_controller_scsi_types,
     default='paravirtual',
-    help='Type of SCSI(s) Controller.',
+    help='Type of SCSI Controllers.',
     show_default=True,
 )
 @pass_context
@@ -2371,10 +2412,10 @@ def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
 @click.argument('bus_number', type=click.INT, required=True)
 @click.option(
     '-t',
-    '--scsi_type',
-    type=click.Choice(['paravirtual', 'lsilogic', 'lsilogicsas', 'buslogic']),
+    '--scsi-type',
+    autocompletion=autocompletion.vm_controller_scsi_types,
     required=True,
-    help='Type of SCSI(s) Controller.',
+    help='Type of SCSI Controllers.',
 )
 @pass_context
 def compute_vm_set_controller_scsi_up(

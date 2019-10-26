@@ -48,11 +48,11 @@ Verify files were uploaded successfully with ``vss-cli stor ls <dir>``:
 At this point, your image is almost ready to be deployed. Sync your images with
 ``vss-cli compute image personal sync`` in order to make them available in the API.
 You can verify if the task has successfully completed by issuing the command
-``vss-cli request image-sync ls`` as follows:
+``vss-cli request image ls`` as follows:
 
 .. code-block:: bash
 
-    vss-cli request image-sync ls -s created_on desc
+    vss-cli request image ls -s created_on desc
 
       id  created_on                   updated_on                   status     type
     ----  ---------------------------  ---------------------------  ---------  ------
