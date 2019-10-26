@@ -152,8 +152,9 @@ def domains(
         ctx.client.get_domains,
         incomplete,
         ['moref', 'name'],
-        sort_index=1,
         complete_index=1,
+        sort_index=1,
+        f_kwargs={"short": 1, "show_all": True, "per_page": 2000}
     )
 
 

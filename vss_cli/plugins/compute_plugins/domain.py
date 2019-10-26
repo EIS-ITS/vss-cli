@@ -64,8 +64,6 @@ def domain_get(ctx: Configuration, name_or_moref):
     ctx.moref = _domain[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_MOREF
-        if not ctx.columns:
-            columns.extend([('HOSTS', 'hosts_count'), ('STATUS', 'status')])
         with ctx.spinner(disable=ctx.debug):
             obj = ctx.get_domain(ctx.moref)
         click.echo(format_output(ctx, [obj], columns=columns, single=True))
@@ -78,14 +76,13 @@ def domain_get(ctx: Configuration, name_or_moref):
 @pass_context
 def domain_get_vms(ctx: Configuration, page):
     with ctx.spinner(disable=ctx.debug):
-        obj = ctx.get_domain(ctx.moref, summary=1)
+        obj = ctx.get_vms_by_domain(ctx.moref)
     if not obj:
         raise VssCliError(
             f'Either domain {ctx.moref} does not exist, '
             f'or you do not have permission to access.'
         )
-    objs = obj['vms']
-    output = format_output(ctx, objs, columns=const.COLUMNS_VM_MIN)
+    output = format_output(ctx, obj, columns=const.COLUMNS_VM)
     # page results
     if page:
         click.echo_via_pager(output)
