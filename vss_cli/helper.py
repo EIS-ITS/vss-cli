@@ -130,7 +130,7 @@ def raw_format_output(
                 columns_width = const.COLUMNS_WIDTH_DEFAULT
 
             # Truncates data
-            if columns_width > -1:
+            if columns_width > -1 and result:
                 if columns_width == 0:  # calculate size
                     terminal_size = shutil.get_terminal_size()
                     number_c = min([len(r) for r in result])
