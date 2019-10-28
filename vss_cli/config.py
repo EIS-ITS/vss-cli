@@ -450,7 +450,7 @@ class Configuration(VssManager):
             out, err = p.communicate()
             out_decoded = out.decode('utf-8')
             # verify if package name is in outdated string
-            pkg_name = const.PACKAGE_NAME
+            pkg_name = const.PACKAGE_NAME.replace('_', '-')
             if pkg_name in out_decoded:
                 lines = out_decoded.split('\n')
                 pkg_line = [line for line in lines if pkg_name in line]
