@@ -1,6 +1,8 @@
 """Helpers used by Home Assistant CLI (hass-cli)."""
 import contextlib
+import csv
 from http.client import HTTPConnection
+import io
 import json
 import logging
 import re
@@ -147,13 +149,22 @@ def raw_format_output(
                     ]
                     for row in result
                 ]
-            res = tabulate(
-                result, headers=headers, tablefmt=table_format
-            )  # type: str
+            if table_format == 'csv':
+                output = io.StringIO()
+                writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+                writer.writerow(headers)
+                for row in result:
+                    writer.writerow(row)
+                res = output.getvalue()  # type: str
+            else:
+                res = tabulate(
+                    result, headers=headers, tablefmt=table_format
+                )  # type: str
             return res
     else:
         raise ValueError(
-            f"Output Format was {output}, expected either 'json' or 'yaml'"
+            f"Output Format was {output}, "
+            f"expected either 'json' or 'yaml' or 'table'"
         )
 
 
