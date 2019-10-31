@@ -2,6 +2,21 @@
 Changelog
 =========
 
+`v0.2.6 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.6>`_ (2019-10-31)
+==================================================================================
+
+**Improvements:**
+
+- `#196 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/196>`_: ``core``: ``--table-format`` support for CSV: by `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#192 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/192>`_: ``compute vm rm``: auto completion provides network objects: by `jm.lopez`_
+- `#193 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/193>`_: ``core``: check available updates always provide an up-to-date package: by `jm.lopez`_
+- `#194 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/194>`_: ``compute domain ls``: filters not working properly: by `jm.lopez`_
+- `#195 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/195>`_: ``core``: ``--columns`` width exception thrown when empty result: by `jm.lopez`_
+
+
 `v0.2.5 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.5>`_ (2019-10-25)
 ==================================================================================
 

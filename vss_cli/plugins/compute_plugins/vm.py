@@ -2525,7 +2525,7 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     type=click.UUID,
     required=True,
     nargs=-1,
-    autocompletion=autocompletion.networks,
+    autocompletion=autocompletion.virtual_machines,
 )
 @pass_context
 def compute_vm_rm(ctx: Configuration, uuid, force, max_del, show_info):

@@ -2,12 +2,12 @@ import logging
 
 import click
 
-from vss_cli import const
+from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
-from vss_cli.helper import format_output
+from vss_cli.helper import format_output, process_filters
 from vss_cli.plugins.compute import cli
 
 _LOGGING = logging.getLogger(__name__)
@@ -22,26 +22,22 @@ def cli(ctx: Configuration):
 
 
 @cli.command('ls', short_help='list fault domains')
-@click.option(
-    '-f',
-    '--filter',
-    multiple=True,
-    type=(click.STRING, click.STRING),
-    help='filter list by name or moref',
-)
-@click.option(
-    '-p', '--page', is_flag=True, help='page results in a less-like format'
-)
+@so.filter_opt
+@so.all_opt
+@so.page_opt
+@so.sort_opt
+@so.count_opt
 @pass_context
-def domain_ls(ctx: Configuration, filter, page):
+def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
     columns = ctx.columns or const.COLUMNS_MOREF
-    query_params = dict(summary=1)
-    if filter:
-        for f in filter:
-            query_params[f[0]] = f[1]
+    params = dict(expand=1, sort='name,asc')
+    if all(filter_by):
+        params['filter'] = ','.join(process_filters(filter_by))
+    if all(sort):
+        params['sort'] = f'{sort[0]},{sort[1]}'
     # query
     with ctx.spinner(disable=ctx.debug):
-        objs = ctx.get_domains(**query_params)
+        objs = ctx.get_domains(show_all=show_all, per_page=count, **params)
     # format output
     output = format_output(ctx, objs, columns=columns)
     # page results

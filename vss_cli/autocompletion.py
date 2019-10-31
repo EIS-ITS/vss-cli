@@ -85,6 +85,7 @@ def table_formats(
         ),
         ("textile", "Textile"),
         ("tsv", "Tab Separated Values"),
+        ("csv", "Comma Separated Values"),
     ]
 
     completions.sort()
@@ -154,7 +155,7 @@ def domains(
         ['moref', 'name'],
         complete_index=1,
         sort_index=1,
-        f_kwargs={"short": 1, "show_all": True, "per_page": 2000}
+        f_kwargs={"short": 1, "show_all": True, "per_page": 2000},
     )
 
 
