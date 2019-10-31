@@ -66,7 +66,7 @@ The following table summarizes the **general** area configuration parameters
 +---------------------------+--------+---------------------------------------------------------------------------------+
 | ``table_format``          | string | table formats supported by `python-tabulate`_: `plain`, `simple`, `github`,     |
 |                           |        | `grid`, `fancy_grid`, `pipe`, `orgtbl`, `rst`, `mediawiki`, `html`, `latex`,    |
-|                           |        | `latex_raw`, `latex_booktabs` or `tsv`.                                         |
+|                           |        | `latex_raw`, `latex_booktabs`, `tsv` or `csv`.                                  |
 +---------------------------+--------+---------------------------------------------------------------------------------+
 | ``check_for_updates``     | bool   | Check for ``vss-cli`` updates when a new token is generated.                    |
 +---------------------------+--------+---------------------------------------------------------------------------------+
