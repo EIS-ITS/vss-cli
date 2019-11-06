@@ -66,7 +66,7 @@ This tutorial contain step by step guidance to change the Virtual Storage Contro
 
 .. code-block:: bash
 
-    mkinitard -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+    mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
 
 8. Power Off or shutdown the virtual machine:
 
