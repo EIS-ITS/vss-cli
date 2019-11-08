@@ -50,7 +50,7 @@ def snapshot_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
                 ('ACTION', 'action'),
             ]
         )
-    params = dict()
+    params = dict(expand=1, sort='created_on,desc')
     if all(filter_by):
         params['filter'] = f'{filter_by[0]},{filter_by[1]}'
     if all(sort):

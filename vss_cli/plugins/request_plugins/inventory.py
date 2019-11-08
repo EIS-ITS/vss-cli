@@ -43,7 +43,7 @@ def request_mgmt_inventory_ls(
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_INVENTORY_MIN
-    params = dict()
+    params = dict(expand=1, sort='created_on,desc')
     if all(filter_by):
         params['filter'] = f'{filter_by[0]},{filter_by[1]}'
     if all(sort):
