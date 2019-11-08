@@ -112,7 +112,7 @@ def snapshot_set_duration(ctx: Configuration, lifetime):
     """Extend snapshot lifetime"""
     # make request
     with ctx.spinner(disable=ctx.debug):
-        _, obj = ctx.extend_snapshot_request(ctx.rid, lifetime)
+        obj = ctx.extend_snapshot_request(ctx.rid, lifetime)
     columns = ctx.columns or const.COLUMNS_REQUEST
     if not ctx.columns:
         columns.extend(const.COLUMNS_REQUEST_SNAP)

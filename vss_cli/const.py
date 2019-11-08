@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.3.0-dev3"
+__version__ = "0.2.7-dev4"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -148,6 +148,8 @@ COLUMNS_REQUEST_MULT_SUBMITTED = [
     ("message",),
 ]
 COLUMNS_REQUEST_SNAP = [
+    ("snapshot.from_date",),
+    ("snapshot.to_date",),
     ("snapshot.description",),
     ("snapshot.snap_id",),
     ("extensions",),
