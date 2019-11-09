@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -148,6 +148,8 @@ COLUMNS_REQUEST_MULT_SUBMITTED = [
     ("message",),
 ]
 COLUMNS_REQUEST_SNAP = [
+    ("snapshot.from_date",),
+    ("snapshot.to_date",),
     ("snapshot.description",),
     ("snapshot.snap_id",),
     ("extensions",),
@@ -358,10 +360,12 @@ COLUMNS_VM_CPU = [
 ]
 COLUMNS_VM_EVENT = [("user_name",), ("created_time",), ("message",)]
 COLUMNS_VM_STATE = [
-    ("power_state",),
-    ("boot_time",),
-    ("connection_state",),
-    ("domain.name",),
+    ("create_date", "state.create_date"),
+    ("power_state", "state.power_state",),
+    ("boot_time", "state.boot_time"),
+    ("connection_state", "state.connection_state"),
+    ("domain_name", "domain.name",),
+    ("domain_moref", "domain.moref",),
 ]
 COLUMNS_VM_TOOLS = [("version",), ("version_status",), ("running_status",)]
 COLUMNS_VM_HW = [

@@ -50,7 +50,7 @@ def snapshot_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
                 ('ACTION', 'action'),
             ]
         )
-    params = dict()
+    params = dict(expand=1, sort='created_on,desc')
     if all(filter_by):
         params['filter'] = f'{filter_by[0]},{filter_by[1]}'
     if all(sort):
@@ -112,7 +112,7 @@ def snapshot_set_duration(ctx: Configuration, lifetime):
     """Extend snapshot lifetime"""
     # make request
     with ctx.spinner(disable=ctx.debug):
-        _, obj = ctx.extend_snapshot_request(ctx.rid, lifetime)
+        obj = ctx.extend_snapshot_request(ctx.rid, lifetime)
     columns = ctx.columns or const.COLUMNS_REQUEST
     if not ctx.columns:
         columns.extend(const.COLUMNS_REQUEST_SNAP)
