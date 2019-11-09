@@ -1,46 +1,70 @@
 # Changelog 📝
 
+## [v0.2.7](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.7) (2019-11-08)
+
+**Improvements:**
+
+- [#199](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/199): ``core``: pyvss upgrade from 0.9.43 -> 0.10.0: by [jm.lopez]
+- [#200](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/200): ``ci``: new items to gitignore: by [jm.lopez]
+- [#201](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/201): ``compute vm get state``: add ``create_date`` attribute: by [jm.lopez]
+- [#202](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202): ``request snapshot ls``: default sort by created date: by [jm.lopez]
+- [#202](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202): ``request new ls``: default sort by created date: by [jm.lopez]
+- [#202](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202): ``request inventory ls``: default sort by created date: by [jm.lopez]
+- [#202](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202): ``request folder ls``: default sort by created date: by [jm.lopez]
+- [#202](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202): ``request change ls``: default sort by created date: by [jm.lopez]
+- [#203](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/203): ``request snapshot set``: show ``from_date`` and ``to_date`` attributes: by [jm.lopez]
+
+**Bug Fixes:**
+
+- [#198](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/192): ``docs``: command typo in PV SCSI example:  by [jm.lopez]
+
 ## [v0.2.6](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.6) (2019-10-31)
 
 **Improvements:**
+
 - [#196](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/196): ``core``: ``--table-format`` support for CSV: by [jm.lopez]
 
 **Bug Fixes:**
+
 - [#192](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/192): ``compute vm rm``: auto completion provides network objects: by [jm.lopez]
 - [#193](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/193): ``core``: check available updates always provide an up-to-date package: by [jm.lopez]
 - [#194](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/194): ``compute domain ls``: filters not working properly: by [jm.lopez]
 - [#195](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/195): ``core``: ``--columns`` width exception thrown when empty result: by [jm.lopez]
 
-
 ## [v0.2.5](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.5) (2019-10-25)
 
 **Improvements:**
-- [#185](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/185): `core`: pyvss upgrade from 0.9.42 -> 0.9.43: by [jm.lopez]
-- [#186](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/186): `compute vm set disk up`: `--mode` auto completion by api: by [jm.lopez]
-- [#187](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/187): `compute vm set controller scsi mk|up`: `--scsi-type` auto completion from API: by [jm.lopez]
-- [#188](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/188): `compute vm get console`: update client type: by [jm.lopez]
-- [#189](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/189): `core` :`webdavclient3` dependency to optional: by [jm.lopez]
-- [#190](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/190): `compute domain ls`: command update based on `pyvss`: by [jm.lopez]
+
+- [#185](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/185): ``core``: pyvss upgrade from 0.9.42 -> 0.9.43: by [jm.lopez]
+- [#186](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/186): ``compute vm set disk up``: `--mode` auto completion by api: by [jm.lopez]
+- [#187](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/187): ``compute vm set controller scsi mk|up``: `--scsi-type` auto completion from API: by [jm.lopez]
+- [#188](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/188): ``compute vm get console``: update client type: by [jm.lopez]
+- [#189](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/189): ``core`` :`webdavclient3` dependency to optional: by [jm.lopez]
+- [#190](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/190): ``compute domain ls``: command update based on `pyvss`: by [jm.lopez]
 
 **Bug Fixes:**
+
 - [#181](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/181): `status`: command failed: by [jm.lopez]
 - [#182](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/182): `docs`: some typos or outdated information:  by [jm.lopez]
 
 **New Features:**
+
 - [#183](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/183): `core`: `--columns-width` option to truncate column values based on user input or terminal size: by [jm.lopez]
 - [#184](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/184): `compute vm set vmrc-copy-paste on|off`: by [jm.lopez]
 
 ## [v0.2.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.4) (2019-10-10)
 
 **Improvements:**
+
 - [#174](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/174): `core`: pyvss upgrade from 0.9.41 -> 0.9.42: by [jm.lopez]
 - [#172](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/172): `compute vm set`: `--wait` flag support for multiple requests: by [jm.lopez]
 - [#172](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/172): `compute vm mk`: `--wait` flag support for multiple requests: by [jm.lopez]
 - [#172](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/172): `compute folder set`: `--wait` flag support for multiple requests: by [jm.lopez]
 - [#172](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/172): `compute inventory mk`: `--wait` flag support for multiple requests: by [jm.lopez]
-- [#179](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/179): `compute vm mk `: sub-command standardization: by [jm.lopez]
+- [#179](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/179): `compute vm mk`: sub-command standardization: by [jm.lopez]
 
 **Bug Fixes:**
+
 - [#168](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/168): `docs`: network invalid option to change network adapter: by [jm.lopez]
 - [#169](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/169): `compute vm set cd mk`: schema exception when creating a cd: by [jm.lopez]
 - [#170](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/170): `message ls --filter`: filters do not work properly: by [jm.lopez]
@@ -48,6 +72,7 @@
 - [#178](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/178): `compute vm mk `: `--notes/-s` duplicated: by [jm.lopez]
 
 **New Features:**
+
 - [#171](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/171): `compute vm mk from-template`: `--instances` flag to deploy multiple instances concurrently: by [jm.lopez]
 - [#173](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/173): `compute vm mk shell`: `--instances` flag to deploy multiple instances concurrently: by [jm.lopez]
 - [#175](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/175): `compute vm mk from-clone`: `--instances` flag to deploy multiple instances concurrently: by [jm.lopez]
@@ -57,6 +82,7 @@
 ## [v0.2.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.3) (2019-09-20)
 
 **Improvements:**
+
 - [#156](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/156): `compute inventory mk`: add ``--transfer/--no-transfer`` option to enable/disable transfer to vskey-stor: by [jm.lopez]
 - [#157](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/157): `compute mk set nic mk`: support for nic type in option ``-n <net-moref-name>=<nic-type>``: by [jm.lopez]
 - [#158](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/158): `compute vm set nic up`: support for new adapter type format ``--adapter``: by [jm.lopez]
@@ -94,6 +120,7 @@
 ## [v0.2.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.2) (2019-09-05)
 
 **Improvements:**
+
 - [#145](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/145): `core`: pyvss upgrade from 0.9.39 -> 0.9.40: by [jm.lopez]
 - [#147](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/147): `core`: ruamel.yaml upgrade to 0.16.5: by [jm.lopez]
 - [#148](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/148): `core`: Pygments upgrade to 2.4.2: by [jm.lopez]
@@ -103,10 +130,12 @@
 - [#154](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/154): `ci`: check-in version and git SHA on VSS API: by [jm.lopez]
 
 **Bug Fixes:**
+
 - [#143](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/143): `core`: `config.get_folder_by_name_or_moref_path` cannot find folder: by [jm.lopez]
 - [#150](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/150): `core`: autocompletion not populating all folders: by [jm.lopez]
 
 **New Features:**
+
 - [#153](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153): `compute vm set`: Add a `--wait` flag to commands which generate requests: by [jm.lopez]
 - [#153](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153): `compute vm mk`: Add a `--wait` flag to commands which generate requests: by [jm.lopez]
 - [#153](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/153): `compute folder set`: Add a `--wait` flag to commands which generate requests: by [jm.lopez]
@@ -115,6 +144,7 @@
 ## [v0.2.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.1) (2019-08-15)
 
 **Improvements:**
+
 - [#129](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/129): `core`: pyvss upgrade from 0.9.38 -> 0.9.39: by [jm.lopez]
 - [#131](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/131): `docs`: vmware paravirtual scsi migration how-to: by [jm.lopez]
 - [#133](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/133): `core`: `vss` command as an alias of `vss-cli`: by [jm.lopez]
@@ -127,6 +157,7 @@
 - [#142](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/142): `compute iso public ls`: improving filtering processing: by [jm.lopez]
  
 **Bug Fixes:**
+
 - [#130](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/130): `core`: `config.get_vm_by_uuid_or_name` cannot find templates: by [jm.lopez]
 - [#132](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/132): `core`: `config.get_vm_by_uuid_or_name` cannot find vms: by [jm.lopez]
 - [#134](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/134): `compute vm mk from-file`: `-s/--save` expects argument: by [jm.lopez]
@@ -134,6 +165,7 @@
 ## [v0.2.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.0) (2019-07-26)
 
 **Improvements:**
+
 - [#125](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/125): `core`: pyvss upgrade from 0.9.36 -> 0.9.38: by [jm.lopez]
 - [#124](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/124): `compute vm ls`: add options to filter and sort: by  [jm.lopez]
 - [#126](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/126): `compute template ls`: add options to filter and sort: by  [jm.lopez]
@@ -142,6 +174,7 @@
 ## [v0.1.9](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.9) (2019-07-19)
 
 **Improvements:**
+
 - [#122](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/122): `core`: removing config.update_vm_floppy in favour of pyvss: by [jm.lopez]
 - [#121](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/121): `core`: pyvss upgrade from 0.9.35 -> 0.9.36: by [jm.lopez]
 - [#119](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/119): `compute vm get controller scsi`: command update: by [jm.lopez]
@@ -152,6 +185,7 @@
 - [#114](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/114): `compute folder ls`: add options to filter and sort  [jm.lopez]
 
 **New Features:**
+
 - [#120](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/120): `compute vm set controller scsi mk`: create vm scsi controllers: by [jm.lopez]
 - [#120](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/120): `compute vm set controller scsi up`: update vm scsi controllers: by [jm.lopez]
 - [#120](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/120): `compute vm set controller scsi rm`: remove vm scsi controllers: by [jm.lopez]
@@ -160,12 +194,14 @@
 ## [v0.1.8](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.8) (2019-07-10)
 
 **Improvements:**
+
 - [#109](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/109): `core`: pyvss upgrade from 0.9.34 -> 0.9.35: by [jm.lopez]
 - [#107](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/107): `compute net ls`: add new options to filter and sort: by [jm.lopez]
 - [#108](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/108): `compute net get`: update vms command backend: by [jm.lopez]
 - [#111](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/111): `compute vm set floppy`: improve image lookup and handling: by [jm.lopez]
 
 **Bug Fixes:**
+
 - [#106](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/106): `docs`: project links > documentation typo in project docs url: by [jm.lopez]
 - [#110](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/110): `compute vm set nic mk`: error when creating cards: by [jm.lopez]
 - [#112](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/112): `compute vm set client`: update_vm_vss_client missing positional argument: by [jm.lopez]
@@ -174,6 +210,7 @@
 ## [v0.1.7](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.7) (2019-06-27)
 
 **Improvements:**
+
 - [#103](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/103): `core`: update pyvss to 0.9.34: by [jm.lopez]
 - [#102](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/102): `compute vm get`: provide floppy attribute: by [jm.lopez]
 - [#104](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/104): `compute vm set cd mk`: create cd/dvd devices: by [jm.lopez]
@@ -185,9 +222,11 @@
 ## [v0.1.6](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.6) (2019-05-24)
 
 **Improvements:**
+
 - [#99](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/99): `core`: update pyvss to 0.9.33: by [jm.lopez]
 
 **Bug Fixes:**
+
 - [#98](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/98): ``compute vm get nic``: command missing network moref using table format: by [jm.lopez]
 
 ## [v0.1.5](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.5) (2019-05-14)
