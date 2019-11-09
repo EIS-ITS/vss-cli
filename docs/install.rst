@@ -22,7 +22,7 @@ The fastest way to install VSS CLI is to use `pip`_:
 
 If you are planning to interact with ``vskey-stor`` execute the following command
 
-.. code-block::
+.. code-block:: bash
 
     pip install vss-cli[stor]
 

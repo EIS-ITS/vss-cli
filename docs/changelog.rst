@@ -2,6 +2,26 @@
 Changelog
 =========
 
+`v0.2.7 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.7>`_ (2019-11-08)
+==================================================================================
+
+**Improvements:**
+
+- `#199 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/199>`_: ``core``: pyvss upgrade from 0.9.43 -> 0.10.0: by `jm.lopez`_
+- `#200 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/200>`_: ``ci``: new items to gitignore: by `jm.lopez`_
+- `#201 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/201>`_: ``compute vm get state``: add ``create_date`` attribute: by `jm.lopez`_
+- `#202 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202>`_: ``request snapshot ls``: default sort by created date: by `jm.lopez`_
+- `#202 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202>`_: ``request new ls``: default sort by created date: by `jm.lopez`_
+- `#202 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202>`_: ``request inventory ls``: default sort by created date: by `jm.lopez`_
+- `#202 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202>`_: ``request folder ls``: default sort by created date: by `jm.lopez`_
+- `#202 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/202>`_: ``request change ls``: default sort by created date: by `jm.lopez`_
+- `#203 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/203>`_: ``request snapshot set``: show ``from_date`` and ``to_date`` attributes: by `jm.lopez`_
+
+**Bug Fixes:**
+
+- `#198 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/192>`_: ``docs``: command typo in PV SCSI example:  by `jm.lopez`_
+
+
 `v0.2.6 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.6>`_ (2019-10-31)
 ==================================================================================
 
