@@ -10,8 +10,8 @@ basic steps to import a virtual machine OVF with disks or an OVA appliance
 to our environment.
 
 Please, refer to the official documentation for your virtualization software to
-produce a virtual machine export in OVF or OVA. If you happen to be using VMware
-workstation or fusion, please refer to the following links:
+produce a virtual machine export in OVF or OVA. If you happen to be using
+VMware workstation or fusion, please refer to the following links:
 
 * `VMware Fusion - Export a VM to OVF`_
 * `VMware Workstation - Export a VM to OVF`_
@@ -26,11 +26,12 @@ workstation or fusion, please refer to the following links:
 
 Source Image
 ------------
-Once you have exported your virtual machine in OVA or OVF, you can either login to `VSKEY-STOR`_
-with your VSS credentials or ``vss-cli stor`` to upload the OVA or OVF (including vmdk disks) to deploy.
+Once you have exported your virtual machine in OVA or OVF, you can either login
+to `VSKEY-STOR`_ with your VSS credentials or ``vss-cli stor`` to upload the
+OVA or OVF (including vmdk disks) to deploy.
 
-Use ``vss-cli stor ul <file_path>`` to upload OVF and disk files to `VSKEY-STOR`_ from
-command line as follows:
+Use ``vss-cli stor ul <file_path>`` to upload OVF and disk files to
+`VSKEY-STOR`_ from command line as follows:
 
 .. code-block:: bash
 
@@ -59,7 +60,8 @@ You can verify if the task has successfully completed by issuing the command
       68  2018-07-18 Wed 15:36:49 EDT  2018-07-18 Wed 15:36:50 EDT  Processed  VM
 
 
-Verify its availability by running ``vss-cli compute image personal ls`` as follows:
+Verify its availability by running
+``vss-cli compute image personal ls`` as follows:
 
 .. code-block:: bash
 
@@ -84,8 +86,9 @@ Save the ``path`` in ``SIMAGE`` environment variable.
 Launch Instance
 ---------------
 
-Use ``vss-cli compute vm mk from-image`` to deploy a virtual machine from OVA/OVF and provide the
-options and arguments specified in the command, as follows:
+Use ``vss-cli compute vm mk from-image`` to deploy a virtual machine
+from OVA/OVF and provide the options and arguments specified in the command,
+as follows:
 
 .. code-block:: bash
 
@@ -126,12 +129,12 @@ options and arguments specified in the command, as follows:
 Operating system
 ~~~~~~~~~~~~~~~~
 
-Run ``vss-cli compute os ls`` to display the list of supported operating systems in
-the ITS Private Cloud. In order to narrow down the list to only **CentOS** operating
-systems, use the ``--filter-by/-f`` option which is structured
-``<field_name>,<operator>,<value>`` and available operators are
-**eq, ne, lt, le, gt, ge, like, in**. So, to limit results to just **CentOS**, use
-the following filter:
+Run ``vss-cli compute os ls`` to display the list of supported operating
+systems in the ITS Private Cloud. In order to narrow down the list to
+only **CentOS** operating systems, use the ``--filter-by/-f`` option
+which is structured ``<field_name>,<operator>,<value>`` and available
+operators are **eq, ne, lt, le, gt, ge, like, in**. So, to limit results
+to just **CentOS**, use the following filter:
 
 .. note:: This version of the VSS CLI supports providing OS reference
     not only using the ``guest_id``, but also the ``full_name`` or Id.
@@ -152,7 +155,8 @@ the following filter:
        2  centosGuest      CentOS 4/5           linuxGuest
 
 
-Set the ``OS`` environment variable to ``centos64Guest`` to save the ``guest_id``:
+Set the ``OS`` environment variable to ``centos64Guest`` to
+save the ``guest_id``:
 
 .. code-block:: bash
 
@@ -162,8 +166,9 @@ Set the ``OS`` environment variable to ``centos64Guest`` to save the ``guest_id`
 Network
 ~~~~~~~
 
-Run ``vss-cli compute net ls`` to list available network segments to your account. You must
-have at least ``VL-1584-VSS-PUBLIC`` which is our public network.
+Run ``vss-cli compute net ls`` to list available network segments
+to your account. You must have at least ``VL-1584-VSS-PUBLIC``
+which is our public network.
 
 .. note:: This version of the VSS CLI supports managing networks
     not only using the moref, but also using names. In case of multiple results,
@@ -184,10 +189,11 @@ Save ``dvportgroup-11052`` in ``NET`` environment variable:
 
     export NET=dvportgroup-11052
 
-By default, the network adapter will use **vmxnet3** which provides ideal performance,
-however a few legacy operating systems does not have the drivers. In such case, you can
-specify which adapter type between: **e1000e***, **e1000**, **vmxnet2** or **vmxnet3**.
-To do so, append the adapter type to the network adapter network as follows:
+By default, the network adapter will use **vmxnet3** which provides
+ideal performance, however a few legacy operating systems does not
+have the drivers. In such case, you can specify which adapter type
+between: **e1000e***, **e1000**, **vmxnet2** or **vmxnet3**. To do
+so, append the adapter type to the network adapter network as follows:
 
 .. code-block:: bash
 
@@ -197,8 +203,8 @@ To do so, append the adapter type to the network adapter network as follows:
 Folder
 ~~~~~~
 
-Logical folders can be listed by running ``vss-cli compute folder ls``. Select the target
-``moref`` folder to store the virtual machine on:
+Logical folders can be listed by running ``vss-cli compute folder ls``.
+Select the target ``moref`` folder to store the virtual machine on:
 
 .. note:: This version of the VSS CLI supports managing logical folders
     not only using the moref, but also using name or path. In case of multiple results,
@@ -213,7 +219,8 @@ Logical folders can be listed by running ``vss-cli compute folder ls``. Select t
     group-v6736  APIDemo  jm        jm > APIDemo
 
 
-Set the ``FOLDER`` environment variable to the target folder (the folder moref may vary):
+Set the ``FOLDER`` environment variable to the target folder
+(the folder moref may vary):
 
 .. code-block:: bash
 
@@ -222,8 +229,9 @@ Set the ``FOLDER`` environment variable to the target folder (the folder moref m
 Deployment
 ~~~~~~~~~~
 
-At this point, we have all requirements to run ``vss-cli compute vm mk from-image``
-command to submit a deployment request. For this example, the request is made for
+At this point, we have all requirements to run
+``vss-cli compute vm mk from-image`` command to submit a
+deployment request. For this example, the request is made for
 2GB of memory, 2 vCPU, 2x40GB disks.
 
 .. code-block:: bash
@@ -241,8 +249,8 @@ The following command should work as well:
     --description "CentOS virtual machine from OVF" CENTOS_1
 
 
-A confirmation email will be sent and the command will return the request ``id`` and
-``task_id`` as follows:
+A confirmation email will be sent and the command will return
+the request ``id`` and ``task_id`` as follows:
 
 .. code-block:: bash
 
@@ -266,7 +274,8 @@ Wait a few minutes until the virtual machine is deployed.
 Access Virtual Machine
 ----------------------
 
-Run ``vss-cli compute vm set <name-or-uuid> state on`` to power on virtual machine as shown below:
+Run ``vss-cli compute vm set <name-or-uuid> state on`` to power
+on virtual machine as shown below:
 
 .. code-block:: bash
 

@@ -1,7 +1,10 @@
+.. _Configuration:
+
 Configuration
 =============
 
-Before using VSS CLI, you need setup your VSS credentials. You can do this in a couple of ways:
+Before using VSS CLI, you need setup your VSS credentials.
+You can do this in a couple of ways:
 
 * Configuration file
 * Environment variables
@@ -22,10 +25,10 @@ The quickest way to get started is to run the ``vss-cli configure mk`` command:
     Successfully configured credentials for https://cloud-api.eis.utoronto.ca.
     You are ready to use the vss-cli 🚀
 
-``vss-cli configure mk`` generates a new configuration file at ``~/.vss-cli/config.yaml`` or
-``%UserProfile%\.vss-cli\config.yaml`` on Windows. The configuration file holds general
-settings configuration ``general`` and multiple endpoint configuration ``endpoints`` as
-follows:
+``vss-cli configure mk`` generates a new configuration file at
+``~/.vss-cli/config.yaml`` or ``%UserProfile%\.vss-cli\config.yaml``
+on Windows. The configuration file holds general settings configuration
+``general`` and multiple endpoint configuration ``endpoints`` as follows:
 
 .. code-block:: yaml
 
@@ -38,6 +41,7 @@ follows:
         table_format: simple
         check_for_updates: yes
         check_for_messages: yes
+        columns_width: 0
 
     endpoints:
         - name: cloud-api
@@ -51,43 +55,59 @@ follows:
 
 The following table summarizes the **general** area configuration parameters
 
-+---------------------------+--------+---------------------------------------------------------------------------------+
-| Name                      | Type   | Description                                                                     |
-+===========================+========+=================================================================================+
-| ``default_endpoint_name`` | string | Default endpoint name that must match one item from the ``endpoints`` section.  |
-+---------------------------+--------+---------------------------------------------------------------------------------+
-| ``timeout``               | int    | Timeout for network operations.                                                 |
-+---------------------------+--------+---------------------------------------------------------------------------------+
-| ``verbose``               | bool   | Enables verbose mode.                                                           |
-+---------------------------+--------+---------------------------------------------------------------------------------+
-| ``debug``                 | bool   | Enables debug mode.                                                             |
-+---------------------------+--------+---------------------------------------------------------------------------------+
-| ``output``                | string | Output format. Either ``yaml``, ``table`` or ``json``                           |
-+---------------------------+--------+---------------------------------------------------------------------------------+
-| ``table_format``          | string | table formats supported by `python-tabulate`_: `plain`, `simple`, `github`,     |
-|                           |        | `grid`, `fancy_grid`, `pipe`, `orgtbl`, `rst`, `mediawiki`, `html`, `latex`,    |
-|                           |        | `latex_raw`, `latex_booktabs`, `tsv` or `csv`.                                  |
-+---------------------------+--------+---------------------------------------------------------------------------------+
-| ``check_for_updates``     | bool   | Check for ``vss-cli`` updates when a new token is generated.                    |
-+---------------------------+--------+---------------------------------------------------------------------------------+
-| ``check_for_messages``    | bool   | Check for Cloud API messages when a new token is generated.                     |
-+---------------------------+--------+---------------------------------------------------------------------------------+
++---------------------------+--------+--------------------------------------+
+| Name                      | Type   | Description                          |
++===========================+========+======================================+
+| ``default_endpoint_name`` | string | Default endpoint name that must match|
+|                           |        | one item from the ``endpoints``      |
+|                           |        | section.                             |
++---------------------------+--------+--------------------------------------+
+| ``timeout``               | int    | Timeout for network operations.      |
++---------------------------+--------+--------------------------------------+
+| ``verbose``               | bool   | Enables verbose mode.                |
++---------------------------+--------+--------------------------------------+
+| ``debug``                 | bool   | Enables debug mode.                  |
++---------------------------+--------+--------------------------------------+
+| ``output``                | string | Output format. Either ``yaml``,      |
+|                           |        | ``table`` or ``json``                |
++---------------------------+--------+--------------------------------------+
+| ``table_format``          | string | table formats supported by           |
+|                           |        | `python-tabulate`_: `plain`,         |
+|                           |        | `simple`, `github`,                  |
+|                           |        | `grid`, `fancy_grid`, `pipe`,        |
+|                           |        | `orgtbl`, `rst`, `mediawiki`,        |
+|                           |        | `html`, `latex`,                     |
+|                           |        | `latex_raw`, `latex_booktabs`, `tsv` |
+|                           |        | or `csv`.                            |
++---------------------------+--------+--------------------------------------+
+| ``check_for_updates``     | bool   | Check for ``vss-cli`` updates when a |
+|                           |        | new token is generated.              |
++---------------------------+--------+--------------------------------------+
+| ``check_for_messages``    | bool   | Check for Cloud API messages when a  |
+|                           |        | new token is generated.              |
++---------------------------+--------+--------------------------------------+
+|      ``columns_width``    | int    | ``0`` to auto. ``-1`` to disable or  |
+|                           |        | any other positive number.           |
++---------------------------+--------+--------------------------------------+
 
 Edit Configuration
 ~~~~~~~~~~~~~~~~~~
 
-There are two methods to edit the raw configuration file and update any of the **general** configuration parameters. Using
-``vss-cli configure edit`` command will use your terminal default editor (``vi``, ``nano``, etc..) to edit the
-configuration file. Also, you can use any **system default** application to edit the configuration file by adding the
-``-l/--launch`` option, for instance ``vss-cli configure edit --launch``.
+There are two methods to edit the raw configuration file and update any of the
+**general** configuration parameters. Using ``vss-cli configure edit`` command
+will use your terminal default editor (``vi``, ``nano``, etc..) to edit the
+configuration file. Also, you can use any **system default** application to
+edit the configuration file by adding the ``-l/--launch`` option, for instance
+``vss-cli configure edit --launch``.
 
 
 Upgrade Legacy Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Users with previous versions of the ``vss-cli`` including the legacy ``vsscli`` can upgrade/migrate their endpoints
-to this version. To do so, execute ``vss-cli configure upgrade <path-to-config>``. By default the ``upgrade`` command
-looks for ``~/vss-cli/config.json`` if no argument is specified.
+Users with previous versions of the ``vss-cli`` including the legacy ``vsscli``
+can upgrade/migrate their endpoints to this version. To do so, execute
+``vss-cli configure upgrade <path-to-config>``. By default the ``upgrade``
+command looks for ``~/vss-cli/config.json`` if no argument is specified.
 
 .. code-block:: bash
 
@@ -99,8 +119,8 @@ looks for ``~/vss-cli/config.json`` if no argument is specified.
       --help           Show this message and exit.
 
 
-The following example upgrades an existing ``vss-cli`` configuration from ``~/vss-cli/config.json`` to
-``~/vss-cli/config.yaml``:
+The following example upgrades an existing ``vss-cli`` configuration from
+``~/vss-cli/config.json`` to ``~/vss-cli/config.yaml``:
 
 .. code-block:: bash
 
@@ -119,7 +139,8 @@ The following example upgrades an existing ``vss-cli`` configuration from ``~/vs
 General settings
 ~~~~~~~~~~~~~~~~
 
-General settings can be updated with the ``vss-cli configure set <setting>`` command as follows:
+General settings can be updated with the ``vss-cli configure set <setting>``
+command as follows:
 
 .. code-block:: bash
 
@@ -148,8 +169,9 @@ Or disable ``columns_width`` calculation:
     /Users/username/.vss-cli/config.yaml updated 💾
 
 
-Boolean values for ``check_for_updates``, ``verbose``, ``debug``, etc. can be enabled (``true``) by using any of the following
-values "yes", "true", "t", "1", "y", everything else is taken as ``false``.
+Boolean values for ``check_for_updates``, ``verbose``, ``debug``, etc.
+can be enabled (``true``) by using any of the following values
+"yes", "true", "t", "1", "y", everything else is taken as ``false``.
 
 .. code-block:: bash
 
@@ -167,8 +189,9 @@ values "yes", "true", "t", "1", "y", everything else is taken as ``false``.
 Add/Update endpoints
 ~~~~~~~~~~~~~~~~~~~~
 
-Endpoints can be added and updated with the ``vss-cli configure mk`` command and you can have multiple accounts with the
-same endpoint. For example, adding a different account:
+Endpoints can be added and updated with the ``vss-cli configure mk``
+command and you can have multiple accounts with the same endpoint.
+For example, adding a different account:
 
 .. code-block:: bash
 
@@ -185,7 +208,8 @@ same endpoint. For example, adding a different account:
 List endpoints
 ~~~~~~~~~~~~~~
 
-To list available endpoint configuration, just execute ``vss-cli configure ls`` and the output should look like:
+To list available endpoint configuration, just execute
+``vss-cli configure ls`` and the output should look like:
 
 .. code-block:: bash
 
@@ -199,8 +223,9 @@ To list available endpoint configuration, just execute ``vss-cli configure ls`` 
 
 Enable endpoint
 ~~~~~~~~~~~~~~~
-By default the ``vss-cli`` will look for the ``default_endpoint_name`` parameter in the configuration file. To update
-the default endpoint, run ``vss-cli configure set default_endpoint <endpoint-name>`` as follows:
+By default the ``vss-cli`` will look for the ``default_endpoint_name``
+parameter in the configuration file. To update the default endpoint,
+run ``vss-cli configure set default_endpoint <endpoint-name>`` as follows:
 
 
 .. code-block:: bash
@@ -225,32 +250,41 @@ To verify, run ``vss-cli configure ls``:
 Environment Variables
 ---------------------
 
-The following table summarizes the environment variables supported by the ``vss-cli``:
+The following table summarizes the environment variables
+supported by the ``vss-cli``:
 
-+------------------+----------------------------------------------------------------------------------+
-| Name             | Description                                                                      |
-+==================+==================================================================================+
-| VSS_ENDPOINT     | Cloud API endpoint URL or endpoint name defined in configuration file.           |
-+------------------+----------------------------------------------------------------------------------+
-| VSS_TIMEOUT      | Timeout for network operations.                                                  |
-+------------------+----------------------------------------------------------------------------------+
-| VSS_USER         | Default Username to use for generating an access token. Token will not persist.  |
-+------------------+----------------------------------------------------------------------------------+
-| VSS_USER_PASS    | Default username password for generating an access token. Token will not persist.|
-+------------------+----------------------------------------------------------------------------------+
-| VSS_TOKEN        | Manually generated Cloud API Access Token.                                       |
-+------------------+----------------------------------------------------------------------------------+
-| VSS_CONFIG       | Relative or full path to non-standard location to configuration file.            |
-+------------------+----------------------------------------------------------------------------------+
-| VSS_OUTPUT       | Output format. Either ``yaml``, ``table`` or ``json``.                           |
-+------------------+----------------------------------------------------------------------------------+
-| VSS_TABLE        | Table format to be used by tabulate.                                             |
-+------------------+----------------------------------------------------------------------------------+
-| VSS_COL_WIDTH    | ``0`` to auto. ``-1`` to disable or any other positive number.                   |
-+------------------+----------------------------------------------------------------------------------+
++------------------+--------------------------------------+
+| Name             | Description                          |
++==================+======================================+
+| VSS_ENDPOINT     | Cloud API endpoint URL or endpoint   |
+|                  | name defined in configuration file.  |
++------------------+--------------------------------------+
+| VSS_TIMEOUT      | Timeout for network operations.      |
++------------------+--------------------------------------+
+| VSS_USER         | Default Username to use for          |
+|                  | generating an access token.          |
+|                  | Token will not persist.              |
++------------------+--------------------------------------+
+| VSS_USER_PASS    | Default username password for        |
+|                  | generating an access token.          |
+|                  | Token will not persist.              |
++------------------+--------------------------------------+
+| VSS_TOKEN        | Manually generated Cloud API Token.  |
++------------------+--------------------------------------+
+| VSS_CONFIG       | Relative or full path to non-standard|
+|                  | location to configuration file.      |
++------------------+--------------------------------------+
+| VSS_OUTPUT       | Output format. Either ``yaml``,      |
+|                  | ``table`` or ``json``.               |
++------------------+--------------------------------------+
+| VSS_TABLE        | Table format to be used by tabulate. |
++------------------+--------------------------------------+
+| VSS_COL_WIDTH    | ``0`` to auto. ``-1`` to disable or  |
+|                  | any other positive number.           |
++------------------+--------------------------------------+
 
-If you would like to have a stateless configuration, set ``VSS_USER`` and ``VSS_USER_PASS``
-or ``VSS_TOKEN`` with a token generated manually:
+If you would like to have a stateless configuration, set ``VSS_USER``
+and ``VSS_USER_PASS`` or ``VSS_TOKEN`` with a token generated manually:
 
 .. code-block:: bash
 
@@ -263,33 +297,40 @@ or ``VSS_TOKEN`` with a token generated manually:
 Command Line Input
 ------------------
 
-The following table summarizes the command line input options supported by the ``vss-cli``:
+The following table summarizes the command line input options
+supported by the ``vss-cli``:
 
-+---------------------------+----------------------------------------------------------------------------------+
-| Option                    | Description                                                                      |
-+===========================+==================================================================================+
-| ``-e``/``--endpoint``     | Cloud API endpoint URL endpoint name defined in configuration file.              |
-+---------------------------+----------------------------------------------------------------------------------+
-| ``--timeout``             | HTTP timeout value.                                                              |
-+---------------------------+----------------------------------------------------------------------------------+
-| ``-u``/``--username``     | Default Username to use for generating an access token. Token will not persist.  |
-+---------------------------+----------------------------------------------------------------------------------+
-| ``-p``/``--password``     | Default username password for generating an access token. Token will not persist.|
-+---------------------------+----------------------------------------------------------------------------------+
-| ``-t``/``--token``        | Manually generated Cloud API Access Token.                                       |
-+---------------------------+----------------------------------------------------------------------------------+
-| ``-c``/``--config``       | Relative or full path to non-standard location to configuration file.            |
-+---------------------------+----------------------------------------------------------------------------------+
-| ``-o``/``--output``       | Output format. Either ``yaml``, ``table`` or ``json``.                           |
-+---------------------------+----------------------------------------------------------------------------------+
-| ``--table-format``        | Table format to be used by tabulate.                                             |
-+---------------------------+----------------------------------------------------------------------------------+
-| ``--columns``             | Custom columns key=value list.                                                   |
-+---------------------------+----------------------------------------------------------------------------------+
-| ``--columns-width``       | Truncates column values (0: auto, -1: disable)                                   |
-+---------------------------+----------------------------------------------------------------------------------+
++---------------------------+-----------------------------------------------+
+| Option                    | Description                                   |
++===========================+===============================================+
+| ``-e``/``--endpoint``     | Cloud API endpoint URL endpoint name defined  |
+|                           | in configuration file.                        |
++---------------------------+-----------------------------------------------+
+| ``--timeout``             | HTTP timeout value.                           |
++---------------------------+-----------------------------------------------+
+| ``-u``/``--username``     | Default Username to use for generating an     |
+|                           | access token. Token will not persist.         |
++---------------------------+-----------------------------------------------+
+| ``-p``/``--password``     | Default username password for generating an   |
+|                           | access token. Token will not persist.         |
++---------------------------+-----------------------------------------------+
+| ``-t``/``--token``        | Manually generated Cloud API Access Token.    |
++---------------------------+-----------------------------------------------+
+| ``-c``/``--config``       | Relative or full path to non-standard location|
+|                           | to configuration file.                        |
++---------------------------+-----------------------------------------------+
+| ``-o``/``--output``       | Output format. Either ``yaml``, ``table`` or  |
+|                           | ``json``.                                     |
++---------------------------+-----------------------------------------------+
+| ``--table-format``        | Table format to be used by tabulate.          |
++---------------------------+-----------------------------------------------+
+| ``--columns``             | Custom columns key=value list.                |
++---------------------------+-----------------------------------------------+
+| ``--columns-width``       | Truncates column values (0: auto, -1: disable)|
++---------------------------+-----------------------------------------------+
 
-The ``vss-cli`` configuration file can be configured using a mix of both user input and command line options as follows:
+The ``vss-cli`` configuration file can be configured using a mix
+of both user input and command line options as follows:
 
 .. code-block:: bash
 
@@ -303,8 +344,9 @@ The ``vss-cli`` configuration file can be configured using a mix of both user in
     Successfully configured credentials for https://vss-api.eis.utoronto.ca.
     You are ready to use the vss-cli 🚀
 
-Then, if the new endpoint isn't the ``default_endpoint_name`` in the configuration file, you can specify the endpoint
-name in ``--endpoint`` option as follows:
+Then, if the new endpoint isn't the ``default_endpoint_name`` in the
+configuration file, you can specify the endpoint name in ``--endpoint``
+option as follows:
 
 .. code-block:: bash
 

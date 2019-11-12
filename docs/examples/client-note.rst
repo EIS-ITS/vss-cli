@@ -19,7 +19,8 @@ In order to launch a new virtual machine, we will use the following parameters:
 * Operating system: ``OS=centos64Guest``
 * Network: ``NET=dvportgroup-11052``
 * Folder: ``FOLDER=group-v6736``
-* ISO image: ``ISO="[vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-Minimal.iso"``
+* ISO image:
+  ``ISO="[vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-Minimal.iso"``
 * Name: ``NAME=Front_end_1``
 * Notes: ``NOTES="Project: Enterprise CMS\nToDo: Backup, Recovery"``
 
@@ -28,9 +29,9 @@ In order to launch a new virtual machine, we will use the following parameters:
     Multi-line strings are handled differently by shells.
 
 
-Run ``vss-cli compute vm mk shell`` to deploy a virtual machine without an operating system
-installed. Before deploying the virtual machine, display what options and arguments the ``shell``
-command takes:
+Run ``vss-cli compute vm mk shell`` to deploy a virtual machine without an
+operating system installed. Before deploying the virtual machine, display
+what options and arguments the ``shell`` command takes:
 
 
 .. code-block:: bash
@@ -65,8 +66,8 @@ command takes:
                                       [required]
       --help                          Show this message and exit.
 
-Now that we have everything, proceed to deploy a new virtual machine with 1GB of memory,
-1 vCPU, 20GB disk and a tag Project:CMS as follows:
+Now that we have everything, proceed to deploy a new virtual machine with
+1GB of memory, 1 vCPU, 20GB disk and a tag Project:CMS as follows:
 
 .. code-block:: bash
 
@@ -74,16 +75,17 @@ Now that we have everything, proceed to deploy a new virtual machine with 1GB of
     --memory 1 --cpu 1 --folder $FOLDER --disk 20 --net $NET --iso $ISO --notes "$NOTES" \
     $NAME
 
-In matter of seconds, a confirmation email will be sent with the allocated IP address, if
-``VL-1584-VSS-PUBLIC`` was selected.
+In matter of seconds, a confirmation email will be sent with the allocated
+IP address, if ``VL-1584-VSS-PUBLIC`` was selected.
 
 List Client Notes
 -----------------
 
-**Optional** Obtain the new ``UUID`` by either listing and filtering virtual machines in your inventory
-``vss-cli compute vm ls --filter-by name %front%`` or listing your new requests
-``vss-cli request new ls -s created_on desc``. The following command illustrates how to list
-virtual machines with the ``front`` string in their names:
+**Optional** Obtain the new ``UUID`` by either listing and filtering virtual
+machines in your inventory ``vss-cli compute vm ls --filter-by name %front%``
+or listing your new requests ``vss-cli request new ls -s created_on desc``.
+The following command illustrates how to list virtual machines with the
+``front`` string in their names:
 
 .. note:: This version of the VSS CLI supports managing virtual machines
     not only using the UUID, but using names. In case of multiple results,
@@ -96,7 +98,8 @@ virtual machines with the ``front`` string in their names:
     ------------------------------------  -----------------
     5012b89f-fae3-168e-7f44-9a23b8e65074  1709T-Front_end_1
 
-To query existing virtual machine **client-note** use the ``vss-cli compute vm get <uuid> client-note``
+To query existing virtual machine **client-note** use the
+``vss-cli compute vm get <uuid> client-note``
 command as follows:
 
 .. code-block:: bash
@@ -110,7 +113,8 @@ command as follows:
 Update Client Notes
 -------------------
 
-In order to update or replace existing client notes, use ``vss-cli compute vm set <uuid> client-note <new-note>``
+In order to update or replace existing client notes, use
+``vss-cli compute vm set <uuid> client-note <new-note>``
 to append or use the flag ``--replace`` to overwrite all notes.
 
 .. code-block:: bash
@@ -127,7 +131,8 @@ And query to validate any change:
                           ToDo: Backup, Recovery
                           Billing Code: 1234
 
-If you wanted just to replace existing contents, add the ``--replace/-r`` option to the command as follows:
+If you wanted just to replace existing contents, add the
+``--replace/-r`` option to the command as follows:
 
 .. code-block:: bash
 

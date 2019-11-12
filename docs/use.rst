@@ -6,23 +6,24 @@ This section describes the VSS Command Line Interface in detail.
 Help
 ----
 
-To get help when using the VSS CLI, you can add ``--help`` option to the end of a command.
-For example, obtaining
+To get help when using the VSS CLI, you can add ``--help`` option
+to the end of a command. For example:
 
 .. code-block:: bash
 
     vss-cli --help
 
-The following command lists the available sub commands for the ``compute`` command:
+The following command lists the available sub commands for the
+``compute`` command:
 
 .. code-block:: bash
 
     vss-cli compute --help
 
 
-Help in sub commands is divided in three main sections: Usage, where the command
-syntax is shown as well as a brief description; Options and sub commands available
-with a short help column as shown below:
+Help in sub commands is divided in three main sections: Usage, where
+the command syntax is shown as well as a brief description; Options
+and sub commands available with a short help column as shown below:
 
 
 .. code-block:: bash
@@ -49,8 +50,9 @@ with a short help column as shown below:
       vm         Manage virtual machines
 
 
-For instance, the ``vss-cli compute vm ls`` command, is used to list your virtual machines
-hosted in the ITS Private Cloud, has the following usage:
+For instance, the ``vss-cli compute vm ls`` command, is used to list
+your virtual machines hosted in the ITS Private Cloud, has the
+following usage:
 
 .. code-block:: bash
 
@@ -77,7 +79,8 @@ hosted in the ITS Private Cloud, has the following usage:
 
 
 
-An example of how to use filters and display virtual machine summary is shown below:
+An example of how to use filters and display virtual machine summary
+is shown below:
 
 .. code-block:: bash
 
@@ -91,15 +94,15 @@ An example of how to use filters and display virtual machine summary is shown be
 
 Command Structure
 -----------------
-The VSS CLI command structure is compose by the base ``vss-cli`` command followed by options,
-subgroups, subcommands, options and arguments.
+The VSS CLI command structure is compose by the base ``vss-cli`` command
+followed by options, subgroups, subcommands, options and arguments.
 
 .. code-block:: bash
 
    vss-cli [OPTIONS] COMMAND [ARGS]...
 
-Parameters take different types of input values such as numbers, strings, lists, tuples,
-and JSON data structures as strings.
+Parameters take different types of input values such as numbers, strings,
+lists, tuples, and JSON data structures as strings.
 
 Parameter Values
 ----------------
@@ -109,8 +112,8 @@ JSON data structures as input parameters on the command line.
 Common
 ~~~~~~
 
-**String** parameters can contain alphanumeric characters and spaces surrounded by quotes. The
-following example renames a virtual machine:
+**String** parameters can contain alphanumeric characters and spaces surrounded
+by quotes. The following example renames a virtual machine:
 
 .. code-block:: bash
 
@@ -122,8 +125,8 @@ Or this can be done by using the VM name instead as follows:
 
    vss-cli compute vm set TEST name VM_NEW
 
-If there's more than one virtual machine with "TEST" in their name, you will be prompted to
-select which one you want to change:
+If there's more than one virtual machine with "TEST" in their name, you will be
+prompted to select which one you want to change:
 
 .. code-block:: bash
 
@@ -134,10 +137,11 @@ select which one you want to change:
 
 Once, selected the change will be processed.
 
-**Timestamp** is widely used in any ``vm set`` command to schedule ``--schedule`` a change
-or in ``vm mk snapshot`` to define the start date ``--from`` of the snapshot.
-Timestamps are formatted ``YYYY-MM-DD HH:MM``. In the next example, a virtual machine
-consolidation task has been submitted to run at ``2017-03-10 21:00``:
+**Timestamp** is widely used in any ``vm set`` command to schedule
+``--schedule`` a change or in ``vm mk snapshot`` to define the start date
+``--from`` of the snapshot. Timestamps are formatted ``YYYY-MM-DD HH:MM``.
+In the next example, a virtual machine consolidation task has been
+submitted to run at ``2017-03-10 21:00``:
 
 
 .. code-block:: bash
@@ -153,8 +157,8 @@ two virtual machines in a single line:
    vss-cli compute vm rm 50128d83-0fcc-05e3-be71-d972ffdf3284 50128d83-0fcc-05e3-be71-d972ffdf3284
 
 Multiple options are taken as lists. For instance, in order to specify multiple
-disks when deploying a virtual machine, multiple occurrences of ``--disk`` should be
-specified as follows:
+disks when deploying a virtual machine, multiple occurrences of ``--disk``
+should be specified as follows:
 
 .. code-block:: bash
 
@@ -187,10 +191,10 @@ argument as follows:
 JSON
 ~~~~
 
-Some VSS CLI options and arguments require data to be formatted as JSON, such as
-reconfiguring a virtual machine guest operating system specification (hostname,
-domain, dns, ip, subnet and gateway) upon deployment. The option ``--custom-spec``
-expects the following JSON data structure:
+Some VSS CLI options and arguments require data to be formatted as JSON, such
+as reconfiguring a virtual machine guest operating system specification
+(hostname, domain, dns, ip, subnet and gateway) upon deployment.
+The option ``--custom-spec`` expects the following JSON data structure:
 
 .. code-block:: json
 
@@ -203,8 +207,8 @@ expects the following JSON data structure:
      "domain": "utoronto.ca"
     }
 
-Passing above JSON data structure to ``--custom-spec`` in Linux, macOS, or Unix and
-Windows PowerShell use the single quote ``'`` to enclose it.
+Passing above JSON data structure to ``--custom-spec`` in Linux, macOS,
+or Unix and Windows PowerShell use the single quote ``'`` to enclose it.
 
 .. code-block:: bash
 
@@ -213,8 +217,9 @@ Windows PowerShell use the single quote ``'`` to enclose it.
       --custom-spec '{"dhcp": false, "ip": "192.168.1.23", "gateway": ["192.168.1.1"],
        "dns": ["192.168.1.1"], "hostname": "vm1", "domain": "utoronto.ca"}' VM1
 
-On the Windows command prompt, use the double quote ``"`` to enclose the data structure
-and escape the double quotes from the data structure using the backslash ``\``:
+On the Windows command prompt, use the double quote ``"`` to enclose the
+data structure and escape the double quotes from the data structure using
+the backslash ``\``:
 
 .. code-block:: bash
 
@@ -232,7 +237,8 @@ The VSS CLI supports two different output formats:
 * JSON (json)
 * YAML (yaml)
 
-By default VSS CLI output is text, and this can be configured either by the output option:
+By default VSS CLI output is text, and this can be configured either by
+the output option:
 
 .. code-block:: bash
 
@@ -250,8 +256,9 @@ Or the ``VSS_OUTPUT`` environment variable:
 Table
 ~~~~~
 
-The ``table`` format presents the VSS CLI output into tab-delimited lines, helpful when using ``grep``,
-``sed``, and ``awk`` on Unix or Windows PowerShell.
+The ``table`` format presents the VSS CLI output into tab-delimited lines,
+helpful when using ``grep``, ``sed``, and ``awk`` on Unix or Windows
+PowerShell.
 
 .. code-block:: bash
 
@@ -265,10 +272,11 @@ The ``table`` format presents the VSS CLI output into tab-delimited lines, helpf
     5030fb03-9f20-ab19-c6dd-d4ac51601665  1904T-Pi-Lab     Public > Dev                2            2  poweredOn
     ====================================  ===============  ================  ===========  ===========  =============  =========================================
 
-You can also control the data shown with ``--columns`` providing a name and a `jsonpath`.
+You can also control the data shown with ``--columns`` providing a name
+and a `jsonpath`.
 
-If you for example just wanted the **UUID**, **NAME** and **PROVISIONED GB** per virtual machines,
-you could do:
+If you for example just wanted the **UUID**, **NAME** and **PROVISIONED GB**
+per virtual machines, you could do:
 
 .. code-block:: bash
 
@@ -293,8 +301,8 @@ given output:
     5030fb03-9f20-ab19-c6d…  1904T-Pi-Lab    Public > Dev                2            2  poweredOn
     503076e4-3473-1474-aae…  1908T-Pi-Lab-2  Public > dev1235            1            1  poweredOn      128.100.228.207 fe80::…
 
-``--columns-width`` can be set to `0` in order to let the ``vss-cli`` to calculate the proper
-column size based on your terminal:
+``--columns-width`` can be set to `0` in order to let the ``vss-cli`` to
+calculate the proper column size based on your terminal:
 
 .. code-block:: bash
 
@@ -308,9 +316,10 @@ column size based on your terminal:
 JSON
 ~~~~
 
-Many languages can easily decode JSON structures using built-in modules or open source libraries.
-The VSS CLI can provide the output in ``json`` so it can be easily processed by other scripts or
-JSON processors such as `jq`_.
+Many languages can easily decode JSON structures using built-in modules
+or open source libraries. The VSS CLI can provide the output in ``json``
+so it can be easily processed by other scripts or JSON processors such
+as `jq`_.
 
 .. code-block:: bash
 
@@ -325,8 +334,8 @@ JSON processors such as `jq`_.
 
 YAML
 ~~~~
-As with JSON, YAML can be easily decoded by many programming languages. The VSS CLI can provide the
-``yaml`` output as follows:
+As with JSON, YAML can be easily decoded by many programming
+languages. The VSS CLI can provide the ``yaml`` output as follows:
 
 
 .. code-block:: bash
@@ -356,7 +365,8 @@ only if at least a dash has been provided. Example:
     --config      --no-verbose  --output      --verbose     --version     -c            -o
 
 
-Activating `bash` or `zsh` completion can be done by executing the following commands:
+Activating `bash` or `zsh` completion can be done by executing the
+following commands:
 
 For `bash`:
 
@@ -370,8 +380,8 @@ For `zsh`
 
     source <(vss-cli completion zsh)
 
-If you do it from your `.bashrc` or `.zshrc` it is recommend to use the form below
-as that does not trigger a run of vss-cli itself.
+If you do it from your `.bashrc` or `.zshrc` it is recommend to use the
+form below as that does not trigger a run of vss-cli itself.
 
 For `bash`:
 
@@ -389,8 +399,8 @@ For `zsh`:
 Shell
 -----
 
-The VSS CLI provides a REPL interactive shell with tab-completion, suggestions and
-command history.
+The VSS CLI provides a REPL interactive shell with tab-completion,
+suggestions and command history.
 
 .. code-block:: bash
 
@@ -402,7 +412,8 @@ command history.
       -i, --history TEXT  File path to save history
       --help              Show this message and exit.
 
-To enter the shell just execute ``vss-cli shell`` and you will get the following welcome message:
+To enter the shell just execute ``vss-cli shell`` and you will get
+the following welcome message:
 
 .. code-block:: bash
 
@@ -431,17 +442,22 @@ Just exclude the ``vss-cli`` command, for instance:
 Known Issues
 ------------
 
-Terminal ``vt100`` does not support colors and the ``vss-cli`` throws the exception
-``_curses.error: use_default_colors() returned ERR`` since `pick`_ only works with
-terminals supporting colors. We have created `Pull Request #30`_ to address
-this issue, and until is merged by the maintainer, the following workarounds are proposed:
+``_curses.error: use_default_colors() returned ERR``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Terminal ``vt100`` does not support colors and to date, this case
+is not gracefully handled by `pick`_ (library used to select from
+multiple objects). We have created `Pull Request #30`_ to
+address this issue. However, using terminals ``vt100`` will not work
+until the code is merged by the maintainer.
+
+In the meantime, the following workarounds are proposed:
 
 Use ``xterm-256color`` as terminal:
 
 .. code-block:: bash
 
     export TERM=xterm-256color
-
 
 Install updated `pick`_ library:
 

@@ -20,14 +20,15 @@ The fastest way to install VSS CLI is to use `pip`_:
 
     pip install vss-cli
 
-If you are planning to interact with ``vskey-stor`` execute the following command
+If you are planning to interact with ``vskey-stor`` execute the following
+command:
 
 .. code-block:: bash
 
     pip install vss-cli[stor]
 
-The command will install ``webdavclient3`` package from PyPI and Linux operating
-systems require  ``libxml2``.
+The command will install ``webdavclient3`` package from PyPI and Linux
+operating systems require  ``libxml2``.
 
 .. note::
 
@@ -39,8 +40,8 @@ systems require  ``libxml2``.
     Linux operating systems require ``python3-dev`` and ``python3-setuptools``.
 
 
-You can also just `download the tarball`_. Once you have the ``vss-cli`` directory
-structure on your workstation, you can just run:
+You can also just `download the tarball`_. Once you have the ``vss-cli``
+directory structure on your workstation, you can just run:
 
 .. code-block:: bash
 
