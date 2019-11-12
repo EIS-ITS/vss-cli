@@ -124,26 +124,42 @@ def compute_folder_set_name(ctx: Configuration, name):
     'moref',
     type=click.STRING,
     required=True,
+    nargs=-1,
     autocompletion=autocompletion.folders,
 )
+@so.max_del_opt
+@so.wait_opt
 @pass_context
-def compute_folder_rm(ctx, moref):
+def compute_folder_rm(
+    ctx: Configuration, moref: str, max_del: int, wait: bool
+):
     """Delete a logical folder. Folder must be empty.
-    Use to obtain folder moref:
-
-       vss-cli compute folder ls
 
     """
     _LOGGING.debug(f'Attempting to remove {moref}')
-    # exist folder
-    payload = dict(moref=ctx.moref)
-    obj = ctx.delete_folder(**payload)
-    # format output
+    if len(moref) > max_del:
+        raise click.BadArgumentUsage(
+            'Increase max instance removal with --max-del/-m option'
+        )
+    objs = list()
+    for folder in moref:
+        skip = False
+        _f = ctx.get_folder_by_name_or_moref_path(folder, silent=True)
+        if not _f:
+            _LOGGING.warning(f'Folder {folder} could not be found. Skipping.')
+            skip = True
+
+        if not skip and _f:
+            mo_id = _f[0]['moref']
+            objs.append(ctx.delete_folder(moref=mo_id))
+    # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
-    # wait for request
-    if ctx.wait:
-        ctx.wait_for_request_to(obj)
+    click.echo(format_output(ctx, objs, columns=columns, single=len(objs) > 1))
+    if wait:
+        if len(moref) > 1:
+            ctx.wait_for_requests_to(objs, in_multiple=True)
+        else:
+            ctx.wait_for_request_to(objs[0])
 
 
 @compute_folder.command('mk', short_help='create folder')

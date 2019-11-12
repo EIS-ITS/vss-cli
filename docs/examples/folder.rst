@@ -17,19 +17,18 @@ a specific folder you have permission on.
 
     Usage: vss-cli compute folder [OPTIONS] COMMAND [ARGS]...
 
-      Manage logical folders.
-
-      Logical Folders are containers for storing and organizing inventory
-      objects, in this case virtual machines.
+    Logical Folders are containers for storing and organizing inventory
+    objects, in this case virtual machines.
 
     Options:
-      --help  Show this message and exit.
+    --help  Show this message and exit.
 
     Commands:
-      get  Get given folder info.
-      ls   list folders
-      mk   create folder
-      set  update folder
+    get  Given folder info.
+    ls   list folders
+    mk   create folder
+    rm   remove folder
+    set  update folder
 
 
 List
@@ -122,15 +121,42 @@ Check the state of the request made by running
 
 Remove
 ------
-To remove a new folder just run ``vss-cli compute folder rm <name-path-moref>``,
+To remove a new folder just run ``vss-cli compute folder rm <name-path-moref> ...``,
 for instance:
 
-.. note:: Folder must be empty or request will fail
+.. note:: Folder must be empty or request will not be accepted.
 
 .. code-block:: bash
 
-    vss-cli compute folder rm group-v8900
+    Usage: vss-cli compute folder rm [OPTIONS] MOREF...
 
+        Delete a logical folder. Folder must be empty.
+
+        Options:
+        -m, --max-del INTEGER RANGE  Maximum items to delete  [default: 3]
+        --wait                       wait for request to complete
+        --help                       Show this message and exit.
+
+To delete multiple folders and wait for requests to complete, execute the following command:
+
+.. code-block: bash
+
+    vss-cli compute folder rm --wait Folder1 Folder2
+
+    id  status     task_id                               message
+    ----  ---------  ------------------------------------  ----------------------------------------
+    24  SUBMITTED  10f58cf5-2e57-4316-9d4a-c3609f6326d5  Request has been accepted for processing
+    25  SUBMITTED  3352632e-1d29-4e82-add4-2179da37d965  Request has been accepted for processing
+    
+    ⏳ Waiting for request 24 to complete... 
+    ⏳ Waiting for request 25 to complete... 
+    
+    🎉 Request 25 completed successfully:
+    warnings            : Folder has been deleted
+    errors              :                     
+    🎉 Request 24 completed successfully:
+    warnings            : Folder has been deleted
+    errors              :            
 
 Check the state of the request made by running
 ``vss-cli request folder ls -s created_on desc -c 1`` or
