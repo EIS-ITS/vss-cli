@@ -82,6 +82,37 @@ Check the state of the request made by running
 ``vss-cli request folder ls -s created_on desc -c 1`` or
 ``vss-cli request folder get <id>``.
 
+Or you can submit multiple folder creation for a given folder, for instance:
+
+.. code-block:: bash
+
+    vss-cli compute folder mk --wait --parent group-v8900 QA DEV PROD UAT 
+
+    id  status     task_id                               message
+    ----  ---------  ------------------------------------  ----------------------------------------
+    49  SUBMITTED  dbd51c34-fd1c-48e4-a2dc-dd33aa44f1e1  Request has been accepted for processing
+    50  SUBMITTED  03f0d9cf-e23f-4f70-b511-2c0f69888e63  Request has been accepted for processing
+    51  SUBMITTED  a9380056-9d07-44f3-8469-c1e8149e90bf  Request has been accepted for processing
+    52  SUBMITTED  8100b93c-0dba-463c-a76a-4d8b97e47c03  Request has been accepted for processing
+    
+    ⏳ Waiting for request 49 to complete... 
+    ⏳ Waiting for request 50 to complete... 
+    ⏳ Waiting for request 51 to complete... 
+    ⏳ Waiting for request 52 to complete... 
+    
+    🎉 Request 50 completed successfully:
+    warnings            : Folder ITS > EIS > Data Centre Dev > Folder10 > DEV created
+    errors              :                     
+    🎉 Request 52 completed successfully:
+    warnings            : Folder ITS > EIS > Data Centre Dev > Folder10 > UAT created
+    errors              :                     
+    🎉 Request 49 completed successfully:
+    warnings            : Folder ITS > EIS > Data Centre Dev > Folder10 > QA created
+    errors              :                     
+    🎉 Request 51 completed successfully:
+    warnings            : Folder ITS > EIS > Data Centre Dev > Folder10 > PROD created
+    errors              :                     
+
 Update
 ------
 
@@ -139,7 +170,7 @@ for instance:
 
 To delete multiple folders and wait for requests to complete, execute the following command:
 
-.. code-block: bash
+.. code-block:: bash
 
     vss-cli compute folder rm --wait Folder1 Folder2
 
