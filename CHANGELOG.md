@@ -4,6 +4,7 @@
 
 **Improvements:**
 
+- [#211](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/211): ``core``: pyvss upgrade from 0.9.43 -> 0.11.0
 - [#210](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/210): ``compute vm mk from-clone``: rename ``--bill-dept`` to ``--client``: __breaking__
 - [#210](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/210): ``compute vm mk from-file``: rename ``--bill-dept`` to ``--client``: __breaking__
 - [#210](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/210): ``compute vm mk from-image``: rename``--bill-dept`` to ``--client``: __breaking__
