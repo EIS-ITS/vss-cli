@@ -2,13 +2,18 @@
 Changelog 📝
 ============
 
-`v0.2.8 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.8>`_ (2019-11-14)
+`v0.3.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.3.0>`_ (2019-11-14)
 --------------------------------------------------------------------------------------
 
 **Improvements:**
 
 
-* `#212 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/212>`_\ : ``compute vm rm``\ : support for ``--wait`` flag
+* `#210 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/210>`_\ : ``compute vm mk from-clone``\ : rename ``--bill-dept`` to ``--client``\ : **breaking**
+* `#210 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/210>`_\ : ``compute vm mk from-file``\ : rename ``--bill-dept`` to ``--client``\ : **breaking**
+* `#210 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/210>`_\ : ``compute vm mk from-image``\ : rename\ ``--bill-dept`` to ``--client``\ : **breaking**
+* `#210 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/210>`_\ : ``compute vm mk from-spec``\ : rename ``--bill-dept`` to ``--client``\ : **breaking**
+* `#210 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/210>`_\ : ``compute vm mk shell``\ : rename ``--bill-dept`` to ``--client``\ : **breaking**
+* `#212 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/212>`_\ : ``compute vm rm from-template``\ : support for ``--wait`` flag
 * `#208 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/208>`_\ : ``compute folder mk``\ : support for multiple values and ``--wait`` flag
 * `#207 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/207>`_\ : ``compute folder rm``\ : support for multiple values and ``--wait`` flag
 
@@ -73,13 +78,13 @@ Changelog 📝
 
 
 * `#181 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/181>`_\ : ``status``\ : command failed
-* `#182 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/182>`_\ : `docs`: some typos or outdated information:  by `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
+* `#182 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/182>`_\ : ``docs``\ : some typos or outdated information:  by `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
 
 **New Features:**
 
 
 * `#183 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/183>`_\ : ``core``\ : ``--columns-width`` option to truncate column values based on user input or terminal size
-* `#184 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/184>`_\ : ``compute vm set vmrc-copy-paste on|off``
+* `#184 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/184>`_\ : ``compute vm set vmrc-copy-paste on|off``\ : enable/disable VMRC copy paste
 
 `v0.2.4 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.4>`_ (2019-10-10)
 --------------------------------------------------------------------------------------
@@ -120,14 +125,14 @@ Changelog 📝
 * `#156 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/156>`_\ : ``compute inventory mk``\ : add ``--transfer/--no-transfer`` option to enable/disable transfer to vskey-stor
 * `#157 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/157>`_\ : ``compute mk set nic mk``\ : support for nic type in option ``-n <net-moref-name>=<nic-type>``
 * `#158 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/158>`_\ : ``compute vm set nic up``\ : support for new adapter type format ``--adapter``
-* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : `compute os ls`: updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
-* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : `compute vm set guest-os`: updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
-* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : `compute vm mk shell`: updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
-* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : `compute vm mk from-template`: updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
-* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : `compute vm mk from-clone`: updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
-* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : `compute vm mk from-image`: updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
-* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : `compute vm mk from-spec`: updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
-* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : `compute vm mk from-file`: updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
+* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : ``compute os ls``\ : updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
+* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : ``compute vm set guest-os``\ : updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
+* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : ``compute vm mk shell``\ : updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
+* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : ``compute vm mk from-template``\ : updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
+* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : ``compute vm mk from-clone``\ : updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
+* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : ``compute vm mk from-image``\ : updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
+* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : ``compute vm mk from-spec``\ : updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
+* `#159 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/159>`_\ : ``compute vm mk from-file``\ : updating camelCase to snake_case attributes: ``guestId``\ ->\ ``guest_id``
 * `#160 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/160>`_\ : ``compute vm set guest-os``\ : adding interactive options
 * `#161 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/161>`_\ : ``core``\ : update columns to match attributes in snake_case
 * `#162 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/162>`_\ : ``compute vm mk shell``\ : support for nic type in option ``-n <net-moref-name>=<nic-type>``
@@ -145,10 +150,10 @@ Changelog 📝
 * `#163 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/163>`_\ : ``compute net public ls``\ : command sorts by ``name,asc``
 * `#164 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/164>`_\ : ``docs``\ : inventory example
 * `#166 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/166>`_\ : ``core``\ : pyvss upgrade from 0.9.40 -> 0.9.41
-* `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_\ : `compute vm set`: avoid clear screen when `--wait` flag is set:  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
-* `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_\ : `compute vm mk`: avoid clear screen when `--wait` flag is set:  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
-* `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_\ : `compute folder set`: avoid clear screen when `--wait` flag is set:  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
-* `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_\ : `compute inventory mk`: avoid clear screen when `--wait` flag is set:  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
+* `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_\ : ``compute vm set``\ : avoid clear screen when ``--wait`` flag is set:  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
+* `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_\ : ``compute vm mk``\ : avoid clear screen when ``--wait`` flag is set:  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
+* `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_\ : ``compute folder set``\ : avoid clear screen when ``--wait`` flag is set:  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
+* `#167 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/167>`_\ : ``compute inventory mk``\ : avoid clear screen when ``--wait`` flag is set:  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
 
 `v0.2.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.2.2>`_ (2019-09-05)
 --------------------------------------------------------------------------------------
@@ -209,8 +214,8 @@ Changelog 📝
 
 
 * `#125 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/125>`_\ : ``core``\ : pyvss upgrade from 0.9.36 -> 0.9.38
-* `#124 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/124>`_\ : `compute vm ls`: add options to filter and sort: by  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
-* `#126 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/126>`_\ : `compute template ls`: add options to filter and sort: by  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
+* `#124 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/124>`_\ : ``compute vm ls``\ : add options to filter and sort: by  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
+* `#126 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/126>`_\ : ``compute template ls``\ : add options to filter and sort: by  `jm.lopez <https://gitlab-ee.eis.utoronto.ca/jm.lopez>`_
 * `#127 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/127>`_\ : ``compute vm set disk up --backing-mode``\ : updates scsi controller used by disk
 
 `v0.1.9 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.1.9>`_ (2019-07-19)
@@ -311,20 +316,20 @@ Changelog 📝
 * `#82 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/82>`_\ : ``core``\ : setup.cfg improvements
 * `#85 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/85>`_\ : ``core``\ : upgrade to py-vss v0.9.30
 * `#86 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/86>`_\ : ``token``\ : ls/get columns
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``token``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``service``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``message``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``key``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``compute floppy``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``compute image``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``compute iso``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``compute os``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request change``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request new``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request export``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request folder``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request image``\ : ls standardizing relational options
-* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request inventory``\ : ls standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``token ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``service ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``message ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``key ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``compute floppy ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``compute image ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``compute iso ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``compute os ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request change ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request new ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request export ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request folder ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request image ls``\ : standardizing relational options
+* `#88 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/88>`_\ : ``request inventory ls``\ : standardizing relational options
 
 **Bug Fixes:**
 
@@ -338,7 +343,7 @@ Changelog 📝
 **Improvements:**
 
 
-* `#69 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/69>`_\ : ``core``\ : Implement ruamel.yaml for yaml mgmt
+* `#69 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/69>`_\ : ``core``\ : Implement ``ruamel.yaml`` for yaml mgmt
 * `#72 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/72>`_\ : ``core``\ : spinner improvements
 * `#78 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/78>`_\ : ``core``\ : emoji handling/rendering improvements
 * `#79 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/79>`_\ : ``stor``\ : general improvements
@@ -440,7 +445,7 @@ Changelog 📝
 * `#18 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/18>`_\ : ``stor``\ : Manage your personal storage space
 * `#12 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/12>`_\ : ``status``\ : Check VSS Status
 * `#14 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/14>`_\ : ``upgrade``\ : Upgrade VSS CLI and dependencies (experimental)
-* `#1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/1>`_\ : ``request``\ : Manage your different requests history
+* `#1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/1>`_\ :   ``request``\ : Manage your different requests history
 * `#15 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/15>`_\ : ``token``\ : Manage your API tokens
 * `#17 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/17>`_\ : ``account``\ : Manage your VSS account
 * `#16 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/16>`_\ : ``message``\ : Manage user messages

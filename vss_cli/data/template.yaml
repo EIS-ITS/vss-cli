@@ -36,7 +36,7 @@ metadata:                 # Optional: Description of virtual machine
   description: >
     nginx and database server for a very important service.
   usage: Test             # Optional: Usage between Prod | Dev | QA | Test (default: source vm usage)
-  billing: Department     # Optional: Billing department (default: source vm billing)
+  client: Department      # Optional: Client department (default: source vm client)
   inform:                 # Optional: list of email addresses. (default: source vm inform)
     - email@utoronto.ca
 #  admin:                  # Optional: VM Administrator (Default: source vm admin)

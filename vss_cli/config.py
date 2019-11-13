@@ -972,7 +972,7 @@ class Configuration(VssManager):
             }
             for v in payload.get('networks')
         ]
-        template['metadata']['billing'] = payload.get('bill_dept')
+        template['metadata']['client'] = payload.get('client')
         template['metadata']['description'] = payload.get('description')
         template['metadata']['usage'] = payload.get('usage')
         template['metadata']['inform'] = payload.get('inform')
@@ -1019,7 +1019,7 @@ class Configuration(VssManager):
                 # metadata section
                 spec_payload.update(metadata_section)
                 spec_payload['built'] = built
-                spec_payload['bill_dept'] = metadata_section['billing']
+                spec_payload['client'] = metadata_section['client']
                 # optional
                 if 'inform' in metadata_section:
                     spec_payload['inform'] = [

@@ -36,17 +36,17 @@ description_opt = click.option(
     type=click.STRING,
     required=True,
 )
-bill_dept_nr_opt = click.option(
-    '--bill-dept',
+client_nr_opt = click.option(
+    '--client',
     '-b',
-    help='Billing department.',
+    help='Client department.',
     type=click.STRING,
     required=False,
 )
-bill_dept_opt = click.option(
-    '--bill-dept',
+client_opt = click.option(
+    '--client',
     '-b',
-    help='Billing department.',
+    help='Client department.',
     type=click.STRING,
     required=True,
 )

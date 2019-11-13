@@ -154,7 +154,7 @@ def compute_vm_get_cds(ctx: Configuration, unit):
 @compute_vm_get.command('client', short_help='Client (Metadata)')
 @pass_context
 def compute_vm_get_client(ctx: Configuration):
-    """Get current virtual machine client/billing department.
+    """Get current virtual machine client department.
     Part of the VSS metadata.
     """
     obj = ctx.get_vm_vss_client(ctx.uuid)
@@ -948,7 +948,7 @@ def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
 @click.argument('client', type=click.STRING, required=True)
 @pass_context
 def compute_vm_set_client(ctx: Configuration, client):
-    """Update virtual machine client/billing department.
+    """Update virtual machine client department.
 
     vss-cli compute vm set <name-or-uuid> client <New-Client>
     """
@@ -2729,7 +2729,7 @@ def compute_vm_from_file(
 )
 @c_so.source_opt
 @c_so.description_opt
-@c_so.bill_dept_nr_opt
+@c_so.client_nr_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -2752,7 +2752,7 @@ def compute_vm_mk_spec(
     name,
     source,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -2804,8 +2804,8 @@ def compute_vm_mk_spec(
         _domain = ctx.get_domain_by_name_or_moref(domain)
         payload['domain'] = _domain[0]['moref']
     # Metadata
-    if bill_dept:
-        payload['bill_dept'] = bill_dept
+    if client:
+        payload['client'] = client
     if notes:
         payload['notes'] = notes
     if admin:
@@ -2848,7 +2848,7 @@ def compute_vm_mk_spec(
 
 @compute_vm_mk.command('shell', short_help='Create empty virtual machine')
 @c_so.description_opt
-@c_so.bill_dept_opt
+@c_so.client_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -2871,7 +2871,7 @@ def compute_vm_mk_shell(
     ctx: Configuration,
     name,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -2922,8 +2922,8 @@ def compute_vm_mk_shell(
         _domain = ctx.get_domain_by_name_or_moref(domain)
         payload['domain'] = _domain[0]['moref']
     # Metadata
-    if bill_dept:
-        payload['bill_dept'] = bill_dept
+    if client:
+        payload['client'] = client
     if notes:
         payload['notes'] = notes
     if admin:
@@ -2961,7 +2961,7 @@ def compute_vm_mk_shell(
 @compute_vm_mk.command('from-template', short_help='Create vm from template')
 @c_so.source_template_opt
 @c_so.description_opt
-@c_so.bill_dept_nr_opt
+@c_so.client_nr_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -2984,7 +2984,7 @@ def compute_vm_mk_template(
     name,
     source,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -3032,8 +3032,8 @@ def compute_vm_mk_template(
         _domain = ctx.get_domain_by_name_or_moref(domain)
         payload['domain'] = _domain[0]['moref']
     # Metadata
-    if bill_dept:
-        payload['bill_dept'] = bill_dept
+    if client:
+        payload['client'] = client
     if notes:
         payload['notes'] = notes
     if admin:
@@ -3073,7 +3073,7 @@ def compute_vm_mk_template(
 @compute_vm_mk.command('from-clone', short_help='Create vm from clone')
 @c_so.source_opt
 @c_so.description_opt
-@c_so.bill_dept_nr_opt
+@c_so.client_nr_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -3096,7 +3096,7 @@ def compute_vm_mk_clone(
     name,
     source,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -3143,8 +3143,8 @@ def compute_vm_mk_clone(
         _domain = ctx.get_domain_by_name_or_moref(domain)
         payload['domain'] = _domain[0]['moref']
     # Metadata
-    if bill_dept:
-        payload['bill_dept'] = bill_dept
+    if client:
+        payload['client'] = client
     if notes:
         payload['notes'] = notes
     if admin:
@@ -3187,7 +3187,7 @@ def compute_vm_mk_clone(
 @click.argument('name', type=click.STRING, required=False)
 @c_so.source_image_opt
 @c_so.description_opt
-@c_so.bill_dept_opt
+@c_so.client_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -3209,7 +3209,7 @@ def compute_vm_mk_image(
     name,
     source,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -3234,7 +3234,7 @@ def compute_vm_mk_image(
         description=description,
         name=name,
         usage=usage,
-        bill_dept=bill_dept,
+        client=client,
         image=image_ref[0]['path'],
     )
     # Hardware
