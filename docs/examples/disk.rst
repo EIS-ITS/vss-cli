@@ -3,15 +3,20 @@
 Manage Virtual Disks
 ====================
 
-Virtual machine disks are listed by ``vss-cli compute vm get <name-or-uuid> disk <unit>`` and updated, removed and
-created by ``vss-cli compute vm set <name-or-uuid> disk <unit>`` . This tutorial walks you through the process of
+Virtual machine disks are listed by
+``vss-cli compute vm get <name-or-uuid> disk <unit>``
+and updated, removed and created by
+``vss-cli compute vm set <name-or-uuid> disk <unit>``.
+This tutorial walks you through the process of
 managing virtual machine disks.
 
 List
 ----
 
-To list a summary of current virtual machine disks, use ``vss-cli compute vm get <name-or-uuid> disk`` or
-``vss-cli compute vm get <name-or-uuid> disk <unit>`` to get specific information of a disk unit. For instance,
+To list a summary of current virtual machine disks, use
+``vss-cli compute vm get <name-or-uuid> disk`` or
+``vss-cli compute vm get <name-or-uuid> disk <unit>``
+to get specific information of a disk unit. For instance,
 the following virtual machine has two virtual disks configured:
 
 .. code-block:: bash
@@ -24,8 +29,8 @@ the following virtual machine has two virtual disks configured:
     Hard disk 2       2  SCSI controller 1:1
     Hard disk 3       3  SCSI controller 1:0
 
-Getting specific information of a given disk unit, run ``vss-cli compute vm get <name-or-uuid> disk <unit>`` as
-follows:
+Getting specific information of a given disk unit, run
+``vss-cli compute vm get <name-or-uuid> disk <unit>`` as follows:
 
 .. code-block:: bash
 
@@ -37,8 +42,8 @@ follows:
     capacity_gb         : 8
     shares.level        : normal
 
-Getting backing information of a particular disk is available by including the sub-command ``backing``
-in the disk command:
+Getting backing information of a particular disk is available
+by including the sub-command ``backing`` in the disk command:
 
 .. code-block:: bash
 
@@ -52,8 +57,8 @@ in the disk command:
     thin_provisioned    : True
 
 
-Getting details of the SCSI controller of a particular disk is available by including the sub-command ``scsi``
-in the disk command:
+Getting details of the SCSI controller of a particular disk is available
+by including the sub-command ``scsi`` in the disk command:
 
 
 .. code-block:: bash
@@ -67,9 +72,9 @@ in the disk command:
 
 Update
 ------
-There are three allowed actions to modify a given disk unit: remove, update and create as shown by
-``vss-cli compute vm set <name-or-uuid
-> disk mk|up|rm --help`` command:
+There are three allowed actions to modify a given disk unit:
+remove, update and create as shown by
+``vss-cli compute vm set <name-or-uuid> disk mk|up|rm --help`` command:
 
 .. code-block:: bash
 
@@ -88,7 +93,8 @@ There are three allowed actions to modify a given disk unit: remove, update and 
 
 Expand
 ~~~~~~
-In order to expand an existing disk, use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -c <capacityGB>``
+In order to expand an existing disk, use
+``vss-cli compute vm set <name-or-uuid> disk up <unit> -c <capacityGB>``
 as shown below:
 
 .. code-block:: bash
@@ -98,7 +104,8 @@ as shown below:
 
 Controller
 ~~~~~~~~~~
-SCSI controllers are also available to update via the CLI. Use ``vss-cli compute vm set <name-or-uuid> disk up <unit> -s <bus_number>``
+SCSI controllers are also available to update via the CLI. Use
+``vss-cli compute vm set <name-or-uuid> disk up <unit> -s <bus_number>``
 as follows:
 
 .. code-block:: bash
@@ -108,7 +115,8 @@ as follows:
 
 Backing Mode
 ~~~~~~~~~~~~
-Disk backing modes can be updated via ``vss-cli compute vm set <name-or-uuid> disk up <unit> -m <disk-mode>``:
+Disk backing modes can be updated via
+``vss-cli compute vm set <name-or-uuid> disk up <unit> -m <disk-mode>``:
 
 
 .. code-block:: bash
@@ -130,8 +138,8 @@ undoable					Changes are made to a redo log, but you are given the option to com
 
 Create
 ------
-Creating a new virtual machine disk is as simple as updating, but switching the sub-command to ``mk``,
-for example:
+Creating a new virtual machine disk is as simple as updating,
+but switching the sub-command to ``mk``, for example:
 
 .. code-block:: bash
 
@@ -139,11 +147,12 @@ for example:
 
 Remove
 ------
-Disk removal will ask for confirmation if flag ``-r/--rm`` is not provided. This is just as fail safe for
-mistakes that can happen and since disk removal is a one way action, it may end in data loss if
-not used carefully.
+Disk removal will ask for confirmation if flag ``-r/--rm`` is not provided.
+This is just as fail safe for mistakes that can happen and since disk removal
+is a one way action, it may end in data loss if not used carefully.
 
-The following example demonstrates how to remove a disk with a confirmation prompt:
+The following example demonstrates how to remove a disk with a confirmation
+prompt:
 
 .. code-block:: bash
 
@@ -154,7 +163,8 @@ The following example demonstrates how to remove a disk with a confirmation prom
 
 If your answer is **N**, the command will exit as shown above.
 
-To override disk removal confirmation prompt, just add ``-r/--rm`` flag as follows:
+To override disk removal confirmation prompt, just add ``-r/--rm``
+flag as follows:
 
 .. code-block:: bash
 

@@ -7,7 +7,8 @@ First time setup
 ----------------
 
 1. Download and install the `Latest version of git`_.
-2. Configure git with your ``username`` and ``email`` matching your GitLab account:
+2. Configure git with your ``username`` and ``email``
+   matching your GitLab account:
 
 .. code-block:: bash
 
@@ -38,7 +39,8 @@ First time setup
 
 Start Coding
 ------------
-1. Create a branch to identify the issue you would like to work on (e.g. ``issue-999``):
+1. Create a branch to identify the issue you would like to work on
+(e.g. ``issue-999``):
 
 .. code-block:: bash
 
@@ -87,17 +89,20 @@ In any case, the resulting files are located in ``docs/_build``.
 
 Developing Plugins
 ------------------
-Plugin developers need to register their sub-commands or sub-groups to either of the following entry-points
+Plugin developers need to register their sub-commands or sub-groups
+to either of the following entry-points
 in their `setup.py` that is loaded by the ``vss-cli`` core package:
 
 - ``vss_cli.contrib.plugins``: scope at ``vss-cli plugins`` command group.
 - ``vss_cli.contrib.compute``: scope at ``vss-cli compute`` command group.
-- ``vss_cli.contrib.compute.vm``: scope at ``vss-cli compute vm`` command group.
+- ``vss_cli.contrib.compute.vm``: scope at ``vss-cli compute vm``
+  command group.
 
-For example, if someone wanted to make a plugin package called ``new_plugin`` which adds a sub-command at
-``vss-cli compute report`` and another one at ``vss-cli compute vm report``, they would create their
-custom python package with the ``vss-cli`` as a dependency, and add the following to their package's setuptools
-entry-points in ``setup.py``:
+For example, if someone wanted to make a plugin package called
+``new_plugin`` which adds a sub-command at ``vss-cli compute report``
+and another one at ``vss-cli compute vm report``, they would create their
+custom python package with the ``vss-cli`` as a dependency, and add the
+following to their package's setuptools entry-points in ``setup.py``:
 
 .. code-block:: python
 
@@ -127,7 +132,8 @@ entry-points in ``setup.py``:
         '''
     )
 
-Now, the plugin package ``new_plugin`` contains ``__init__.py`` and ``core.py``:
+Now, the plugin package ``new_plugin`` contains ``__init__.py``
+and ``core.py``:
 
 .. code-block:: python
 
@@ -162,7 +168,8 @@ Now, the plugin package ``new_plugin`` contains ``__init__.py`` and ``core.py``:
             )
         )
 
-After installing the plugin, the ``vss-cli`` will load the plugin in the defined scope:
+After installing the plugin, the ``vss-cli`` will load the plugin
+in the defined scope:
 
 .. code-block:: bash
 

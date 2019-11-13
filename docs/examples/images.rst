@@ -6,14 +6,14 @@ Manage Floppy, ISOs and OVA/OVF Images
 ISO
 ---
 Installing a guest operating system is a very common task upon VM creation,
-and in order to reduce deployment time, we have included the ability of mounting an
-ISO image right after a VM has been created. With this users can power on the VM and
-start installing the desired OS without remotely mounting the ISO image, which
-depending of user's bandwidth, could take longer because it has to transmit the ISO
-file contents to the VM.
+and in order to reduce deployment time, we have included the ability of
+mounting an ISO image right after a VM has been created. With this users
+can power on the VM and start installing the desired OS without remotely
+mounting the ISO image, which depending of user's bandwidth, could take
+longer because it has to transmit the ISO file contents to the VM.
 
-
-Public and personal ISO images can be managed with the ``vss-cli compute iso`` command:
+Public and personal ISO images can be managed with the ``vss-cli compute iso``
+command:
 
 .. code-block:: bash
 
@@ -34,12 +34,14 @@ Public and personal ISO images can be managed with the ``vss-cli compute iso`` c
 Public
 ~~~~~~
 
-Our ISO image catalog is composed by more than 220 ISO images (and growing) stored within
-our virtual environment to make a faster VM-ISO interaction, where users can pick and
-choose the most common Linux distributions, Windows, etc. or any other Software like SQL Server.
+Our ISO image catalog is composed by more than 220 ISO images (and growing)
+stored within our virtual environment to make a faster VM-ISO interaction,
+where users can pick and choose the most common Linux distributions,
+Windows, etc. or any other Software like SQL Server.
 
-Currently, users can only list and use public ISO images with ``vss-cli compute iso public ls`` and
-those can be filtered and sorted with including the proper options:
+Currently, users can only list and use public ISO images with
+``vss-cli compute iso public ls`` and those can be filtered and sorted with
+including the proper options:
 
 .. code-block:: bash
 
@@ -59,8 +61,8 @@ those can be filtered and sorted with including the proper options:
       --help                          Show this message and exit.
 
 
-For instance, to look for a publicly available **Ubuntu 18** image, the command could be something
-like:
+For instance, to look for a publicly available **Ubuntu 18** image, the
+command could be something like:
 
 
 .. code-block:: bash
@@ -77,8 +79,9 @@ like:
 .. note:: To successfully mount a public ISO to a VM, **Path**, **Name** or **ID**
     must be added to the VM command.
 
-Now that we are familiar with the `iso` command in the **VSS CLI**, we can get the ISO file to
-mount into a virtual machine. First, we should obtain the VM's UUID:
+Now that we are familiar with the `iso` command in the **VSS CLI**,
+we can get the ISO file to mount into a virtual machine.
+First, we should obtain the VM's UUID:
 
 .. note:: This version of the VSS CLI supports managing virtual machines
     not only using the UUID, but using names. In case of multiple results,
@@ -111,7 +114,8 @@ as follows:
 Personal
 ~~~~~~~~
 
-User provided ISOs can be managed with the ``vss-cli compute iso personal`` command:
+User provided ISOs can be managed with the
+``vss-cli compute iso personal`` command:
 
 .. code-block:: bash
 
@@ -127,14 +131,16 @@ User provided ISOs can be managed with the ``vss-cli compute iso personal`` comm
       sync  Sync personal ISO images
 
 
-In order to list or load a user ISO into a VM, users should **upload** the file to `VSKEY-STOR`_
-and then execute a ``sync`` command to make the image file available in the ITS Private Cloud.
+In order to list or load a user ISO into a VM, users should **upload**
+the file to `VSKEY-STOR`_ and then execute a ``sync`` command to make
+the image file available in the ITS Private Cloud.
 
 .. note:: Assuming you have already uploaded a file, the command
     ``vss-cli compute iso personal sync`` should be executed.
 
-Once you get a confirmation notification (email or message) ISO images should be visible through the CLI.
-To list just execute ``vss-cli compute iso personal ls`` and the output should look as follows:
+Once you get a confirmation notification (email or message) ISO images
+should be visible through the CLI. To list just execute
+``vss-cli compute iso personal ls`` and the output should look as follows:
 
 .. code-block:: bash
 
@@ -145,8 +151,10 @@ To list just execute ``vss-cli compute iso personal ls`` and the output should l
     [vssUser-xfers] jm/isos/CentOS-7-x86_64-Minimal-1804.iso                           CentOS-7-x86_64-Minimal-1804.iso
 
 
-The process of mounting the image to a VM is the same: first get the VM UUID and then execute
-``vss-cli compute vm set <name-or-uuid> cd up <unit> -b <name-or-path-or-id>`` as shown below:
+The process of mounting the image to a VM is the same: first get
+the VM UUID and then execute
+``vss-cli compute vm set <name-or-uuid> cd up <unit> -b <name-or-path-or-id>``
+as shown below:
 
 .. code-block:: bash
 
@@ -173,11 +181,13 @@ The process of mounting the image to a VM is the same: first get the VM UUID and
 Virtual Machine
 ---------------
 
-The ITS Private Cloud API has the ability to deploy OVA or OVF virtual machines from either our public repository or an
-Open Virtualization Format file provided by a user and uploaded to `VSKEY-STOR`_, either for a
-single or multiple deployments.
+The ITS Private Cloud API has the ability to deploy OVA or
+OVF virtual machines from either our public repository or an
+Open Virtualization Format file provided by a user and
+uploaded to `VSKEY-STOR`_, either for a single or multiple deployments.
 
-Public and personal VM images can be managed with the ``vss-cli compute image`` command:
+Public and personal VM images can be managed with the
+``vss-cli compute image`` command:
 
 .. code-block:: bash
 
@@ -196,11 +206,12 @@ Public and personal VM images can be managed with the ``vss-cli compute image`` 
 
 Public
 ~~~~~~
-The public repository holds an OVA catalog of common linux distributions such as Ubuntu,
-VMware PhotonOS and CoreOS optimized for cloud deployment.
+The public repository holds an OVA catalog of common linux distributions
+such as Ubuntu, VMware PhotonOS and CoreOS optimized for cloud deployment.
 
-Currently, users can only list and use public VM images with ``vss-cli compute image public ls`` and
-those can be filtered and sorted with including the proper options:
+Currently, users can only list and use public VM images with
+``vss-cli compute image public ls`` and those can be filtered and sorted
+with including the proper options:
 
 .. code-block:: bash
 
@@ -220,8 +231,8 @@ those can be filtered and sorted with including the proper options:
       -p, --page                      page results in a less-like format
       --help                          Show this message and exit.
 
-For instance, to look for a publicly available **Photon OS** image, the command could be something
-like:
+For instance, to look for a publicly available **Photon OS** image,
+the command could be something like:
 
 .. code-block:: bash
 
@@ -235,14 +246,15 @@ like:
 
 .. note:: To successfully deploy a VM from a public VM image, **Path** should be added to the VM command.
 
-For further instructions on how to deploy a virtual machine from image, please refer to
-:doc:`Deploy Instance from Image <deploy-image>`.
+For further instructions on how to deploy a virtual machine from
+image, please refer to :doc:`Deploy Instance from Image <deploy-image>`.
 
 
 Personal
 ~~~~~~~~
 
-User provided VM images can be managed with the ``vss-cli compute image personal`` command:
+User provided VM images can be managed with the
+``vss-cli compute image personal`` command:
 
 .. code-block:: bash
 
@@ -258,14 +270,16 @@ User provided VM images can be managed with the ``vss-cli compute image personal
       sync  Sync personal OVA/OVF VM images
 
 
-In order to deploy a VM from a provided VM image, users should **upload** the file to `VSKEY-STOR`_
-and then execute a ``sync`` command to make the image file available in the ITS Private Cloud.
+In order to deploy a VM from a provided VM image, users should **upload**
+the file to `VSKEY-STOR`_ and then execute a ``sync`` command to make the
+image file available in the ITS Private Cloud.
 
 .. note:: Assuming you have already uploaded the OVA file or OVF+Disks (VMDKs), the command
     ``vss-cli compute image personal sync`` should be executed.
 
-Once you get a confirmation notification (email or message) VM images should be visible through the CLI.
-To list just execute ``vss-cli compute image personal ls`` and the output should look as follows:
+Once you get a confirmation notification (email or message) VM images
+should be visible through the CLI. To list just execute
+``vss-cli compute image personal ls`` and the output should look as follows:
 
 .. code-block:: bash
 
@@ -278,15 +292,16 @@ To list just execute ``vss-cli compute image personal ls`` and the output should
     [vssUser-xfers] jm/images/wily-server-cloudimg-amd64.ova                                 wily-server-cloudimg-amd64.ova
     [vssUser-xfers] jm/images/photon-custom-hw10-1.0-13c08b6.ova                             photon-custom-hw10-1.0-13c08b6.ova
 
-For further instructions on how to deploy a virtual machine from image, please refer to
-:doc:`Deploy Instance from Image <deploy-image>`.
+For further instructions on how to deploy a virtual machine from image,
+please refer to :doc:`Deploy Instance from Image <deploy-image>`.
 
 Floppy
 ------
 
-In some operating systems, such as the most recent versions of Windows, you need to provide the
-device drivers to properly recognize basic devices like the **VMXNET3** network adapter or
-**Paravirtual SCSi controllers**. These drivers are provided by VMware and now, they are available
+In some operating systems, such as the most recent versions of Windows,
+you need to provide the device drivers to properly recognize basic devices
+like the **VMXNET3** network adapter or **Paravirtual SCSi controllers**.
+These drivers are provided by VMware and now, they are available
 for you to use on demand by the ``floppy`` command ``vss-cli compute floppy``.
 
 .. code-block:: bash
@@ -307,8 +322,9 @@ for you to use on demand by the ``floppy`` command ``vss-cli compute floppy``.
 Public
 ~~~~~~
 
-Currently, users can only list and use public Floppy images with ``vss-cli compute floppy public ls`` and
-those can be filtered and sorted with including the proper options:
+Currently, users can only list and use public Floppy images with
+``vss-cli compute floppy public ls`` and those can be filtered and
+sorted with including the proper options:
 
 .. code-block:: bash
 
@@ -329,8 +345,8 @@ those can be filtered and sorted with including the proper options:
       --help                          Show this message and exit.
 
 
-For instance, to look for a **Windows** drivers image, the command should be something
-like:
+For instance, to look for a **Windows** drivers image, the command
+should be something like:
 
 
 .. code-block:: bash
@@ -343,7 +359,8 @@ like:
     [] /vmimages/floppies/pvscsi-Windows2003.flp  pvscsi-Windows2003.flp
     [] /vmimages/floppies/pvscsi-WindowsXP.flp    pvscsi-WindowsXP.flp
 
-The process of mounting the image to a VM is the same: first get the VM UUID and then execute
+The process of mounting the image to a VM is the same:
+first get the VM UUID and then execute
 ``vss-cli compute vm set <name-or-uuid> floppy <unit> --image <path>`` as shown below:
 
 .. code-block:: bash
@@ -353,10 +370,12 @@ The process of mounting the image to a VM is the same: first get the VM UUID and
 
 Personal
 ~~~~~~~~
-The ``floppy`` command resource also provides available ``.flp`` images from your `VSKEY-STOR`_ space,
-so you are free to upload any custom floppy image and mount it to a Virtual Machine.
+The ``floppy`` command resource also provides available ``.flp``
+images from your `VSKEY-STOR`_ space, so you are free to upload any
+custom floppy image and mount it to a Virtual Machine.
 
-User provided VM images can be managed with the ``vss-cli compute floppy personal`` command:
+User provided VM images can be managed with the
+``vss-cli compute floppy personal`` command:
 
 .. code-block:: bash
 
@@ -372,14 +391,16 @@ User provided VM images can be managed with the ``vss-cli compute floppy persona
       sync  Sync personal Floppy images
 
 
-In order to list or load a user Floppy into a VM, users should **upload** the file to `VSKEY-STOR`_
-and then execute a ``sync`` command to make the image file available in the ITS Private Cloud.
+In order to list or load a user Floppy into a VM, users should **upload**
+the file to `VSKEY-STOR`_and then execute a ``sync`` command to make the
+image file available in the ITS Private Cloud.
 
 .. note:: Assuming you have already uploaded a file, the command
     ``vss-cli compute floppy personal sync`` should be executed.
 
-Once you get a confirmation notification (email or message) Floppy images should be visible through the CLI.
-To list just execute ``vss-cli compute floppy personal ls`` and the output should look as follows:
+Once you get a confirmation notification (email or message) Floppy images
+should be visible through the CLI. To list just execute
+``vss-cli compute floppy personal ls`` and the output should look as follows:
 
 .. code-block:: bash
 
@@ -389,8 +410,10 @@ To list just execute ``vss-cli compute floppy personal ls`` and the output shoul
     --------------------------------------  ----------
     [vssUser-xfers] jm/floppies/pvscsi.flp  pvscsi.flp
 
-The process of mounting the image to a VM is the same: first get the VM UUID and then
-execute ``vss-cli compute vm set <name-or-uuid> floppy <unit> --image <path>`` as shown below:
+The process of mounting the image to a VM is the same:
+first get the VM UUID and then
+execute ``vss-cli compute vm set <name-or-uuid> floppy <unit> --image <path>``
+as shown below:
 
 .. code-block:: bash
 

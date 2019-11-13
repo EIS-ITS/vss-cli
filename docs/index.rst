@@ -6,8 +6,9 @@
 ITS Private Cloud Command Line Interface ``vss-cli``
 ====================================================
 
-The ITS Private Cloud Command-Line Interface ``vss-cli`` simplifies the interaction
-with the ITS Private Cloud RESTful API to manage your virtual machines and other services.
+The ITS Private Cloud Command-Line Interface ``vss-cli`` simplifies
+the interaction with the ITS Private Cloud RESTful API to manage your
+virtual machines and other services.
 
 .. raw:: html
 

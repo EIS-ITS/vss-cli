@@ -3,22 +3,31 @@
 VMware Paravirtual SCSI Controller
 ==================================
 
-According to VMware, there are two main reasons to deploy a virtual machine with the Paravirtual SCSI controller:
+According to VMware, there are two main reasons to deploy a virtual machine
+with the Paravirtual SCSI controller:
 
-  PVSCSI adapters are high-performance storage adapters that can result in **greater throughput and lower CPU utilization**.
-  PVSCSI adapters are best for environments, especially SAN environments, where hardware or applications drive a very high amount of I/O throughput.
-  The VMware PVSCSI adapter driver is also compatible with the Windows Storport storage driver. PVSCSI adapters are not suitable for DAS environments.
-  VMware Paravirtual SCSI adapters are high-performance storage adapters that can result in greater throughput and lower CPU utilization. [1]_
+  PVSCSI adapters are high-performance storage adapters that can result
+  in **greater throughput and lower CPU utilization**. PVSCSI adapters are
+  best for environments, especially SAN environments, where hardware or
+  applications drive a very high amount of I/O throughput. The VMware PVSCSI
+  adapter driver is also compatible with the Windows Storport storage driver.
+  PVSCSI adapters are not suitable for DAS environments. VMware Paravirtual
+  SCSI adapters are high-performance storage adapters that can result in
+  greater throughput and lower CPU utilization. [1]_
 
-  The PVSCSI adapter offers a significant **reduction in CPU utilization** as well as potentially increased throughput compared to
-  the default virtual storage adapters, and is thus the best choice for environments with very I/O-intensive guest applications. [2]_
+  The PVSCSI adapter offers a significant **reduction in CPU utilization** as
+  well as potentially increased throughput compared to the default virtual
+  storage adapters, and is thus the best choice for environments with very
+  I/O-intensive guest applications. [2]_
 
 
 Changing VMware Storage Controller to Paravirtual for CentOS 7
 --------------------------------------------------------------
 
-This tutorial contain step by step guidance to change the Virtual Storage Controller from LSI Logic Parallel
-(``SCSI controller 0``) to VMware Paravirtual for a CentOS 7 based Virtual Machine that is running on the **ITS Private Cloud**.
+This tutorial contain step by step guidance to change the Virtual Storage
+Controller from LSI Logic Parallel (``SCSI controller 0``) to VMware
+Paravirtual for a CentOS 7 based Virtual Machine that is running on
+the **ITS Private Cloud**.
 
 
 1. Create a Virtual Machine Snapshot:

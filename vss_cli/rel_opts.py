@@ -29,5 +29,15 @@ page_opt = click.option(
     '-p', '--page', is_flag=True, help='page results in a less-like format'
 )
 wait_opt = click.option(
-    '--wait', is_flag=True, help='wait for request to complete'
+    '--wait', is_flag=True, help='wait for request(s) to complete'
+)
+
+max_del_opt = click.option(
+    '-m',
+    '--max-del',
+    type=click.IntRange(1, 10),
+    required=False,
+    default=3,
+    help='Maximum items to delete',
+    show_default=True,
 )

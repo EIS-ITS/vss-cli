@@ -17,19 +17,18 @@ a specific folder you have permission on.
 
     Usage: vss-cli compute folder [OPTIONS] COMMAND [ARGS]...
 
-      Manage logical folders.
-
-      Logical Folders are containers for storing and organizing inventory
-      objects, in this case virtual machines.
+    Logical Folders are containers for storing and organizing inventory
+    objects, in this case virtual machines.
 
     Options:
-      --help  Show this message and exit.
+    --help  Show this message and exit.
 
     Commands:
-      get  Get given folder info.
-      ls   list folders
-      mk   create folder
-      set  update folder
+    get  Given folder info.
+    ls   list folders
+    mk   create folder
+    rm   remove folder
+    set  update folder
 
 
 List
@@ -83,6 +82,37 @@ Check the state of the request made by running
 ``vss-cli request folder ls -s created_on desc -c 1`` or
 ``vss-cli request folder get <id>``.
 
+Or you can submit multiple folder creation for a given folder, for instance:
+
+.. code-block:: bash
+
+    vss-cli compute folder mk --wait --parent group-v8900 QA DEV PROD UAT 
+
+    id  status     task_id                               message
+    ----  ---------  ------------------------------------  ----------------------------------------
+    49  SUBMITTED  dbd51c34-fd1c-48e4-a2dc-dd33aa44f1e1  Request has been accepted for processing
+    50  SUBMITTED  03f0d9cf-e23f-4f70-b511-2c0f69888e63  Request has been accepted for processing
+    51  SUBMITTED  a9380056-9d07-44f3-8469-c1e8149e90bf  Request has been accepted for processing
+    52  SUBMITTED  8100b93c-0dba-463c-a76a-4d8b97e47c03  Request has been accepted for processing
+    
+    ⏳ Waiting for request 49 to complete... 
+    ⏳ Waiting for request 50 to complete... 
+    ⏳ Waiting for request 51 to complete... 
+    ⏳ Waiting for request 52 to complete... 
+    
+    🎉 Request 50 completed successfully:
+    warnings            : Folder ITS > EIS > Data Centre Dev > Folder10 > DEV created
+    errors              :                     
+    🎉 Request 52 completed successfully:
+    warnings            : Folder ITS > EIS > Data Centre Dev > Folder10 > UAT created
+    errors              :                     
+    🎉 Request 49 completed successfully:
+    warnings            : Folder ITS > EIS > Data Centre Dev > Folder10 > QA created
+    errors              :                     
+    🎉 Request 51 completed successfully:
+    warnings            : Folder ITS > EIS > Data Centre Dev > Folder10 > PROD created
+    errors              :                     
+
 Update
 ------
 
@@ -122,15 +152,42 @@ Check the state of the request made by running
 
 Remove
 ------
-To remove a new folder just run ``vss-cli compute folder rm <name-path-moref>``,
+To remove a new folder just run ``vss-cli compute folder rm <name-path-moref> ...``,
 for instance:
 
-.. note:: Folder must be empty or request will fail
+.. note:: Folder must be empty or request will not be accepted.
 
 .. code-block:: bash
 
-    vss-cli compute folder rm group-v8900
+    Usage: vss-cli compute folder rm [OPTIONS] MOREF...
 
+        Delete a logical folder. Folder must be empty.
+
+        Options:
+        -m, --max-del INTEGER RANGE  Maximum items to delete  [default: 3]
+        --wait                       wait for request to complete
+        --help                       Show this message and exit.
+
+To delete multiple folders and wait for requests to complete, execute the following command:
+
+.. code-block:: bash
+
+    vss-cli compute folder rm --wait Folder1 Folder2
+
+    id  status     task_id                               message
+    ----  ---------  ------------------------------------  ----------------------------------------
+    24  SUBMITTED  10f58cf5-2e57-4316-9d4a-c3609f6326d5  Request has been accepted for processing
+    25  SUBMITTED  3352632e-1d29-4e82-add4-2179da37d965  Request has been accepted for processing
+    
+    ⏳ Waiting for request 24 to complete... 
+    ⏳ Waiting for request 25 to complete... 
+    
+    🎉 Request 25 completed successfully:
+    warnings            : Folder has been deleted
+    errors              :                     
+    🎉 Request 24 completed successfully:
+    warnings            : Folder has been deleted
+    errors              :            
 
 Check the state of the request made by running
 ``vss-cli request folder ls -s created_on desc -c 1`` or

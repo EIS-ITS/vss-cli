@@ -3,10 +3,11 @@
 Scheduling Virtual Machine Changes
 ==================================
 
-Scheduling changes provides flexibility to execute API actions at any given time.
-For instance, scheduling to automatically upgrade VMware Tools, or to Shutdown VM and
-then increase memory or CPU can be accomplished by just adding the schedule attribute
-to any ``vss-cli compute set <uuid> <attribute>`` as described below:
+Scheduling changes provides flexibility to execute API actions at any
+given time. For instance, scheduling to automatically upgrade VMware
+Tools, or to Shutdown VM and then increase memory or CPU can be
+accomplished by just adding the schedule attribute to any
+``vss-cli compute set <uuid> <attribute>`` as described below:
 
 .. code-block:: bash
 
@@ -52,12 +53,13 @@ and apply any filtering if required:
     50128577-2026-908a-7bb7-df5a34fea7bf  1610T-cranky_sinoussi
 
 
-Once you got the target virtual machine ``UUID`` proceed to scheduling the changes.
+Once you got the target virtual machine ``UUID`` proceed to scheduling
+the changes.
 
 Power Off
 ---------
-Schedule the power off task by adding the ``--schedule`` option with the desired value
-to the ``state off`` command as follows:
+Schedule the power off task by adding the ``--schedule`` option with
+the desired value to the ``state off`` command as follows:
 
 .. code-block:: bash
 
@@ -67,8 +69,8 @@ to the ``state off`` command as follows:
 
 Add CPU
 -------
-Schedule the task to add cpu with the ``--schedule`` option with the desired value
-to the ``cpu count <numCpu>`` command as follows:
+Schedule the task to add cpu with the ``--schedule`` option with the
+desired value to the ``cpu count <numCpu>`` command as follows:
 
 .. code-block:: bash
 
@@ -78,8 +80,9 @@ to the ``cpu count <numCpu>`` command as follows:
 
 Update boot delay
 -----------------
-Schedule the task to update ``boot-delay`` with the ``--schedule`` option and the desired value
-to the ``boot-delay <milliseconds>`` command as follows:
+Schedule the task to update ``boot-delay`` with the ``--schedule``
+option and the desired value to the ``boot-delay <milliseconds>``
+command as follows:
 
 .. code-block:: bash
 
@@ -89,8 +92,9 @@ to the ``boot-delay <milliseconds>`` command as follows:
 
 Add Memory
 ----------
-Schedule the task to add memory with the ``--schedule`` option with the desired value
-to the ``memory size <numCpu>`` command as follows:
+Schedule the task to add memory with the ``--schedule`` option
+with the desired value to the ``memory size <numCpu>`` command
+as follows:
 
 .. code-block:: bash
 
@@ -101,8 +105,8 @@ to the ``memory size <numCpu>`` command as follows:
 
 Power ON
 --------
-Schedule the power on task by adding the ``--schedule`` option with the desired value
-to the ``state on`` command as follows:
+Schedule the power on task by adding the ``--schedule`` option
+with the desired value to the ``state on`` command as follows:
 
 .. code-block:: bash
 
@@ -113,7 +117,8 @@ to the ``state on`` command as follows:
 
 Reschedule Memory Change
 ------------------------
-To reschedule a scheduled update, use the command ``vss-cli request change set {request_id} schedule`` with
+To reschedule a scheduled update, use the command
+``vss-cli request change set {request_id} schedule`` with
 the option ``-d/--date-time``:
 
 .. code-block:: bash
@@ -127,8 +132,8 @@ the option ``-d/--date-time``:
       --help                          Show this message and exit.
 
 
-Assuming you got change request ``24542`` as a result of submitting the memory change,
-the command to update the scheduled datetime should be something like:
+Assuming you got change request ``24542`` as a result of submitting the
+memory change, the command to update the scheduled datetime should be something like:
 
 .. code-block:: bash
 
@@ -136,8 +141,9 @@ the command to update the scheduled datetime should be something like:
 
 Cancel Boot Delay Change
 ------------------------
-To cancel a scheduled update, use the command ``vss-cli request change set {request_id} schedule`` with
-the option ``-c/--cancel``:
+To cancel a scheduled update, use the command
+``vss-cli request change set {request_id} schedule`` with the option
+``-c/--cancel``:
 
 .. code-block:: bash
 
@@ -149,12 +155,13 @@ the option ``-c/--cancel``:
                                       Update datetime YYYY-MM-DD HH:MM.
       --help                          Show this message and exit.
 
-Assuming you got change request ``24545`` as a result of submitting the memory change,
-the command to update the scheduled datetime should be something like:
+Assuming you got change request ``24545`` as a result of submitting the
+memory change, the command to update the scheduled datetime should be something like:
 
 .. code-block:: bash
 
     vss-cli request change set 24545 schedule --cancel
 
 
-For now, you just wait for the tasks to be executed in the requested date and time.
+For now, you just wait for the tasks to be executed in the requested
+date and time.

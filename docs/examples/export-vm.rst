@@ -29,7 +29,8 @@ Validate virtual machine
 ------------------------
 
 First, we need to double check if the ``committedGB`` size is lower
-than **200GB** by executing the command ``vss-cli compute vm get <name-or-uuid>``
+than **200GB** by executing the command
+``vss-cli compute vm get <name-or-uuid>``
 and looking for the attribute ``Committed (GB)`` as follows:
 
 .. code-block:: bash
@@ -85,8 +86,8 @@ Finally, verify if the VM's CD/DVD unit is not backed by an ISO image file:
     Backing             : client
 
 
-Execute ``vss-cli compute vm set <name-or-uuid> cd <unit> --iso client`` if an ISO image is shown
-in CD backing.
+Execute ``vss-cli compute vm set <name-or-uuid> cd <unit> --iso client``
+if an ISO image is shown in CD backing.
 
 Export virtual machine
 ------------------------
@@ -121,11 +122,13 @@ the status, execute ``vss-cli request export get <request-id>``.
     transferred         : Yes
 
 
-The request object holds more attributes, however the above listed are more important for
-this example. ``status=Processed`` tells us that the request has been completed.
-``transferred=yes`` indicates that resulting ``files`` were successfully transferred to your
-`VSKEY-STOR`_ space. To confirm, you could either go to a web browser and open `VSKEY-STOR`_ and sign in
-or execute ``vss-cli stor ls <uuid>`` and you should get something like:
+The request object holds more attributes, however the above listed are
+more important for this example. ``status=Processed`` tells us that the
+request has been completed. ``transferred=yes`` indicates that resulting
+``files`` were successfully transferred to your `VSKEY-STOR`_ space.
+To confirm, you could either go to a web browser and open `VSKEY-STOR`_
+and sign in or execute ``vss-cli stor ls <uuid>`` and you should
+get something like:
 
 .. code-block:: bash
 
@@ -137,8 +140,10 @@ or execute ``vss-cli stor ls <uuid>`` and you should get something like:
 Download virtual machine export
 -------------------------------
 
-To download the files you could either go to a web browser and open `VSKEY-STOR`_ and sign in, go to the
-``<uuid>`` folder and download the files or execute ``vss-cli stor dl <uuid>/<file> -n t`` as follows:
+To download the files you could either go to a web browser and
+open `VSKEY-STOR`_ and sign in, go to the ``<uuid>`` folder and
+download the files or execute ``vss-cli stor dl <uuid>/<file> -n t``
+as follows:
 
 .. code-block:: bash
 
@@ -154,7 +159,8 @@ To download the files you could either go to a web browser and open `VSKEY-STOR`
     Download <uuid>/disk-0.vmdk to ~/Downloads/disk-0.vmdk in progress...
     Download complete.
 
-That's it, at this point the OVF and disks are ready to be imported to a desired platform.
+That's it, at this point the OVF and disks are ready to be imported to
+a desired platform.
 
 .. _`VSKEY-STOR`: https://vskey-stor.eis.utoronto.ca
 .. _`Open Virtualization format (OVF)`: https://en.wikipedia.org/wiki/Open_Virtualization_Format

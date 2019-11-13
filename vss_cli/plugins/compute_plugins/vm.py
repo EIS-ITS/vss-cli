@@ -154,7 +154,7 @@ def compute_vm_get_cds(ctx: Configuration, unit):
 @compute_vm_get.command('client', short_help='Client (Metadata)')
 @pass_context
 def compute_vm_get_client(ctx: Configuration):
-    """Get current virtual machine client/billing department.
+    """Get current virtual machine client department.
     Part of the VSS metadata.
     """
     obj = ctx.get_vm_vss_client(ctx.uuid)
@@ -948,7 +948,7 @@ def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
 @click.argument('client', type=click.STRING, required=True)
 @pass_context
 def compute_vm_set_client(ctx: Configuration, client):
-    """Update virtual machine client/billing department.
+    """Update virtual machine client department.
 
     vss-cli compute vm set <name-or-uuid> client <New-Client>
     """
@@ -2508,17 +2508,16 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     '--force',
     is_flag=True,
     default=False,
+    show_default=True,
     help='Force deletion if power state is on',
-)
-@click.option(
-    '-m', '--max-del', type=click.IntRange(1, 10), required=False, default=3
 )
 @click.option(
     '-s',
     '--show-info',
     is_flag=True,
     default=False,
-    help='Show guest info and confirmation ' 'if -f/--force is not included.',
+    show_default=True,
+    help='Show guest info and confirmation if -f/--force is not included.',
 )
 @click.argument(
     'uuid',
@@ -2527,56 +2526,75 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     nargs=-1,
     autocompletion=autocompletion.virtual_machines,
 )
+@so.max_del_opt
+@so.wait_opt
 @pass_context
-def compute_vm_rm(ctx: Configuration, uuid, force, max_del, show_info):
+def compute_vm_rm(
+    ctx: Configuration,
+    uuid: list,
+    max_del: int,
+    force: bool,
+    show_info: bool,
+    wait: bool,
+):
     """ Delete a list of virtual machine uuids:
 
         vss-cli compute vm rm <name-or-uuid> <name-or-uuid> --show-info
 
     """
-    # result set
-    objs = list()
+    _LOGGING.debug(f'Attempting to remove {uuid}')
     if len(uuid) > max_del:
         raise click.BadArgumentUsage(
-            'Increase max instance removal with ' '--max-del/-m option'
+            'Increase max instance removal with --max-del/-m option'
         )
-    #
-    for vm in uuid:
-        skip = False
-        _vm = ctx.get_vm(vm)
-        if not _vm:
-            _LOGGING.warning(
-                f'Virtual machine {vm} could not be found. ' f'Skipping.'
-            )
-            skip = True
-        if _vm and show_info:
-            folder_info = ctx.get_vm_folder(vm)
-            name = ctx.get_vm_name(vm)
-            guest_info = ctx.get_vm_guest(vm)
-            ip_addresses = (
-                ', '.join(guest_info.get('ip_address'))
-                if guest_info.get('ip_address')
-                else ''
-            )
-
-            c_str = const.DEFAULT_VM_DEL_MSG.format(
-                name=name,
-                folder_info=folder_info,
-                ip_addresses=ip_addresses,
-                **guest_info,
-            )
-            confirmation = force or click.confirm(c_str)
-            if not confirmation:
-                _LOGGING.warning(f'Skipping {vm}...')
+    # result
+    objs = list()
+    with ctx.spinner(disable=ctx.debug or show_info):
+        for vm in uuid:
+            skip = False
+            _vm = ctx.get_vm(vm)
+            if not _vm:
+                _LOGGING.warning(
+                    f'Virtual machine {vm} could not be found. Skipping.'
+                )
                 skip = True
-        if not skip:
-            # request
-            payload = dict(uuid=vm, force=force)
-            objs.append(ctx.delete_vm(**payload))
+            if _vm and show_info:
+                folder_info = ctx.get_vm_folder(vm)
+                name = ctx.get_vm_name(vm)
+                guest_info = ctx.get_vm_guest(vm)
+                ip_addresses = (
+                    ', '.join(guest_info.get('ip_address'))
+                    if guest_info.get('ip_address')
+                    else ''
+                )
+
+                c_str = const.DEFAULT_VM_DEL_MSG.format(
+                    name=name,
+                    folder_info=folder_info,
+                    ip_addresses=ip_addresses,
+                    **guest_info,
+                )
+                confirmation = force or click.confirm(c_str)
+                if not confirmation:
+                    _LOGGING.warning(f'Skipping {vm}...')
+                    skip = True
+            if not skip:
+                # request
+                payload = dict(uuid=vm, force=force)
+                objs.append(ctx.delete_vm(**payload))
     # print
-    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    for obj in objs:
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    if objs:
+        columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+        click.echo(
+            format_output(ctx, objs, columns=columns, single=len(objs) == 1)
+        )
+        if wait:
+            if len(objs) > 1:
+                ctx.wait_for_requests_to(objs, in_multiple=True)
+            else:
+                ctx.wait_for_request_to(objs[0])
+    else:
+        _LOGGING.warning('No requests have been submitted.')
 
 
 @compute_vm.group(
@@ -2711,7 +2729,7 @@ def compute_vm_from_file(
 )
 @c_so.source_opt
 @c_so.description_opt
-@c_so.bill_dept_nr_opt
+@c_so.client_nr_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -2734,7 +2752,7 @@ def compute_vm_mk_spec(
     name,
     source,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -2786,8 +2804,8 @@ def compute_vm_mk_spec(
         _domain = ctx.get_domain_by_name_or_moref(domain)
         payload['domain'] = _domain[0]['moref']
     # Metadata
-    if bill_dept:
-        payload['bill_dept'] = bill_dept
+    if client:
+        payload['client'] = client
     if notes:
         payload['notes'] = notes
     if admin:
@@ -2830,7 +2848,7 @@ def compute_vm_mk_spec(
 
 @compute_vm_mk.command('shell', short_help='Create empty virtual machine')
 @c_so.description_opt
-@c_so.bill_dept_opt
+@c_so.client_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -2853,7 +2871,7 @@ def compute_vm_mk_shell(
     ctx: Configuration,
     name,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -2904,8 +2922,8 @@ def compute_vm_mk_shell(
         _domain = ctx.get_domain_by_name_or_moref(domain)
         payload['domain'] = _domain[0]['moref']
     # Metadata
-    if bill_dept:
-        payload['bill_dept'] = bill_dept
+    if client:
+        payload['client'] = client
     if notes:
         payload['notes'] = notes
     if admin:
@@ -2943,7 +2961,7 @@ def compute_vm_mk_shell(
 @compute_vm_mk.command('from-template', short_help='Create vm from template')
 @c_so.source_template_opt
 @c_so.description_opt
-@c_so.bill_dept_nr_opt
+@c_so.client_nr_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -2966,7 +2984,7 @@ def compute_vm_mk_template(
     name,
     source,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -3014,8 +3032,8 @@ def compute_vm_mk_template(
         _domain = ctx.get_domain_by_name_or_moref(domain)
         payload['domain'] = _domain[0]['moref']
     # Metadata
-    if bill_dept:
-        payload['bill_dept'] = bill_dept
+    if client:
+        payload['client'] = client
     if notes:
         payload['notes'] = notes
     if admin:
@@ -3055,7 +3073,7 @@ def compute_vm_mk_template(
 @compute_vm_mk.command('from-clone', short_help='Create vm from clone')
 @c_so.source_opt
 @c_so.description_opt
-@c_so.bill_dept_nr_opt
+@c_so.client_nr_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -3078,7 +3096,7 @@ def compute_vm_mk_clone(
     name,
     source,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -3125,8 +3143,8 @@ def compute_vm_mk_clone(
         _domain = ctx.get_domain_by_name_or_moref(domain)
         payload['domain'] = _domain[0]['moref']
     # Metadata
-    if bill_dept:
-        payload['bill_dept'] = bill_dept
+    if client:
+        payload['client'] = client
     if notes:
         payload['notes'] = notes
     if admin:
@@ -3169,7 +3187,7 @@ def compute_vm_mk_clone(
 @click.argument('name', type=click.STRING, required=False)
 @c_so.source_image_opt
 @c_so.description_opt
-@c_so.bill_dept_opt
+@c_so.client_opt
 @c_so.admin_opt
 @c_so.inform_opt
 @c_so.usage_opt
@@ -3191,7 +3209,7 @@ def compute_vm_mk_image(
     name,
     source,
     description,
-    bill_dept,
+    client,
     usage,
     memory,
     cpu,
@@ -3216,7 +3234,7 @@ def compute_vm_mk_image(
         description=description,
         name=name,
         usage=usage,
-        bill_dept=bill_dept,
+        client=client,
         image=image_ref[0]['path'],
     )
     # Hardware

@@ -7,8 +7,8 @@ This tutorial details how to deploy a virtual machine from either a running
 or a powered off virtual machine in the ITS Private Cloud and reconfigure the
 operating system (hostname, domain, gateway, dns, etc.) using the VSS CLI.
 It assumes you already have set up a VSS account with access to the REST API,
-a virtual machine with **operating system** and **VMware Tools installed** which
-will be the source virtual machine.
+a virtual machine with **operating system** and **VMware Tools installed**
+which will be the source virtual machine.
 
 .. note:: If you do not have a virtual machine with operating system installed, please refer
   to :ref:`DeployOS`.
@@ -17,11 +17,12 @@ will be the source virtual machine.
 Source Virtual Machine
 ----------------------
 
-A source virtual machine can be either a powered on or off virtual machine. However,
-the power state is relevant in terms of deployment time. This is because when cloning a
-running virtual machine, first it creates a snapshot and then starts copying the data.
-Even though the memory data is not kept, it takes time to generate the snapshot. For this
-example, we will be using a powered on virtual machine with Ubuntu installed.
+A source virtual machine can be either a powered on or off virtual machine.
+However, the power state is relevant in terms of deployment time. This is
+because when cloning a running virtual machine, first it creates a snapshot
+and then starts copying the data. Even though the memory data is not kept,
+it takes time to generate the snapshot. For this example, we will be using
+a powered on virtual machine with Ubuntu installed.
 
 **Optional*** First obtain the ``uuid`` of the source virtual machine:
 
@@ -43,22 +44,24 @@ Save the ``uuid`` in ``SUUID`` environment variable.
 Launch Instance
 ---------------
 
-Launching an instance ``from-clone`` is simpler than ``shell`` since the ``from-clone``
-command carbon copies source virtual machine specifications and creates an instance
-with just name and ``--description/-d``, however to make this example more realistic,
-we will specify a different logical folder, otherwise the ``from-clone`` command will use
-the source virtual machine folder, network, disks and domain.
+Launching an instance ``from-clone`` is simpler than ``shell`` since the
+``from-clone`` command carbon copies source virtual machine specifications
+and creates an instance with just name and ``--description/-d``, however to
+make this example more realistic, we will specify a different logical folder,
+otherwise the ``from-clone`` command will use the source virtual machine
+folder, network, disks and domain.
 
 
-Run ``vss-cli compute vm mk from-clone --help`` to obtain the list of arguments and options required:
+Run ``vss-cli compute vm mk from-clone --help`` to obtain the list of
+arguments and options required:
 
 .. code-block:: bash
 
     Usage: vss-cli compute vm mk from-clone [OPTIONS] [NAME]
-    
+
       Clone virtual machine from running or powered off vm. If name argument is
       not specified, -clone suffix will be added to resulting virtual machine
-    
+
     Options:
       -s, --source TEXT               Source virtual machine or template UUID.
                                       [required]
@@ -89,8 +92,8 @@ Run ``vss-cli compute vm mk from-clone --help`` to obtain the list of arguments 
 Network
 ~~~~~~~
 
-Run ``vss-cli compute net ls`` to list available network segments to your account. You must
-have at least ``VL-1584-VSS-PUBLIC`` which is our public network.
+Run ``vss-cli compute net ls`` to list available network segments to your
+account. You must have at least ``VL-1584-VSS-PUBLIC`` which is our public network.
 
 .. note:: This version of the VSS CLI supports managing networks
     not only using the moref, but also using names. In case of multiple results,
@@ -111,10 +114,11 @@ Save ``dvportgroup-11052`` in ``NET`` environment variable:
 
     export NET=dvportgroup-11052
 
-By default, the network adapter will use **vmxnet3** which provides ideal performance,
-however a few legacy operating systems does not have the drivers. In such case, you can
-specify which adapter type between: **e1000e***, **e1000**, **vmxnet2** or **vmxnet3**.
-To do so, append the adapter type to the network adapter network as follows:
+By default, the network adapter will use **vmxnet3** which provides
+ideal performance, however a few legacy operating systems does not
+have the drivers. In such case, you can specify which adapter type
+between: **e1000e***, **e1000**, **vmxnet2** or **vmxnet3**. To do
+so, append the adapter type to the network adapter network as follows:
 
 .. code-block:: bash
 
@@ -125,8 +129,8 @@ To do so, append the adapter type to the network adapter network as follows:
 Folder
 ~~~~~~
 
-Logical folders can be listed by running ``vss-cli compute folder ls``. Select the target
-``moref`` folder to store the virtual machine on:
+Logical folders can be listed by running ``vss-cli compute folder ls``.
+Select the target ``moref`` folder to store the virtual machine on:
 
 .. note:: This version of the VSS CLI supports managing logical folders
     not only using the moref, but also using name or path. In case of multiple results,
@@ -141,25 +145,27 @@ Logical folders can be listed by running ``vss-cli compute folder ls``. Select t
     group-v6736  APIDemo          jm > Demo > APIDemo                jm
 
 
-Set the ``FOLDER`` environment variable to the target folder (the folder moref may vary):
+Set the ``FOLDER`` environment variable to the target folder
+(the folder moref may vary):
 
 .. code-block:: bash
 
     export FOLDER=group-v6736
 
 
-Before proceeding to deploy the virtual machine, a guest operating system customization
-specification needs to be created.
+Before proceeding to deploy the virtual machine, a guest operating system
+customization specification needs to be created.
 
 Customization Spec
 ~~~~~~~~~~~~~~~~~~
 
-Customizing a guest operating system is helpful to prevent conflicts if virtual machines
-are identical after deployed. To customize the guest operating system, VMware Tools must be
-installed in the source virtual machine.
+Customizing a guest operating system is helpful to prevent conflicts if
+virtual machines are identical after deployed. To customize the guest
+operating system, VMware Tools must be installed in the source virtual machine.
 
-The ``vss-cli compute vm mk from-clone `` command provides the option ``-p/--custom-spec`` to
-pass the guest os customization spec, which is structured as follows:
+The ``vss-cli compute vm mk from-clone `` command provides the option
+``-p/--custom-spec`` to pass the guest os customization spec, which is
+structured as follows:
 
 .. code-block:: json
 
@@ -176,8 +182,8 @@ pass the guest os customization spec, which is structured as follows:
                      }]
     }
 
-Since we are running on a DHCP-enabled network, we will just update the hostname and domain. The
-customization spec added will be:
+Since we are running on a DHCP-enabled network, we will just update
+the hostname and domain. The customization spec added will be:
 
 .. code-block:: json
 
@@ -203,9 +209,10 @@ Serializing the above JSON structure would be something like:
 Deployment
 ~~~~~~~~~~
 
-At this point, we have all requirements to run ``vss-cli compute vm mk from-clone``
-command to submit a deployment request. For this example, the request is made for
-2GB of memory, 2 vCPU, 2x40GB disks and  to reconfigure the hostname and domain.
+At this point, we have all requirements to run
+``vss-cli compute vm mk from-clone`` command to submit a deployment
+request. For this example, the request is made for 2GB of memory, 2 vCPU,
+2x40GB disks and  to reconfigure the hostname and domain.
 
 .. note::
 
@@ -223,7 +230,8 @@ command to submit a deployment request. For this example, the request is made fo
     To wait for the deployment to complete, you could use the ``--wait`` flag at the ``mk`` command level:
     i.e. ``vss-cli compute vm mk --wait from-clone ...```
 
-To verify the state of the new request, run ``vss-cli request new ls`` as follows:
+To verify the state of the new request, run ``vss-cli request new ls``
+as follows:
 
 .. code-block:: bash
 
@@ -246,15 +254,17 @@ Wait a few minutes until the virtual machine is deployed.
 Access Virtual Machine
 ----------------------
 
-Run ``vss-cli compute vm set <name-or-uuid> state on`` to power on virtual machine as shown below:
+Run ``vss-cli compute vm set <name-or-uuid> state on`` to power on
+virtual machine as shown below:
 
 .. code-block:: bash
 
     vss-cli compute vm set docker-node1 state on
 
-At this point, the guest operating system customization spec will kick in and start
-reconfiguring the recently deployed instance. In a few minute the virtual machine will
-show the hostname and ip configuration by running ``vss-cli compute vm get <name-or-uuid> guest``:
+At this point, the guest operating system customization spec will kick
+in and start reconfiguring the recently deployed instance. In a few minutes
+the virtual machine will show the hostname and ip configuration by running
+``vss-cli compute vm get <name-or-uuid> guest``:
 
 .. code-block:: bash
 

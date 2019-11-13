@@ -3,11 +3,12 @@
 Deploy and reconfigure Instance from Template
 =============================================
 
-This tutorial details how to deploy a virtual machine from a virtual machine template
-in the ITS Private Cloud and reconfigure the operating system (hostname, domain,
-gateway, dns, etc.) using the VSS CLI. It assumes you already have set up a VSS
-account with access to the REST API, a virtual machine with **operating system**
-and **VMware Tools installed** which will be marked as template.
+This tutorial details how to deploy a virtual machine from a virtual machine
+template in the ITS Private Cloud and reconfigure the operating system
+(hostname, domain, gateway, dns, etc.) using the VSS CLI. It assumes you
+already have set up a VSS account with access to the REST API, a virtual
+machine with **operating system** and **VMware Tools installed** which will
+be marked as template.
 
 .. note:: If you do not have a virtual machine with operating system installed, please refer
   to :ref:`DeployOS`.
@@ -21,14 +22,16 @@ and **VMware Tools installed** which will be marked as template.
 Virtual Machine Template
 ------------------------
 
-Virtual Machine Templates are useful if you create a virtual machine that you want to clone
-frequently, offering a more secure way of preserving a virtual machine configuration, since
-they are more difficult to alter than ordinary virtual machine. Templates are commonly referred
-as Master Copy of certain virtual machine, thus any virtual machine can be marked as template.
+Virtual Machine Templates are useful if you create a virtual machine that you
+want to clone frequently, offering a more secure way of preserving a virtual
+machine configuration, since they are more difficult to alter than ordinary
+virtual machine. Templates are commonly referred as Master Copy of certain
+virtual machine, thus any virtual machine can be marked as template.
 
 .. warning:: Virtual machines with large disks will take longer to deploy.
 
-**Optional**. In order to make a virtual machine a template, first obtain the ``uuid`` of the virtual machine:
+**Optional**. In order to make a virtual machine a template, first obtain
+the ``uuid`` of the virtual machine:
 
 .. note:: This version of the VSS CLI supports managing virtual machines
     not only using the UUID, but using names. In case of multiple results,
@@ -44,14 +47,15 @@ as Master Copy of certain virtual machine, thus any virtual machine can be marke
 
 Save the ``uuid`` in ``SUUID`` environment variable.
 
-Then update the **template** state by running ``vss-cli compute vm set <name-or-uuid> template --on``:
+Then update the **template** state by running
+``vss-cli compute vm set <name-or-uuid> template --on``:
 
 .. code-block:: bash
 
     vss-cli compute vm set $SUUID template --on
-    
+
     # or
-    
+
     vss-cli compute vm set ubuntu-16.04_x64 template --on
 
 Once the request has been processed, verify the **template** state:
@@ -65,14 +69,16 @@ Once the request has been processed, verify the **template** state:
 Launch Instance
 ---------------
 
-Launching an instance ``from-template`` is simpler than ``shell`` since the ``from-template``
-command carbon copy the specs with just name and ``--description/-d`` to provide. However to
-make this example more realistic, a different logical folder is provided,
-otherwise the ``from-template`` command will use the source virtual machine template folder
-as default.
+Launching an instance ``from-template`` is simpler than ``shell`` since the
+``from-template`` command carbon copy the specs with just name and
+``--description/-d`` to provide. However to make this example more
+realistic, a different logical folder is provided, otherwise the
+``from-template`` command will use the source virtual machine template
+folder as default.
 
 
-Run ``vss-cli compute vm mk from-template --help`` to obtain the list of arguments and options required:
+Run ``vss-cli compute vm mk from-template --help`` to obtain the
+list of arguments and options required:
 
 .. code-block:: bash
 
@@ -110,8 +116,9 @@ Run ``vss-cli compute vm mk from-template --help`` to obtain the list of argumen
 Network
 ~~~~~~~
 
-Run ``vss-cli compute net ls`` to list available network segments to your account. You must
-have at least ``VL-1584-VSS-PUBLIC`` which is the VSS public network.
+Run ``vss-cli compute net ls`` to list available network segments
+to your account. You must have at least ``VL-1584-VSS-PUBLIC`` which is
+the VSS public network.
 
 .. note:: This version of the VSS CLI supports managing networks
     not only using the moref, but also using names. In case of multiple results,
@@ -133,9 +140,10 @@ Save ``dvportgroup-11052`` in ``NET`` environment variable:
     export NET=dvportgroup-11052
 
 
-By default, the network adapter will use **vmxnet3** which provides ideal performance,
-however a few legacy operating systems does not have the drivers. In such case, you can
-specify which adapter type between: **e1000e***, **e1000**, **vmxnet2** or **vmxnet3**.
+By default, the network adapter will use **vmxnet3** which provides
+ideal performance, however a few legacy operating systems does not
+have the drivers. In such case, you can specify which adapter type
+between: **e1000e***, **e1000**, **vmxnet2** or **vmxnet3**.
 To do so, append the adapter type to the network adapter network as follows:
 
 .. code-block:: bash
@@ -147,8 +155,9 @@ To do so, append the adapter type to the network adapter network as follows:
 Folder
 ~~~~~~
 
-Logical folders can be listed by running ``vss-cli compute folder ls``. Select the target
-``moref`` folder to store the virtual machine on:
+Logical folders can be listed by running
+``vss-cli compute folder ls``. Select the target ``moref`` folder to store
+the virtual machine on:
 
 .. note:: This version of the VSS CLI supports managing logical folders
     not only using the moref, but also using names. In case of multiple results,
@@ -162,25 +171,28 @@ Logical folders can be listed by running ``vss-cli compute folder ls``. Select t
     -----------  -------  --------  ----------------------------
     group-v6736  APIDemo  jm        jm > APIDemo
 
-Set the ``FOLDER`` environment variable to the target folder (the folder moref may vary):
+Set the ``FOLDER`` environment variable to the target folder
+(the folder moref may vary):
 
 .. code-block:: bash
 
     export FOLDER=group-v6736
 
 
-Before proceeding to deploy the virtual machine, a guest operating system customization
-specification needs to be created.
+Before proceeding to deploy the virtual machine, a guest operating system
+customization specification needs to be created.
 
 Customization Spec
 ~~~~~~~~~~~~~~~~~~
 
-Customizing a guest operating system is helpful to prevent conflicts if virtual machines
-are identical after deployed. To customize the guest operating system, VMware Tools must be
-installed in the source template or virtual machine.
+Customizing a guest operating system is helpful to prevent conflicts
+if virtual machines are identical after deployed. To customize the guest
+operating system, VMware Tools must beinstalled in the source template or
+virtual machine.
 
-The ``vss-cli compute vm mk from-template`` command provides the option ``-p/--custom-spec`` to
-pass the guest os customization spec, which is structured as follows:
+The ``vss-cli compute vm mk from-template`` command provides the
+option ``-p/--custom-spec`` to pass the guest os customization spec,
+which is structured as follows:
 
 .. code-block:: json
 
@@ -197,8 +209,8 @@ pass the guest os customization spec, which is structured as follows:
                      }]
     }
 
-Since we are running on a DHCP-enabled network, we will just update the hostname and domain. The
-customization spec added will be:
+Since we are running on a DHCP-enabled network, we will just update
+the hostname and domain. The customization spec added will be:
 
 .. code-block:: json
 
@@ -224,9 +236,10 @@ Serializing the above JSON structure would be something like:
 Deployment
 ~~~~~~~~~~
 
-At this point, we have all requirements to run ``vss-cli compute vm mk from-template``
-command to submit a deployment request. For this example, the request is made for
-2GB of memory, 2 vCPU, 2x40GB disks and  to reconfigure the hostname and domain.
+At this point, we have all requirements to run
+``vss-cli compute vm mk from-template`` command to submit a deployment request.
+For this example, the request is made for 2GB of memory, 2 vCPU, 2x40GB disks
+and  to reconfigure the hostname and domain.
 
 .. code-block:: bash
 
@@ -254,7 +267,8 @@ The following command will also work:
     Deploy multiple instances with the ``--instances`` flag.
 
 
-To verify the state of the new request, run ``vss-cli request new ls`` as follows:
+To verify the state of the new request, run ``vss-cli request new ls``
+as follows:
 
 .. code-block:: bash
 
@@ -277,7 +291,8 @@ Wait a few minutes until the virtual machine is deployed.
 Access Virtual Machine
 ----------------------
 
-Run ``vss-cli compute vm set <name-or-uuid> state on`` to power on virtual machine as shown below:
+Run ``vss-cli compute vm set <name-or-uuid> state on`` to power on
+virtual machine as shown below:
 
 .. code-block:: bash
 
@@ -287,9 +302,10 @@ Run ``vss-cli compute vm set <name-or-uuid> state on`` to power on virtual machi
 
     vss-cli compute vm set docker-node1 state on
 
-At this point, the guest operating system customization spec will kick in and start
-reconfiguring the recently deployed instance. In a few minute the virtual machine will
-show the hostname and ip configuration by running ``vss-cli compute vm get <name-or-uuid> guest``:
+At this point, the guest operating system customization spec will
+kick in and start reconfiguring the recently deployed instance.
+In a few minutes the virtual machine will show the hostname and ip
+configuration by running ``vss-cli compute vm get <name-or-uuid> guest``:
 
 .. code-block:: bash
 

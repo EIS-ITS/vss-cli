@@ -339,7 +339,11 @@ class Configuration(VssManager):
                                 f'input {self.endpoint}. \n'
                             )
                             # load endpoint from endpoints
-                            config_endpoint, usr, pwd = self.load_profile_from_config(  # NOQA: E501
+                            (
+                                config_endpoint,
+                                usr,
+                                pwd,
+                            ) = self.load_profile_from_config(  # NOQA: E501
                                 endpoint=self.endpoint
                             )
                         # 2. provided by configuration file
@@ -350,7 +354,11 @@ class Configuration(VssManager):
                                 f'{self.default_endpoint_name}. \n'
                             )
                             # load endpoint from endpoints
-                            config_endpoint, usr, pwd = self.load_profile_from_config(  # NOQA: E501
+                            (
+                                config_endpoint,
+                                usr,
+                                pwd,
+                            ) = self.load_profile_from_config(  # NOQA: E501
                                 endpoint=self.default_endpoint_name
                             )
                         # 3. fallback to default settings
@@ -359,7 +367,11 @@ class Configuration(VssManager):
                                 f"Invalid endpoint {self.endpoint_name} "
                                 f"configuration. \n"
                             )
-                            config_endpoint, usr, pwd = self.load_profile_from_config(  # NOQA: E501
+                            (
+                                config_endpoint,
+                                usr,
+                                pwd,
+                            ) = self.load_profile_from_config(  # NOQA: E501
                                 endpoint=self.endpoint_name
                             )
                         # check valid creds
@@ -373,7 +385,11 @@ class Configuration(VssManager):
                             _LOGGING.warning(
                                 f'Falling back to {default_endpoint}'
                             )
-                            config_endpoint, usr, pwd = self.load_profile_from_config(  # NOQA: E501
+                            (
+                                config_endpoint,
+                                usr,
+                                pwd,
+                            ) = self.load_profile_from_config(  # NOQA: E501
                                 endpoint=const.DEFAULT_ENDPOINT_NAME
                             )
                         # set config data
@@ -626,7 +642,11 @@ class Configuration(VssManager):
             try:
                 self.config_file = self.load_config_file()
                 # load credentials by endpoint_name
-                config_endpoint, e_username, e_password = self.load_profile_from_config(  # NOQA: E501c
+                (
+                    config_endpoint,
+                    e_username,
+                    e_password,
+                ) = self.load_profile_from_config(  # NOQA: E501c
                     endpoint=self.endpoint_name
                 )
                 # profile does not exist
@@ -819,7 +839,7 @@ class Configuration(VssManager):
         return objs
 
     def get_folder_by_name_or_moref_path(
-        self, name_moref_path: str
+        self, name_moref_path: str, silent: bool = False
     ) -> List[Any]:
         g_folders = self.get_folders(
             sort='path,desc', show_all=True, per_page=500
@@ -829,7 +849,7 @@ class Configuration(VssManager):
         objs = self._filter_objects_by_attrs(
             name_moref_path, g_folders, attributes
         )
-        if not objs:
+        if not objs and not silent:
             raise click.BadParameter(f'{name_moref_path} could not be found')
         obj_count = len(objs)
         if obj_count > 1:
@@ -952,7 +972,7 @@ class Configuration(VssManager):
             }
             for v in payload.get('networks')
         ]
-        template['metadata']['billing'] = payload.get('bill_dept')
+        template['metadata']['client'] = payload.get('client')
         template['metadata']['description'] = payload.get('description')
         template['metadata']['usage'] = payload.get('usage')
         template['metadata']['inform'] = payload.get('inform')
@@ -999,7 +1019,7 @@ class Configuration(VssManager):
                 # metadata section
                 spec_payload.update(metadata_section)
                 spec_payload['built'] = built
-                spec_payload['bill_dept'] = metadata_section['billing']
+                spec_payload['client'] = metadata_section['client']
                 # optional
                 if 'inform' in metadata_section:
                     spec_payload['inform'] = [
@@ -1066,15 +1086,19 @@ class Configuration(VssManager):
         ),
         wait: int = 5,
         max_tries: int = 720,
+        in_multiple: bool = False,
     ):
-        objs = [
-            dict(
-                _links=dict(request=r_url),
-                status=obj['status'],
-                request=dict(id=os.path.basename(r_url)),
-            )
-            for r_url in obj['_links']['request']
-        ]
+        if not in_multiple:
+            objs = [
+                dict(
+                    _links=dict(request=r_url),
+                    status=obj['status'],
+                    request=dict(id=os.path.basename(r_url)),
+                )
+                for r_url in obj['_links']['request']
+            ]
+        else:
+            objs = obj
         wq = WorkerQueue(max_workers=len(objs))
 
         with wq.join(debug=self.debug):
