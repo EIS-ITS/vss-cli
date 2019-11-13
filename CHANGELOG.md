@@ -4,6 +4,7 @@
 
 **Improvements:**
 
+- [#212](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/212): ``compute vm rm``: support for ``--wait`` flag
 - [#208](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/208): ``compute folder mk``: support for multiple values and ``--wait`` flag
 - [#207](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/207): ``compute folder rm``: support for multiple values and ``--wait`` flag
 
