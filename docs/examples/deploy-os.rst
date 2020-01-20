@@ -156,7 +156,7 @@ command takes:
 
     Options:
       -d, --description TEXT          A brief description.  [required]
-      -b, --bill-dept TEXT            Billing department.  [required]
+      -b, --client TEXT               Client department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
@@ -187,7 +187,7 @@ Now that we have everything, proceed to deploy a new virtual machine with 1GB of
 
 .. code-block:: bash
 
-    vss-cli compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os $OS \
+    vss-cli compute vm mk shell --description 'NGINX web server' --client EIS --os $OS \
     --memory 1 --cpu 1 --folder $FOLDER --disk 20 --net $NET --iso "$ISO" --notes 'Project: CMS' \
     FrontEnd_1
 
@@ -195,7 +195,7 @@ The following command will also work:
 
 .. code-block:: bash
 
-    vss-cli compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os centos \
+    vss-cli compute vm mk shell --description 'NGINX web server' --client EIS --os centos \
     --memory 1 --cpu 1 --folder APIDemo --disk 20 --net PUBLIC --iso CentOS-7.0-1406-x86_64-DVD.iso \
     --notes 'Project: CMS' FrontEnd_1
 

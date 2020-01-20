@@ -100,7 +100,7 @@ as follows:
       -s, --source TEXT               Source Virtual Machine OVA/OVF id, name or
                                       path.  [required]
       -d, --description TEXT          A brief description.  [required]
-      -b, --bill-dept TEXT            Billing department.  [required]
+      -b, --client TEXT               Client department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
@@ -236,7 +236,7 @@ deployment request. For this example, the request is made for
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-image --image $SIMAGE --bill-dept EIS --memory 2 --cpu 2 \
+    vss-cli compute vm mk from-image --image $SIMAGE --client EIS --memory 2 --cpu 2 \
     --folder $FOLDER --disk 40 --disk 40 --net $NET  --os $OS \
     --description "CentOS virtual machine from OVF" CENTOS_1
 
@@ -244,7 +244,7 @@ The following command should work as well:
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-image --image CentOS-7-x86_64-VMware.ovf --bill-dept EIS \
+    vss-cli compute vm mk from-image --image CentOS-7-x86_64-VMware.ovf --client EIS \
     --memory 2 --cpu 2 --folder APIDemo --disk 40 --disk 40 --net PUBLIC  --os centos \
     --description "CentOS virtual machine from OVF" CENTOS_1
 
