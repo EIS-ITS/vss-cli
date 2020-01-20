@@ -1578,9 +1578,9 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
     vmt = ctx.get_vm_tools(ctx.uuid)
     if not vmt:
         raise click.BadParameter(
-            f'VMware Tools status could ' f'not be checked on {ctx.uuid} '
+            f'VMware Tools status could not be checked on {ctx.uuid} '
         )
-    if vmt.get('runningStatus') not in ["guestToolsRunning"]:
+    if vmt.get('running_status') not in ["guestToolsRunning"]:
         raise click.BadParameter(
             f'VMware Tools must be running ' f'on {ctx.uuid} to execute cmd.'
         )
