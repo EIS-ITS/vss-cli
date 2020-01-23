@@ -1635,7 +1635,39 @@ def compute_vm_set_guest_os(ctx: Configuration, guest_id):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set.command('ha-group', short_help='HA Group (Metadata)')
+@compute_vm_set.group('ha-group', short_help='HA Group (Metadata)')
+@pass_context
+def compute_vm_set_ha_group(ctx: Configuration):
+    """Manage HA group by tagging virtual machines with given
+    virtual machine UUIDs.
+
+    Checks will run every 3 hours to validate virtual machine
+    association and domain separation.
+
+    """
+    pass
+
+
+@compute_vm_set_ha_group.command('rm', short_help='Remove VM from HA-Group')
+@pass_context
+def compute_vm_set_ha_group_rm(ctx: Configuration):
+    """Remove given VM from HA-Group
+
+    vss-cli compute vm set <name-or-uuid> ha-group rm
+    """
+    # request
+    obj = ctx.delete_vm_vss_ha_group(uuid=ctx.uuid)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_ha_group.command(
+    'mk', short_help='Create HA-Group with multiple VMs'
+)
 @click.argument('uuid', type=click.UUID, nargs=-1, required=True)
 @click.option(
     '-r',
@@ -1645,14 +1677,10 @@ def compute_vm_set_guest_os(ctx: Configuration, guest_id):
     help='Replace existing value.',
 )
 @pass_context
-def compute_vm_set_ha_group(ctx: Configuration, uuid, replace):
-    """Create HA group by tagging virtual machines with given
-    virtual machine UUIDs.
+def compute_vm_set_ha_group_mk(ctx: Configuration, uuid, replace):
+    """Create HA Group by tagging VMs together
 
-    Checks will run every 3 hours to validate virtual machine
-    association and domain separation.
-
-    vss-cli compute vm set <name-or-uuid> ha-group --replace <uuid-1> <uuid-n>
+    vss-cli compute vm set <name-or-uuid> ha-group mk -r <uuid-1> <uuid-n>
     """
     for vm in uuid:
         _vm = ctx.get_vm(vm)
