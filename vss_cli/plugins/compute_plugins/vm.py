@@ -1980,9 +1980,18 @@ def compute_vm_set_snapshot(ctx: Configuration):
     show_default=True,
     help='Number of hours the snapshot will live.',
 )
+@click.option(
+    '-c',
+    '--consolidate',
+    is_flag=True,
+    default=False,
+    required=False,
+    show_default=True,
+    help='Consolidate disks after snapshot deletion',
+)
 @pass_context
 def compute_vm_set_snapshot_mk(
-    ctx: Configuration, description, timestamp, lifetime
+    ctx: Configuration, description, timestamp, lifetime, consolidate
 ):
     """Create virtual machine snapshot:
 
@@ -2000,6 +2009,7 @@ def compute_vm_set_snapshot_mk(
             timestamp, const.DEFAULT_DATETIME_FMT
         ),
         valid=lifetime,
+        consolidate=consolidate,
     )
     # add common options
     payload.update(ctx.payload_options)
