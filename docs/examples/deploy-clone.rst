@@ -66,7 +66,7 @@ arguments and options required:
       -s, --source TEXT               Source virtual machine or template UUID.
                                       [required]
       -d, --description TEXT          A brief description.  [required]
-      -b, --bill-dept TEXT            Billing department.
+      -b, --client TEXT               Client department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
@@ -220,7 +220,7 @@ request. For this example, the request is made for 2GB of memory, 2 vCPU,
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-clone --source $SUUID --bill-dept EIS --memory 2 --cpu 2 \
+    vss-cli compute vm mk from-clone --source $SUUID --client EIS --memory 2 --cpu 2 \
     --folder $FOLDER --disk 40 --disk 40 --net $NET \
     --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
     --description "Docker node" docker-node1

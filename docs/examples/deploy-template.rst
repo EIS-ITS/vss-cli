@@ -90,7 +90,7 @@ list of arguments and options required:
       -s, --source TEXT               Source virtual machine or template UUID.
                                       [required]
       -d, --description TEXT          A brief description.  [required]
-      -b, --bill-dept TEXT            Billing department.
+      -b, --client TEXT               Client department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
@@ -243,7 +243,7 @@ and  to reconfigure the hostname and domain.
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-template --source $SUUID --bill-dept EIS --memory 2 --cpu 2 \
+    vss-cli compute vm mk from-template --source $SUUID --client EIS --memory 2 --cpu 2 \
     --folder $FOLDER --disk 40 --disk 40 --net $NET \
     --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
     --description "Docker node" docker-node1
@@ -257,7 +257,7 @@ The following command will also work:
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-template --source ubuntu-16.04_x64 --bill-dept EIS --memory 2 --cpu 2 \
+    vss-cli compute vm mk from-template --source ubuntu-16.04_x64 --client EIS --memory 2 --cpu 2 \
     --folder APIDemo --disk 40 --disk 40 --net VSS-PUBLIC \
     --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
     --description "Docker node" docker-node1

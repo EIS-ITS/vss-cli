@@ -57,7 +57,7 @@ what options and arguments the ``shell`` command takes:
       -s, --iso TEXT                  ISO image path to be mounted after creation
       -h, --high-io                   VM will be created with a VMware Paravirtual
                                       SCSIController.
-      -b, --bill-dept TEXT            Billing department.  [required]
+      -b, --client TEXT               Client department.  [required]
       -o, --os TEXT                   Guest operating system id or name.
                                       [required]
       -f, --folder TEXT               Logical folder moref.  [required]
@@ -71,7 +71,7 @@ Now that we have everything, proceed to deploy a new virtual machine with
 
 .. code-block:: bash
 
-    vss-cli compute vm mk shell --description 'NGINX web server' --bill-dept EIS --os $OS \
+    vss-cli compute vm mk shell --description 'NGINX web server' --client EIS --os $OS \
     --memory 1 --cpu 1 --folder $FOLDER --disk 20 --net $NET --iso $ISO --notes "$NOTES" \
     $NAME
 

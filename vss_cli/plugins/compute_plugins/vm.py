@@ -1578,9 +1578,9 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
     vmt = ctx.get_vm_tools(ctx.uuid)
     if not vmt:
         raise click.BadParameter(
-            f'VMware Tools status could ' f'not be checked on {ctx.uuid} '
+            f'VMware Tools status could not be checked on {ctx.uuid} '
         )
-    if vmt.get('runningStatus') not in ["guestToolsRunning"]:
+    if vmt.get('running_status') not in ["guestToolsRunning"]:
         raise click.BadParameter(
             f'VMware Tools must be running ' f'on {ctx.uuid} to execute cmd.'
         )
@@ -1635,7 +1635,39 @@ def compute_vm_set_guest_os(ctx: Configuration, guest_id):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set.command('ha-group', short_help='HA Group (Metadata)')
+@compute_vm_set.group('ha-group', short_help='HA Group (Metadata)')
+@pass_context
+def compute_vm_set_ha_group(ctx: Configuration):
+    """Manage HA group by tagging virtual machines with given
+    virtual machine UUIDs.
+
+    Checks will run every 3 hours to validate virtual machine
+    association and domain separation.
+
+    """
+    pass
+
+
+@compute_vm_set_ha_group.command('rm', short_help='Remove VM from HA-Group')
+@pass_context
+def compute_vm_set_ha_group_rm(ctx: Configuration):
+    """Remove given VM from HA-Group
+
+    vss-cli compute vm set <name-or-uuid> ha-group rm
+    """
+    # request
+    obj = ctx.delete_vm_vss_ha_group(uuid=ctx.uuid)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_ha_group.command(
+    'mk', short_help='Create HA-Group with multiple VMs'
+)
 @click.argument('uuid', type=click.UUID, nargs=-1, required=True)
 @click.option(
     '-r',
@@ -1645,14 +1677,10 @@ def compute_vm_set_guest_os(ctx: Configuration, guest_id):
     help='Replace existing value.',
 )
 @pass_context
-def compute_vm_set_ha_group(ctx: Configuration, uuid, replace):
-    """Create HA group by tagging virtual machines with given
-    virtual machine UUIDs.
+def compute_vm_set_ha_group_mk(ctx: Configuration, uuid, replace):
+    """Create HA Group by tagging VMs together
 
-    Checks will run every 3 hours to validate virtual machine
-    association and domain separation.
-
-    vss-cli compute vm set <name-or-uuid> ha-group --replace <uuid-1> <uuid-n>
+    vss-cli compute vm set <name-or-uuid> ha-group mk -r <uuid-1> <uuid-n>
     """
     for vm in uuid:
         _vm = ctx.get_vm(vm)
@@ -1980,9 +2008,18 @@ def compute_vm_set_snapshot(ctx: Configuration):
     show_default=True,
     help='Number of hours the snapshot will live.',
 )
+@click.option(
+    '-c',
+    '--consolidate',
+    is_flag=True,
+    default=False,
+    required=False,
+    show_default=True,
+    help='Consolidate disks after snapshot deletion',
+)
 @pass_context
 def compute_vm_set_snapshot_mk(
-    ctx: Configuration, description, timestamp, lifetime
+    ctx: Configuration, description, timestamp, lifetime, consolidate
 ):
     """Create virtual machine snapshot:
 
@@ -2000,6 +2037,7 @@ def compute_vm_set_snapshot_mk(
             timestamp, const.DEFAULT_DATETIME_FMT
         ),
         valid=lifetime,
+        consolidate=consolidate,
     )
     # add common options
     payload.update(ctx.payload_options)
