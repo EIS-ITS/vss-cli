@@ -1,6 +1,6 @@
 FROM python:3.6-alpine
 # Defining env vars
-ENV VSSCLI_VERSION="0.3.1-dev4"
+ENV VSSCLI_VERSION="0.4.0-dev0"
 ARG CI_BUILD_REF
 # Defininig tags
 LABEL maintainer="Jose Manuel Lopez <jm@eis.utoronto.ca>" \

@@ -1,5 +1,20 @@
 # Changelog 📝
 
+## [v0.4.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.4.0) (2020-01-24)
+
+**Improvements:**
+
+- [#217](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/217): ``core``: pyvss upgrade from 0.11.0 -> 0.12.0
+- [#218](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/218): ``compute vm set snapshot mk``: add ``--consolidate`` option
+- [#219](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/219): ``compute vm set ha-group mk``: create ``ha-group``
+- [#219](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/219): ``compute vm set ha-group rm``: remove current member from ``ha-group``    
+
+**Bug Fixes:**
+
+- [#215](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/215): ``docs``: ``bill-dept`` option was found in docs. Replaced with ``client``
+- [#216](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/216): ``compute vm set guest-cmd``: always fails.
+- [#220](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/220): ``ci``: release dist step fails due to missing os requirement
+
 ## [v0.3.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.3.0) (2019-11-14)
 
 **Improvements:**
