@@ -46,8 +46,8 @@ def compute_inventory_dl(ctx: Configuration, request_id, directory, launch):
     default editor."""
     file_path = ctx.download_inventory_file(request_id, directory)
     # to launch or not
-    if launch:
-        click.launch(file_path)
+    if launch and file_path:
+        click.launch(file_path.get('file'))
 
 
 @cli.command('mk', short_help='create inventory report')
