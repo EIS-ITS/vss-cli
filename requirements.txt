@@ -4,7 +4,7 @@ click-log==0.3.2
 click-plugins==1.1.1
 click-repl==0.1.6
 click-threading==0.4.4
-tabulate==0.8.3
+tabulate==0.8.6
 jsonpath-rw==1.4.0
 jinja2>=2.10
 dateparser==0.7.2
