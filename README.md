@@ -280,7 +280,7 @@ Refer to the [Changelog][Changelog] for details.
 [Python Releases for Windows]: https://www.python.org/downloads/windows/
 [pip]: http://www.pip-installer.org/en/latest/
 [open a new issue]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/new
-[build-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/build.svg
+[build-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/pipeline.svg
 [coverage-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/coverage.svg
 [pypi-img]: https://img.shields.io/pypi/v/vss-cli.svg
 [pyver-img]: https://img.shields.io/pypi/pyversions/vss-cli.svg

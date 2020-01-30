@@ -4,14 +4,16 @@
 
 **Improvements:**
 
-- [#226](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/226): ``core``: tabulate upgrade from 0.8.3 -> 0.8.6
-- [#225](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/225): ``core``: dateparser upgrade from 0.7.0 -> 0.7.2
-- [#224](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/224): ``core``: validators upgrade from 0.12.4 -> 0.14.2
 - [#223](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/223): ``core``: pick upgrade from 0.6.4 -> 0.6.6
+- [#224](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/224): ``core``: validators upgrade from 0.12.4 -> 0.14.2
+- [#225](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/225): ``core``: dateparser upgrade from 0.7.0 -> 0.7.2
+- [#226](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/226): ``core``: tabulate upgrade from 0.8.3 -> 0.8.6
+- [#229](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/229): ``core``: pyvss upgrade from 0.12.0 -> 0.12.1
 
 **Bug Fixes:**
 
 - [#222](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/222): ``compute inventory dl --launch``: fails with exception.
+- [#228](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/228): ``compute vm set controller scsi up --scsi-type paravirtual`` fails with ``KeyError`` exception.
 
 ## [v0.4.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.4.0) (2020-01-24)
 
