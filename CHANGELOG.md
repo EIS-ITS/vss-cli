@@ -1,5 +1,18 @@
 # Changelog 📝
 
+## [v0.4.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.4.1) (2020-01-30)
+
+**Improvements:**
+
+- [#226](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/226): ``core``: tabulate upgrade from 0.8.3 -> 0.8.6
+- [#225](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/225): ``core``: dateparser upgrade from 0.7.0 -> 0.7.2
+- [#224](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/224): ``core``: validators upgrade from 0.12.4 -> 0.14.2
+- [#223](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/223): ``core``: pick upgrade from 0.6.4 -> 0.6.6
+
+**Bug Fixes:**
+
+- [#222](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/222): ``compute inventory dl --launch``: fails with exception.
+
 ## [v0.4.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.4.0) (2020-01-24)
 
 **Improvements:**
