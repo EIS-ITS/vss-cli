@@ -2262,9 +2262,9 @@ def compute_vm_set_version(ctx: Configuration):
 )
 @click.argument(
     'vmx',
-    type=click.Choice(['vmx-11', 'vmx-12', 'vmx-13']),
+    type=click.STRING,
+    autocompletion=autocompletion.virtual_hw_types,
     required=False,
-    default='vmx-13',
 )
 @pass_context
 def compute_vm_set_version_policy_vmx(ctx: Configuration, vmx):
