@@ -2129,6 +2129,7 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
         'reset': 'reset',
         'reboot': 'reboot',
         'shutdown': 'shutdown',
+        'suspend': 'suspend',
     }
     # create payload
     payload = dict(uuid=ctx.uuid, state=lookup[state])
@@ -2147,22 +2148,25 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
                 f'on {ctx.uuid} send a reboot or shutdown '
                 f'signal.'
             )
-    # process request
-    # show guest os info if no confirmation flag has been
-    # included - just checking
-    guest_info = ctx.get_vm_guest(ctx.uuid)
-    ip_addresses = (
-        ', '.join(guest_info.get('ip_address'))
-        if guest_info.get('ip_address')
-        else ''
-    )
-    # confirmation string
-    confirmation_str = const.DEFAULT_STATE_MSG.format(
-        state=state, ip_addresses=ip_addresses, **guest_info
-    )
-    confirmation = confirm or click.confirm(confirmation_str)
-    if not confirmation:
-        raise click.ClickException('Cancelled by user.')
+    # confirmation only required if state if not off
+    is_powered_off = ctx.is_powered_off_vm(ctx.uuid)
+    if not is_powered_off:
+        # process request
+        # show guest os info if no confirmation flag has been
+        # included - just checking
+        guest_info = ctx.get_vm_guest(ctx.uuid)
+        ip_addresses = (
+            ', '.join(guest_info.get('ip_address'))
+            if guest_info.get('ip_address')
+            else ''
+        )
+        # confirmation string
+        confirmation_str = const.DEFAULT_STATE_MSG.format(
+            state=state, ip_addresses=ip_addresses, **guest_info
+        )
+        confirmation = confirm or click.confirm(confirmation_str)
+        if not confirmation:
+            raise click.ClickException('Cancelled by user.')
     # request
     obj = ctx.update_vm_state(**payload)
     # print
