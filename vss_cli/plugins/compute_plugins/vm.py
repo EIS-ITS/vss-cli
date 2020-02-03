@@ -2106,7 +2106,7 @@ def compute_vm_set_snapshot_re(ctx: Configuration, snapshot_id):
 @compute_vm_set.command('state', short_help='Power state')
 @click.argument(
     'state',
-    type=click.Choice(['on', 'off', 'reboot', 'reset', 'shutdown']),
+    type=click.Choice(['on', 'off', 'reboot', 'reset', 'shutdown', 'suspend']),
     required=True,
 )
 @click.option(
