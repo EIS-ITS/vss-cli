@@ -1,6 +1,7 @@
 """VSS CLI (vss-cli)."""
 import logging
 import os
+import platform
 import sys
 from typing import List, Optional, Union, cast
 
@@ -218,7 +219,9 @@ def _default_token() -> Optional[str]:
     help='Sort table by the jsonpath expression. Example: updated_on',
 )
 @click.version_option(
-    version=f'{const.__version__}; pyvss v{pyvss_version}',
+    version=f'{const.__version__} ('
+    f'pyvss/{pyvss_version} '
+    f'{platform.python_implementation()}/{platform.python_version()})',
     message='%(prog)s v%(version)s',
 )
 @pass_context
