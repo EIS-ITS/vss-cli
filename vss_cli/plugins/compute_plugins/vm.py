@@ -2344,7 +2344,10 @@ def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
     'vss-option', short_help='Enable or disable given vss-option'
 )
 @click.argument(
-    'vss-option', type=click.Choice(['reboot_on_restore', 'reset_on_restore'])
+    'vss-option',
+    type=click.STRING,
+    autocompletion=autocompletion.vss_options,
+    required=False,
 )
 @click.option(
     '--on/--off', help='Enable or disable given vss-option', default=False
