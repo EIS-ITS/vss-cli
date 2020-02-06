@@ -2106,7 +2106,7 @@ def compute_vm_set_snapshot_re(ctx: Configuration, snapshot_id):
 @compute_vm_set.command('state', short_help='Power state')
 @click.argument(
     'state',
-    type=click.Choice(['on', 'off', 'reboot', 'reset', 'shutdown']),
+    type=click.Choice(['on', 'off', 'reboot', 'reset', 'shutdown', 'suspend']),
     required=True,
 )
 @click.option(
@@ -2129,6 +2129,7 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
         'reset': 'reset',
         'reboot': 'reboot',
         'shutdown': 'shutdown',
+        'suspend': 'suspend',
     }
     # create payload
     payload = dict(uuid=ctx.uuid, state=lookup[state])
@@ -2139,30 +2140,33 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
         vmt = ctx.get_vm_tools(ctx.uuid)
         if not vmt:
             raise click.BadParameter(
-                f'VMware Tools status could ' f'not be checked on {ctx.uuid} '
+                f'VMware Tools status could not be checked on {ctx.uuid} '
             )
-        if vmt.get('runningStatus') not in ["guestToolsRunning"]:
+        if vmt.get('runningStatus') in ["guestToolsRunning"]:
             raise click.BadParameter(
                 f'VMware Tools must be running '
                 f'on {ctx.uuid} send a reboot or shutdown '
                 f'signal.'
             )
-    # process request
-    # show guest os info if no confirmation flag has been
-    # included - just checking
-    guest_info = ctx.get_vm_guest(ctx.uuid)
-    ip_addresses = (
-        ', '.join(guest_info.get('ip_address'))
-        if guest_info.get('ip_address')
-        else ''
-    )
-    # confirmation string
-    confirmation_str = const.DEFAULT_STATE_MSG.format(
-        state=state, ip_addresses=ip_addresses, **guest_info
-    )
-    confirmation = confirm or click.confirm(confirmation_str)
-    if not confirmation:
-        raise click.ClickException('Cancelled by user.')
+    # confirmation only required if state if not off
+    is_powered_off = ctx.is_powered_off_vm(ctx.uuid)
+    if not is_powered_off:
+        # process request
+        # show guest os info if no confirmation flag has been
+        # included - just checking
+        guest_info = ctx.get_vm_guest(ctx.uuid)
+        ip_addresses = (
+            ', '.join(guest_info.get('ip_address'))
+            if guest_info.get('ip_address')
+            else ''
+        )
+        # confirmation string
+        confirmation_str = const.DEFAULT_STATE_MSG.format(
+            state=state, ip_addresses=ip_addresses, **guest_info
+        )
+        confirmation = confirm or click.confirm(confirmation_str)
+        if not confirmation:
+            raise click.ClickException('Cancelled by user.')
     # request
     obj = ctx.update_vm_state(**payload)
     # print
@@ -2262,9 +2266,9 @@ def compute_vm_set_version(ctx: Configuration):
 )
 @click.argument(
     'vmx',
-    type=click.Choice(['vmx-11', 'vmx-12', 'vmx-13']),
+    type=click.STRING,
+    autocompletion=autocompletion.virtual_hw_types,
     required=False,
-    default='vmx-13',
 )
 @pass_context
 def compute_vm_set_version_policy_vmx(ctx: Configuration, vmx):
@@ -2340,7 +2344,10 @@ def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
     'vss-option', short_help='Enable or disable given vss-option'
 )
 @click.argument(
-    'vss-option', type=click.Choice(['reboot_on_restore', 'reset_on_restore'])
+    'vss-option',
+    type=click.STRING,
+    autocompletion=autocompletion.vss_options,
+    required=False,
 )
 @click.option(
     '--on/--off', help='Enable or disable given vss-option', default=False

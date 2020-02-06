@@ -376,3 +376,27 @@ def virtual_nic_types(
         attrs=['type', 'description'],
         f_kwargs={"only_type": False},
     )
+
+
+def virtual_hw_types(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_vmx_types,
+        incomplete,
+        attrs=['type', 'description'],
+        f_kwargs={"only_type": False},
+    )
+
+
+def vss_options(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_vss_options,
+        incomplete,
+        attrs=['option', 'description'],
+        f_kwargs={"only_option": False},
+    )

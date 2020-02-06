@@ -47,6 +47,7 @@ build-dist:
   tags:
    - python-3
   artifacts:
+    expire_in: 1 week
     paths:
       - dist
 
@@ -84,7 +85,6 @@ build-docker-hub:
     - dind
 
 # Develop/branches
-
 test-code-develop:
   image: python:3-alpine
   stage: test
@@ -100,6 +100,7 @@ test-code-develop:
     - develop
     - branches
   artifacts:
+    expire_in: 1 week
     paths:
       - coverage/
 
@@ -116,6 +117,7 @@ build-docs-develop:
     - cp -r docs/_build/html/* ./public
     - cp -r docs/_build/man/* ./man
   artifacts:
+    expire_in: 1 week
     paths:
      - public
      - man
@@ -211,7 +213,6 @@ release-docker-hub-develop:
     - dind
 
 # Master
-
 test-code-master:
   image: python:3-alpine
   stage: test
@@ -227,6 +228,7 @@ test-code-master:
     - master
     - tags
   artifacts:
+    expire_in: 1 week
     paths:
       - coverage/
 
@@ -244,6 +246,7 @@ build-docs-master:
     - cp -r docs/_build/html/* ./public
     - cp -r docs/_build/man/* ./man
   artifacts:
+    expire_in: 1 week
     paths:
      - public
      - man
@@ -331,6 +334,7 @@ build-docs-tag:
     - cp -r docs/_build/html/* ./public
     - cp -r docs/_build/man/* ./man
   artifacts:
+    expire_in: 1 week
     paths:
      - public
      - man
