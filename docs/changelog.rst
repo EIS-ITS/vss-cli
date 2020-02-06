@@ -2,6 +2,25 @@
 Changelog 📝
 ============
 
+`v0.5.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.0>`_ (2020-02-06)
+--------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#231 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/231>`_: ``compute vm set state``: add option ``suspend``.
+- `#233 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/233>`_: ``compute vm set state``: confirm only if state is not ``poweredOff``.
+- `#234 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/234>`_: ``core``: pyvss upgrade from 0.12.1 -> 0.13.0.
+- `#235 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/235>`_: ``compute vm set vss-option``: allow autocompletion.
+- `#236 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/236>`_: ``--version``: flag to provide python implementation and version.
+- `#237 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/237>`_: ``ci``: set ``expire_in`` to 1week for artifacts.
+- `#238 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/238>`_: ``core``: implement wheels packaging.
+
+**Bug Fixes:**
+
+- `#230 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/230>`_: ``compute vm set version``: out of date.
+- `#232 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/232>`_: ``compute vm set state``: shutdown invalid tools running validation.
+
+
 `v0.4.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.4.1>`_ (2020-01-30)
 --------------------------------------------------------------------------------------
 
