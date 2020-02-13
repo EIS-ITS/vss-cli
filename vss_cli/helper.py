@@ -273,17 +273,21 @@ def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
             dump_object(value, key, _list)
 
 
-def process_filters(filters: Union[List, Tuple]) -> List:
+def process_filters(filters: List[Union[List, Tuple]]) -> List[str]:
     ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
+    processed_filters = []
     wc = '%'
-    f = filters[1]
-    has_wc = wc in f
-    op_query = f.split(',')
-    filter_by = list(filters)
-    if op_query:
-        has_op = op_query[0] in ops
-        if not has_op:
-            filter_by.insert(1, 'like')
-        if not has_wc:
-            filter_by[2] = f'%{filter_by[2]}%'
-    return filter_by
+    for filtr in filters:
+        f = filtr[1]
+        has_wc = wc in f
+        op_query = f.split(',')
+        filter_by = list(filtr)
+        if op_query:
+            has_op = op_query[0] in ops
+            if not has_op:
+                filter_by.insert(1, 'like')
+            if not has_wc:
+                filter_by[2] = f'%{filter_by[2]}%'
+        filter_by = ','.join(filter_by)
+        processed_filters.append(filter_by)
+    return processed_filters

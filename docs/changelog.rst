@@ -2,6 +2,24 @@
 Changelog 📝
 ============
 
+`v0.5.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.1>`_ (2020-02-14)
+--------------------------------------------------------------------------------------
+
+**Bug Fixes:**
+
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute vm ls``: ``--filter`` does not support multiple instances.
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute floppy ls``: ``--filter`` does not support multiple instances.
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute domain ls``: ``--filter`` does not support multiple instances.
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute folder ls``: ``--filter`` does not support multiple instances.
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute image personal ls``: ``--filter`` does not support multiple instances.
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute image public ls``: ``--filter`` does not support multiple instances.
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute iso personal ls``: ``--filter`` does not support multiple instances.
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute iso public ls``: ``--filter`` does not support multiple instances.
+- `#240 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240>`_: ``compute net ls``: ``--filter`` does not support multiple instances.
+- `#241 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/241>`_: ``upgrade``: upgrade command to prioritize to ``python3 -m pip``.
+- `#242 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/242>`_: ``upgrade``:  error when ``git`` is not installed.
+
+
 `v0.5.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.0>`_ (2020-02-06)
 --------------------------------------------------------------------------------------
 

@@ -42,7 +42,7 @@ def compute_os_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     """
     params = dict(expand=1, sort='guest_id,asc')
     if all(filter_by):
-        params['filter'] = ','.join(process_filters(filter_by))
+        params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
         params['sort'] = f'{sort[0]},{sort[1]}'
     with ctx.spinner(disable=ctx.debug):

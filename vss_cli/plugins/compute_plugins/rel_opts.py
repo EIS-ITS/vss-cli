@@ -211,3 +211,9 @@ instances = click.option(
     default=1,
     show_default=True,
 )
+vss_options_opt = click.option(
+    'vss-option',
+    help='VSS Option to enable',
+    autocompletion=autocompletion.vss_options,
+    required=False,
+)

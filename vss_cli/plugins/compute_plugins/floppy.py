@@ -41,7 +41,7 @@ def compute_floppy_public_ls(
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
-        params['filter'] = ','.join(process_filters(filter_by))
+        params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
         params['sort'] = f'{sort[0]},{sort[1]}'
     # get objects
