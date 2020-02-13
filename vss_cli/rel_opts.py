@@ -3,6 +3,7 @@ import click
 filter_opt = click.option(
     '-f',
     '--filter-by',
+    multiple=True,
     type=click.Tuple([click.STRING, click.STRING]),
     default=(None, None),
     help='filter list by <field_name> <operator>,<value>',

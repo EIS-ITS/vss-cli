@@ -32,7 +32,7 @@ def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
     columns = ctx.columns or const.COLUMNS_MOREF
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
-        params['filter'] = ','.join(process_filters(filter_by))
+        params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
         params['sort'] = f'{sort[0]},{sort[1]}'
     # query

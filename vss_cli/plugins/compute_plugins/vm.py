@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+from typing import List, Tuple
 
 import click
 from click_plugins import with_plugins
@@ -36,7 +37,14 @@ def compute_vm(ctx: Configuration):
 @so.sort_opt
 @so.count_opt
 @pass_context
-def compute_vm_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
+def compute_vm_ls(
+    ctx: Configuration,
+    filter_by: List[Tuple],
+    show_all: bool,
+    sort,
+    page,
+    count,
+):
     """List virtual machine instances.
 
         Filter and sort list by any attribute. For example:
@@ -50,7 +58,7 @@ def compute_vm_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
-        params['filter'] = ','.join(process_filters(filter_by))
+        params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
         params['sort'] = f'{sort[0]},{sort[1]}'
     # get templates

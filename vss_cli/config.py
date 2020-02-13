@@ -778,7 +778,7 @@ class Configuration(VssManager):
             # If it's a value error, then the string
             # is not a valid hex code for a UUID.
             # get vm by name
-            g_vms = self.get_vms(per_page=2500)
+            g_vms = self.get_vms(per_page=3000)
             uuid_or_name = uuid_or_name.lower()
             v = list(
                 filter(lambda i: uuid_or_name in i['name'].lower(), g_vms)

@@ -40,7 +40,7 @@ def message_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     columns = ctx.columns or const.COLUMNS_MESSAGE_MIN
     params = dict(expand=1, sort='status,asc')
     if all(filter_by):
-        params['filter'] = ','.join(process_filters(filter_by))
+        params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
         params['sort'] = f'{sort[0]},{sort[1]}'
     # make request
