@@ -53,8 +53,9 @@ def cli(ctx: Configuration, upstream, git_branch):
             ],
         },
         'branch': {
-            'pkg': f'git+https://gitlab-ee.eis.utoronto.ca'
-            f'/vss/vss-cli.git@{git_branch}',
+            'pkg': f'https://gitlab-ee.eis.utoronto.ca'
+            f'/vss/vss-cli/-/archive/'
+            f'{git_branch}/vss-cli-{git_branch}.zip',
             'args': ['--upgrade'],
         },
     }
