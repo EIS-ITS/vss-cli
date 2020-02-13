@@ -169,8 +169,8 @@ class Configuration(VssManager):
         return self.output
 
     @staticmethod
-    def get_pip_binary() -> str:
-        cmd_bin_opts = ['pip3', 'pip']
+    def get_python_binary() -> str:
+        cmd_bin_opts = ['python3', 'python']
         cmd_bin = None
         for cmd_bin_opt in cmd_bin_opts:
             if shutil.which(cmd_bin_opt, mode=os.X_OK):
@@ -457,9 +457,9 @@ class Configuration(VssManager):
     def check_available_updates(self) -> None:
         try:
             _LOGGING.debug('Checking for available updates.')
-            cmd_bin = self.get_pip_binary()
+            cmd_bin = self.get_python_binary()
             # create command with the right exec
-            pip_cmd = f'{cmd_bin} list --outdated'.split(None)
+            pip_cmd = f'{cmd_bin} -m pip list --outdated'.split(None)
             from subprocess import Popen, PIPE
 
             p = Popen(pip_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
