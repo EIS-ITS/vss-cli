@@ -31,7 +31,7 @@ def network_ls(ctx: Configuration, filter_by, show_all, sort, page):
     Filter by path or name name=<name> or moref=<moref>.
     For example:
 
-        vss-cli compute net ls -f name public
+        vss-cli compute net ls -f name=public
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):

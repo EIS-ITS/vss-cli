@@ -29,12 +29,12 @@ def compute_folder(ctx):
 def compute_folder_ls(ctx: Configuration, filter_by, show_all, sort, page):
     """ List logical folders based on:
 
-        Filter list in the following format <field_name> <operator>,<value>
+        Filter list in the following format <field_name>=<operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
 
         For example: name like,%Project%
 
-            vss-cli compute folder ls -f name like %Project%
+            vss-cli compute folder ls -f name=like,%Project%
 
         Sort list in the following format <field_name> <asc|desc>. For example:
 

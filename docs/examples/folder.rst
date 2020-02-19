@@ -34,12 +34,12 @@ a specific folder you have permission on.
 List
 ----
 Run ``vss-cli compute folder`` to list available logical folders. Filter list by
-name using the option ``--filter-by/-f`` which is structured ``<field_name> <operator>,<value>``
+name using the option ``--filter-by/-f`` which is structured ``<field_name>=<operator>,<value>``
 and available operators are **eq, ne, lt, le, gt, ge, like, in** as follows:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name ut
+    vss-cli compute folder ls -f name=ut
 
     moref        name              parent.name  path
     -----------  ----------------  -----------  ----------------------------------------------

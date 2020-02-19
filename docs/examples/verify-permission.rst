@@ -32,7 +32,7 @@ list permissions. In this case, the folder ``moref`` can be queried by
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name Folder
+    vss-cli compute folder ls -f name=Folder
 
     moref        name     parent    path
     -----------  -------  --------  ----------------------------

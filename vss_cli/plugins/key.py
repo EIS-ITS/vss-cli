@@ -31,11 +31,11 @@ def cli(ctx: Configuration):
 def key_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     """List ssh public keys based on:
 
-        Filter list in the following format <field_name> <operator>,<value>
+        Filter list in the following format <field_name>=<operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: type eq,ssh-rsa
 
-            vss-cli key ls -f type eq,ssh-rsa
+            vss-cli key ls -f type=eq,ssh-rsa
 
         Sort list in the following format <field_name> <asc|desc>. For example:
 

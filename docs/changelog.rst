@@ -2,6 +2,22 @@
 Changelog 📝
 ============
 
+`v0.5.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.2>`_ (2020-02-19)
+--------------------------------------------------------------------------------------
+
+**Bug Fixes:**
+
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute vm ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute floppy ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute domain ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute folder ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute image personal ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute image public ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute iso personal ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute iso public ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+- `#244 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244>`_: ``compute net ls``: ``--filter`` affected by `pallets/click#472 <https://github.com/pallets/click/issues/472>`_.
+
+
 `v0.5.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.1>`_ (2020-02-14)
 --------------------------------------------------------------------------------------
 

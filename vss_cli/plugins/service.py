@@ -29,7 +29,7 @@ def service_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: name like,%VPN%
 
-            vss-cli service ls -f name like,%VPN%
+            vss-cli service ls -f name=like,%VPN%
 
         Sort list in the following format <field_name> <asc|desc>. For example:
 

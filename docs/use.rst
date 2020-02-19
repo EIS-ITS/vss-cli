@@ -62,11 +62,11 @@ following usage:
 
       Filter and sort list by any attribute. For example:
 
-      vss-cli compute vm ls -f name like,%vm-name% -f version like,%13
+      vss-cli compute vm ls -f name=like,%vm-name% -f version like,%13
 
       Simple name filtering:
 
-      vss-cli compute vm ls -f name %vm-name% -s name desc
+      vss-cli compute vm ls -f name=%vm-name% -s name desc
 
     Options:
       -f, --filter-by <TEXT TEXT>...  filter list by <field_name>
@@ -84,7 +84,7 @@ is shown below:
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name %vm-% -s name desc
+    vss-cli compute vm ls -f name=%vm-% -s name desc
 
     UUID                                  NAME        FOLDER                          CPU  IP_ADDRESS       MEMORY  POWER       GUEST                         VERSION
     ------------------------------------  ----------  ----------------------------  -----  -------------  --------  ----------  ----------------------------  ---------
@@ -262,7 +262,7 @@ PowerShell.
 
 .. code-block:: bash
 
-    vss-cli --table-format=rst compute vm ls -f name %Pi% -s name desc
+    vss-cli --table-format=rst compute vm ls -f name=%Pi% -s name desc
 
     ====================================  ===============  ================  ===========  ===========  =============  =========================================
     uuid                                  name             folder.path         cpu_count    memory_gb  power_state    ip_address
@@ -280,7 +280,7 @@ per virtual machines, you could do:
 
 .. code-block:: bash
 
-    vss-cli --columns=UUID=uuid,VMNAME=name,GB=provisioned_gb compute vm ls -f name Pi
+    vss-cli --columns=UUID=uuid,VMNAME=name,GB=provisioned_gb compute vm ls -f name=Pi
 
     UUID                                  VMNAME              GB
     ------------------------------------  ---------------  -----
@@ -294,7 +294,7 @@ given output:
 
 .. code-block:: bash
 
-    vss-cli --columns-width 0 compute vm ls -f name Pi -c 2
+    vss-cli --columns-width 0 compute vm ls -f name=Pi -c 2
 
     uuid                     name            folder.path         cpu_count    memory_gb  power_state    ip_address
     -----------------------  --------------  ----------------  -----------  -----------  -------------  -----------------------
@@ -306,7 +306,7 @@ calculate the proper column size based on your terminal:
 
 .. code-block:: bash
 
-    vss-cli --columns-width 15 compute vm ls -f name Pi -c 2
+    vss-cli --columns-width 15 compute vm ls -f name=Pi -c 2
 
     uuid             name            folder.path        cpu_count    memory_gb  power_state    ip_address
     ---------------  --------------  ---------------  -----------  -----------  -------------  ---------------
@@ -340,7 +340,7 @@ languages. The VSS CLI can provide the ``yaml`` output as follows:
 
 .. code-block:: bash
 
-    vss-cli --output=yaml compute vm ls -f name %TEST% -s name desc
+    vss-cli --output=yaml compute vm ls -f name=%TEST% -s name desc
 
     - name: 1902D-TESTOVA123
       uuid: 50300d58-29dd-5781-a5a0-dc9937351090
@@ -433,7 +433,7 @@ Just exclude the ``vss-cli`` command, for instance:
 
 .. code-block:: bash
 
-    vss (vss-api) > --columns=UUID=uuid,VMNAME=name compute vm ls -f name ecs
+    vss (vss-api) > --columns=UUID=uuid,VMNAME=name compute vm ls -f name=ecs
     UUID                                  VMNAME
     ------------------------------------  -----------------------
     501220a5-a091-1866-9741-664236067142  1611T-ecstatic_mccarthy

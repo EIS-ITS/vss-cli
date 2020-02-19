@@ -132,7 +132,7 @@ Operating system
 Run ``vss-cli compute os ls`` to display the list of supported operating
 systems in the ITS Private Cloud. In order to narrow down the list to
 only **CentOS** operating systems, use the ``--filter-by/-f`` option
-which is structured ``<field_name>,<operator>,<value>`` and available
+which is structured ``<field_name>=<operator>,<value>`` and available
 operators are **eq, ne, lt, le, gt, ge, like, in**. So, to limit results
 to just **CentOS**, use the following filter:
 
@@ -142,7 +142,7 @@ to just **CentOS**, use the following filter:
 
 .. code-block:: bash
 
-    vss-cli compute os ls --filter-by full_name CentOS
+    vss-cli compute os ls --filter-by full_name=CentOS
 
       id  guest_id         full_name            family
     ----  ---------------  -------------------  ----------
@@ -212,7 +212,7 @@ Select the target ``moref`` folder to store the virtual machine on:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name like,API%
+    vss-cli compute folder ls -f name=like,API%
 
     moref        name     parent    path
     -----------  -------  --------  ----------------------------

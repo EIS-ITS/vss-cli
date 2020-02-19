@@ -37,7 +37,7 @@ def compute_floppy_public_ls(
 
     Filter by path or name path=<path> or name=<name>. For example:
 
-        vss-cli compute floppy ls -f name like,pv% -s path asc
+        vss-cli compute floppy ls -f name=like,pv% -s path asc
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):

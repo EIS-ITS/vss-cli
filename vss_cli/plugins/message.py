@@ -26,11 +26,11 @@ def cli(ctx: Configuration):
 def message_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     """List messages based on:
 
-        Filter list in the following format <field_name> <operator>,<value>
+        Filter list in the following format <field_name>=<operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: kind eq,Notice
 
-            vss-cli message ls -f kind eq,Notice
+            vss-cli message ls -f kind=eq,Notice
 
         Sort list in the following format <field_name> <asc|desc>. For example:
 

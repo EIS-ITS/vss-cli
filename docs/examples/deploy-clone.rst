@@ -32,7 +32,7 @@ a powered on virtual machine with Ubuntu installed.
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name cranky
+    vss-cli compute vm ls -f name=cranky
 
     uuid                                  name
     ------------------------------------  ---------------------
@@ -101,7 +101,7 @@ account. You must have at least ``VL-1584-VSS-PUBLIC`` which is our public netwo
 
 .. code-block:: bash
 
-    vss-cli compute net ls -f name PUBLIC
+    vss-cli compute net ls -f name=PUBLIC
 
     moref              name                description         subnet            ports
     -----------------  ------------------  ------------------  --------------  -------
@@ -138,7 +138,7 @@ Select the target ``moref`` folder to store the virtual machine on:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name API
+    vss-cli compute folder ls -f name=API
 
     moref        name             path                               parent.name
     -----------  ---------------  ---------------------------------  ---------------

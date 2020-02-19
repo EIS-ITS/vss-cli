@@ -25,11 +25,11 @@ def cli(ctx: Configuration):
 def token_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     """List tokens based on:
 
-        Filter list in the following format <field_name> <operator>,<value>
+        Filter list in the following format <field_name>=<operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
         For example: valid eq,false
 
-            vss-cli token ls -f valid eq,false
+            vss-cli token ls -f valid=eq,false
 
         Sort list in the following format <field_name> <asc|desc>. For example:
 
