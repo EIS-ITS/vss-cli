@@ -273,21 +273,45 @@ def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
             dump_object(value, key, _list)
 
 
-def process_filters(filters: List[Union[List, Tuple]]) -> List[str]:
+def process_filters(filters: List[str]) -> List[str]:
     ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
     processed_filters = []
     wc = '%'
-    for filtr in filters:
-        f = filtr[1]
-        has_wc = wc in f
-        op_query = f.split(',')
-        filter_by = list(filtr)
-        if op_query:
-            has_op = op_query[0] in ops
-            if not has_op:
-                filter_by.insert(1, 'like')
-            if not has_wc:
-                filter_by[2] = f'%{filter_by[2]}%'
-        filter_by = ','.join(filter_by)
-        processed_filters.append(filter_by)
+    filters = [f.split('=') for f in filters]
+    _LOGGING.debug(f'trying to process filters {filters}')
+    try:
+        for filtr in filters:
+            f = filtr[1]
+            has_wc = wc in f
+            op_query = f.split(',')
+            op_query_val_type = str
+            # op_query contains (operator, value) if any
+            filter_by = list(filtr)
+            # filter_by contains (attribute, filter_str)
+            if op_query:
+                has_op = op_query[0] in ops
+                check_index = 1 if has_op else 0
+                # check for op_query_val_type
+                try:
+                    int(op_query[check_index])
+                    op_query_val_type = int
+                except ValueError:
+                    pass
+                if not has_op and op_query_val_type == str:
+                    # if query does not have operator,
+                    # use like by default
+                    _LOGGING.debug('operator not found in query. using like')
+                    filter_by.insert(1, 'like')
+                if not has_op and op_query_val_type == int:
+                    _LOGGING.debug('operator not found in query. using eq')
+                    filter_by.insert(1, 'eq')
+                if not has_wc and op_query_val_type == str:
+                    filter_by[2] = f'%{filter_by[2]}%'
+            filter_by = ','.join(filter_by)
+            processed_filters.append(filter_by)
+    except Exception as ex:
+        _LOGGING.warning(
+            f'an error occurred processing filters: {ex}', exc_info=True
+        )
+    _LOGGING.debug(f'processed filters {processed_filters}')
     return processed_filters

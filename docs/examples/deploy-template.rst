@@ -39,7 +39,7 @@ the ``uuid`` of the virtual machine:
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name ubuntu-16.04_x64
+    vss-cli compute vm ls -f name=ubuntu-16.04_x64
 
     uuid                                  name
     ------------------------------------  ----------------------
@@ -126,7 +126,7 @@ the VSS public network.
 
 .. code-block:: bash
 
-    vss-cli compute net ls -f name public
+    vss-cli compute net ls -f name=public
     moref              name                description         subnet            ports
     -----------------  ------------------  ------------------  --------------  -------
     dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network  142.1.216.0/23       32
@@ -165,7 +165,7 @@ the virtual machine on:
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name like,API%
+    vss-cli compute folder ls -f name=like,API%
 
     moref        name     parent    path
     -----------  -------  --------  ----------------------------

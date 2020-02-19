@@ -49,11 +49,11 @@ def compute_vm_ls(
 
         Filter and sort list by any attribute. For example:
 
-        vss-cli compute vm ls -f name like,%vm-name% -f version like,%13
+        vss-cli compute vm ls -f name=like,%vm-name% -f version=like,%13
 
         Simple name filtering:
 
-        vss-cli compute vm ls -f name %vm-name% -s name desc
+        vss-cli compute vm ls -f name=%vm-name% -s name desc
 
     """
     params = dict(expand=1, sort='name,asc')

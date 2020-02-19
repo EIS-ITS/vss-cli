@@ -24,7 +24,7 @@ Operating system
 Run ``vss-cli compute os ls`` to display the list of supported operating systems in
 the ITS Private Cloud. In order to narrow down the list to only **CentOS** operating
 systems, use the ``--filter-by/-f`` option which is structured
-``<field_name> <operator>,<value>`` and available operators are
+``<field_name>=<operator>,<value>`` and available operators are
 **eq, ne, lt, le, gt, ge, like, in**. So, to limit results to just **CentOS**, use
 the following filter:
 
@@ -34,7 +34,7 @@ the following filter:
 
 .. code-block:: bash
 
-    vss-cli compute os ls --filter-by full_name CentOS
+    vss-cli compute os ls --filter-by full_name=CentOS
 
       id  guest_id         full_name            family
     ----  ---------------  -------------------  ----------
@@ -66,7 +66,7 @@ have at least ``VL-1584-VSS-PUBLIC`` which is our public network.
 
 .. code-block:: bash
 
-    vss-cli compute net ls -f name public
+    vss-cli compute net ls -f name=public
     moref              name                description         subnet            ports
     -----------------  ------------------  ------------------  --------------  -------
     dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network  142.1.216.0/23       32
@@ -100,7 +100,7 @@ Logical folders can be listed by running ``vss-cli compute folder ls``. Select t
 
 .. code-block:: bash
 
-    vss-cli compute folder ls -f name API
+    vss-cli compute folder ls -f name=API
 
     moref        name     parent    path
     -----------  -------  --------  ----------------------------
@@ -127,7 +127,7 @@ ISO images in both the VSS central store and your personal VSKEY-STOR space.
 
 .. code-block:: bash
 
-    vss-cli compute iso public ls -f name like,Cent%
+    vss-cli compute iso public ls -f name=like,Cent%
     path                                                           name
     -------------------------------------------------------------  -------------------------------------
     [vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-DVD.iso         CentOS-7.0-1406-x86_64-DVD.iso
@@ -225,7 +225,7 @@ If you prefer to validate the status of the request with VSS CLI, run ``vss-cli 
 display a list of your request history.
 
 This command supports filter and sorting by using the ``--filter-by/-f`` and ``--sort/-s``
-respectively. Filter list in the following format ``<field_name> <operator>,<value>``
+respectively. Filter list in the following format ``<field_name>=<operator>,<value>``
 where operator is **eq, ne, lt, le, gt, ge, like, in**. For example: status,eq,Processed.
 Sort list in the following format ``<field_name> <asc|desc>``.
 

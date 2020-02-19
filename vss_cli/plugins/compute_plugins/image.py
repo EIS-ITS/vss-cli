@@ -37,7 +37,7 @@ def compute_image_public_ls(
 
     Filter by name and sort desc. For example:
 
-        vss-cli compute image public ls -f name like,Cent% -s path asc
+        vss-cli compute image public ls -f name=like,Cent% -s path asc
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):

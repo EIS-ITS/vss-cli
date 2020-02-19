@@ -50,7 +50,7 @@ name using the option ``--filter-by/-f`` which is structured
 
 .. code-block:: bash
 
-    vss-cli compute net ls -f name PUBLIC
+    vss-cli compute net ls -f name=PUBLIC
 
     moref              name                description                  subnet          vlan_id    vms
     -----------------  ------------------  ---------------------------  --------------  ---------  -----

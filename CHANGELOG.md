@@ -1,5 +1,20 @@
 # Changelog 📝
 
+## [v0.5.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.2) (2020-02-19)
+
+**Bug Fixes:**
+
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute vm ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute floppy ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute domain ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute folder ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute image personal ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute image public ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute iso personal ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute iso public ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute net ls``: ``--filter`` affected by [pallets/click#472].
+
+
 ## [v0.5.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.1) (2020-02-14)
 
 **Bug Fixes:**
@@ -464,3 +479,4 @@
 
 [jm.lopez]: https://gitlab-ee.eis.utoronto.ca/jm.lopez
 [alex.tremblay]: https://gitlab-ee.eis.utoronto.ca/alex.tremblay
+[pallets/click#472]: https://github.com/pallets/click/issues/472

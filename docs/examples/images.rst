@@ -50,7 +50,7 @@ including the proper options:
       List available ISO images in the VSS central store.
 
       Filter by name and sort desc. For example:
-          vss-cli compute iso public ls -f name like,Cent% -s path asc
+          vss-cli compute iso public ls -f name=like,Cent% -s path asc
 
     Options:
       -f, --filter-by <TEXT TEXT>...  filter list by <field_name>
@@ -67,7 +67,7 @@ command could be something like:
 
 .. code-block:: bash
 
-    vss-cli compute iso public ls -f name like,ubu%-18% -s path asc
+    vss-cli compute iso public ls -f name=like,ubu%-18% -s path asc
 
     path                                                        name
     ----------------------------------------------------------  ----------------------------------
@@ -89,7 +89,7 @@ First, we should obtain the VM's UUID:
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name %ubuntu%
+    vss-cli compute vm ls -f name=%ubuntu%
 
     uuid                                  name
     ------------------------------------  ------------------------------
@@ -221,7 +221,7 @@ with including the proper options:
 
       Filter by name and sort desc. For example:
 
-          vss-cli compute image public ls -f name like,Cent% -s path asc
+          vss-cli compute image public ls -f name=like,Cent% -s path asc
 
     Options:
       -f, --filter-by <TEXT TEXT>...  filter list by <field_name>
@@ -236,7 +236,7 @@ the command could be something like:
 
 .. code-block:: bash
 
-    vss-cli compute image public ls -f name like,%photon% -s path asc
+    vss-cli compute image public ls -f name=like,%photon% -s path asc
 
     path                                                              name
     ----------------------------------------------------------------  ----------------------------------
@@ -334,7 +334,7 @@ sorted with including the proper options:
 
       Filter by path or name path=<path> or name=<name>. For example:
 
-          vss-cli compute floppy ls -f name like,pv% -s path asc
+          vss-cli compute floppy ls -f name=like,pv% -s path asc
 
     Options:
       -f, --filter-by <TEXT TEXT>...  filter list by <field_name>
@@ -351,7 +351,7 @@ should be something like:
 
 .. code-block:: bash
 
-    vss-cli compute floppy public ls -f name like,%Windows%
+    vss-cli compute floppy public ls -f name=like,%Windows%
 
     path                                          name
     --------------------------------------------  ----------------------
