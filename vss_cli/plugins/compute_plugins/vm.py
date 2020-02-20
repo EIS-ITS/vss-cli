@@ -38,12 +38,7 @@ def compute_vm(ctx: Configuration):
 @so.count_opt
 @pass_context
 def compute_vm_ls(
-    ctx: Configuration,
-    filter_by: List[Tuple],
-    show_all: bool,
-    sort,
-    page,
-    count,
+    ctx: Configuration, filter_by, show_all: bool, sort, page, count,
 ):
     """List virtual machine instances.
 
@@ -58,7 +53,7 @@ def compute_vm_ls(
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
-        params['filter'] = ';'.join(process_filters(filter_by))
+        params['filter'] = ';'.join(filter_by)
     if all(sort):
         params['sort'] = ';'.join(sort)
     # get templates

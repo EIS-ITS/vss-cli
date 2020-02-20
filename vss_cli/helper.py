@@ -296,11 +296,11 @@ def process_sort(ctx, param, value: List[str]) -> List[str]:
     return processed_sorts
 
 
-def process_filters(filters: List[str]) -> List[str]:
+def process_filters(ctx, param, value: List[str]) -> List[str]:
     ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
     processed_filters = []
     wc = '%'
-    filters = [f.split('=') for f in filters]
+    filters = [f.split('=') for f in value]
     _LOGGING.debug(f'trying to process filters {filters}')
     try:
         for filtr in filters:

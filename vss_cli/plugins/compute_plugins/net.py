@@ -7,7 +7,7 @@ import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
-from vss_cli.helper import format_output, process_filters
+from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
 
 _LOGGING = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def network_ls(ctx: Configuration, filter_by, show_all, sort, page):
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
-        params['filter'] = ';'.join(process_filters(filter_by))
+        params['filter'] = ';'.join(filter_by)
     if all(sort):
         params['sort'] = ';'.join(sort)
     # get objects
