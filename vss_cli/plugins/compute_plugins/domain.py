@@ -7,7 +7,7 @@ import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
-from vss_cli.helper import format_output, process_filters
+from vss_cli.helper import format_output, process_filters, process_sort
 from vss_cli.plugins.compute import cli
 
 _LOGGING = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
     if all(filter_by):
         params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # query
     with ctx.spinner(disable=ctx.debug):
         objs = ctx.get_domains(show_all=show_all, per_page=count, **params)

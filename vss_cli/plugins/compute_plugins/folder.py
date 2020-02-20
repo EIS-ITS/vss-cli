@@ -36,15 +36,15 @@ def compute_folder_ls(ctx: Configuration, filter_by, show_all, sort, page):
 
             vss-cli compute folder ls -f name=like,%Project%
 
-        Sort list in the following format <field_name> <asc|desc>. For example:
+        Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli compute folder ls -s path desc
+            vss-cli compute folder ls -s path=desc
     """
     params = dict(expand=1, sort='path,asc')
     if all(filter_by):
         params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # get objects
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_folders(show_all=show_all, **params)

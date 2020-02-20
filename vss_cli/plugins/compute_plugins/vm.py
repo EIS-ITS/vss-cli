@@ -53,14 +53,14 @@ def compute_vm_ls(
 
         Simple name filtering:
 
-        vss-cli compute vm ls -f name=%vm-name% -s name desc
+        vss-cli compute vm ls -f name=%vm-name% -s name=desc
 
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
         params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # get templates
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_vms(show_all=show_all, per_page=count, **params)

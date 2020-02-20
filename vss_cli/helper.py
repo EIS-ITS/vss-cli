@@ -273,6 +273,29 @@ def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
             dump_object(value, key, _list)
 
 
+def process_sort(ctx, param, value: List[str]) -> List[str]:
+    ops = ['asc', 'desc']
+    processed_sorts = []
+    sorts = [s.split('=') for s in value]
+    _LOGGING.debug(f'trying to process sort options {sorts}')
+    try:
+        for sort in sorts:
+            sort_by = list(sort)
+            if len(sort) < 2:
+                sort_by.insert(1, 'desc')
+            op = sort_by[1]
+            if op in ops:
+                sort_by = ','.join(sort_by)
+                processed_sorts.append(sort_by)
+            else:
+                _LOGGING.warning(f'ignoring sort option: {op}')
+    except Exception as ex:
+        _LOGGING.warning(
+            f'an error occurred processing sort options: {ex}', exc_info=True
+        )
+    return processed_sorts
+
+
 def process_filters(filters: List[str]) -> List[str]:
     ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
     processed_filters = []

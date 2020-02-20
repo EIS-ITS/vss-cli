@@ -37,9 +37,9 @@ def key_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 
             vss-cli key ls -f type=eq,ssh-rsa
 
-        Sort list in the following format <field_name> <asc|desc>. For example:
+        Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli key ls -s created_on desc
+            vss-cli key ls -s created_on=desc
 
     """
     columns = ctx.columns or const.COLUMNS_SSH_KEY_MIN
@@ -47,7 +47,7 @@ def key_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if all(filter_by):
         params['filter'] = f'{filter_by[0]},{filter_by[1]}'
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_ssh_keys(

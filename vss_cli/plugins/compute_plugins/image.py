@@ -37,13 +37,13 @@ def compute_image_public_ls(
 
     Filter by name and sort desc. For example:
 
-        vss-cli compute image public ls -f name=like,Cent% -s path asc
+        vss-cli compute image public ls -f name=like,Cent% -s path=asc
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
         params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # get objects
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_images(show_all=show_all, **params)

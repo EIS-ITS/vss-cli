@@ -37,7 +37,7 @@ def network_ls(ctx: Configuration, filter_by, show_all, sort, page):
     if all(filter_by):
         params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # get objects
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_networks(show_all=show_all, **params)

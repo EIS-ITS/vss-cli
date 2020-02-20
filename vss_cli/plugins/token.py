@@ -27,13 +27,13 @@ def token_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 
         Filter list in the following format <field_name>=<operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: valid eq,false
+        For example: valid=eq,false
 
             vss-cli token ls -f valid=eq,false
 
-        Sort list in the following format <field_name> <asc|desc>. For example:
+        Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli token ls -s created_on desc
+            vss-cli token ls -s created_on=desc
 
     """
     columns = ctx.columns or const.COLUMNS_TK_MIN
@@ -41,7 +41,7 @@ def token_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if all(filter_by):
         params['filter'] = f'{filter_by[0]},{filter_by[1]}'
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # make request
     with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_user_tokens(

@@ -27,13 +27,13 @@ def service_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 
         Filter list in the following format <field_name> <operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: name like,%VPN%
+        For example: name=like,%VPN%
 
             vss-cli service ls -f name=like,%VPN%
 
-        Sort list in the following format <field_name> <asc|desc>. For example:
+        Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli service ls -s label desc
+            vss-cli service ls -s label=desc
 
     """
     columns = ctx.columns or const.COLUMNS_VSS_SERVICE
@@ -41,7 +41,7 @@ def service_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if all(filter_by):
         params['filter'] = f'{filter_by[0]},{filter_by[1]}'
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # make request
     with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_vss_services(

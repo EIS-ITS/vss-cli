@@ -33,15 +33,15 @@ def request_mgmt_change_ls(
 ):
     """List requests based on:
 
-        Filter list in the following format <field_name> <operator>,<value>
+        Filter list in the following format <field_name>=<operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status,eq,Processed
+        For example: status=eq,Processed
 
-            vss-cli request change ls -f status eq,PROCESSED
+            vss-cli request change ls -f status=eq,PROCESSED
 
-        Sort list in the following format <field_name> <asc|desc>. For example:
+        Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request change ls -s created_on desc
+            vss-cli request change ls -s created_on=desc
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE_MIN
@@ -49,7 +49,7 @@ def request_mgmt_change_ls(
     if all(filter_by):
         params['filter'] = f'{filter_by[0]},{filter_by[1]}'
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # make request
     with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_change_requests(

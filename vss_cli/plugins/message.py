@@ -32,9 +32,9 @@ def message_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 
             vss-cli message ls -f kind=eq,Notice
 
-        Sort list in the following format <field_name> <asc|desc>. For example:
+        Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli message ls -s created_on desc
+            vss-cli message ls -s created_on=desc
 
     """
     columns = ctx.columns or const.COLUMNS_MESSAGE_MIN
@@ -42,7 +42,7 @@ def message_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if all(filter_by):
         params['filter'] = ';'.join(process_filters(filter_by))
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # make request
     with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_user_messages(
