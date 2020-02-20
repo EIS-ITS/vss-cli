@@ -1,6 +1,7 @@
 """Upgrade plugin for VSS CLI (vss-cli)."""
 import logging
 from subprocess import call
+import sys
 
 import click
 
@@ -72,7 +73,7 @@ def cli(ctx: Configuration, upstream, git_branch):
         raise click.BadArgumentUsage(f'Invalid upstream {upstream}')
     # assemble command
     cmd_args_str = ' '.join(cmd_lookup['args'])
-    cmd_bin = ctx.get_python_binary()
+    cmd_bin = sys.executable
     # execute command
     cmd_str = f"{cmd_bin} -m pip install {cmd_args_str} {cmd_lookup['pkg']}"
     _LOGGING.debug(f'Executing {cmd_str}')
