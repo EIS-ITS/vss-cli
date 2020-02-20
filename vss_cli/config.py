@@ -507,7 +507,7 @@ class Configuration(VssManager):
                 )
                 self.secho('Run ', fg='green', nl=False)
                 self.secho(
-                    'vss-cli message ls -f status Created', fg='red', nl=False
+                    'vss-cli message ls -f status=Created', fg='red', nl=False
                 )
                 self.secho(' to list unread messages.', fg='green')
             else:
