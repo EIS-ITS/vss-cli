@@ -45,14 +45,7 @@ def cli(ctx: Configuration, upstream, git_branch):
     """
     lookup = {
         'stable': {'pkg': 'vss-cli', 'args': ['--upgrade']},
-        'develop': {
-            'pkg': 'vss-cli',
-            'args': [
-                '--upgrade',
-                '--index-url',
-                'https://test.pypi.org/legacy/',
-            ],
-        },
+        'develop': {'pkg': 'vss-cli', 'args': ['--upgrade', '--pre']},
         'branch': {
             'pkg': f'https://gitlab-ee.eis.utoronto.ca'
             f'/vss/vss-cli/-/archive/'
