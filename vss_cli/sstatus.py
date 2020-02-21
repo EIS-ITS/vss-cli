@@ -1,13 +1,19 @@
-from vss_cli.vssconst import STATUS_PAGE_ID, STATUS_PAGE_SERVICE
-import requests
 from dateutil import parser as dateutil_parser
+import requests
 
-components_url = 'https://{page_id}.statuspage.io/' \
-                 'api/v2/components.json'.format(page_id=STATUS_PAGE_ID)
+from vss_cli.utils.emoji import EMOJI_UNICODE
+from vss_cli.vssconst import STATUS_PAGE_ID, STATUS_PAGE_SERVICE
 
-upcoming_maints_url = 'https://{page_id}.statuspage.io/' \
-                      'api/v2/scheduled-maintenances/' \
-                      'upcoming.json'.format(page_id=STATUS_PAGE_ID)
+components_url = (
+    'https://{page_id}.statuspage.io/'
+    'api/v2/components.json'.format(page_id=STATUS_PAGE_ID)
+)
+
+upcoming_maints_url = (
+    'https://{page_id}.statuspage.io/'
+    'api/v2/scheduled-maintenances/'
+    'upcoming.json'.format(page_id=STATUS_PAGE_ID)
+)
 
 
 def format_iso8601(s):
@@ -20,11 +26,22 @@ def get_component():
     components = r.json()
     for cmp in components['components']:
         if STATUS_PAGE_SERVICE in cmp['name']:
-            return {'created_at': format_iso8601(cmp.get('created_at')),
-                    'updated_at': format_iso8601(cmp.get('updated_at')),
-                    'name': cmp.get('name'),
-                    'description': cmp.get('description'),
-                    'status': cmp.get('status')}
+            icon = EMOJI_UNICODE.get(':question_mark:')
+            status = cmp.get('status')
+            if status in ['operational']:
+                icon = EMOJI_UNICODE.get(':white_heavy_check_mark:')
+            elif 'degraded' in status or 'partial' in status:
+                icon = EMOJI_UNICODE.get(':warning:')
+            elif 'disruption' in status:
+                icon = EMOJI_UNICODE.get(':cross_mark:')
+            return {
+                'created_at': format_iso8601(cmp.get('created_at')),
+                'updated_at': format_iso8601(cmp.get('updated_at')),
+                'name': cmp.get('name'),
+                'description': cmp.get('description'),
+                'status': status,
+                'icon': icon,
+            }
     return None
 
 
@@ -39,15 +56,16 @@ def get_upcoming_maintenance_by_service():
                 created_at = format_iso8601(maint.get('created_at'))
                 scheduled_for = format_iso8601(maint.get('scheduled_for'))
                 scheduled_until = format_iso8601(maint.get('scheduled_until'))
-                maint_dict = {'name': maint.get('name'),
-                              'impact': maint.get('impact'),
-                              'link': maint.get('shortlink'),
-                              'status': maint.get('status'),
-                              'created_at': created_at,
-                              'scheduled_for': scheduled_for,
-                              'scheduled_until': scheduled_until,
-                              'description': updates[0].get('body')
-                              if updates else None}
+                maint_dict = {
+                    'name': maint.get('name'),
+                    'impact': maint.get('impact'),
+                    'link': maint.get('shortlink'),
+                    'status': maint.get('status'),
+                    'created_at': created_at,
+                    'scheduled_for': scheduled_for,
+                    'scheduled_until': scheduled_until,
+                    'description': updates[0].get('body') if updates else None,
+                }
                 maintenances.append(maint_dict)
     return maintenances
 
@@ -57,5 +75,5 @@ def check_status():
     component = get_component()
     # Component upcoming maintenance
     upcoming_maints = get_upcoming_maintenance_by_service()
-    return {'component': component,
-            'upcoming_maintenances': upcoming_maints}
+    component['upcoming_maintenances'] = upcoming_maints
+    return component
