@@ -333,8 +333,7 @@ def process_filters(ctx, param, value: List[str]) -> List[str]:
             filter_by = ','.join(filter_by)
             processed_filters.append(filter_by)
     except Exception as ex:
-        _LOGGING.warning(
-            f'an error occurred processing filters: {ex}', exc_info=True
-        )
+        _LOGGING.warning('ignoring invalid filters')
+        _LOGGING.debug(f'exception while parsing filters: {ex}', exc_info=True)
     _LOGGING.debug(f'processed filters {processed_filters}')
     return processed_filters
