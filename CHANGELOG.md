@@ -1,33 +1,71 @@
 # Changelog 📝
 
+## [v0.6.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.6.0) (2020-02-28)
+
+**Improvements:**
+
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute vm ls``: support multiple ``--sort`` options. 
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute floppy ls``: support multiple ``--sort`` options. 
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute domain ls``: support multiple ``--sort`` options. 
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute folder ls``: support multiple ``--sort`` options. 
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute image personal ls``: support multiple ``--sort`` options. 
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute image public ls``: support multiple ``--sort`` options. 
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute iso personal ls``: support multiple ``--sort`` options. 
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute iso public ls``: support multiple ``--sort`` options. 
+- [#246](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``compute net ls``: support multiple ``--sort`` options. 
+- [#247](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``request change ls``: support multiple ``--sort`` options. 
+- [#247](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``request export ls``: support multiple ``--sort`` options. 
+- [#247](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``request folder ls``: support multiple ``--sort`` options. 
+- [#247](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``request image ls``: support multiple ``--sort`` options. 
+- [#247](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``request inventory ls``: support multiple ``--sort`` options. 
+- [#247](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``request new ls``: support multiple ``--sort`` options. 
+- [#247](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246): ``request snapshot ls``: support multiple ``--sort`` options. 
+- [#248](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/248): ``service ls``: support multiple ``--sort`` options. 
+- [#249](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/249): ``token ls``: support multiple ``--sort`` options. 
+- [#250](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/250): ``key ls``: support multiple ``--sort`` options. 
+- [#255](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/255): ``ls``: implementation improvement ``--filter-by``.
+- [#257](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/257): ``upgrade``: command improvements to find current python executable.
+- [#258](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/258): ``ci``: deploy pre-releases to **PYPI** instead of Test instance of PYPI.
+- [#259](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/259): ``upgrade develop``: install available pre-release from PYPI.
+- [#260](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/260): ``status``: provide summary of both API and VSS service status.
+
+**Bug Fixes:**
+
+- [#251](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/251): ``service ls``: exception thrown.
+- [#252](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/252): ``token ls``: exception thrown.
+- [#253](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/253): ``key ls``: exception thrown.
+- [#254](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/254): ``request ls``: exception thrown.
+- [#256](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/256): ``core``: when messages found, warning provides invalid command.
+
+
 ## [v0.5.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.2) (2020-02-19)
 
 **Bug Fixes:**
 
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute vm ls``: ``--filter`` affected by [pallets/click#472].
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute floppy ls``: ``--filter`` affected by [pallets/click#472].
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute domain ls``: ``--filter`` affected by [pallets/click#472].
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute folder ls``: ``--filter`` affected by [pallets/click#472].
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute image personal ls``: ``--filter`` affected by [pallets/click#472].
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute image public ls``: ``--filter`` affected by [pallets/click#472].
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute iso personal ls``: ``--filter`` affected by [pallets/click#472].
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute iso public ls``: ``--filter`` affected by [pallets/click#472].
-- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute net ls``: ``--filter`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute vm ls``: ``--filter-by`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute floppy ls``: ``--filter-by`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute domain ls``: ``--filter-by`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute folder ls``: ``--filter-by`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute image personal ls``: ``--filter-by`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute image public ls``: ``--filter-by`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute iso personal ls``: ``--filter-by`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute iso public ls``: ``--filter-by`` affected by [pallets/click#472].
+- [#244](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/244): ``compute net ls``: ``--filter-by`` affected by [pallets/click#472].
 
 
 ## [v0.5.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.1) (2020-02-14)
 
 **Bug Fixes:**
 
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute vm ls``: ``--filter`` does not support multiple instances.
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute floppy ls``: ``--filter`` does not support multiple instances.
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute domain ls``: ``--filter`` does not support multiple instances.
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute folder ls``: ``--filter`` does not support multiple instances.
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute image personal ls``: ``--filter`` does not support multiple instances.
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute image public ls``: ``--filter`` does not support multiple instances.
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute iso personal ls``: ``--filter`` does not support multiple instances.
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute iso public ls``: ``--filter`` does not support multiple instances.
-- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute net ls``: ``--filter`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute vm ls``: ``--filter-by`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute floppy ls``: ``--filter-by`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute domain ls``: ``--filter-by`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute folder ls``: ``--filter-by`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute image personal ls``: ``--filter-by`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute image public ls``: ``--filter-by`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute iso personal ls``: ``--filter-by`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute iso public ls``: ``--filter-by`` does not support multiple instances.
+- [#240](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/240): ``compute net ls``: ``--filter-by`` does not support multiple instances.
 - [#241](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/241): ``upgrade``: upgrade command to prioritize to ``python3 -m pip``.
 - [#242](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/242): ``upgrade``:  error when ``git`` is not installed.
 
