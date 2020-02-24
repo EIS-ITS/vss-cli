@@ -32,21 +32,21 @@ def image_sync_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 
         Filter list in the following format <field_name> <operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status eq,PROCESSED
+        For example: status=eq,PROCESSED
 
-            vss-cli request image-sync ls -f status eq,PROCESSED
+            vss-cli request image-sync ls -f status=eq,PROCESSED
 
-        Sort list in the following format <field_name> <asc|desc>. For example:
+        Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request image-sync ls -s created_on desc
+            vss-cli request image-sync ls -s created_on=desc
 
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_IMAGE_SYNC_MIN
     params = dict(expand=1, sort='created_on,desc')
     if all(filter_by):
-        params['filter'] = f'{filter_by[0]},{filter_by[1]}'
+        params['filter'] = ';'.join(filter_by)
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     # make request
     with ctx.spinner(disable=ctx.debug):
         _requests = ctx.get_image_sync_requests(

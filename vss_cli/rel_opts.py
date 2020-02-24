@@ -1,19 +1,24 @@
 import click
 
+from vss_cli.helper import process_filters, process_sort
+
 filter_opt = click.option(
     '-f',
     '--filter-by',
     multiple=True,
     type=click.STRING,
-    default=None,
+    callback=process_filters,
+    default=[],
     help='filter list by <field_name>=<operator>,<value>',
 )
 sort_opt = click.option(
     '-s',
     '--sort',
-    type=click.Tuple([click.STRING, click.STRING]),
-    default=(None, None),
-    help='sort by <field_name> <asc|desc>',
+    multiple=True,
+    type=click.STRING,
+    callback=process_sort,
+    default=None,
+    help='sort by <field_name>=<asc|desc>',
 )
 
 all_opt = click.option(

@@ -5,7 +5,7 @@ import click
 from vss_cli import const, rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
-from vss_cli.helper import format_output, process_filters
+from vss_cli.helper import format_output
 from vss_cli.plugins.compute import cli
 
 _LOGGING = logging.getLogger(__name__)
@@ -31,20 +31,20 @@ def compute_os_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 
         Filter list in the following format <field_name>=<operator>,<value>
         where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status eq,PROCESSED
+        For example: status=eq,PROCESSED
 
             vss-cli compute os ls -f full_name=like,CentOS%
 
-        Sort list in the following format <field_name> <asc|desc>. For example:
+        Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli compute os ls -s guest_id asc
+            vss-cli compute os ls -s guest_id=asc
 
     """
     params = dict(expand=1, sort='guest_id,asc')
     if all(filter_by):
-        params['filter'] = ';'.join(process_filters(filter_by))
+        params['filter'] = ';'.join(filter_by)
     if all(sort):
-        params['sort'] = f'{sort[0]},{sort[1]}'
+        params['sort'] = ';'.join(sort)
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_os(show_all=show_all, per_page=count, **params)
     # format

@@ -2,6 +2,47 @@
 Changelog 📝
 ============
 
+
+`v0.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.6.0>`_ (2020-02-28)
+--------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute vm ls``: support multiple ``--sort`` options.
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute floppy ls``: support multiple ``--sort`` options.
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute domain ls``: support multiple ``--sort`` options.
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute folder ls``: support multiple ``--sort`` options.
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute image personal ls``: support multiple ``--sort`` options.
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute image public ls``: support multiple ``--sort`` options.
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute iso personal ls``: support multiple ``--sort`` options.
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute iso public ls``: support multiple ``--sort`` options.
+- `#246 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``compute net ls``: support multiple ``--sort`` options.
+- `#247 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``request change ls``: support multiple ``--sort`` options.
+- `#247 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``request export ls``: support multiple ``--sort`` options.
+- `#247 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``request folder ls``: support multiple ``--sort`` options.
+- `#247 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``request image ls``: support multiple ``--sort`` options.
+- `#247 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``request inventory ls``: support multiple ``--sort`` options.
+- `#247 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``request new ls``: support multiple ``--sort`` options.
+- `#247 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/246>`_: ``request snapshot ls``: support multiple ``--sort`` options.
+- `#248 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/248>`_: ``service ls``: support multiple ``--sort`` options.
+- `#249 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/249>`_: ``token ls``: support multiple ``--sort`` options.
+- `#250 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/250>`_: ``key ls``: support multiple ``--sort`` options.
+- `#255 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/255>`_: ``ls``: implementation improvement ``--filter-by``.
+- `#257 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/257>`_: ``upgrade``: command improvements to find current python executable.
+- `#258 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/258>`_: ``ci``: deploy pre-releases to **PYPI** instead of Test instance of PYPI.
+- `#259 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/259>`_: ``upgrade develop``: install available pre-release from PYPI.
+- `#260 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/260>`_: ``status``: provide summary of both API and VSS service status.
+- `#262 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/262>`_: ``ci``: except deploy to pypi when branch develop and commit msg is ``Version release``.
+
+**Bug Fixes:**
+
+- `#251 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/251>`_: ``service ls``: exception thrown.
+- `#252 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/252>`_: ``token ls``: exception thrown.
+- `#253 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/253>`_: ``key ls``: exception thrown.
+- `#254 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/254>`_: ``request ls``: exception thrown.
+- `#256 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/256>`_: ``core``: when messages found, warning provides invalid command.
+
+
 `v0.5.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.5.2>`_ (2020-02-19)
 --------------------------------------------------------------------------------------
 

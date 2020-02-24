@@ -132,11 +132,14 @@ release-dist-develop:
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make libffi-dev openssl-dev
     - pip install twine setuptools wheel
-    - twine upload -u ${PYPI_USER} -p ${PYPI_PASSWORD} --repository-url https://test.pypi.org/legacy/ dist/*
+    - twine upload -u ${PYPI_USER} -p ${PYPI_PASSWORD} dist/*
   dependencies:
     - build-dist
   only:
     - develop
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /Version release/
   tags:
    - python-3
 

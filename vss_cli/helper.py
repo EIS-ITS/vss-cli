@@ -273,11 +273,34 @@ def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
             dump_object(value, key, _list)
 
 
-def process_filters(filters: List[str]) -> List[str]:
+def process_sort(ctx, param, value: List[str]) -> List[str]:
+    ops = ['asc', 'desc']
+    processed_sorts = []
+    sorts = [s.split('=') for s in value]
+    _LOGGING.debug(f'trying to process sort options {sorts}')
+    try:
+        for sort in sorts:
+            sort_by = list(sort)
+            if len(sort) < 2:
+                sort_by.insert(1, 'desc')
+            op = sort_by[1]
+            if op in ops:
+                sort_by = ','.join(sort_by)
+                processed_sorts.append(sort_by)
+            else:
+                _LOGGING.warning(f'ignoring sort option: {op}')
+    except Exception as ex:
+        _LOGGING.warning(
+            f'an error occurred processing sort options: {ex}', exc_info=True
+        )
+    return processed_sorts
+
+
+def process_filters(ctx, param, value: List[str]) -> List[str]:
     ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
     processed_filters = []
     wc = '%'
-    filters = [f.split('=') for f in filters]
+    filters = [f.split('=') for f in value]
     _LOGGING.debug(f'trying to process filters {filters}')
     try:
         for filtr in filters:
@@ -310,8 +333,7 @@ def process_filters(filters: List[str]) -> List[str]:
             filter_by = ','.join(filter_by)
             processed_filters.append(filter_by)
     except Exception as ex:
-        _LOGGING.warning(
-            f'an error occurred processing filters: {ex}', exc_info=True
-        )
+        _LOGGING.warning('ignoring invalid filters')
+        _LOGGING.debug(f'exception while parsing filters: {ex}', exc_info=True)
     _LOGGING.debug(f'processed filters {processed_filters}')
     return processed_filters

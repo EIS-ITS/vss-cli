@@ -169,20 +169,6 @@ class Configuration(VssManager):
         return self.output
 
     @staticmethod
-    def get_python_binary() -> str:
-        cmd_bin_opts = ['python3', 'python']
-        cmd_bin = None
-        for cmd_bin_opt in cmd_bin_opts:
-            if shutil.which(cmd_bin_opt, mode=os.X_OK):
-                cmd_bin = cmd_bin_opt
-                return cmd_bin
-        # raise if nothing found
-        if not cmd_bin:
-            raise click.ClickException(
-                f"Cloud not find {', '.join(cmd_bin_opts)}"
-            )
-
-    @staticmethod
     def _default_user_agent(
         name: str = const.PACKAGE_NAME,
         version: str = const.__version__,
@@ -457,7 +443,7 @@ class Configuration(VssManager):
     def check_available_updates(self) -> None:
         try:
             _LOGGING.debug('Checking for available updates.')
-            cmd_bin = self.get_python_binary()
+            cmd_bin = sys.executable
             # create command with the right exec
             pip_cmd = f'{cmd_bin} -m pip list --outdated'.split(None)
             from subprocess import Popen, PIPE
@@ -507,7 +493,7 @@ class Configuration(VssManager):
                 )
                 self.secho('Run ', fg='green', nl=False)
                 self.secho(
-                    'vss-cli message ls -f status Created', fg='red', nl=False
+                    'vss-cli message ls -f status=Created', fg='red', nl=False
                 )
                 self.secho(' to list unread messages.', fg='green')
             else:
