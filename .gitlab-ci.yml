@@ -137,6 +137,9 @@ release-dist-develop:
     - build-dist
   only:
     - develop
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /Version release/
   tags:
    - python-3
 

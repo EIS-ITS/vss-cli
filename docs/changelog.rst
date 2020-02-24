@@ -32,6 +32,7 @@ Changelog 📝
 - `#258 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/258>`_: ``ci``: deploy pre-releases to **PYPI** instead of Test instance of PYPI.
 - `#259 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/259>`_: ``upgrade develop``: install available pre-release from PYPI.
 - `#260 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/260>`_: ``status``: provide summary of both API and VSS service status.
+- `#262 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/262>`_: ``ci``: except deploy to pypi when branch develop and commit msg is ``Version release``.
 
 **Bug Fixes:**
 
