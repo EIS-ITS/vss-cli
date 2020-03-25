@@ -1417,7 +1417,7 @@ def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
 
 @compute_vm_set.command('domain', short_help='Domain migration')
 @click.argument(
-    'domain_moref',
+    'name_or_moref',
     type=click.STRING,
     required=True,
     autocompletion=autocompletion.domains,
@@ -1430,19 +1430,22 @@ def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
 )
 @click.option('-o', '--on', is_flag=True, help='Power of after migrating')
 @pass_context
-def compute_vm_set_domain(ctx: Configuration, domain_moref, force, on):
+def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
     """Migrate a virtual machine to another fault domain.
     In order to proceed with the virtual machine relocation,
-    it's required to be in a powered off state. The `force` flag
-    will send a shutdown signal anf if times out, will perform a
-    power off task. After migration completes, the `on` flag
+    in some cases the VM is required to be in a powered off state.
+
+    The `force` flag will send a shutdown signal anf if times out,
+    will perform a power off task. After migration completes, the `on` flag
     indicates to power on the virtual machine.
 
-    vss-cli compute vm set <name-or-uuid> domain <domain-moref> --force --on
+    vss-cli compute vm set <name-or-uuid> domain <name-or-moref> --force --on
     """
+    _domain = ctx.get_domain_by_name_or_moref(name_or_moref)
+    if not _domain:
+        raise click.BadArgumentUsage(f'Domain {_domain} does not exist')
+    domain_moref = _domain[0]['moref']
     payload = dict(uuid=ctx.uuid, moref=domain_moref, poweron=on, force=force)
-    if not ctx.get_domain(domain_moref):
-        raise click.BadArgumentUsage(f'Domain {domain_moref} does not exist')
     # add common options
     payload.update(ctx.payload_options)
     # request
