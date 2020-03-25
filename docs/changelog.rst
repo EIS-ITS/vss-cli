@@ -2,6 +2,13 @@
 Changelog 📝
 ============
 
+`v0.6.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.6.0>`_ (2020-03-25)
+--------------------------------------------------------------------------------------
+
+**Bug Fixes:**
+
+- `#263 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/263>`_:  ``compute vm set domain``: domain does not autocomplete based on name attribute.
+
 
 `v0.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.6.0>`_ (2020-02-28)
 --------------------------------------------------------------------------------------
