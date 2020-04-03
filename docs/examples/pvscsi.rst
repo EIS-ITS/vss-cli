@@ -125,6 +125,135 @@ the **ITS Private Cloud**.
     More information :ref:`Snapshot`.
 
 
+Changing VMware Storage Controller to Paravirtual for Windows
+-------------------------------------------------------------
+
+This tutorial contain step by step guidance to change the Virtual Storage
+Controller from LSI Logic SAS (``SCSI controller 0``) to VMware
+Paravirtual for a **Microsoft Windows Server 2016 or later (64-bit)**
+based Virtual Machine running on the **ITS Private Cloud** [3]_.
+
+.. warning::
+
+    Ensure machine is patched and latest VMware Tools installed and running.
+
+    If VMware Tools is ever removed from the system, it will not boot.
+
+.. note::
+
+    If the device has more that one controller to start, please do not blindly
+    follow instruction to will need to adjust to your environment and the controller
+    id’s being referenced.
+
+1. Create a Virtual Machine Snapshot:
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <name-or-uuid> snapshot mk -d "lsi logic to paravirtual" -l 72
+
+.. note::
+
+    More information :ref:`Snapshot`.
+
+2. Shutdown/Power Off the virtual machine:
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <vm-name-or-uuid> state -c shutdown
+
+3. Add a temporary VMware Paravirtual Controller to the Virtual Machine.
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <vm-name-or-uuid> controller scsi mk -t paravirtual
+
+4. Verify that a new SCSI controller has been created.
+
+.. code-block:: bash
+
+    vss-cli compute vm get <vm-name-or-uuid> controller scsi
+
+    label                bus_number  type
+    -----------------  ------------  ----------------------------
+    SCSI controller 0             0  VirtualLsiLogicSASController
+    SCSI controller 1             1  ParaVirtualSCSIController
+
+5. Power On the virtual machine.
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <vm-name-or-uuid> state on
+
+6. Log Onto windows machine to verify whether the VMware Paravirtual driver get installed using
+   **Device Manager > Controllers > PVSCSI device**.
+
+7. Shutdown/Power Off the virtual machine:
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <vm-name-or-uuid> state shutdown
+
+8. Update scsi controller `0` to type `Paravirtual`:
+
+.. code-block:: bash
+
+    vss-cli compute vm set <vm-name-or-uuid> controller scsi up -t paravirtual 0
+
+9. Check whether the update executed successfully:
+
+.. code-block:: bash
+
+    vss-cli compute vm get <vm-name-or-uuid> controller scsi
+
+    label              bus_number    type
+    -----------------  ------------  ----------------------------
+    SCSI controller 0             0  ParaVirtualSCSIController
+    SCSI controller 1             1  ParaVirtualSCSIController
+
+10. Power On the virtual machine.
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <vm-name-or-uuid> state on
+
+
+11. Log Onto windows machine to verify boot and driver changed, in device manager you will now see 2  - controllers PVSCSI device.
+
+.. note::
+
+    In Multi-disk environment, you will need to check and likely bring the additional disks online using computer manager
+
+12. Shutdown/Power Off the virtual machine:
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <vm-name-or-uuid> state shutdown
+
+13. Remove temporary SCSI controller
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <name-or-uuid> controller scsi rm 1
+
+14. Power On the virtual machine.
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <vm-name-or-uuid> state on
+
+15. Log Onto windows machine verify boot and removal of secondary scsi controller using the device manager.
+
+16. (Optional) Remove Virtual Machine snapshot:
+
+.. code-block:: bash
+
+    vss-cli compute vm set --wait <vm-name-or-uuid> snapshot rm <snap-id>
+
+.. note::
+
+    More information :ref:`Snapshot`.
+
 
 .. [1] `VMware KB 1010398 <https://kb.vmware.com/s/article/1010398>`_
 .. [2] `Performance Best Practices for VMware vSphere 6.7 <https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/performance/vsphere-esxi-vcenter-server-67-performance-best-practices.pdf>`_
+.. [3] Contributed by `Joe Bate <https://isea.utoronto.ca/>`_.
