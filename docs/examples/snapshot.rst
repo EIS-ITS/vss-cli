@@ -102,8 +102,9 @@ of hours for the snapshot to live.
                                       [default: 2020-01-23 08:55]
       -l, --lifetime INTEGER RANGE    Number of hours the snapshot will live.
                                       [default: 24]
-      -c, --consolidate               Consolidate disks after snapshot deletion
-                                      [default: False]
+      -c, --consolidate / --no-consolidate
+                                      Consolidate disks after snapshot deletion
+                                      [default: True]
       --help                          Show this message and exit.
 
 

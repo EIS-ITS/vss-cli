@@ -2016,9 +2016,9 @@ def compute_vm_set_snapshot(ctx: Configuration):
 )
 @click.option(
     '-c',
-    '--consolidate',
+    '--consolidate/--no-consolidate',
     is_flag=True,
-    default=False,
+    default=True,
     required=False,
     show_default=True,
     help='Consolidate disks after snapshot deletion',
