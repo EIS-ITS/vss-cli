@@ -1,5 +1,27 @@
 # Changelog 📝
 
+## [v0.6.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.6.2) (2020-04-09)
+
+**Improvements:**
+
+- [#265](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/265): ``docs``: vmware paravirtual scsi migration how-to (windows).
+- [#266](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/266): ``compute vm set snapshot mk``: ``--consolidate`` default to true.
+- [#267](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/267): ``core``: ``pyvss`` upgrade from 0.13.0-> 0.13.1.
+- [#268](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/268): ``compute vm mk from-clone``: ``--power-on`` option to power on vm after deployment.
+- [#268](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/268): ``compute vm mk from-file``: ``--power-on`` option to power on vm after deployment.
+- [#268](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/268): ``compute vm mk from-image``: ``--power-on`` option to power on vm after deployment.
+- [#268](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/268): ``compute vm mk from-spec``: ``--power-on`` option to power on vm after deployment.
+- [#268](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/268): ``compute vm mk from-template``: ``--power-on`` option to power on vm after deployment.
+- [#268](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/268): ``compute vm mk shell``: ``--power-on`` option to power on vm after deployment.
+- [#269](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/269): ``core``: ``click`` upgrade from  7.0.0 -> 7.1.1.
+- [#270](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/270): ``completion``: support for ``fish``.
+- [#271](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/271): ``core``: ``pick`` 0.6.6 -> 0.6.7.
+- [#272](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/272): ``core``: ``validators`` 0.14.2 -> 0.14.3.
+- [#273](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/273): ``core``: ``tabulate`` 0.8.6 -> 0.8.7.
+- [#274](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/274): ``core``: ``--table-format`` support for ``pretty``.
+- [#275](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/275): ``core``: ``dateparser`` 0.7.2 -> 0.7.4.
+- [#276](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/276): ``core``: ``ruaml.yaml`` 0.16.5 -> 0.16.10.
+
 ## [v0.6.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.6.1) (2020-03-25)
 
 **Bug Fixes:**

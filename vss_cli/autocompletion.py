@@ -77,6 +77,7 @@ def table_formats(
         ("moinmoin", "MoinMain Wiki"),
         ("youtrack", "Youtrack format"),
         ("html", "HTML Markup"),
+        ("pretty", "HTML escaping."),
         ("latex", "LaTeX markup, replacing special characters"),
         ("latex_raw", "LaTeX markup, no replacing of special characters"),
         (

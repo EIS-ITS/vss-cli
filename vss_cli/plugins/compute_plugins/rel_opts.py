@@ -179,7 +179,13 @@ iso_opt = click.option(
 high_io_opt = click.option(
     '--high-io',
     '-h',
-    help='VM will be created with a ' 'VMware Paravirtual SCSIController.',
+    help='Use VMware Paravirtual SCSIController.',
+    is_flag=True,
+    required=False,
+)
+power_on_opt = click.option(
+    '--power-on',
+    help='Power on after successful deployment.',
     is_flag=True,
     required=False,
 )

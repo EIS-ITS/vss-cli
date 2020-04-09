@@ -148,6 +148,12 @@ For `zsh`
 
 ```bash
 source <(vss-cli completion zsh)
+
+For `fish`
+
+.. code-block:: bash
+
+    _VSS_CLI_COMPLETE=source_fish vss-cli > ~/.config/fish/completions/vss-cli-complete.fish
 ```
 
 If you do it from your `.bashrc` or `.zshrc` it is recommend to use the form below 
@@ -163,6 +169,12 @@ For `zsh`:
 
 ```bash
 eval "$(_VSS_CLI_COMPLETE=source_zsh vss-cli)"
+```
+
+For `fish`:
+
+```bash
+eval (env _VSS_CLI_COMPLETE=source_fish vss-cli)
 ```
 
 ## VSS Shell
@@ -235,7 +247,7 @@ Options:
 Commands:
   account     Manage your VSS account
   completion  Output shell completion code for the specified shell (bash or
-              zsh).
+              zsh or fish).
   compute     Manage VMs, networks, folders, etc.
   configure   Configure VSS-CLI options.
   key         Manage your SSH Public Keys.

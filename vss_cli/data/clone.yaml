@@ -14,6 +14,7 @@ machine:
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
 #  high_io: false         # Optional: created with a VMware Paravirtual SCSIController.
+#  power_on: true         # Optional: Power on after successful deployment.
 # Networking
 networking:
   use_custom_spec: false  # (Custom Spec) Required: attempt to apply a custom spec to this VM. (default: no)

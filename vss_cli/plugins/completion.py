@@ -1,13 +1,14 @@
 """Auto-completion for VSS CLI (vss-cli)."""
 import click
 from click._bashcomplete import get_completion_script
+
 from vss_cli.cli import pass_context
 
 
 @click.group(
     'completion',
     short_help='Output shell completion code for '
-               'the specified shell (bash or zsh).'
+    'the specified shell (bash or zsh or fish).',
 )
 @pass_context
 def cli(ctx):
@@ -35,3 +36,10 @@ def bash(ctx):
 def zsh(ctx):
     """Output shell completion code for zsh."""
     dump_script("zsh")
+
+
+@cli.command()
+@pass_context
+def fish(ctx):
+    """Output shell completion code for fish."""
+    dump_script("fish")

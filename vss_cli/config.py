@@ -1002,6 +1002,13 @@ class Configuration(VssManager):
                     }
                     for n in networking_section['interfaces']
                 ]
+                # other
+                machine_section['high_io'] = machine_section.get(
+                    'high_io', False
+                )
+                machine_section['power_on'] = machine_section.get(
+                    'power_on', False
+                )
                 # metadata section
                 spec_payload.update(metadata_section)
                 spec_payload['built'] = built
