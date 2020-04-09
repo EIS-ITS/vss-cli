@@ -365,7 +365,7 @@ only if at least a dash has been provided. Example:
     --config      --no-verbose  --output      --verbose     --version     -c            -o
 
 
-Activating `bash` or `zsh` completion can be done by executing the
+Activating `bash` or `zsh` or `fish` completion can be done by executing the
 following commands:
 
 For `bash`:
@@ -379,6 +379,12 @@ For `zsh`
 .. code-block:: bash
 
     source <(vss-cli completion zsh)
+
+For `fish`
+
+.. code-block:: bash
+
+    _VSS_CLI_COMPLETE=source_fish vss-cli > ~/.config/fish/completions/vss-cli-complete.fish
 
 If you do it from your `.bashrc` or `.zshrc` it is recommend to use the
 form below as that does not trigger a run of vss-cli itself.
@@ -394,6 +400,12 @@ For `zsh`:
 .. code-block:: bash
 
     eval "$(_VSS_CLI_COMPLETE=source_zsh vss-cli)"
+
+For `fish`:
+
+.. code-block:: bash
+
+    eval (env _VSS_CLI_COMPLETE=source_fish vss-cli)
 
 
 Shell
