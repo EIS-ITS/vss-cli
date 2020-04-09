@@ -2794,6 +2794,7 @@ def compute_vm_from_file(
 @c_so.notes_opt
 @c_so.iso_opt
 @c_so.extra_config_opt
+@c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
 @click.argument('name', type=click.STRING, required=True)
@@ -2817,6 +2818,7 @@ def compute_vm_mk_spec(
     domain,
     os,
     extra_config,
+    power_on,
     vss_service,
     instances,
 ):
@@ -2830,7 +2832,11 @@ def compute_vm_mk_spec(
     s_payload = ctx.get_vm_spec(vm_uuid)
     # payload
     payload = dict(
-        description=description, name=name, usage=usage, built=built
+        description=description,
+        name=name,
+        usage=usage,
+        built=built,
+        power_on=power_on,
     )
     # Hardware
     if memory:
@@ -2914,6 +2920,7 @@ def compute_vm_mk_spec(
 @c_so.iso_opt
 @c_so.high_io_opt
 @c_so.extra_config_opt
+@c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
 @click.argument('name', type=click.STRING, required=True)
@@ -2937,6 +2944,7 @@ def compute_vm_mk_shell(
     domain,
     os,
     extra_config,
+    power_on,
     vss_service,
     instances,
 ):
@@ -2949,6 +2957,7 @@ def compute_vm_mk_shell(
         usage=usage,
         built=built,
         high_io=high_io,
+        power_on=power_on,
     )
     # Hardware
     if memory:
@@ -3026,6 +3035,7 @@ def compute_vm_mk_shell(
 @c_so.notes_opt
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
+@c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
 @click.argument('name', type=click.STRING, required=False)
@@ -3050,6 +3060,7 @@ def compute_vm_mk_template(
     custom_spec,
     extra_config,
     vss_service,
+    power_on,
     instances,
 ):
     """Deploy virtual machine from template"""
@@ -3062,6 +3073,7 @@ def compute_vm_mk_template(
         name=name,
         usage=usage,
         source_template=vm_uuid,
+        power_on=power_on,
     )
     # Hardware
     if memory:
@@ -3138,6 +3150,7 @@ def compute_vm_mk_template(
 @c_so.notes_opt
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
+@c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
 @click.argument('name', type=click.STRING, required=False)
@@ -3161,6 +3174,7 @@ def compute_vm_mk_clone(
     os,
     custom_spec,
     extra_config,
+    power_on,
     vss_service,
     instances,
 ):
@@ -3172,7 +3186,11 @@ def compute_vm_mk_clone(
     vm_uuid = _vm[0]['uuid']
     # payload
     payload = dict(
-        description=description, name=name, usage=usage, source=vm_uuid
+        description=description,
+        name=name,
+        usage=usage,
+        source=vm_uuid,
+        power_on=power_on,
     )
     # Hardware
     if memory:
@@ -3252,6 +3270,7 @@ def compute_vm_mk_clone(
 @c_so.notes_opt
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
+@c_so.power_on_opt
 @c_so.user_data_opt
 @c_so.vss_service_opt
 @pass_context
@@ -3273,6 +3292,7 @@ def compute_vm_mk_image(
     domain,
     os,
     custom_spec,
+    power_on,
     extra_config,
     user_data,
     vss_service,
@@ -3287,6 +3307,7 @@ def compute_vm_mk_image(
         usage=usage,
         client=client,
         image=image_ref[0]['path'],
+        power_on=power_on,
     )
     # Hardware
     if memory:
