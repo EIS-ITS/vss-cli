@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.6.2"
+__version__ = "0.7.0-dev0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -240,6 +240,7 @@ COLUMNS_VM_TEMPLATE = [
 ]
 COLUMNS_VM = [*COLUMNS_VM_TEMPLATE, ("power_state",), ("ip_address",)]
 COLUMNS_VM_INFO = [
+    ("moref",),
     ("uuid",),
     ("name", "name.full_name"),
     ("folder.path", "folder.path"),
