@@ -1,30 +1,31 @@
-import re
-import click
 import json
 import logging
+import re
+from uuid import UUID
+
+import click
 
 _LOGGING = logging.getLogger(__name__)
 
 
 def validate_phone_number(ctx, param, phone):
-    phone_regex = r'(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|' \
-                  r'\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d' \
-                  r'{3}[-\.\s]??\d{4})+'
+    phone_regex = (
+        r'(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|'
+        r'\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d'
+        r'{3}[-\.\s]??\d{4})+'
+    )
     if not re.match(phone_regex, phone):
         raise click.BadParameter(
-            'Value must be in the '
-            'following format 416-166-6666'
+            'Value must be in the ' 'following format 416-166-6666'
         )
     return phone
 
 
 def validate_email(ctx, param, email):
-    email_regex = r'([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+' \
-                  r'\.[a-zA-Z0-9-.]+$)'
+    email_regex = r'([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+' r'\.[a-zA-Z0-9-.]+$)'
     if not re.match(email_regex, email):
         raise click.BadParameter(
-            'Value must be in the '
-            'following format user@utoronto.ca'
+            'Value must be in the ' 'following format user@utoronto.ca'
         )
     return email
 
@@ -65,3 +66,19 @@ def validate_inform(ctx, param, value):
         for email in _value:
             validate_email(ctx, param, email)
         return value
+
+
+def validate_uuid(ctx, param, value):
+    if value:
+        try:
+            _ = UUID(value)
+            return value
+        except ValueError:
+            return False
+
+
+def validate_vm_moref(ctx, param, value):
+    if value:
+        if re.match(r'vm-[0-9]+', value):
+            return value
+    return False

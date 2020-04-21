@@ -27,7 +27,8 @@ from vss_cli.helper import (
     debug_requests_on, format_output, get_hostname_from_url)
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
-from vss_cli.validators import validate_email, validate_phone_number
+from vss_cli.validators import (
+    validate_email, validate_phone_number, validate_uuid, validate_vm_moref)
 import vss_cli.yaml as yaml
 
 _LOGGING = logging.getLogger(__name__)
@@ -745,42 +746,34 @@ class Configuration(VssManager):
         self.vskey_stor = wc.Client(options=options)
         return self.vskey_stor.valid()
 
-    def get_vm_by_uuid_or_name(self, uuid_or_name: str) -> List:
-        try:
-            # is uuid?
-            uuid = UUID(uuid_or_name)
-            v = self.get_vm(str(uuid))
+    def get_vm_by_uuid_or_name(self, vm_id: str) -> List:
+        is_moref = validate_vm_moref('', '', vm_id)
+        is_uuid = validate_uuid('', '', vm_id)
+        _LOGGING.debug(f'is_moref={is_moref}, is_uuid={is_uuid}')
+        if is_moref or is_uuid:
+            v = self.get_vm(str(vm_id))
             if not v:
                 # try template
-                v = self.get_template(str(uuid))
+                v = self.get_template(vm_id)
                 if not v:
                     raise click.BadArgumentUsage(
                         'uuid should could not be found'
                     )
             return [v]
-        except ValueError:
-            # not an uuid
-            _LOGGING.debug(f'not an uuid {uuid_or_name}')
+        else:
+            _LOGGING.debug(f'not a moref or uuid {vm_id}')
             # If it's a value error, then the string
             # is not a valid hex code for a UUID.
             # get vm by name
             g_vms = self.get_vms(per_page=3000)
-            uuid_or_name = uuid_or_name.lower()
-            v = list(
-                filter(lambda i: uuid_or_name in i['name'].lower(), g_vms)
-            )
+            vm_id = vm_id.lower()
+            v = list(filter(lambda i: vm_id in i['name'].lower(), g_vms))
             if not v:
                 # try templates:
                 g_tmpls = self.get_templates(per_page=2500)
-                v = list(
-                    filter(
-                        lambda i: uuid_or_name in i['name'].lower(), g_tmpls
-                    )
-                )
+                v = list(filter(lambda i: vm_id in i['name'].lower(), g_tmpls))
                 if not v:
-                    raise click.BadParameter(
-                        f'{uuid_or_name} could not be found'
-                    )
+                    raise click.BadParameter(f'{vm_id} could not be found')
             v_count = len(v)
             if v_count > 1:
                 msg = f"Found {v_count} matches. Please select one:"
