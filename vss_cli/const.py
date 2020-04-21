@@ -95,7 +95,7 @@ DEFAULT_VM_DEL_MSG = (
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
 COLUMNS_DEFAULT = [("all", "*")]
-COLUMNS_VM_MIN = [("uuid",), ("name",)]
+COLUMNS_VM_MIN = [("moref",), ("name",)]
 COLUMNS_VIM_REQUEST = [("vm_uuid", "vm_uuid"), ("vm_name", "vm_name")]
 COLUMNS_MOREF = [("moref",), ("name",)]
 COLUMNS_FOLDER_MIN = [*COLUMNS_MOREF, ("path",), ("parent.name",)]
