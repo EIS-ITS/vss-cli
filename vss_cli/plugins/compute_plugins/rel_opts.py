@@ -8,7 +8,7 @@ from vss_cli.validators import (
 source_opt = click.option(
     '--source',
     '-s',
-    help='Source virtual machine or template UUID.',
+    help='Source virtual machine or template MOREF or UUID.',
     type=click.STRING,
     required=True,
     autocompletion=autocompletion.virtual_machines,

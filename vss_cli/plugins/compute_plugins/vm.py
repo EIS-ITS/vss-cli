@@ -76,15 +76,15 @@ def compute_vm_ls(
     invoke_without_command=True,
 )
 @click.argument(
-    'uuid_or_name',
+    'vm_id_or_name',
     type=click.STRING,
     required=True,
     autocompletion=autocompletion.virtual_machines,
 )
 @pass_context
-def compute_vm_get(ctx: Configuration, uuid_or_name):
+def compute_vm_get(ctx: Configuration, vm_id_or_name):
     """Obtain virtual machine summary and other attributes."""
-    _vm = ctx.get_vm_by_id_or_name(uuid_or_name)
+    _vm = ctx.get_vm_by_id_or_name(vm_id_or_name)
     ctx.moref = _vm[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_VM_INFO
@@ -705,7 +705,7 @@ def compute_vm_get_vss_service(ctx: Configuration):
     invoke_without_command=True,
 )
 @click.argument(
-    'uuid_or_name',
+    'vm_id_or_name',
     type=click.STRING,
     required=True,
     autocompletion=autocompletion.virtual_machines,
@@ -730,12 +730,12 @@ def compute_vm_get_vss_service(ctx: Configuration):
 @so.wait_opt
 @pass_context
 def compute_vm_set(
-    ctx: Configuration, uuid_or_name, schedule, user_meta: str, wait: bool
+    ctx: Configuration, vm_id_or_name, schedule, user_meta: str, wait: bool
 ):
     """Manage virtual machine attributes such as cpu,
     memory, disk, network backing, cd, etc.."""
-    _vm = ctx.get_vm_by_id_or_name(uuid_or_name)
-    ctx.moref = _vm[0]['uuid']
+    _vm = ctx.get_vm_by_id_or_name(vm_id_or_name)
+    ctx.moref = _vm[0]['moref']
     # setup payload opts
     ctx.payload_options = dict()
     ctx.user_meta = dict(to_tuples(user_meta))
@@ -2816,7 +2816,7 @@ def compute_vm_mk_spec(
      base for a new VM."""
     built = 'os_install'
     _vm = ctx.get_vm_by_id_or_name(source)
-    vm_uuid = _vm[0]['uuid']
+    vm_uuid = _vm[0]['moref']
     s_payload = ctx.get_vm_spec(vm_uuid)
     # payload
     payload = dict(
@@ -3054,13 +3054,13 @@ def compute_vm_mk_template(
     """Deploy virtual machine from template"""
     # get source from uuid or name
     _vm = ctx.get_vm_by_id_or_name(source)
-    vm_uuid = _vm[0]['uuid']
+    vm_id = _vm[0]['moref']
     # payload
     payload = dict(
         description=description,
         name=name,
         usage=usage,
-        source_template=vm_uuid,
+        source_template=vm_id,
         power_on=power_on,
     )
     # Hardware
@@ -3171,13 +3171,13 @@ def compute_vm_mk_clone(
     resulting virtual machine"""
     # get source from uuid or name
     _vm = ctx.get_vm_by_id_or_name(source)
-    vm_uuid = _vm[0]['uuid']
+    vm_id = _vm[0]['moref']
     # payload
     payload = dict(
         description=description,
         name=name,
         usage=usage,
-        source=vm_uuid,
+        source=vm_id,
         power_on=power_on,
     )
     # Hardware
