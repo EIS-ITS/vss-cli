@@ -1674,7 +1674,7 @@ def compute_vm_set_ha_group_rm(ctx: Configuration):
 @compute_vm_set_ha_group.command(
     'mk', short_help='Create HA-Group with multiple VMs'
 )
-@click.argument('uuid', type=click.UUID, nargs=-1, required=True)
+@click.argument('vm_id', type=click.STRING, nargs=-1, required=True)
 @click.option(
     '-r',
     '--replace',
@@ -1683,18 +1683,31 @@ def compute_vm_set_ha_group_rm(ctx: Configuration):
     help='Replace existing value.',
 )
 @pass_context
-def compute_vm_set_ha_group_mk(ctx: Configuration, uuid, replace):
+def compute_vm_set_ha_group_mk(ctx: Configuration, vm_id, replace):
     """Create HA Group by tagging VMs together
 
     vss-cli compute vm set <name-or-uuid> ha-group mk -r <uuid-1> <uuid-n>
     """
-    for vm in uuid:
-        _vm = ctx.get_vm(vm)
+    valid_vms = list()
+    for vm in vm_id:
+        _vm = ctx.get_vm_by_id_or_name(vm, silent=True)
         if not _vm:
-            raise click.BadArgumentUsage(f'{vm} could not be found')
+            _LOGGING.warning(f'{vm} could not be found')
+        else:
+            valid_vms.append(_vm[0])
+
+    if len(valid_vms) < len(vm_id):
+        if not click.confirm(
+            f'Found {len(valid_vms)} but provided {len(vm_id)} vms. '
+            f'Would you like to continue?'
+        ):
+            raise click.Abort('Cancelled by user.')
+
     # create payload
     payload = dict(
-        append=not replace, vms=list(map(str, uuid)), uuid=str(ctx.moref)
+        append=not replace,
+        vms=list(map(lambda x: x['moref'], valid_vms)),
+        uuid=str(ctx.moref),
     )
     # add common options
     payload.update(ctx.payload_options)

@@ -746,7 +746,7 @@ class Configuration(VssManager):
         self.vskey_stor = wc.Client(options=options)
         return self.vskey_stor.valid()
 
-    def get_vm_by_id_or_name(self, vm_id: str) -> List:
+    def get_vm_by_id_or_name(self, vm_id: str, silent=False) -> List:
         is_moref = validate_vm_moref('', '', vm_id)
         is_uuid = validate_uuid('', '', vm_id)
         _LOGGING.debug(f'is_moref={is_moref}, is_uuid={is_uuid}')
@@ -761,9 +761,12 @@ class Configuration(VssManager):
                 # try template
                 v = self.get_templates(filter=filters)
                 if not v:
-                    raise click.BadArgumentUsage(
-                        'vm id should could not be found'
-                    )
+                    if silent:
+                        return None
+                    else:
+                        raise click.BadArgumentUsage(
+                            f'vm id {vm_id} could not be found'
+                        )
             return v
         else:
             _LOGGING.debug(f'not a moref or uuid {vm_id}')
