@@ -746,20 +746,25 @@ class Configuration(VssManager):
         self.vskey_stor = wc.Client(options=options)
         return self.vskey_stor.valid()
 
-    def get_vm_by_uuid_or_name(self, vm_id: str) -> List:
+    def get_vm_by_id_or_name(self, vm_id: str) -> List:
         is_moref = validate_vm_moref('', '', vm_id)
         is_uuid = validate_uuid('', '', vm_id)
         _LOGGING.debug(f'is_moref={is_moref}, is_uuid={is_uuid}')
         if is_moref or is_uuid:
-            v = self.get_vm(str(vm_id))
+            if is_moref:
+                attr = 'moref'
+            else:
+                attr = 'uuid'
+            filters = f'{attr},eq,{vm_id}'
+            v = self.get_vms(filter=filters)
             if not v:
                 # try template
-                v = self.get_template(vm_id)
+                v = self.get_templates(filter=filters)
                 if not v:
                     raise click.BadArgumentUsage(
-                        'uuid should could not be found'
+                        'vm id should could not be found'
                     )
-            return [v]
+            return v
         else:
             _LOGGING.debug(f'not a moref or uuid {vm_id}')
             # If it's a value error, then the string
@@ -780,7 +785,10 @@ class Configuration(VssManager):
                 sel, index = pick(
                     title=msg,
                     indicator='=>',
-                    options=[f"{i['uuid']} ({i['name']})" for i in v],
+                    options=[
+                        f"({i['moref']}) {i['folder']['path']} > {i['name']}"
+                        for i in v
+                    ],
                 )
                 return [v[index]]
             return v

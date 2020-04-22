@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.7.0-dev1"
+__version__ = "0.7.0-dev2"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -83,11 +83,15 @@ DEFAULT_STATE_MSG = (
 )
 
 DEFAULT_VM_DEL_MSG = (
-    "Name:\t\t{name[name]}\n"
-    "Folder:\t\t{folder_info[path]}\n"
-    "Host Name:\t{hostname} "
-    "({os[full_name]})\n"
-    "IP Address:\t{ip_addresses}\n"
+    "Moref:\t\t{vm[moref]}\n"
+    "UUID:\t\t{vm[uuid]}\n"
+    "Name:\t\t{vm[name]}\n"
+    "Folder:\t\t{vm[folder][path]}\n"
+    "Host Name:\t{vm[hostname]} "
+    "({vm[guest_full_name]})\n"
+    "IP Address:\t{vm[ip_address]}\n"
+    "MAC Address:\t{vm[mac_address]}\n"
+    "Create Date:\t{vm[create_date]}\n"
     "Are you sure you want to delete "
     "the above VM?"
 )

@@ -84,7 +84,7 @@ def compute_vm_ls(
 @pass_context
 def compute_vm_get(ctx: Configuration, uuid_or_name):
     """Obtain virtual machine summary and other attributes."""
-    _vm = ctx.get_vm_by_uuid_or_name(uuid_or_name)
+    _vm = ctx.get_vm_by_id_or_name(uuid_or_name)
     ctx.moref = _vm[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_VM_INFO
@@ -734,7 +734,7 @@ def compute_vm_set(
 ):
     """Manage virtual machine attributes such as cpu,
     memory, disk, network backing, cd, etc.."""
-    _vm = ctx.get_vm_by_uuid_or_name(uuid_or_name)
+    _vm = ctx.get_vm_by_id_or_name(uuid_or_name)
     ctx.moref = _vm[0]['uuid']
     # setup payload opts
     ctx.payload_options = dict()
@@ -2571,8 +2571,8 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     help='Show guest info and confirmation if -f/--force is not included.',
 )
 @click.argument(
-    'uuid',
-    type=click.UUID,
+    'vm_id',
+    type=click.STRING,
     required=True,
     nargs=-1,
     autocompletion=autocompletion.virtual_machines,
@@ -2582,56 +2582,44 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
 @pass_context
 def compute_vm_rm(
     ctx: Configuration,
-    uuid: list,
+    vm_id: list,
     max_del: int,
     force: bool,
     show_info: bool,
     wait: bool,
 ):
-    """ Delete a list of virtual machine uuids:
+    """ Delete a list of virtual machine ids:
 
-        vss-cli compute vm rm <name-or-uuid> <name-or-uuid> --show-info
+        vss-cli compute vm rm <name-or-vm-id> <name-or-vm-id> --show-info
 
     """
-    _LOGGING.debug(f'Attempting to remove {uuid}')
-    if len(uuid) > max_del:
+    _LOGGING.debug(f'Attempting to remove {vm_id}')
+    if len(vm_id) > max_del:
         raise click.BadArgumentUsage(
             'Increase max instance removal with --max-del/-m option'
         )
     # result
     objs = list()
     with ctx.spinner(disable=ctx.debug or show_info):
-        for vm in uuid:
+        for vm in vm_id:
             skip = False
-            _vm = ctx.get_vm(vm)
+            _vm = ctx.get_vm_by_id_or_name(vm)
             if not _vm:
                 _LOGGING.warning(
                     f'Virtual machine {vm} could not be found. Skipping.'
                 )
                 skip = True
+            _LOGGING.debug(f'Found {_vm}')
+            moref = _vm[0]['moref']
             if _vm and show_info:
-                folder_info = ctx.get_vm_folder(vm)
-                name = ctx.get_vm_name(vm)
-                guest_info = ctx.get_vm_guest(vm)
-                ip_addresses = (
-                    ', '.join(guest_info.get('ip_address'))
-                    if guest_info.get('ip_address')
-                    else ''
-                )
-
-                c_str = const.DEFAULT_VM_DEL_MSG.format(
-                    name=name,
-                    folder_info=folder_info,
-                    ip_addresses=ip_addresses,
-                    **guest_info,
-                )
+                c_str = const.DEFAULT_VM_DEL_MSG.format(vm=_vm[0])
                 confirmation = force or click.confirm(c_str)
                 if not confirmation:
-                    _LOGGING.warning(f'Skipping {vm}...')
+                    _LOGGING.warning(f'Skipping {moref}...')
                     skip = True
             if not skip:
                 # request
-                payload = dict(uuid=vm, force=force)
+                payload = dict(uuid=moref, force=force)
                 objs.append(ctx.delete_vm(**payload))
     # print
     if objs:
@@ -2827,7 +2815,7 @@ def compute_vm_mk_spec(
      machine specification (memory, disk, networking, etc) as a
      base for a new VM."""
     built = 'os_install'
-    _vm = ctx.get_vm_by_uuid_or_name(source)
+    _vm = ctx.get_vm_by_id_or_name(source)
     vm_uuid = _vm[0]['uuid']
     s_payload = ctx.get_vm_spec(vm_uuid)
     # payload
@@ -3065,7 +3053,7 @@ def compute_vm_mk_template(
 ):
     """Deploy virtual machine from template"""
     # get source from uuid or name
-    _vm = ctx.get_vm_by_uuid_or_name(source)
+    _vm = ctx.get_vm_by_id_or_name(source)
     vm_uuid = _vm[0]['uuid']
     # payload
     payload = dict(
@@ -3182,7 +3170,7 @@ def compute_vm_mk_clone(
     If name argument is not specified, -clone suffix will be added to
     resulting virtual machine"""
     # get source from uuid or name
-    _vm = ctx.get_vm_by_uuid_or_name(source)
+    _vm = ctx.get_vm_by_id_or_name(source)
     vm_uuid = _vm[0]['uuid']
     # payload
     payload = dict(
