@@ -101,7 +101,7 @@ def vm_templates(
     return _autocomplete(
         ctx.client.get_templates,
         incomplete,
-        ['uuid', 'name'],
+        ['moref', 'name'],
         complete_index=1,
         sort_index=1,
         f_kwargs={"short": 1, "show_all": True, "per_page": 2000},
@@ -115,7 +115,7 @@ def virtual_machines(
     return _autocomplete(
         ctx.client.get_vms,
         incomplete,
-        ['uuid', 'name'],
+        ['moref', 'name'],
         complete_index=1,
         sort_index=1,
         f_kwargs={"show_all": True, "short": 1, "per_page": 2000},
@@ -302,7 +302,7 @@ def change_requests(
     return _autocomplete(
         ctx.client.get_change_requests,
         incomplete,
-        attrs=['id', 'vm_uuid', 'vm_name', 'attribute'],
+        attrs=['id', 'vm_moref', 'vm_name', 'attribute'],
         f_kwargs={"sort": "created_on,desc", "per_page": 500},
     )
 
@@ -314,7 +314,7 @@ def export_requests(
     return _autocomplete(
         ctx.client.get_export_requests,
         incomplete,
-        attrs=['id', 'vm_uuid', 'vm_name'],
+        attrs=['id', 'vm_moref', 'vm_name'],
         f_kwargs={"sort": "created_on,desc", "per_page": 500},
     )
 
@@ -350,7 +350,7 @@ def snapshot_requests(
     return _autocomplete(
         ctx.client.get_snapshot_requests,
         incomplete,
-        attrs=['id', 'vm_uuid', 'vm_name'],
+        attrs=['id', 'vm_moref', 'vm_name'],
         f_kwargs={"sort": "created_on,desc", "per_page": 500},
     )
 
