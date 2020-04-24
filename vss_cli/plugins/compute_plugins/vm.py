@@ -699,6 +699,23 @@ def compute_vm_get_vss_service(ctx: Configuration):
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@compute_vm_get.command('vsphere-link', short_help='Get vSphere link to VM')
+@click.option(
+    '-l', '--launch', is_flag=True, help='Launch link to default handler'
+)
+@pass_context
+def compute_vm_get_vsphere_link(ctx: Configuration, launch: bool):
+    """Get vSphere Client Link to VM """
+    obj = ctx.get_vm_vsphere_link(ctx.moref)
+    link = obj.get('value')
+    # print
+    columns = ctx.columns or [('value',)]
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # launch
+    if launch:
+        click.launch(link)
+
+
 @compute_vm.group(
     'set',
     short_help='Set virtual machine attribute',
