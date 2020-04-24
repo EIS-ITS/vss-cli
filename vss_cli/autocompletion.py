@@ -295,6 +295,18 @@ def inventory_requests(
     )
 
 
+def new_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_new_requests,
+        incomplete,
+        attrs=['id', 'vm_moref', 'vm_name'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
+
+
 def change_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:

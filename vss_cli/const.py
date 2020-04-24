@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.7.0-dev6"
+__version__ = "0.7.0-dev7"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -207,6 +207,7 @@ COLUMNS_REQUEST_NEW_MIN = [
 ]
 COLUMNS_REQUEST_NEW = [
     *COLUMNS_REQUEST_NEW_MIN,
+    ('guest_os',),
     ("domain",),
     ("source_vm",),
     ("source_template",),
