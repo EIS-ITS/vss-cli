@@ -611,7 +611,7 @@ def compute_vm_get_stats(ctx: Configuration, kind):
      performance statistics. Choose between: io, memory,
      cpu or net. For example:
 
-    vss-cli compute vm get <name-or-uuid> stats memory
+    vss-cli compute vm get <name-or-vm_id> stats memory
     """
     lookup = {
         'cpu': ctx.get_vm_performance_cpu,
@@ -765,10 +765,10 @@ def compute_vm_set(
 def compute_vm_set_admin(ctx: Configuration, name, email, phone):
     """Set or update virtual machine administrator in metadata.
 
-    vss-cli compute vm set <name-or-uuid> admin "Admin Name"
+    vss-cli compute vm set <name-or-vm_id> admin "Admin Name"
     admin.email@utoronto.ca 416-666-6666
     """
-    payload = dict(name=name, phone=phone, email=email, uuid=ctx.moref)
+    payload = dict(name=name, phone=phone, email=email, vm_id=ctx.moref)
     # add common options
     payload.update(ctx.payload_options)
     # process request
@@ -794,12 +794,12 @@ def compute_vm_set_admin(ctx: Configuration, name, email, phone):
 def compute_vm_set_alarm(ctx: Configuration, action, alarm_moref):
     """Acknowledge or clear a given alarm. Obtain alarm moref by:
 
-        vss-cli compute vm get <name-or-uuid> alarm
+        vss-cli compute vm get <name-or-vm_id> alarm
 
-        vss-cli compute vm set <name-or-uuid> alarm <moref> --action ack
+        vss-cli compute vm set <name-or-vm_id> alarm <moref> --action ack
 
     """
-    payload = dict(uuid=ctx.moref, moref=alarm_moref)
+    payload = dict(vm_id=ctx.moref, moref=alarm_moref)
     # add common options
     payload.update(ctx.payload_options)
     # action
@@ -829,10 +829,10 @@ def compute_vm_set_boot_bios(ctx: Configuration, on):
     """Update virtual machine boot configuration to
     boot directly to BIOS.
 
-    vss-cli compute vm set <name-or-uuid> boot-bios --on
-    vss-cli compute vm set <name-or-uuid> boot-bios --off
+    vss-cli compute vm set <name-or-vm_id> boot-bios --on
+    vss-cli compute vm set <name-or-vm_id> boot-bios --off
     """
-    payload = dict(uuid=ctx.moref, boot_bios=on)
+    payload = dict(vm_id=ctx.moref, boot_bios=on)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -851,9 +851,9 @@ def compute_vm_set_boot_bios(ctx: Configuration, on):
 def compute_vm_set_boot_delay(ctx: Configuration, delay_in_ms):
     """Update virtual machine boot delay time (ms).
 
-    vss-cli compute vm set <name-or-uuid> boot-delay 5000
+    vss-cli compute vm set <name-or-vm_id> boot-delay 5000
     """
-    payload = dict(uuid=ctx.moref, boot_delay_ms=delay_in_ms)
+    payload = dict(vm_id=ctx.moref, boot_delay_ms=delay_in_ms)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -888,9 +888,9 @@ def compute_vm_set_cd(ctx: Configuration):
 def compute_vm_set_cd_mk(ctx: Configuration, backing):
     """Create virtual machine CD/DVD unit with ISO or client backing.
 
-    vss-cli compute vm set <name-or-uuid> cd mk --backing <name-or-path-or-id>
+    vss-cli compute vm set <name-or-vm_id> cd mk --backing <name-or-path-or-id>
 
-    vss-cli compute vm set <name-or-uuid> cd mk --backing client
+    vss-cli compute vm set <name-or-vm_id> cd mk --backing client
     """
     p_backing = []
     for b in backing:
@@ -899,7 +899,7 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
         _LOGGING.debug(f'Will create {iso_ref}')
         p_backing.append(str(iso_ref[0]['id']))
     # generate payload
-    payload = dict(uuid=ctx.moref, backings=p_backing)
+    payload = dict(vm_id=ctx.moref, backings=p_backing)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -926,15 +926,15 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
 def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
     """Update virtual machine CD/DVD backend to ISO or client.
 
-    vss-cli compute vm set <name-or-uuid> cd up <unit> -b <name-or-path-or-id>
+    vss-cli compute vm set <name-or-vm_id> cd up <unit> -b <name-or-path-or-id>
 
-    vss-cli compute vm set <name-or-uuid> cd up <unit> -b client
+    vss-cli compute vm set <name-or-vm_id> cd up <unit> -b client
     """
     # get iso reference
     iso_ref = ctx.get_iso_by_name_or_path(backing)
     _LOGGING.debug(f'Will mount {iso_ref}')
     # generate payload
-    payload = dict(uuid=ctx.moref, unit=unit, iso=iso_ref[0]['path'])
+    payload = dict(vm_id=ctx.moref, unit=unit, iso=iso_ref[0]['path'])
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -953,10 +953,10 @@ def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
 def compute_vm_set_client(ctx: Configuration, client):
     """Update virtual machine client department.
 
-    vss-cli compute vm set <name-or-uuid> client <New-Client>
+    vss-cli compute vm set <name-or-vm_id> client <New-Client>
     """
     # generate payload
-    payload = dict(uuid=ctx.moref, client=client)
+    payload = dict(vm_id=ctx.moref, client=client)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -983,14 +983,14 @@ def compute_vm_set_client_note(ctx: Configuration, notes, replace):
     """Set or update virtual machine client notes
      in metadata.
 
-     vss-cli compute vm set <name-or-uuid> client-note "New note"
+     vss-cli compute vm set <name-or-vm_id> client-note "New note"
      """
     if not replace:
         _old_notes = ctx.get_vm_notes(ctx.moref)
         old_notes = _old_notes.get('value') or ""
         notes = "{}\n{}".format(old_notes, notes)
     # generate payload
-    payload = dict(uuid=ctx.moref, notes=notes)
+    payload = dict(vm_id=ctx.moref, notes=notes)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1008,10 +1008,10 @@ def compute_vm_set_client_note(ctx: Configuration, notes, replace):
 def compute_vm_set_consolidate(ctx: Configuration):
     """Perform virtual machine disk consolidation
 
-    vss-cli compute vm set --schedule <timestamp> <name-or-uuid> consolidate
+    vss-cli compute vm set --schedule <timestamp> <name-or-vm_id> consolidate
     """
     # generate payload
-    payload = dict(uuid=ctx.moref)
+    payload = dict(vm_id=ctx.moref)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1037,7 +1037,7 @@ def compute_vm_set_cpu(ctx: Configuration):
 @pass_context
 def compute_vm_set_cpu_count(ctx: Configuration, cpu_count):
     # generate payload
-    payload = dict(uuid=ctx.moref, number=cpu_count)
+    payload = dict(vm_id=ctx.moref, number=cpu_count)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1055,7 +1055,7 @@ def compute_vm_set_cpu_count(ctx: Configuration, cpu_count):
 @pass_context
 def compute_vm_set_cpu_hot_add(ctx: Configuration, status):
     lookup = {'on': True, 'off': False}
-    payload = dict(uuid=ctx.moref, hot_add=lookup[status])
+    payload = dict(vm_id=ctx.moref, hot_add=lookup[status])
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1121,7 +1121,7 @@ def compute_vm_set_custom_spec(
     # create custom_spec
     custom_spec = ctx.get_custom_spec(**_custom_spec)
     # create payload
-    payload = dict(uuid=ctx.moref, custom_spec=custom_spec)
+    payload = dict(vm_id=ctx.moref, custom_spec=custom_spec)
     # add common options
     payload.update(ctx.payload_options)
     # process request
@@ -1156,7 +1156,7 @@ def compute_vm_set_extra_config(ctx: Configuration):
 def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
     """Create **guestinfo** interface extra configuration options:
 
-    vss-cli compute vm set <name-or-uuid> extra-cfg mk key1=value2 key2=value2
+    vss-cli compute vm set <name-or-vm_id> extra-cfg mk key1=value2 key2=value2
 
     """
     # process input
@@ -1167,7 +1167,7 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
         _LOGGING.error(ex)
         raise click.BadArgumentUsage('Argument must be key=value strings')
     # assemble payload
-    payload = dict(uuid=ctx.moref, options=options)
+    payload = dict(vm_id=ctx.moref, options=options)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1194,7 +1194,7 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
 def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
     """Update **guestinfo** interface extra configuration options:
 
-    vss-cli compute vm set <name-or-uuid> extra-cfg up key1=value2 key2=value2
+    vss-cli compute vm set <name-or-vm_id> extra-cfg up key1=value2 key2=value2
 
     """
     # process input
@@ -1216,7 +1216,7 @@ def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
                 f'Extra config options will be ignored: {", ".join(no_opts)}'
             )
     # assemble payload
-    payload = dict(uuid=ctx.moref, options=options)
+    payload = dict(vm_id=ctx.moref, options=options)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1243,7 +1243,7 @@ def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
 def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
     """Remove **guestinfo** interface extra configuration options:
 
-    vss-cli compute vm set <name-or-uuid> extra-cfg rm key1 key2 keyN
+    vss-cli compute vm set <name-or-vm_id> extra-cfg rm key1 key2 keyN
 
     """
     # check if key exists
@@ -1258,7 +1258,7 @@ def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
                 f'Extra config options will be ignored: {", ".join(no_opts)}'
             )
     # assemble payload
-    payload = dict(uuid=ctx.moref, options=key)
+    payload = dict(vm_id=ctx.moref, options=key)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1277,9 +1277,9 @@ def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
 def compute_vm_set_description(ctx: Configuration, description):
     """Set or update virtual machine description in metadata.
 
-    vss-cli compute vm set <name-or-uuid> description "new description"
+    vss-cli compute vm set <name-or-vm_id> description "new description"
     """
-    payload = dict(uuid=ctx.moref, description=description)
+    payload = dict(vm_id=ctx.moref, description=description)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1313,9 +1313,9 @@ def compute_vm_set_disk(ctx: Configuration):
 def compute_vm_set_disk_mk(ctx: Configuration, capacity):
     """Create virtual machine disk:
 
-        vss-cli compute vm set <name-or-uuid> disk mk -c 10 -c 40
+        vss-cli compute vm set <name-or-vm_id> disk mk -c 10 -c 40
     """
-    payload = dict(uuid=ctx.moref, values_in_gb=capacity)
+    payload = dict(vm_id=ctx.moref, values_in_gb=capacity)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1356,11 +1356,11 @@ def compute_vm_set_disk_up(
 ):
     """Update virtual machine disk capacity:
 
-        vss-cli compute vm set <name-or-uuid> disk up --capacity 30 <unit>
+        vss-cli compute vm set <name-or-vm_id> disk up --capacity 30 <unit>
 
-        vss-cli compute vm set <name-or-uuid> disk up --scsi=<bus> <unit>
+        vss-cli compute vm set <name-or-vm_id> disk up --scsi=<bus> <unit>
     """
-    payload = dict(uuid=ctx.moref, disk=unit)
+    payload = dict(vm_id=ctx.moref, disk=unit)
     # add common options
     payload.update(ctx.payload_options)
     if capacity:
@@ -1394,9 +1394,9 @@ def compute_vm_set_disk_up(
 def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
     """Remove virtual machine disks. Warning: data will be lost:
 
-        vss-cli compute vm set <name-or-uuid> disk rm <unit> <unit> ...
+        vss-cli compute vm set <name-or-vm_id> disk rm <unit> <unit> ...
     """
-    payload = dict(uuid=ctx.moref, units=list(unit))
+    payload = dict(vm_id=ctx.moref, units=list(unit))
     # add common options
     payload.update(ctx.payload_options)
     # confirm
@@ -1439,13 +1439,15 @@ def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
     will perform a power off task. After migration completes, the `on` flag
     indicates to power on the virtual machine.
 
-    vss-cli compute vm set <name-or-uuid> domain <name-or-moref> --force --on
+    vss-cli compute vm set <name-or-vm_id> domain <name-or-moref> --force --on
     """
     _domain = ctx.get_domain_by_name_or_moref(name_or_moref)
     if not _domain:
         raise click.BadArgumentUsage(f'Domain {_domain} does not exist')
     domain_moref = _domain[0]['moref']
-    payload = dict(uuid=ctx.moref, moref=domain_moref, poweron=on, force=force)
+    payload = dict(
+        vm_id=ctx.moref, moref=domain_moref, poweron=on, force=force
+    )
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1463,9 +1465,9 @@ def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
 def compute_vm_set_export(ctx: Configuration):
     """Export current virtual machine to OVF.
 
-    vss-cli compute vm set <name-or-uuid> export
+    vss-cli compute vm set <name-or-vm_id> export
     """
-    payload = dict(uuid=ctx.moref)
+    payload = dict(vm_id=ctx.moref)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1496,7 +1498,7 @@ def compute_vm_set_floppy(ctx: Configuration, unit, image):
     _LOGGING.debug(f'Will mount {img_ref}')
     image = img_ref[0].get('path')
     # generate payload
-    payload = dict(uuid=ctx.moref, unit=unit, image=image)
+    payload = dict(vm_id=ctx.moref, unit=unit, image=image)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1524,7 +1526,7 @@ def compute_vm_set_folder(ctx: Configuration, name_moref_path):
 
     """
     # create payload
-    payload = dict(uuid=ctx.moref)
+    payload = dict(vm_id=ctx.moref)
     # lookup for folder
     _folder = ctx.get_folder_by_name_or_moref_path(name_moref_path)
     payload['folder_moId'] = _folder[0]['moref']
@@ -1568,7 +1570,7 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
     """
     Execute a command in the Guest Operating system.
 
-    vss-cli compute vm set <name-or-uuid> guest-cmd "/bin/echo"
+    vss-cli compute vm set <name-or-vm_id> guest-cmd "/bin/echo"
     "Hello > /tmp/hello.txt"
 
     Note: VMware Tools must be installed and running.
@@ -1592,7 +1594,7 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
         )
     # creating payload
     payload = dict(
-        uuid=ctx.moref,
+        vm_id=ctx.moref,
         user=username,
         pwd=password,
         cmd=cmd,
@@ -1622,13 +1624,13 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
 def compute_vm_set_guest_os(ctx: Configuration, guest_id):
     """Update guest operating system configuration:
 
-        vss-cli compute vm set <name-or-uuid> guest-os <name-or-name>
+        vss-cli compute vm set <name-or-vm_id> guest-os <name-or-name>
 
     """
     g_os = ctx.get_os_by_name_or_guest(guest_id)
     g_id = g_os[0]['guest_id']
     # create payload
-    payload = dict(uuid=ctx.moref, os=g_id)
+    payload = dict(vm_id=ctx.moref, os=g_id)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1659,10 +1661,10 @@ def compute_vm_set_ha_group(ctx: Configuration):
 def compute_vm_set_ha_group_rm(ctx: Configuration):
     """Remove given VM from HA-Group
 
-    vss-cli compute vm set <name-or-uuid> ha-group rm
+    vss-cli compute vm set <name-or-vm_id> ha-group rm
     """
     # request
-    obj = ctx.delete_vm_vss_ha_group(uuid=ctx.moref)
+    obj = ctx.delete_vm_vss_ha_group(vm_id=ctx.moref)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
@@ -1686,7 +1688,7 @@ def compute_vm_set_ha_group_rm(ctx: Configuration):
 def compute_vm_set_ha_group_mk(ctx: Configuration, vm_id, replace):
     """Create HA Group by tagging VMs together
 
-    vss-cli compute vm set <name-or-uuid> ha-group mk -r <uuid-1> <uuid-n>
+    vss-cli compute vm set <name-or-vm_id> ha-group mk -r <vm_id-1> <vm_id-n>
     """
     valid_vms = list()
     for vm in vm_id:
@@ -1707,7 +1709,7 @@ def compute_vm_set_ha_group_mk(ctx: Configuration, vm_id, replace):
     payload = dict(
         append=not replace,
         vms=list(map(lambda x: x['moref'], valid_vms)),
-        uuid=str(ctx.moref),
+        vm_id=str(ctx.moref),
     )
     # add common options
     payload.update(ctx.payload_options)
@@ -1737,12 +1739,12 @@ def compute_vm_set_inform(ctx: Configuration, email, replace):
     """Update or set informational contacts emails in
     metadata.
 
-    vss-cli compute vm set <name-or-uuid> inform <email-1> <email-n>
+    vss-cli compute vm set <name-or-vm_id> inform <email-1> <email-n>
     """
     for e in email:
         validate_email(ctx, '', e)
     # create payload
-    payload = dict(append=not replace, emails=list(email), uuid=ctx.moref)
+    payload = dict(append=not replace, emails=list(email), vm_id=ctx.moref)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1769,11 +1771,11 @@ def compute_vm_set_memory(ctx: Configuration):
 def compute_vm_set_memory_size(ctx: Configuration, memory_gb):
     """Update virtual machine memory size in GB.
 
-    vss-cli compute vm set <name-or-uuid> memory size <memory_gb>
+    vss-cli compute vm set <name-or-vm_id> memory size <memory_gb>
 
     """
     # create payload
-    payload = dict(sizeGB=memory_gb, uuid=ctx.moref)
+    payload = dict(sizeGB=memory_gb, vm_id=ctx.moref)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1794,12 +1796,12 @@ def compute_vm_set_memory_size(ctx: Configuration, memory_gb):
 def compute_vm_set_memory_hot_add(ctx: Configuration, status):
     """Enable or disable virtual machine memory hot-add setting
 
-    vss-cli compute vm set <name-or-uuid> memory hot-add on|off
+    vss-cli compute vm set <name-or-vm_id> memory hot-add on|off
 
     """
     lookup = {'on': True, 'off': False}
     # create payload
-    payload = dict(uuid=ctx.moref, hot_add=lookup[status])
+    payload = dict(vm_id=ctx.moref, hot_add=lookup[status])
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1819,10 +1821,10 @@ def compute_vm_set_name(ctx: Configuration, name):
     """Update virtual machine name only. It does not update
     VSS prefix YYMM{P|D|Q|T}.
 
-    vss-cli compute vm set <name-or-uuid> name <new-name>
+    vss-cli compute vm set <name-or-vm_id> name <new-name>
 
     """
-    payload = dict(name=name, uuid=ctx.moref)
+    payload = dict(name=name, vm_id=ctx.moref)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1870,13 +1872,15 @@ def compute_vm_set_nic(ctx: Configuration):
 def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
     """Update network adapter backing network, type or state
 
-        vss-cli compute vm set <name-or-uuid> nic up <unit> --adapter <type>
+        vss-cli compute vm set <name-or-vm_id> nic up <unit>
+        --adapter <type>
 
 
-        vss-cli compute vm set <name-or-uuid> nic up <unit> --network <network>
+        vss-cli compute vm set <name-or-vm_id> nic up <unit>
+        --network <network>
     """
     # create payload
-    payload = dict(uuid=ctx.moref, nic=unit)
+    payload = dict(vm_id=ctx.moref, nic=unit)
     # add common options
     payload.update(ctx.payload_options)
     # process request
@@ -1920,11 +1924,11 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
 def compute_vm_set_nic_mk(ctx: Configuration, net):
     """Add network adapter specifying backing network and adapter type.
 
-        vss-cli compute vm set <name-or-uuid> nic mk
+        vss-cli compute vm set <name-or-vm_id> nic mk
         -n <moref-or-name>=<nic-type> -n <moref-or-name>
     """
     # create payload
-    payload = dict(uuid=ctx.moref)
+    payload = dict(vm_id=ctx.moref)
     # add common options
     payload.update(ctx.payload_options)
     # payload
@@ -1948,17 +1952,17 @@ def compute_vm_set_nic_mk(ctx: Configuration, net):
 def compute_vm_set_nic_rm(ctx: Configuration, unit, confirm):
     """Remove given network adapters
 
-        vss-cli compute vm set <name-or-uuid> nic rm <unit> <unit> ...
+        vss-cli compute vm set <name-or-vm_id> nic rm <unit> <unit> ...
     """
     # create payload
-    payload = dict(uuid=ctx.moref)
+    payload = dict(vm_id=ctx.moref)
     units_payload = []
     # add common options
     payload.update(ctx.payload_options)
     confirm_message = list()
     # validate adapters
     for n in unit:
-        _nic = ctx.get_vm_nic(uuid=ctx.moref, nic=n)
+        _nic = ctx.get_vm_nic(vm_id=ctx.moref, nic=n)
         if _nic:
             _nic = _nic.pop()
             _message = const.DEFAULT_NIC_DEL_MSG.format(**_nic)
@@ -2042,7 +2046,8 @@ def compute_vm_set_snapshot_mk(
 ):
     """Create virtual machine snapshot:
 
-       vss-cli compute vm set <name-or-uuid> snapshot mk -d 'Short description'
+       vss-cli compute vm set <name-or-vm_id> snapshot mk
+       --description 'Short description'
 
        Note: if -t/--timestamp not specified, the snapshot request timestamp
        is current time.
@@ -2050,7 +2055,7 @@ def compute_vm_set_snapshot_mk(
 
     # create payload
     payload = dict(
-        uuid=ctx.moref,
+        vm_id=ctx.moref,
         desc=description,
         date_time=datetime.datetime.strftime(
             timestamp, const.DEFAULT_DATETIME_FMT
@@ -2076,11 +2081,11 @@ def compute_vm_set_snapshot_mk(
 def compute_vm_set_snapshot_rm(ctx: Configuration, snapshot_id):
     """Remove virtual machine snapshot:
 
-        vss-cli compute vm set <name-or-uuid> snapshot rm <snapshot-id>
+        vss-cli compute vm set <name-or-vm_id> snapshot rm <snapshot-id>
     """
     # create payload
-    payload = dict(uuid=ctx.moref, snapshot=snapshot_id)
-    if not ctx.get_vm_snapshot(uuid=ctx.moref, snapshot=snapshot_id):
+    payload = dict(vm_id=ctx.moref, snapshot=snapshot_id)
+    if not ctx.get_vm_snapshot(vm_id=ctx.moref, snapshot=snapshot_id):
         raise click.BadArgumentUsage(
             f'Snapshot ID {snapshot_id} could not be found.'
         )
@@ -2102,11 +2107,11 @@ def compute_vm_set_snapshot_rm(ctx: Configuration, snapshot_id):
 def compute_vm_set_snapshot_re(ctx: Configuration, snapshot_id):
     """Revert virtual machine snapshot:
 
-        vss-cli compute vm set <name-or-uuid> snapshot re <snapshot-id>
+        vss-cli compute vm set <name-or-vm_id> snapshot re <snapshot-id>
     """
     # create payload
-    payload = dict(uuid=ctx.moref, snapshot=snapshot_id)
-    if not ctx.get_vm_snapshot(uuid=ctx.moref, snapshot=snapshot_id):
+    payload = dict(vm_id=ctx.moref, snapshot=snapshot_id)
+    if not ctx.get_vm_snapshot(vm_id=ctx.moref, snapshot=snapshot_id):
         raise click.BadArgumentUsage(
             f'Snapshot ID {snapshot_id} could not be found.'
         )
@@ -2135,7 +2140,8 @@ def compute_vm_set_snapshot_re(ctx: Configuration, snapshot_id):
 def compute_vm_set_state(ctx: Configuration, state, confirm):
     """ Set given virtual machine power state.
 
-    vss-cli compute vm set <name-or-uuid> state on|off|reset|reboot|shutdown -c
+    vss-cli compute vm set <name-or-vm_id> state on|off|reset|reboot|shutdown
+    --confirm
 
     Reboot and shutdown send a guest OS restart signal
     (VMware Tools required).
@@ -2151,7 +2157,7 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
         'suspend': 'suspend',
     }
     # create payload
-    payload = dict(uuid=ctx.moref, state=lookup[state])
+    payload = dict(vm_id=ctx.moref, state=lookup[state])
     # add common options
     payload.update(ctx.payload_options)
     # validate VMware tools if shutdown/reboot
@@ -2209,10 +2215,10 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
 def compute_vm_set_template(ctx: Configuration, on):
     """Marks virtual machine as template or template to virtual machine.
 
-    vss-cli compute vm set <name-or-uuid> template --on/--off
+    vss-cli compute vm set <name-or-vm_id> template --on/--off
     """
     # create payload
-    payload = dict(uuid=ctx.moref, value=on)
+    payload = dict(vm_id=ctx.moref, value=on)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2234,9 +2240,9 @@ def compute_vm_set_tools(ctx: Configuration, action):
     """Upgrade, mount and unmount official VMware Tools package.
     This command does not apply for Open-VM-Tools.
 
-    vss-cli compute vm set <name-or-uuid> tools upgrade|mount|unmount
+    vss-cli compute vm set <name-or-vm_id> tools upgrade|mount|unmount
     """
-    payload = dict(uuid=ctx.moref, action=action)
+    payload = dict(vm_id=ctx.moref, action=action)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2258,10 +2264,10 @@ def compute_vm_set_usage(ctx: Configuration, usage):
     """Update virtual machine usage in both name prefix
     and metadata.
 
-    vss-cli compute vm set <name-or-uuid> usage Prod|Test|Dev|QA
+    vss-cli compute vm set <name-or-vm_id> usage Prod|Test|Dev|QA
     """
     # create payload
-    payload = dict(uuid=ctx.moref, usage=usage)
+    payload = dict(vm_id=ctx.moref, usage=usage)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2293,7 +2299,7 @@ def compute_vm_set_version(ctx: Configuration):
 def compute_vm_set_version_policy_vmx(ctx: Configuration, vmx):
     """Update virtual hardware version."""
     # create payload
-    payload = dict(uuid=ctx.moref, vmx=vmx)
+    payload = dict(vm_id=ctx.moref, vmx=vmx)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2318,7 +2324,7 @@ def compute_vm_set_version_policy_vmx(ctx: Configuration, vmx):
 def compute_vm_set_version_policy(ctx: Configuration, policy):
     """Update virtual hardware version upgrade policy."""
     # create payload
-    payload = dict(uuid=ctx.moref, policy=policy)
+    payload = dict(vm_id=ctx.moref, policy=policy)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2343,7 +2349,7 @@ def compute_vm_set_version_policy(ctx: Configuration, policy):
 def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
     """Enable or disable copy/paste between VMRC and VM OS"""
     # create payload
-    payload = dict(uuid=ctx.moref)
+    payload = dict(vm_id=ctx.moref)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2375,7 +2381,7 @@ def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
 def compute_vm_set_vss_option(ctx: Configuration, vss_option, on):
     """Enable or disable given VSS Option"""
     # create payload
-    payload = dict(uuid=ctx.moref, option_name=vss_option)
+    payload = dict(vm_id=ctx.moref, option_name=vss_option)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2405,7 +2411,7 @@ def compute_vm_set_vss_service(ctx: Configuration, label_name_or_id):
         'id'
     ]
     # create payload
-    payload = dict(uuid=ctx.moref, service_name_or_id=service)
+    payload = dict(vm_id=ctx.moref, service_name_or_id=service)
     # add common options
     payload.update(ctx.payload_options)
     obj = ctx.update_vm_vss_service(**payload)
@@ -2454,10 +2460,10 @@ def compute_vm_set_controller_scsi(ctx: Configuration):
 def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
     """Create virtual machine SCSI controllers:
 
-        vss-cli compute vm set <name-or-uuid> controller scsi mk
+        vss-cli compute vm set <name-or-vm_id> controller scsi mk
         -t paravirtual -t lsilogic
     """
-    payload = dict(uuid=ctx.moref, types=scsi_type)
+    payload = dict(vm_id=ctx.moref, types=scsi_type)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2487,7 +2493,7 @@ def compute_vm_set_controller_scsi_up(
 ):
     """Update virtual machine SCSI controller type:
 
-        vss-cli compute vm set <name-or-uuid> controller scsi up
+        vss-cli compute vm set <name-or-vm_id> controller scsi up
         <bus> -t paravirtual
 
     """
@@ -2495,7 +2501,7 @@ def compute_vm_set_controller_scsi_up(
     bus = ctx.get_vm_scsi_device(ctx.moref, bus_number)
     if not bus:
         raise click.BadOptionUsage('', 'SCSI bus could not be found.')
-    payload = dict(uuid=ctx.moref, bus=bus_number, bus_type=scsi_type)
+    payload = dict(vm_id=ctx.moref, bus=bus_number, bus_type=scsi_type)
     # add common options
     payload.update(ctx.payload_options)
     obj = ctx.update_vm_scsi_device_type(**payload)
@@ -2522,7 +2528,7 @@ def compute_vm_set_controller_scsi_up(
 def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     """Remove virtual machine SCSI controllers.
 
-        vss-cli compute vm set <name-or-uuid> controller scsi rm <bus> ...
+        vss-cli compute vm set <name-or-vm_id> controller scsi rm <bus> ...
     """
     buses = list(bus_number)
     for bus in buses:
@@ -2545,7 +2551,7 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
         raise click.BadArgumentUsage(
             'No valid SCSI Controllers could be found'
         )
-    payload = dict(uuid=ctx.moref, buses=buses)
+    payload = dict(vm_id=ctx.moref, buses=buses)
     # add common options
     payload.update(ctx.payload_options)
     # confirm
@@ -2632,7 +2638,7 @@ def compute_vm_rm(
                     skip = True
             if not skip:
                 # request
-                payload = dict(uuid=moref, force=force)
+                payload = dict(vm_id=moref, force=force)
                 objs.append(ctx.delete_vm(**payload))
     # print
     if objs:
@@ -2713,7 +2719,7 @@ def compute_vm_from_file(
 
     Or from an existing vm:
 
-        vss-cli compute vm get <vm_name_or_uuid> spec --edit vm.yaml
+        vss-cli compute vm get <name-or-vm_id> spec --edit vm.yaml
 
     Edit vm.yaml file and deploy as follows:
 
@@ -2829,8 +2835,8 @@ def compute_vm_mk_spec(
      base for a new VM."""
     built = 'os_install'
     _vm = ctx.get_vm_by_id_or_name(source)
-    vm_uuid = _vm[0]['moref']
-    s_payload = ctx.get_vm_spec(vm_uuid)
+    vm_id = _vm[0]['moref']
+    s_payload = ctx.get_vm_spec(vm_id)
     # payload
     payload = dict(
         description=description,

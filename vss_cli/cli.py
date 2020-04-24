@@ -195,7 +195,7 @@ def _default_token() -> Optional[str]:
     default=None,
     help=(
         'Custom columns key=value list.'
-        ' Example: VM=uuid,PROVISIONED=storage.provisionedGB'
+        ' Example: VM=moref,PROVISIONED=storage.provisionedGB'
     ),
 )
 @click.option(
