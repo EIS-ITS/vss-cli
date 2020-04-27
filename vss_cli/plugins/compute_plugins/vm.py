@@ -1690,6 +1690,23 @@ def compute_vm_set_ha_group_rm(ctx: Configuration):
         ctx.wait_for_request_to(obj)
 
 
+@compute_vm_set_ha_group.command('mg', short_help='Migrate VM HA-Group')
+@pass_context
+def compute_vm_set_ha_group_mg(ctx: Configuration):
+    """Remove given VM from HA-Group
+
+    vss-cli compute vm set <name-or-vm_id> ha-group mg
+    """
+    # request
+    obj = ctx.migrate_vm_vss_ha_group(vm_id=ctx.moref)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait:
+        ctx.wait_for_request_to(obj)
+
+
 @compute_vm_set_ha_group.command(
     'mk', short_help='Create HA-Group with multiple VMs'
 )
