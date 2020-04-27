@@ -1,5 +1,33 @@
 # Changelog 📝
 
+## [v0.7.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.7.0) (2020-04-24)
+
+**Improvements:**
+
+- [#278](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/278): ``compute vm ls``: add ``vm_moref`` to default attributes. 
+- [#279](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/279): ``compute vm get``: add support to query by ``moref``.
+- [#280](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/280): ``compute vm set``: add support to update vm by ``moref``.
+- [#281](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/281): ``compute vm set ha-group mk``: update to ``moref`` or ``name``: __breaking__
+- [#282](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/282): ``compute vm get ha-group``: update  vm identifier ``moref``: __breaking__
+- [#283](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/283): ``compute vm get``: include vm identifier ``moref``.
+- [#284](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/284): ``compute vm rm``: allow delete vm by ``name``, ``moref`` or ``uuid``.
+- [#285](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/285): ``core``: ``pyvss`` upgrade from 0.13.1-> 0.14.0: __breaking__
+- [#286](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/286): ``compute vm get vsphere-link``: provide vSphere client link to vm.
+- [#287](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/287): ``request new ls``: provide ``vm_moref``.
+- [#287](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/287): ``request change ls``: provide ``vm_moref``.
+- [#287](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/287): ``request snapshot ls``: provide ``vm_moref``.
+- [#287](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/287): ``request export ls``: provide ``vm_moref``.
+- [#288](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/288): ``completion``: support ``vm_moref`` and ``moref`` attributes.
+- [#291](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/291): ``core``: ``click-spinner`` v0.1.8 -> v0.1.10.
+- [#293](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/293): ``docs``: replace ``uuid`` with ``moref``.
+- [#294](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/294): ``compute vm set ha-group mg``: to migrate existing ha-group from ``uuid`` to ``moref``.
+
+**Bug Fixes:**
+
+- [#289](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/289): ``request new get``: autocomplete missing.
+- [#290](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/290): ``request snapshot get``: autocomplete missing. 
+
+
 ## [v0.6.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.6.2) (2020-04-09)
 
 **Improvements:**
