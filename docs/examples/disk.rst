@@ -4,9 +4,9 @@ Manage Virtual Disks
 ====================
 
 Virtual machine disks are listed by
-``vss-cli compute vm get <name-or-uuid> disk <unit>``
+``vss-cli compute vm get <name-or-vm-id> disk <unit>``
 and updated, removed and created by
-``vss-cli compute vm set <name-or-uuid> disk <unit>``.
+``vss-cli compute vm set <name-or-vm-id> disk <unit>``.
 This tutorial walks you through the process of
 managing virtual machine disks.
 
@@ -14,8 +14,8 @@ List
 ----
 
 To list a summary of current virtual machine disks, use
-``vss-cli compute vm get <name-or-uuid> disk`` or
-``vss-cli compute vm get <name-or-uuid> disk <unit>``
+``vss-cli compute vm get <name-or-vm-id> disk`` or
+``vss-cli compute vm get <name-or-vm-id> disk <unit>``
 to get specific information of a disk unit. For instance,
 the following virtual machine has two virtual disks configured:
 
@@ -30,11 +30,11 @@ the following virtual machine has two virtual disks configured:
     Hard disk 3       3  SCSI controller 1:0
 
 Getting specific information of a given disk unit, run
-``vss-cli compute vm get <name-or-uuid> disk <unit>`` as follows:
+``vss-cli compute vm get <name-or-vm-id> disk <unit>`` as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1
+    vss-cli compute vm get vm-1233 disk 1
 
     label               : Hard disk 1
     unit                : 1
@@ -47,7 +47,7 @@ by including the sub-command ``backing`` in the disk command:
 
 .. code-block:: bash
 
-    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 backing
+    vss-cli compute vm get vm-1233 disk 1 backing
 
     descriptor_file_name: None
     device_name         : None
@@ -63,7 +63,7 @@ by including the sub-command ``scsi`` in the disk command:
 
 .. code-block:: bash
 
-    vss-cli compute vm get 50128d83-0fcc-05e3-be71-d972ffdf3284 disk 1 scsi
+    vss-cli compute vm get vm-1233 disk 1 scsi
 
     bus_number          : 0
     label               : SCSI controller 0
@@ -74,7 +74,7 @@ Update
 ------
 There are three allowed actions to modify a given disk unit:
 remove, update and create as shown by
-``vss-cli compute vm set <name-or-uuid> disk mk|up|rm --help`` command:
+``vss-cli compute vm set <name-or-vm-id> disk mk|up|rm --help`` command:
 
 .. code-block:: bash
 
@@ -94,7 +94,7 @@ remove, update and create as shown by
 Expand
 ~~~~~~
 In order to expand an existing disk, use
-``vss-cli compute vm set <name-or-uuid> disk up <unit> -c <capacityGB>``
+``vss-cli compute vm set <name-or-vm-id> disk up <unit> -c <capacityGB>``
 as shown below:
 
 .. code-block:: bash
@@ -105,7 +105,7 @@ as shown below:
 Controller
 ~~~~~~~~~~
 SCSI controllers are also available to update via the CLI. Use
-``vss-cli compute vm set <name-or-uuid> disk up <unit> -s <bus_number>``
+``vss-cli compute vm set <name-or-vm-id> disk up <unit> -s <bus_number>``
 as follows:
 
 .. code-block:: bash
@@ -116,7 +116,7 @@ as follows:
 Backing Mode
 ~~~~~~~~~~~~
 Disk backing modes can be updated via
-``vss-cli compute vm set <name-or-uuid> disk up <unit> -m <disk-mode>``:
+``vss-cli compute vm set <name-or-vm-id> disk up <unit> -m <disk-mode>``:
 
 
 .. code-block:: bash
@@ -143,7 +143,7 @@ but switching the sub-command to ``mk``, for example:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk mk --capacity 20
+    vss-cli compute vm set vm-1233 disk mk --capacity 20
 
 Remove
 ------
@@ -156,7 +156,7 @@ prompt:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk rm 2
+    vss-cli compute vm set vm-1233 disk rm 2
 
     Are you sure you want to delete disk unit 2? [y/N]: N
     Error: Cancelled by user.
@@ -168,5 +168,5 @@ flag as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk rm --rm 2
+    vss-cli compute vm set vm-1233 disk rm --rm 2
 

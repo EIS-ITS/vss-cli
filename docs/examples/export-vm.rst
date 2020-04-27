@@ -30,12 +30,12 @@ Validate virtual machine
 
 First, we need to double check if the ``committedGB`` size is lower
 than **200GB** by executing the command
-``vss-cli compute vm get <name-or-uuid>``
+``vss-cli compute vm get <name-or-vm-id>``
 and looking for the attribute ``Committed (GB)`` as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm get <name-or-uuid>
+    vss-cli compute vm get <name-or-vm-id>
 
     ...
     Provisioned (GB)    : 16.0
@@ -47,18 +47,19 @@ In this particular case, we can proceed since the committed space is
 lower than **200GB**.
 
 The last item to verify is the virtual machine power state which has
-to be powered off. To verify that, execute ``vss-cli compute vm get <name-or-uuid> state``
+to be powered off. To verify that, execute ``vss-cli compute vm get <name-or-vm-id> state``
 
 
 .. code-block:: bash
 
-    vss-cli compute vm get <name-or-uuid> state
+    vss-cli compute vm get <name-or-vm-id> state
 
-    Uuid                : <uuid>
-    Connection State    : connected
-    Power State         : poweredOff
-    Boot Time           :
-    Domain Name         : FD1
+    create_date         : 2020-04-24 Fri 16:20:05
+    power_state         : poweredOff
+    boot_time           : None
+    connection_state    : connected
+    domain_name         : FDx
+    domain_moref        : domain-c631
 
 
 If the virtual machine power state is ``poweredOn`` power it off by
@@ -68,7 +69,7 @@ hard power ``off`` as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm set <name-or-uuid> state shutdown
+    vss-cli compute vm set <name-or-vm-id> state shutdown
 
     Host Name: ubuntu (Ubuntu Linux (64-bit))
     IP Address: 192.168.2.100, fe80::250:56ff:fe92:d463
@@ -80,18 +81,19 @@ Finally, verify if the VM's CD/DVD unit is not backed by an ISO image file:
 
 .. code-block:: bash
 
-    vss-cli compute vm get <name-or-uuid> cd
-    Uuid                : <uuid>
-    Label               : CD/DVD drive 1
-    Backing             : client
+    vss-cli compute vm get <name-or-vm-id> cd
+
+    label           backing    connected
+    --------------  ---------  ------------
+    CD/DVD drive 1  client     disconnected
 
 
-Execute ``vss-cli compute vm set <name-or-uuid> cd <unit> --iso client``
+Execute ``vss-cli compute vm set <name-or-vm-id> cd <unit> --iso client``
 if an ISO image is shown in CD backing.
 
 Export virtual machine
 ------------------------
-Run ``vss-cli compute vm set <name-or-uuid> export`` to submit an export task.
+Run ``vss-cli compute vm set <name-or-vm-id> export`` to submit an export task.
 The command does not require any argument or options.
 
 .. code-block:: bash
@@ -100,7 +102,7 @@ The command does not require any argument or options.
 
       Export current virtual machine to OVF.
 
-      vss-cli compute vm set <name-or-uuid> export
+      vss-cli compute vm set <name-or-vm-id> export
 
     Options:
       --help  Show this message and exit.
@@ -127,7 +129,7 @@ more important for this example. ``status=Processed`` tells us that the
 request has been completed. ``transferred=yes`` indicates that resulting
 ``files`` were successfully transferred to your `VSKEY-STOR`_ space.
 To confirm, you could either go to a web browser and open `VSKEY-STOR`_
-and sign in or execute ``vss-cli stor ls <uuid>`` and you should
+and sign in or execute ``vss-cli stor ls <vm-id>`` and you should
 get something like:
 
 .. code-block:: bash
@@ -141,22 +143,22 @@ Download virtual machine export
 -------------------------------
 
 To download the files you could either go to a web browser and
-open `VSKEY-STOR`_ and sign in, go to the ``<uuid>`` folder and
-download the files or execute ``vss-cli stor dl <uuid>/<file> -n t``
+open `VSKEY-STOR`_ and sign in, go to the ``<vm-id>`` folder and
+download the files or execute ``vss-cli stor dl <vm-id>/<file> -n t``
 as follows:
 
 .. code-block:: bash
 
     # OVF descriptor
-    vss-cli stor dl <uuid>/1812T-JMLpezLujn.ovf -d ~/Downloads -n 1812T-JMLpezLujn.ovf
+    vss-cli stor dl <vm-id>/1812T-JMLpezLujn.ovf -d ~/Downloads -n 1812T-JMLpezLujn.ovf
 
-    Download <uuid>/1812T-JMLpezLujn.ovf to ~/Downloads/1812T-JMLpezLujn.ovf in progress...
+    Download <vm-id>/1812T-JMLpezLujn.ovf to ~/Downloads/1812T-JMLpezLujn.ovf in progress...
     Download complete.
 
     # disk file
-    vss-cli stor dl <uuid>/disk-0.vmdk -d ~/Downloads -n disk-0.vmdk
+    vss-cli stor dl <vm-id>/disk-0.vmdk -d ~/Downloads -n disk-0.vmdk
 
-    Download <uuid>/disk-0.vmdk to ~/Downloads/disk-0.vmdk in progress...
+    Download <vm-id>/disk-0.vmdk to ~/Downloads/disk-0.vmdk in progress...
     Download complete.
 
 That's it, at this point the OVF and disks are ready to be imported to

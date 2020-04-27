@@ -20,8 +20,8 @@ In order to launch a new virtual machine, we will use the following parameters:
 * Network: ``NET=dvportgroup-11052``
 * Folder: ``FOLDER=group-v6736``
 * ISO image:
-  ``ISO="[vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-Minimal.iso"``
-* Name: ``NAME=Front_end_1``
+  ``ISO='[vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-Minimal.iso'``
+* Name: ``NAME=Frontend-1``
 * Notes: ``NOTES="Project: Enterprise CMS\nToDo: Backup, Recovery"``
 
 .. warning::
@@ -43,27 +43,34 @@ what options and arguments the ``shell`` command takes:
       Create a new virtual machine with no operating system pre-installed.
 
     Options:
-      -d, --description TEXT          Vm description.  [required]
-      -r, --inform TEXT               Informational contact emails in comma
-                                      separated
-      -u, --usage [Test|Prod|Dev|QA]  Vm usage.
+      -d, --description TEXT          A brief description.  [required]
+      -b, --client TEXT               Client department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
+
+      -r, --inform TEXT               Informational contact emails in comma
+                                      separated
+
+      -u, --usage [Test|Prod|Dev|QA]  Vm usage.
+      -o, --os TEXT                   Guest operating system id.  [required]
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
-      -t, --domain TEXT               Target fault domain.
-      -t, --notes TEXT                Custom notes.
-      -s, --iso TEXT                  ISO image path to be mounted after creation
-      -h, --high-io                   VM will be created with a VMware Paravirtual
-                                      SCSIController.
-      -b, --client TEXT               Client department.  [required]
-      -o, --os TEXT                   Guest operating system id or name.
+      -f, --folder TEXT               Logical folder moref name or path.
                                       [required]
-      -f, --folder TEXT               Logical folder moref.  [required]
+
       -i, --disk INTEGER              Disks in GB.  [required]
-      -n, --net TEXT                  Networks moref or name mapped to NICs.
+      -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
                                       [required]
+
+      -t, --domain TEXT               Target fault domain name or moref.
+      --notes TEXT                    Custom notes.
+      -s, --iso TEXT                  ISO image to be mounted after creation
+      -h, --high-io                   Use VMware Paravirtual SCSIController.
+      -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      --power-on                      Power on after successful deployment.
+      --vss-service TEXT              VSS Service related to VM
+      --instances INTEGER             Number of instances to deploy  [default: 1]
       --help                          Show this message and exit.
 
 Now that we have everything, proceed to deploy a new virtual machine with
@@ -71,9 +78,9 @@ Now that we have everything, proceed to deploy a new virtual machine with
 
 .. code-block:: bash
 
-    vss-cli compute vm mk shell --description 'NGINX web server' --client EIS --os $OS \
-    --memory 1 --cpu 1 --folder $FOLDER --disk 20 --net $NET --iso $ISO --notes "$NOTES" \
-    $NAME
+    vss-cli compute vm mk shell --description 'NGINX web server' --client EIS --os centos \
+    --memory 1 --cpu 1 --folder TargetFolder --disk 20 --net Public --iso centos --notes "Project:CMS" \
+    Frontend-1
 
 In matter of seconds, a confirmation email will be sent with the allocated
 IP address, if ``VL-1584-VSS-PUBLIC`` was selected.
@@ -82,7 +89,7 @@ List Client Notes
 -----------------
 
 **Optional** Obtain the new ``UUID`` by either listing and filtering virtual
-machines in your inventory ``vss-cli compute vm ls --filter-by name=%front%``
+machines in your inventory ``vss-cli compute vm ls --filter-by name=Front``
 or listing your new requests ``vss-cli request new ls -s created_on desc``.
 The following command illustrates how to list virtual machines with the
 ``front`` string in their names:
@@ -93,10 +100,12 @@ The following command illustrates how to list virtual machines with the
 
 .. code-block:: bash
 
-    vss-cli compute vm ls --filter-by name=front
-    uuid                                  name
-    ------------------------------------  -----------------
-    5012b89f-fae3-168e-7f44-9a23b8e65074  1709T-Front_end_1
+    vss-cli compute vm ls -f name=Front
+
+    moref    name              folder.path                  cpu_count    memory_gb  power_state    ip_address
+    -------  ----------------  -------------------------  -----------  -----------  -------------  ------------
+    vm-2182  2004T-Frontend-1  VSS > Development > Dev03            1            1  poweredOff
+
 
 To query existing virtual machine **client-note** use the
 ``vss-cli compute vm get <uuid> client-note``
@@ -104,10 +113,9 @@ command as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm get Front_end_1 client-note
+    vss-cli compute vm get Frontend1 client-note
 
-    value               : Project: Enterprise CMS
-                          ToDo: Backup, Recovery
+    value               : Project:CMS
 
 
 Update Client Notes
@@ -119,13 +127,13 @@ to append or use the flag ``--replace`` to overwrite all notes.
 
 .. code-block:: bash
 
-    vss-cli compute vm set Front_end_1 client-note "Billing Code: 1234"
+    vss-cli compute vm set Frontend1 client-note "Billing Code: 1234"
 
 And query to validate any change:
 
 .. code-block:: bash
 
-    vss-cli compute vm get Front_end_1 client-note
+    vss-cli compute vm get Frontend1 client-note
 
     value               : Project: Enterprise CMS
                           ToDo: Backup, Recovery
@@ -136,7 +144,7 @@ If you wanted just to replace existing contents, add the
 
 .. code-block:: bash
 
-    vss-cli compute vm set Front_end_1 client-note --replace "Billing Code: 1234"
+    vss-cli compute vm set Frontend1 client-note --replace "Billing Code: 1234"
 
 And query to validate any change:
 

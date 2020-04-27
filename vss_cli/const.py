@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.6.2"
+__version__ = "0.7.0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -83,11 +83,15 @@ DEFAULT_STATE_MSG = (
 )
 
 DEFAULT_VM_DEL_MSG = (
-    "Name:\t\t{name[name]}\n"
-    "Folder:\t\t{folder_info[path]}\n"
-    "Host Name:\t{hostname} "
-    "({os[full_name]})\n"
-    "IP Address:\t{ip_addresses}\n"
+    "Moref:\t\t{vm[moref]}\n"
+    "UUID:\t\t{vm[uuid]}\n"
+    "Name:\t\t{vm[name]}\n"
+    "Folder:\t\t{vm[folder][path]}\n"
+    "Host Name:\t{vm[hostname]} "
+    "({vm[guest_full_name]})\n"
+    "IP Address:\t{vm[ip_address]}\n"
+    "MAC Address:\t{vm[mac_address]}\n"
+    "Create Date:\t{vm[create_date]}\n"
     "Are you sure you want to delete "
     "the above VM?"
 )
@@ -95,8 +99,8 @@ DEFAULT_VM_DEL_MSG = (
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
 COLUMNS_DEFAULT = [("all", "*")]
-COLUMNS_VM_MIN = [("uuid",), ("name",)]
-COLUMNS_VIM_REQUEST = [("vm_uuid", "vm_uuid"), ("vm_name", "vm_name")]
+COLUMNS_VM_MIN = [("moref",), ("name",)]
+COLUMNS_VIM_REQUEST = [("vm_moref",), ("vm_name",)]
 COLUMNS_MOREF = [("moref",), ("name",)]
 COLUMNS_FOLDER_MIN = [*COLUMNS_MOREF, ("path",), ("parent.name",)]
 COLUMNS_FOLDER = [*COLUMNS_FOLDER_MIN, ("parent.moref",), ("has_children",)]
@@ -147,15 +151,18 @@ COLUMNS_REQUEST_MULT_SUBMITTED = [
     ("task_id", "request.task_id[*]"),
     ("message",),
 ]
-COLUMNS_REQUEST_SNAP = [
+COLUMNS_REQUEST_SNAP_MIN = [
+    *COLUMNS_REQUEST,
+    *COLUMNS_VIM_REQUEST,
+    ("action",),
     ("snapshot.from_date",),
     ("snapshot.to_date",),
+]
+COLUMNS_REQUEST_SNAP = [
+    *COLUMNS_REQUEST_SNAP_MIN,
     ("snapshot.description",),
     ("snapshot.snap_id",),
     ("extensions",),
-    ("action",),
-    *COLUMNS_VIM_REQUEST,
-    *COLUMNS_REQUEST_MAX,
 ]
 COLUMNS_REQUEST_CHANGE_MIN = [
     *COLUMNS_REQUEST,
@@ -203,6 +210,7 @@ COLUMNS_REQUEST_NEW_MIN = [
 ]
 COLUMNS_REQUEST_NEW = [
     *COLUMNS_REQUEST_NEW_MIN,
+    ('guest_os',),
     ("domain",),
     ("source_vm",),
     ("source_template",),
@@ -240,6 +248,7 @@ COLUMNS_VM_TEMPLATE = [
 ]
 COLUMNS_VM = [*COLUMNS_VM_TEMPLATE, ("power_state",), ("ip_address",)]
 COLUMNS_VM_INFO = [
+    ("moref",),
     ("uuid",),
     ("name", "name.full_name"),
     ("folder.path", "folder.path"),

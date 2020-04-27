@@ -41,15 +41,7 @@ def snapshot_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
             vss-cli request snapshot ls -s created_on=desc
 
     """
-    columns = ctx.columns or const.COLUMNS_REQUEST
-    if not ctx.columns:
-        columns.extend(
-            [
-                ('VM_NAME', 'vm_name'),
-                ('VM_UUID', 'vm_uuid'),
-                ('ACTION', 'action'),
-            ]
-        )
+    columns = ctx.columns or const.COLUMNS_REQUEST_SNAP_MIN
     params = dict(expand=1, sort='created_on,desc')
     if all(filter_by):
         params['filter'] = ';'.join(filter_by)

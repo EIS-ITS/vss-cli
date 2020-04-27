@@ -3,7 +3,7 @@ import logging
 
 import click
 
-from vss_cli import const, rel_opts as so
+from vss_cli import autocompletion, const, rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -64,7 +64,12 @@ def request_mgmt_new_ls(
 
 
 @request_mgmt_new.command('get', short_help='New vm request')
-@click.argument('rid', type=click.INT, required=True)
+@click.argument(
+    'rid',
+    type=click.INT,
+    required=True,
+    autocompletion=autocompletion.new_requests,
+)
 @pass_context
 def request_mgmt_new_get(ctx: Configuration, rid):
     # make request

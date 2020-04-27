@@ -61,7 +61,7 @@ Run ``vss-cli compute net ls`` to list available network segments to your accoun
 have at least ``VL-1584-VSS-PUBLIC`` which is our public network.
 
 .. note:: This version of the VSS CLI supports managing networks
-    not only using the moref, but also using names. In case of multiple results,
+    not only using the ``moref``, but also using names. In case of multiple results,
     the CLI prompts to select the right instance.
 
 .. code-block:: bash
@@ -95,7 +95,7 @@ Logical folders can be listed by running ``vss-cli compute folder ls``. Select t
 ``moref`` folder to store the virtual machine on:
 
 .. note:: This version of the VSS CLI supports managing logical folders
-    not only using the moref, but also using names. In case of multiple results,
+    not only using the ``moref``, but also using names. In case of multiple results,
     the CLI prompts to select the right instance.
 
 .. code-block:: bash
@@ -121,13 +121,13 @@ install the operating system. Run ``vss-cli compute iso public ls`` to display  
 ISO images in both the VSS central store and your personal VSKEY-STOR space.
 
 .. note:: This version of the VSS CLI supports managing ISOs
-    not only using the path, but also using name or ID. In case of multiple results,
+    not only using the path, but also using ``name`` or ``ID`` or ``path``. In case of multiple results,
     the CLI prompts to select the right instance.
 
 
 .. code-block:: bash
 
-    vss-cli compute iso public ls -f name=like,Cent%
+    vss-cli compute iso public ls -f name=Cent%
     path                                                           name
     -------------------------------------------------------------  -------------------------------------
     [vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-DVD.iso         CentOS-7.0-1406-x86_64-DVD.iso
@@ -138,7 +138,7 @@ Save the desired path to ``ISO`` environment variable:
 
 .. code-block:: bash
 
-    export ISO="[vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-DVD.iso"
+    export ISO='[vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-DVD.iso'
 
 Deployment
 ~~~~~~~~~~
@@ -160,23 +160,27 @@ command takes:
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
+
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
+
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
       -o, --os TEXT                   Guest operating system id.  [required]
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
       -f, --folder TEXT               Logical folder moref name or path.
                                       [required]
+
       -i, --disk INTEGER              Disks in GB.  [required]
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
                                       [required]
+
       -t, --domain TEXT               Target fault domain name or moref.
       --notes TEXT                    Custom notes.
-      -s, --iso TEXT                  ISO image path to be mounted after creation
-      -h, --high-io                   VM will be created with a VMware Paravirtual
-                                      SCSIController.
+      -s, --iso TEXT                  ISO image to be mounted after creation
+      -h, --high-io                   Use VMware Paravirtual SCSIController.
       -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      --power-on                      Power on after successful deployment.
       --vss-service TEXT              VSS Service related to VM
       --instances INTEGER             Number of instances to deploy  [default: 1]
       --help                          Show this message and exit.
@@ -187,17 +191,9 @@ Now that we have everything, proceed to deploy a new virtual machine with 1GB of
 
 .. code-block:: bash
 
-    vss-cli compute vm mk shell --description 'NGINX web server' --client EIS --os $OS \
-    --memory 1 --cpu 1 --folder $FOLDER --disk 20 --net $NET --iso "$ISO" --notes 'Project: CMS' \
-    FrontEnd_1
-
-The following command will also work:
-
-.. code-block:: bash
-
-    vss-cli compute vm mk shell --description 'NGINX web server' --client EIS --os centos \
-    --memory 1 --cpu 1 --folder APIDemo --disk 20 --net PUBLIC --iso CentOS-7.0-1406-x86_64-DVD.iso \
-    --notes 'Project: CMS' FrontEnd_1
+    vss-cli compute vm mk --wait shell --power-on --description 'NGINX web server' --client EIS \
+    --os centos8 --memory 1 --cpu 1 --folder APIDemo --disk 20 --net VSS --iso centos \
+    --notes 'Project: CMS' Frontend3
 
 .. note::
 
@@ -209,10 +205,16 @@ A confirmation email will be sent and the command will return the request ``id``
 
 .. code-block:: bash
 
-    status              : 202
-    request             : status: Submitted, id: 1150, task_id: 7c32e09a-b36b-4b89-b6a5-ffc91045db4f
+    id                  : 78
+    status              : IN_PROGRESS
+    task_id             : af6e1d45-6890-4329-b2c2-c3e3d6d28cfd
     message             : Request has been accepted for processing
-    name                : Accepted
+    ⏳ Waiting for request 78 to complete...
+    🎉 Request 78 completed successfully:
+    warnings            : Fault Domain: Cluster1 (domain-c63), Created in: VSS > Development > Dev03 (group-v907),
+                          Network adapter 1 (vmxnet3): 00:50:56:b0:0e:30: Quarantine,
+                          Successfully powered on.
+    errors              :
 
 
 In matter of seconds, a confirmation email will be sent with the allocated IP address, if
@@ -234,55 +236,43 @@ the following command:
 
 .. code-block:: bash
 
-    vss-cli request new ls -s created_on desc -c 1
-      id  created_on               updated_on               status     vm_name           vm_uuid
-    ----  -----------------------  -----------------------  ---------  ----------------  ------------------------------------
-    1150  2017-03-13 13:11:41 EDT  2017-03-13 13:12:00 EDT  Processed  1703T-FrontEnd_1  5012f74a-4243-6664-20a9-0993567fbb7e
+    vss-cli request new ls -s created_on=desc -c 1
+
+      id  created_on                   updated_on                   status     vm_moref    vm_name          approval.approved    built_from
+    ----  ---------------------------  ---------------------------  ---------  ----------  ---------------  -------------------  ------------
+      78  2020-04-24 Fri 17:06:49 EDT  2020-04-24 Fri 17:06:51 EDT  PROCESSED  vm-2185     2004T-Frontend3  True                 os_install
 
 
 Access Instance
 ---------------
 
-The previous command has shown the virtual machine has been successfully created and it has been
-assigned ``5012f74a-4243-6664-20a9-0993567fbb7e`` as ``uuid``. To validate the ISO is mounted, run
-``vss-cli compute vm get <name-or-uuid> cd 1``:
+Since we added the ``--power-on`` option, the virtual machine should have been powered on
+right after the Guest Operating System Customization task completed.
+
+In a few minutes the virtual machine will show the hostname and ip configuration by running
+``vss-cli compute vm get <name-or-vm-id> guest``:
 
 .. code-block:: bash
 
-    vss-cli compute vm get FrontEnd_1 cd 1
+    vss-cli compute vm get docker-node1 guest
 
-    LABEL               : CD/DVD drive 1
-    BACKING             : [vss-ISOs] Linux/CentOS/CentOS-7.0-1406-x86_64-DVD.iso
-    CONNECTED           : Disconnected
-    CONTROLLER_TYPE     : IDE 0
-    CONTROLLER_NODE     : IDE 0:0
+    hostname            : fe2
+    ip_address          : 142.1.217.228, fe80::250:56ff:fe92:323f
+    full_name           : CentOS 8 (64-bit)
+    guest_id            : centos8_64Guest
+    running_status      : guestToolsRunning
 
-Confirming the ISO has been successfully mounted upon provisioning, update the state to ``on`` using
-``vss-cli compute vm <name-or-uuid> set state on`` as follows:
 
-.. code-block:: bash
-
-    vss-cli compute vm set FrontEnd_1 state on
-
-A confirmation email will be sent and the command will return the request ``id`` and
-``task_id`` as follows:
+The **Guest Host Name** shows that the hostname has been changed, and now
+you will be able to access via either ``ssh`` or the virtual machine console:
 
 .. code-block:: bash
 
-    status              : 202
-    request             : status: Submitted, id: 5646, task_id: 1c2caca0-5038-4779-8d66-74db39650d57
-    message             : Request has been accepted for processing
-    name                : Accepted
-
-Launch a one-time link to the virtual machine console with ``vss-cli compute vm get <name-or-uuid> console``
-and proceed with the operating system install:
+    ssh username@<ip-address>
 
 .. code-block:: bash
 
-    vss-cli compute vm get FrontEnd_1 console -l
-
-.. warning:: To generate a console link you just need to have a valid vSphere session
-  (unfortunately), and this is due to the nature of vSphere API.
+    vss-cli compute vm get Frontend2 vsphere-link -l
 
 .. image:: centos-install.png
 

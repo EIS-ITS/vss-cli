@@ -24,21 +24,23 @@ and then starts copying the data. Even though the memory data is not kept,
 it takes time to generate the snapshot. For this example, we will be using
 a powered on virtual machine with Ubuntu installed.
 
-**Optional*** First obtain the ``uuid`` of the source virtual machine:
+**Optional*** First obtain the vm identifier ``moref`` (managed object reference)
+of the source virtual machine:
 
 .. note:: This version of the VSS CLI supports managing virtual machines
-    not only using the UUID, but using names. In case of multiple results,
+    not only using the UUID and Moref but using names. In case of multiple results,
     the CLI prompts to select the right instance.
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name=cranky
+    vss-cli compute vm ls -f name=Front
 
-    uuid                                  name
-    ------------------------------------  ---------------------
-    50128577-2026-908a-7bb7-df5a34fea7bf  1610T-cranky_sinoussi
+    moref    name              folder.path                  cpu_count    memory_gb  power_state    ip_address
+    -------  ----------------  -------------------------  -----------  -----------  -------------  ------------
+    vm-2182  2004T-Frontend-1  VSS > Development > Dev03            1            1  poweredOff
 
-Save the ``uuid`` in ``SUUID`` environment variable.
+
+Save the ``moref`` in ``MOREF`` environment variable.
 
 
 Launch Instance
@@ -63,15 +65,18 @@ arguments and options required:
       not specified, -clone suffix will be added to resulting virtual machine
 
     Options:
-      -s, --source TEXT               Source virtual machine or template UUID.
-                                      [required]
+      -s, --source TEXT               Source virtual machine or template MOREF or
+                                      UUID.  [required]
+
       -d, --description TEXT          A brief description.  [required]
-      -b, --client TEXT               Client department.  [required]
+      -b, --client TEXT               Client department.
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
+
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
+
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
       -o, --os TEXT                   Guest operating system id.
       -m, --memory INTEGER            Memory in GB.
@@ -83,10 +88,13 @@ arguments and options required:
       --notes TEXT                    Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
+
       -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      --power-on                      Power on after successful deployment.
       --vss-service TEXT              VSS Service related to VM
       --instances INTEGER             Number of instances to deploy  [default: 1]
       --help                          Show this message and exit.
+                        Show this message and exit.
 
 
 Network
@@ -161,7 +169,8 @@ Customization Spec
 
 Customizing a guest operating system is helpful to prevent conflicts if
 virtual machines are identical after deployed. To customize the guest
-operating system, VMware Tools must be installed in the source virtual machine.
+operating system, VMware Tools and Perl must be installed in
+the source virtual machine.
 
 The ``vss-cli compute vm mk from-clone `` command provides the option
 ``-p/--custom-spec`` to pass the guest os customization spec, which is
@@ -220,60 +229,44 @@ request. For this example, the request is made for 2GB of memory, 2 vCPU,
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-clone --source $SUUID --client EIS --memory 2 --cpu 2 \
-    --folder $FOLDER --disk 40 --disk 40 --net $NET \
-    --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
-    --description "Docker node" docker-node1
+    vss-cli compute vm mk --wait from-clone --power-on --source Frontend \
+    --client EIS --folder APIDemo \
+    --memory 2 --cpu 2 --disk 40 --disk 40 --net VSS \
+    --custom-spec '{"hostname": "fe2", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
+    --description "Frontend 2" Frontend2
 
 .. note::
 
     To wait for the deployment to complete, you could use the ``--wait`` flag at the ``mk`` command level:
     i.e. ``vss-cli compute vm mk --wait from-clone ...```
 
-To verify the state of the new request, run ``vss-cli request new ls``
-as follows:
-
-.. code-block:: bash
-
-    vss-cli request new ls -s created_on desc -c 1
-
-      id  created_on               updated_on               status       vm_name             vm_uuid
-    ----  -----------------------  -----------------------  -----------  ------------------  ---------
-    1151  2017-03-13 15:24:44 EDT  2017-03-13 15:24:44 EDT  In Progress  1703T-docker-node1
-
 Wait a few minutes until the virtual machine is deployed.
 
 .. code-block:: bash
 
-    vss-cli request new ls -s created_on desc -c 1
+    vss-cli request new ls -s created_on=desc -c 1
 
-      id  created_on               updated_on               status     vm_name             vm_uuid
-    ----  -----------------------  -----------------------  ---------  ------------------  ------------------------------------
-    1151  2017-03-13 15:24:44 EDT  2017-03-13 15:27:06 EDT  Processed  1703T-docker-node1  50124c39-06cd-4971-c4ff-36f95846c810
+      id  created_on                   updated_on                   status     vm_moref    vm_name          approval.approved    built_from
+    ----  ---------------------------  ---------------------------  ---------  ----------  ---------------  -------------------  ------------
+      76  2020-04-24 Fri 16:36:15 EDT  2020-04-24 Fri 16:37:31 EDT  PROCESSED  vm-2183     2004T-Frontend2  True                 clone
 
 Access Virtual Machine
 ----------------------
 
-Run ``vss-cli compute vm set <name-or-uuid> state on`` to power on
-virtual machine as shown below:
+Since we added the ``--power-on`` option, the virtual machine should have been powered on
+right after the Guest Operating System Customization task completed.
+
+In a few minutes the virtual machine will show the hostname and ip configuration by running
+``vss-cli compute vm get <name-or-vm-id> guest``:
 
 .. code-block:: bash
 
-    vss-cli compute vm set docker-node1 state on
+    vss-cli compute vm get Frontend2 guest
 
-At this point, the guest operating system customization spec will kick
-in and start reconfiguring the recently deployed instance. In a few minutes
-the virtual machine will show the hostname and ip configuration by running
-``vss-cli compute vm get <name-or-uuid> guest``:
-
-.. code-block:: bash
-
-    vss-cli compute vm get docker-node1 guest
-
-    hostname            : fe1
+    hostname            : fe2
     ip_address          : 142.1.217.228, fe80::250:56ff:fe92:323f
-    full_name           : Ubuntu Linux (64-bit)
-    guest_id            : ubuntu64Guest
+    full_name           : CentOS 8 (64-bit)
+    guest_id            : centos8_64Guest
     running_status      : guestToolsRunning
 
 
@@ -286,7 +279,5 @@ you will be able to access via either ``ssh`` or the virtual machine console:
 
 .. code-block:: bash
 
-    vss-cli compute vm get docker-node1 console -l
+    vss-cli compute vm get Frontend2 vsphere-link -l
 
-.. warning:: To generate a console link you just need to have a valid vSphere session
-  (unfortunately), and this is due to the nature of vSphere API.

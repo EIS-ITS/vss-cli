@@ -31,38 +31,38 @@ virtual machine, thus any virtual machine can be marked as template.
 .. warning:: Virtual machines with large disks will take longer to deploy.
 
 **Optional**. In order to make a virtual machine a template, first obtain
-the ``uuid`` of the virtual machine:
+the ``moref`` of the virtual machine:
 
 .. note:: This version of the VSS CLI supports managing virtual machines
-    not only using the UUID, but using names. In case of multiple results,
+    not only using the ``MOREF`` or ``UUID``, but using names. In case of multiple results,
     the CLI prompts to select the right instance.
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name=ubuntu-16.04_x64
+    vss-cli compute vm ls -f name=Front
 
-    uuid                                  name
-    ------------------------------------  ----------------------
-    5012f881-ebef-c3df-22d0-84b219288cae  1608T-ubuntu-16.04_x64
+    moref    name              folder.path                  cpu_count    memory_gb  power_state    ip_address
+    -------  ----------------  -------------------------  -----------  -----------  -------------  ------------
+    vm-2182  2004T-Frontend-1  VSS > Development > Dev03            1            1  poweredOff
 
-Save the ``uuid`` in ``SUUID`` environment variable.
+Save the ``moref`` in ``MOREF`` environment variable.
 
 Then update the **template** state by running
-``vss-cli compute vm set <name-or-uuid> template --on``:
+``vss-cli compute vm set <name-or-vm_id> template --on``:
 
 .. code-block:: bash
 
-    vss-cli compute vm set $SUUID template --on
+    vss-cli compute vm set --wait $MOREF template --on
 
     # or
 
-    vss-cli compute vm set ubuntu-16.04_x64 template --on
+    vss-cli compute vm set --wait Front template --on
 
 Once the request has been processed, verify the **template** state:
 
 .. code-block:: bash
 
-    vss-cli compute vm get $SUUID template
+    vss-cli compute vm get Front template
 
     IsTemplate         : True
 
@@ -70,7 +70,7 @@ Launch Instance
 ---------------
 
 Launching an instance ``from-template`` is simpler than ``shell`` since the
-``from-template`` command carbon copy the specs with just name and
+``from-template`` command carbon copies the specs with just name and
 ``--description/-d`` to provide. However to make this example more
 realistic, a different logical folder is provided, otherwise the
 ``from-template`` command will use the source virtual machine template
@@ -87,15 +87,18 @@ list of arguments and options required:
       Deploy virtual machine from template
 
     Options:
-      -s, --source TEXT               Source virtual machine or template UUID.
-                                      [required]
+      -s, --source TEXT               Source virtual machine or template MOREF or
+                                      UUID.  [required]
+
       -d, --description TEXT          A brief description.  [required]
-      -b, --client TEXT               Client department.  [required]
+      -b, --client TEXT               Client department.
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
+
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
+
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
       -o, --os TEXT                   Guest operating system id.
       -m, --memory INTEGER            Memory in GB.
@@ -107,10 +110,13 @@ list of arguments and options required:
       --notes TEXT                    Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
+
       -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      --power-on                      Power on after successful deployment.
       --vss-service TEXT              VSS Service related to VM
       --instances INTEGER             Number of instances to deploy  [default: 1]
       --help                          Show this message and exit.
+
 
 
 Network
@@ -127,6 +133,7 @@ the VSS public network.
 .. code-block:: bash
 
     vss-cli compute net ls -f name=public
+
     moref              name                description         subnet            ports
     -----------------  ------------------  ------------------  --------------  -------
     dvportgroup-11052  VL-1584-VSS-PUBLIC  VSS Public network  142.1.216.0/23       32
@@ -185,10 +192,10 @@ customization specification needs to be created.
 Customization Spec
 ~~~~~~~~~~~~~~~~~~
 
-Customizing a guest operating system is helpful to prevent conflicts
-if virtual machines are identical after deployed. To customize the guest
-operating system, VMware Tools must beinstalled in the source template or
-virtual machine.
+Customizing a guest operating system is helpful to prevent conflicts if
+virtual machines are identical after deployed. To customize the guest
+operating system, VMware Tools and Perl must be installed in
+the source virtual machine.
 
 The ``vss-cli compute vm mk from-template`` command provides the
 option ``-p/--custom-spec`` to pass the guest os customization spec,
@@ -243,40 +250,31 @@ and  to reconfigure the hostname and domain.
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-template --source $SUUID --client EIS --memory 2 --cpu 2 \
-    --folder $FOLDER --disk 40 --disk 40 --net $NET \
-    --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
-    --description "Docker node" docker-node1
+    vss-cli compute vm mk --wait from-template --power-on --source Frontend \
+    --client EIS --folder APIDemo \
+    --memory 2 --cpu 2 --disk 40 --disk 40 --net VSS \
+    --custom-spec '{"hostname": "fe2", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
+    --description "Frontend 3" Frontend3
 
 .. note::
 
     To wait for the deployment to complete, you could use the ``--wait`` flag at the ``mk`` command level:
     i.e. ``vss-cli compute vm mk --wait from-template ...```
 
-The following command will also work:
-
-.. code-block:: bash
-
-    vss-cli compute vm mk from-template --source ubuntu-16.04_x64 --client EIS --memory 2 --cpu 2 \
-    --folder APIDemo --disk 40 --disk 40 --net VSS-PUBLIC \
-    --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
-    --description "Docker node" docker-node1
-
 .. note::
 
     Deploy multiple instances with the ``--instances`` flag.
 
 
-To verify the state of the new request, run ``vss-cli request new ls``
-as follows:
+Wait a few minutes until the virtual machine is deployed.
 
 .. code-block:: bash
 
-    vss-cli request new ls -s created_on desc -c 1
+   vss-cli request new ls -s created_on=desc -c 1
 
-      id  created_on               updated_on               status       vm_name             vm_uuid
-    ----  -----------------------  -----------------------  -----------  ------------------  ---------
-    1151  2017-03-13 15:24:44 EDT  2017-03-13 15:24:44 EDT  In Progress  1703T-docker-node1
+      id  created_on                   updated_on                   status     vm_moref    vm_name          approval.approved    built_from
+    ----  ---------------------------  ---------------------------  ---------  ----------  ---------------  -------------------  ------------
+      76  2020-04-24 Fri 16:36:15 EDT  2020-04-24 Fri 16:37:31 EDT  PROCESSED  vm-2184     2004T-Frontend3  True                 template
 
 Wait a few minutes until the virtual machine is deployed.
 
@@ -291,25 +289,15 @@ Wait a few minutes until the virtual machine is deployed.
 Access Virtual Machine
 ----------------------
 
-Run ``vss-cli compute vm set <name-or-uuid> state on`` to power on
-virtual machine as shown below:
+Since we added the ``--power-on`` option, the virtual machine should have been powered on
+right after the Guest Operating System Customization task completed.
+
+In a few minutes the virtual machine will show the hostname and ip configuration by running
+``vss-cli compute vm get <name-or-vm-id> guest``:
 
 .. code-block:: bash
 
-    vss-cli compute vm set docker-node1 state on
-
-    # or
-
-    vss-cli compute vm set docker-node1 state on
-
-At this point, the guest operating system customization spec will
-kick in and start reconfiguring the recently deployed instance.
-In a few minutes the virtual machine will show the hostname and ip
-configuration by running ``vss-cli compute vm get <name-or-uuid> guest``:
-
-.. code-block:: bash
-
-    vss-cli compute vm get docker-node1 guest
+    vss-cli compute vm get Frontend3 guest
 
     Uuid                : 50124c39-06cd-4971-c4ff-36f95846c810
     Guest Guest Full Name: Ubuntu Linux (64-bit)
@@ -327,7 +315,4 @@ you will be able to access via either ``ssh`` or the virtual machine console:
 
 .. code-block:: bash
 
-    vss-cli compute vm get docker-node1 console -l
-
-.. warning:: To generate a console link you just need to have a valid vSphere session
-  (unfortunately), and this is due to the nature of vSphere API.
+    vss-cli compute vm get Frontend2 vsphere-link -l

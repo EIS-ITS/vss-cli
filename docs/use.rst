@@ -62,7 +62,7 @@ following usage:
 
       Filter and sort list by any attribute. For example:
 
-      vss-cli compute vm ls -f name=like,%vm-name% -f version like,%13
+      vss-cli compute vm ls -f name=vm-name -f version=13
 
       Simple name filtering:
 
@@ -84,18 +84,19 @@ is shown below:
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name=%vm-% -s name desc
+    vss-cli compute vm ls -f name=%VM% -s name=desc
 
-    UUID                                  NAME        FOLDER                          CPU  IP_ADDRESS       MEMORY  POWER       GUEST                         VERSION
-    ------------------------------------  ----------  ----------------------------  -----  -------------  --------  ----------  ----------------------------  ---------
-    5012c585-98e5-088b-4c61-9b100a414fca  1905P-vm-1  VSS > Sandbox > jm > Desktop      2  192.168.2.100         5  poweredOn   Microsoft Windows 8 (64-bit)  vmx-13
-    50127974-aa4a-c215-f9f0-e1ab8a4ef050  1409P-vm-2  VSS > Sandbox > jm > Desktop      1                        3  poweredOff  Microsoft Windows 8 (64-bit)  vmx-10
+    moref    name                  folder.path                                         cpu_count    memory_gb  power_state    ip_address
+    -------  --------------------  ------------------------------------------------  -----------  -----------  -------------  ------------
+    vm-1274  1910T-TestVM1         VSS > Development                                           1            2  poweredOff
+    vm-1270  1910T-TestVM2         VSS > Development                                           1            2  poweredOff
+    vm-1258  1910T-TestVM3         VSS > Development                                           1            1  poweredOff
 
 
 Command Structure
 -----------------
 The VSS CLI command structure is compose by the base ``vss-cli`` command
-followed by options, subgroups, subcommands, options and arguments.
+followed by options, subgroups, sub-commands, options and arguments.
 
 .. code-block:: bash
 
@@ -117,23 +118,25 @@ by quotes. The following example renames a virtual machine:
 
 .. code-block:: bash
 
-   vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 name VM_NEW
+   vss-cli compute vm set vm-123 name 'VM-New'
 
 Or this can be done by using the VM name instead as follows:
 
 .. code-block:: bash
 
-   vss-cli compute vm set TEST name VM_NEW
+   vss-cli compute vm set TEST name VM-New
 
 If there's more than one virtual machine with "TEST" in their name, you will be
 prompted to select which one you want to change:
 
 .. code-block:: bash
 
-     Found 2 matches. Please select one:
+     Found 5 matches. Please select one:
 
-     => 50300d58-29dd-5781-a5a0-dc9937351090 (1902D-TESTOVA123)
-        5030d265-2c35-f3a9-e295-ebee8ced91d6 (1902D-TEST132)
+     => (vm-1270) VSS > Development > 1910T-TestVM1
+        (vm-1258) VSS > Development > 1910T-TestVM2
+        (vm-1274) VSS > Development > 1910T-TestVM3
+
 
 Once, selected the change will be processed.
 
@@ -146,7 +149,7 @@ submitted to run at ``2017-03-10 21:00``:
 
 .. code-block:: bash
 
-   vss-cli compute vm set --schedule '2017-03-10 21:00' 50128d83-0fcc-05e3-be71-d972ffdf3284 consolidate
+   vss-cli compute vm set --schedule '2017-03-10 21:00' vm-123 consolidate
 
 Lists are implemented in arguments and options. In arguments list are generally
 series of strings separated by spaces. The below command shows how to delete
@@ -154,7 +157,7 @@ two virtual machines in a single line:
 
 .. code-block:: bash
 
-   vss-cli compute vm rm 50128d83-0fcc-05e3-be71-d972ffdf3284 50128d83-0fcc-05e3-be71-d972ffdf3284
+   vss-cli compute vm rm vm-123 vm-234
 
 Multiple options are taken as lists. For instance, in order to specify multiple
 disks when deploying a virtual machine, multiple occurrences of ``--disk``
@@ -162,7 +165,7 @@ should be specified as follows:
 
 .. code-block:: bash
 
-   vss-cli compute vm mk from-template --source 50128d83-0fcc-05e3-be71-d972ffdf3284 \
+   vss-cli compute vm mk from-template --power-on --source TestVM1 \
     --description 'New virtual machine' --disk 40 --disk 20 --disk 30 VM2
 
 Boolean is a binary flag that turns an option on or off, such is the case
@@ -171,13 +174,13 @@ marked as virtual machine by not specifying the flag.
 
 .. code-block:: bash
 
-   vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 template --on
+   vss-cli compute vm set TestVM3 template --on
 
 Integers
 
 .. code-block:: bash
 
-   vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 memory size 1
+   vss-cli compute vm set TestVM2 memory size 1
 
 Binary objects are handled by passing a relative or full path to the object
 to process. When uploading a file to VSKEY-STOR, a path should be passed as
@@ -212,7 +215,7 @@ or Unix and Windows PowerShell use the single quote ``'`` to enclose it.
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-template --source 50128d83-0fcc-05e3-be71-d972ffdf3284 \
+    vss-cli compute vm mk from-template --source TestVM3 --power-on \
       --description 'New virtual machine' \
       --custom-spec '{"dhcp": false, "ip": "192.168.1.23", "gateway": ["192.168.1.1"],
        "dns": ["192.168.1.1"], "hostname": "vm1", "domain": "utoronto.ca"}' VM1
@@ -223,7 +226,7 @@ the backslash ``\``:
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-template --source 50128d83-0fcc-05e3-be71-d972ffdf3284 \
+    vss-cli compute vm mk from-template --source FrontEnd-1 \
       --description 'New virtual machine' \
       --custom-spec "{\"dhcp\": false, \"ip\": \"192.168.1.23\", \"gateway\": [\"192.168.1.1\"],
        \"dns\": [\"192.168.1.1\"], \"hostname\": \"vm1\", \"domain\": \"utoronto.ca\"}" VM1
@@ -262,15 +265,15 @@ PowerShell.
 
 .. code-block:: bash
 
-    vss-cli --table-format=rst compute vm ls -f name=%Pi% -s name desc
+    vss-cli --table-format=rst compute vm ls -f name=%VM% -s name=desc
 
-    ====================================  ===============  ================  ===========  ===========  =============  =========================================
-    uuid                                  name             folder.path         cpu_count    memory_gb  power_state    ip_address
-    ====================================  ===============  ================  ===========  ===========  =============  =========================================
-    50305559-f3df-05b7-aa62-2cffa28807ac  1909T-Pi-Lab-10  Public > dev123             1            1  poweredOff
-    503076e4-3473-1474-aaeb-25504ab9c823  1908T-Pi-Lab-2   Public > dev1235            1            1  poweredOn      192.168.130.252 fe80::fd35:a67d:6542:c5ac
-    5030fb03-9f20-ab19-c6dd-d4ac51601665  1904T-Pi-Lab     Public > Dev                2            2  poweredOn
-    ====================================  ===============  ================  ===========  ===========  =============  =========================================
+    =======  ====================  ================================================  ===========  ===========  =============  ============
+    moref    name                  folder.path                                         cpu_count    memory_gb  power_state    ip_address
+    =======  ====================  ================================================  ===========  ===========  =============  ============
+    vm-1274  1910T-TestVM1         VSS > Development                                           1            2  poweredOff
+    vm-1270  1910T-TestVM2         VSS > Development                                           1            2  poweredOff
+    vm-1258  1910T-TestVM3         VSS > Development                                           1            1  poweredOff
+    =======  ====================  ================================================  ===========  ===========  =============  ============
 
 You can also control the data shown with ``--columns`` providing a name
 and a `jsonpath`.
@@ -280,13 +283,13 @@ per virtual machines, you could do:
 
 .. code-block:: bash
 
-    vss-cli --columns=UUID=uuid,VMNAME=name,GB=provisioned_gb compute vm ls -f name=Pi
+    vss-cli --columns=moref,name,gb=provisioned_gb compute vm ls -f name=VM
 
-    UUID                                  VMNAME              GB
-    ------------------------------------  ---------------  -----
-    5030fb03-9f20-ab19-c6dd-d4ac51601665  1904T-Pi-Lab     15.65
-    503076e4-3473-1474-aaeb-25504ab9c823  1908T-Pi-Lab-2    8
-    50305559-f3df-05b7-aa62-2cffa28807ac  1909T-Pi-Lab-10  11.18
+    moref    name                     gb
+    -------  --------------------  -----
+    vm-1270  1910T-TestVM1         22.19
+    vm-1258  1910T-TestVM2         21.19
+    vm-1274  1910T-TestVM3          2.19
 
 
 The option ``--columns-width`` allows you to set a maximum column width for a
@@ -294,24 +297,28 @@ given output:
 
 .. code-block:: bash
 
-    vss-cli --columns-width 0 compute vm ls -f name=Pi -c 2
+    vss-cli --columns-width 0 compute vm ls -f name=VM
 
-    uuid                     name            folder.path         cpu_count    memory_gb  power_state    ip_address
-    -----------------------  --------------  ----------------  -----------  -----------  -------------  -----------------------
-    5030fb03-9f20-ab19-c6d…  1904T-Pi-Lab    Public > Dev                2            2  poweredOn
-    503076e4-3473-1474-aae…  1908T-Pi-Lab-2  Public > dev1235            1            1  poweredOn      128.100.228.207 fe80::…
+    moref    name            folder.path       cpu_count    memory_gb  power_state    ip_address
+    -------  --------------  --------------  -----------  -----------  -------------  ------------
+    vm-1270  1910T-TestVM-…  VSS > Develop…            1            2  poweredOff
+    vm-1258  1910T-TestVM-…  VSS > Develop…            1            1  poweredOff
+    vm-1274  1910T-TestVM-…  VSS > Develop…            1            2  poweredOff
+
 
 ``--columns-width`` can be set to `0` in order to let the ``vss-cli`` to
 calculate the proper column size based on your terminal:
 
 .. code-block:: bash
 
-    vss-cli --columns-width 15 compute vm ls -f name=Pi -c 2
+    vss-cli --columns-width 18 compute vm ls -f name=VM
 
-    uuid             name            folder.path        cpu_count    memory_gb  power_state    ip_address
-    ---------------  --------------  ---------------  -----------  -----------  -------------  ---------------
-    5030fb03-9f20-…  1904T-Pi-Lab    Public > Dev               2            2  poweredOn
-    503076e4-3473-…  1908T-Pi-Lab-2  Public > dev12…            1            1  poweredOn      128.100.228.20
+    moref    name                folder.path           cpu_count    memory_gb  power_state    ip_address
+    -------  ------------------  ------------------  -----------  -----------  -------------  ------------
+    vm-1017  1908Q-VM-2          ITS > EIS > Data …            1            1  poweredOff
+    vm-1270  1910T-TestVM1       VSS > Development             1            2  poweredOff
+    vm-1258  1910T-TestVM2       VSS > Development             1            1  poweredOff
+    vm-1274  1910T-TestVM3       VSS > Development             1            2  poweredOff
 
 JSON
 ~~~~
@@ -326,8 +333,18 @@ as `jq`_.
     vss --output=json compute vm ls
     [
         {
-            "name": "1610Q-cocky_torvalds",
-            "uuid": "50124670-bfd4-95bc-1d6e-ea3c20ab0bbb"
+        "moref": "vm-1270",
+        "name": "1910T-TestVM1",
+        "provisioned_gb": 2.18,
+        "tools_running_status": "guestToolsNotRunning",
+        "tools_version": "0",
+        "tools_version_status": "guestToolsNotInstalled",
+        "uncommitted_bytes": 2338168320,
+        "unshared_bytes": 996,
+        "updated_on": "2020-04-21 Tue 02:10:03 EDT",
+        "uuid": "5030f8d5-fa01-8eff-bb21-8d1ee7e6c230",
+        "version": "vmx-15"
+        ...
         }
     ]
 
@@ -342,10 +359,17 @@ languages. The VSS CLI can provide the ``yaml`` output as follows:
 
     vss-cli --output=yaml compute vm ls -f name=%TEST% -s name desc
 
-    - name: 1902D-TESTOVA123
-      uuid: 50300d58-29dd-5781-a5a0-dc9937351090
-    - name: 1902D-TEST132
-      uuid: 5030d265-2c35-f3a9-e295-ebee8ced91d6
+   - moref: vm-2173
+      name: 2004P-test-vm-centos
+      provisioned_gb: 2.18
+      tools_running_status: guestToolsNotRunning
+      tools_version: '0'
+      tools_version_status: guestToolsNotInstalled
+      uncommitted_bytes: 2338168320
+      unshared_bytes: 996
+      updated_on: 2020-04-21 Tue 02:10:03 EDT
+      uuid: 5030f8d5-fa01-8eff-bb21-8d1ee7e6c230
+      version: vmx-15
 
 
 
@@ -445,10 +469,14 @@ Just exclude the ``vss-cli`` command, for instance:
 
 .. code-block:: bash
 
-    vss (vss-api) > --columns=UUID=uuid,VMNAME=name compute vm ls -f name=ecs
-    UUID                                  VMNAME
-    ------------------------------------  -----------------------
-    501220a5-a091-1866-9741-664236067142  1611T-ecstatic_mccarthy
+    vss (vss-api) > --columns=moref,name compute vm ls -f name=VM
+
+    moref    name
+    -------  ---------------
+    vm-1270  1910T-TestVM1
+    vm-1258  1910T-TestVM2
+    vm-1274  1910T-TestVM3
+
 
 
 .. _`jq`: https://stedolan.github.io/jq/
