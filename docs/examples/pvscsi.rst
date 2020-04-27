@@ -34,7 +34,7 @@ the **ITS Private Cloud**.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <name-or-uuid> snapshot mk -d "lsi logic to paravirtual" -l 72
+    vss-cli compute vm set <name-or-vm-id> snapshot mk -d "lsi logic to paravirtual" -l 72
 
 .. note::
 
@@ -44,19 +44,19 @@ the **ITS Private Cloud**.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-uuid> state shutdown
+    vss-cli compute vm set <vm-name-or-vm-id> state shutdown
 
 3. Add a temporary VMware Paravirtual Controller to the Virtual Machine.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-uuid> controller scsi mk -t paravirtual
+    vss-cli compute vm set <vm-name-or-vm-id> controller scsi mk -t paravirtual
 
 4. Verify that a new SCSI controller has been created.
 
 .. code-block:: bash
 
-    vss-cli compute vm get <vm-name-or-uuid> controller scsi
+    vss-cli compute vm get <vm-name-or-vm-id> controller scsi
 
     label                bus_number  type
     -----------------  ------------  ----------------------------
@@ -67,7 +67,7 @@ the **ITS Private Cloud**.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-uuid> state on
+    vss-cli compute vm set <vm-name-or-vm-id> state on
 
 
 6. Login and promote your account to have root level permission.
@@ -81,19 +81,19 @@ the **ITS Private Cloud**.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-uuid> state shutdown
+    vss-cli compute vm set <vm-name-or-vm-id> state shutdown
 
 9. Update scsi controller `0` to type `Paravirtual`:
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-uuid> controller scsi up -t paravirtual 0
+    vss-cli compute vm set <vm-name-or-vm-id> controller scsi up -t paravirtual 0
 
 10. Check whether the update executed successfully:
 
 .. code-block:: bash
 
-    vss-cli compute vm get <vm-name-or-uuid> controller scsi
+    vss-cli compute vm get <vm-name-or-vm-id> controller scsi
 
     label              bus_number    type
     -----------------  ------------  ----------------------------
@@ -104,13 +104,13 @@ the **ITS Private Cloud**.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <name-or-uuid> controller scsi rm 1
+    vss-cli compute vm set <name-or-vm-id> controller scsi rm 1
 
 12. Power On the virtual machine:
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-uuid> state on
+    vss-cli compute vm set <vm-name-or-vm-id> state on
 
 13. Verify everything is working well.
 
@@ -118,7 +118,7 @@ the **ITS Private Cloud**.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-uuid> snapshot rm <snap-id>
+    vss-cli compute vm set <vm-name-or-vm-id> snapshot rm <snap-id>
 
 .. note::
 
@@ -149,7 +149,7 @@ based Virtual Machine running on the **ITS Private Cloud** [3]_.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <name-or-uuid> snapshot mk -d "lsi logic to paravirtual" -l 72
+    vss-cli compute vm set --wait <name-or-vm-id> snapshot mk -d "lsi logic to paravirtual" -l 72
 
 .. note::
 
@@ -159,19 +159,19 @@ based Virtual Machine running on the **ITS Private Cloud** [3]_.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-uuid> state -c shutdown
+    vss-cli compute vm set --wait <vm-name-or-vm-id> state -c shutdown
 
 3. Add a temporary VMware Paravirtual Controller to the Virtual Machine.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-uuid> controller scsi mk -t paravirtual
+    vss-cli compute vm set --wait <vm-name-or-vm-id> controller scsi mk -t paravirtual
 
 4. Verify that a new SCSI controller has been created.
 
 .. code-block:: bash
 
-    vss-cli compute vm get <vm-name-or-uuid> controller scsi
+    vss-cli compute vm get <vm-name-or-vm-id> controller scsi
 
     label                bus_number  type
     -----------------  ------------  ----------------------------
@@ -182,7 +182,7 @@ based Virtual Machine running on the **ITS Private Cloud** [3]_.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-uuid> state on
+    vss-cli compute vm set --wait <vm-name-or-vm-id> state on
 
 6. Log Onto windows machine to verify whether the VMware Paravirtual driver get installed using
    **Device Manager > Controllers > PVSCSI device**.
@@ -191,19 +191,19 @@ based Virtual Machine running on the **ITS Private Cloud** [3]_.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-uuid> state shutdown
+    vss-cli compute vm set --wait <vm-name-or-vm-id> state shutdown
 
 8. Update scsi controller `0` to type `Paravirtual`:
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-uuid> controller scsi up -t paravirtual 0
+    vss-cli compute vm set <vm-name-or-vm-id> controller scsi up -t paravirtual 0
 
 9. Check whether the update executed successfully:
 
 .. code-block:: bash
 
-    vss-cli compute vm get <vm-name-or-uuid> controller scsi
+    vss-cli compute vm get <vm-name-or-vm-id> controller scsi
 
     label              bus_number    type
     -----------------  ------------  ----------------------------
@@ -214,7 +214,7 @@ based Virtual Machine running on the **ITS Private Cloud** [3]_.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-uuid> state on
+    vss-cli compute vm set --wait <vm-name-or-vm-id> state on
 
 
 11. Log Onto windows machine to verify boot and driver changed, in device manager you will now see 2  - controllers PVSCSI device.
@@ -227,19 +227,19 @@ based Virtual Machine running on the **ITS Private Cloud** [3]_.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-uuid> state shutdown
+    vss-cli compute vm set --wait <vm-name-or-vm-id> state shutdown
 
 13. Remove temporary SCSI controller
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <name-or-uuid> controller scsi rm 1
+    vss-cli compute vm set --wait <name-or-vm-id> controller scsi rm 1
 
 14. Power On the virtual machine.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-uuid> state on
+    vss-cli compute vm set --wait <vm-name-or-vm-id> state on
 
 15. Log Onto windows machine verify boot and removal of secondary scsi controller using the device manager.
 
@@ -247,7 +247,7 @@ based Virtual Machine running on the **ITS Private Cloud** [3]_.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-uuid> snapshot rm <snap-id>
+    vss-cli compute vm set --wait <vm-name-or-vm-id> snapshot rm <snap-id>
 
 .. note::
 

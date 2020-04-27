@@ -7,7 +7,7 @@ Scheduling changes provides flexibility to execute API actions at any
 given time. For instance, scheduling to automatically upgrade VMware
 Tools, or to Shutdown VM and then increase memory or CPU can be
 accomplished by just adding the schedule attribute to any
-``vss-cli compute set <uuid> <attribute>`` as described below:
+``vss-cli compute set <moref> <attribute>`` as described below:
 
 .. code-block:: bash
 
@@ -35,25 +35,26 @@ This guide exemplifies the scheduling process for the following actions:
 * Reschedule the **memory size** change.
 * Cancel **boot-delay** change.
 
-Virtual Machine UUID
---------------------
+Virtual Machine ID
+------------------
 
-**Optional**. Get virtual machine ``UUID`` with ``vss-cli compute vm ls``
-and apply any filtering if required:
+**Optional**. Get virtual machine ``MOREF`` or ``UUID``
+with ``vss-cli compute vm ls`` and apply any filtering if required:
 
 .. note:: This version of the VSS CLI supports managing virtual machines
-    not only using the UUID, but using names. In case of multiple results,
+    not only using the ``MOREF``, but using names. In case of multiple results,
     the CLI prompts to select the right instance.
 
 .. code-block:: bash
 
-    vss-cli compute vm ls -f name=%cranky%
-    uuid                                  name
-    ------------------------------------  ---------------------
-    50128577-2026-908a-7bb7-df5a34fea7bf  1610T-cranky_sinoussi
+    vss-cli compute vm ls -f name=Front
+
+    moref    name             folder.path                  cpu_count    memory_gb  power_state    ip_address
+    -------  ---------------  -------------------------  -----------  -----------  -------------  ------------
+    vm-2183  2004T-Frontend2  VSS > Development > Dev02            2            2  poweredOff
 
 
-Once you got the target virtual machine ``UUID`` proceed to scheduling
+Once you got the target virtual machine ``MOREF`` proceed to scheduling
 the changes.
 
 Power Off
@@ -65,7 +66,7 @@ the desired value to the ``state off`` command as follows:
 
     vss-cli compute vm set --schedule "2019-04-06 00:08" cranky_sinoussi state off
     # or
-    vss-cli compute vm set --schedule "2019-04-06 00:08" 50128577-2026-908a-7bb7-df5a34fea7bf state off
+    vss-cli compute vm set --schedule "2019-04-06 00:08" vm-2183 state off
 
 Add CPU
 -------
@@ -74,9 +75,9 @@ desired value to the ``cpu count <numCpu>`` command as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm set --schedule "2019-04-06 00:10" cranky_sinoussi cpu count 2
+    vss-cli compute vm set --schedule "2019-04-06 00:10" Frontend2 cpu count 2
     # or
-    vss-cli compute vm set --schedule "2019-04-06 00:10" 50128577-2026-908a-7bb7-df5a34fea7bf cpu count 2
+    vss-cli compute vm set --schedule "2019-04-06 00:10" vm-2183 cpu count 2
 
 Update boot delay
 -----------------
@@ -88,7 +89,7 @@ command as follows:
 
     vss-cli compute vm set --schedule "2019-04-06 00:11" cranky_sinoussi boot-delay 10000
     # or
-    vss-cli compute vm set --schedule "2019-04-06 00:11" 50128577-2026-908a-7bb7-df5a34fea7bf boot-delay 10000
+    vss-cli compute vm set --schedule "2019-04-06 00:11" vm-2183 boot-delay 10000
 
 Add Memory
 ----------
@@ -100,7 +101,7 @@ as follows:
 
     vss-cli compute vm set --schedule "2019-04-06 00:12" cranky_sinoussi memory size 2
     # or
-    vss-cli compute vm set --schedule "2019-04-06 00:12" 50128577-2026-908a-7bb7-df5a34fea7bf memory size 2
+    vss-cli compute vm set --schedule "2019-04-06 00:12" vm-2183 memory size 2
 
 
 Power ON
@@ -112,7 +113,7 @@ with the desired value to the ``state on`` command as follows:
 
     vss-cli compute vm set --schedule "2019-04-06 00:15" cranky_sinoussi state on
     # or
-    vss-cli compute vm set --schedule "2019-04-06 00:15" 50128577-2026-908a-7bb7-df5a34fea7bf state on
+    vss-cli compute vm set --schedule "2019-04-06 00:15" vm-2183 state on
 
 
 Reschedule Memory Change

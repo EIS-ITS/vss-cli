@@ -99,31 +99,40 @@ as follows:
     Options:
       -s, --source TEXT               Source Virtual Machine OVA/OVF id, name or
                                       path.  [required]
+
       -d, --description TEXT          A brief description.  [required]
       -b, --client TEXT               Client department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
+
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
+
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
       -o, --os TEXT                   Guest operating system id.  [required]
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
       -f, --folder TEXT               Logical folder moref name or path.
                                       [required]
+
       -i, --disk INTEGER              Disks in GB.  [required]
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
                                       [required]
+
       -t, --domain TEXT               Target fault domain name or moref.
       --notes TEXT                    Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
+
       -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      --power-on                      Power on after successful deployment.
       --user-data FILENAME            Cloud-init user_data YML file path to pre-
                                       configure guest os upon first boot.
+
       --vss-service TEXT              VSS Service related to VM
       --help                          Show this message and exit.
+
 
 
 Operating system
@@ -244,9 +253,10 @@ The following command should work as well:
 
 .. code-block:: bash
 
-    vss-cli compute vm mk from-image --image CentOS-7-x86_64-VMware.ovf --client EIS \
-    --memory 2 --cpu 2 --folder APIDemo --disk 40 --disk 40 --net PUBLIC  --os centos \
-    --description "CentOS virtual machine from OVF" CENTOS_1
+    vss-cli compute vm mk --wait from-image --power-on --source CentOS-7-x86_64-VMware.ovf \
+    --client EIS --folder APIDemo \
+    --memory 2 --cpu 2  --disk 40 --disk 40 --net PUBLIC  --os centos \
+    --description "CentOS virtual machine from OVF" CENTOS-1
 
 
 A confirmation email will be sent and the command will return
@@ -254,49 +264,54 @@ the request ``id`` and ``task_id`` as follows:
 
 .. code-block:: bash
 
-    status              : 202
-    request             : status: Submitted, id: 1234, task_id: 7c32e09a-b36b-4b89-b6a5-ffc91045db4f
+    id                  : 77
+    status              : IN_PROGRESS
+    task_id             : c62e579d-240b-4e1d-8b5d-0c643bfd72f5
     message             : Request has been accepted for processing
-    name                : Accepted
+    ⏳ Waiting for request 77 to complete...
+    🎉 Request 77 completed successfully:
+    warnings            : Image file(s) transferred: CentOS-7-x86_64-VMware.ovf, disk-0.vmdk, VM 2004T-CENTOS-1 has been successfully
+                          deployed from {'name': 'CentOS-7-x86_64-VMware.ovf', 'path': '[vssUser-xfers] vskey/jm/501264bc-5d2d-3330-e0d9-562309e33331/CentOS-7-x86_64-VMware.ovf'},
+                          Error while updating Memory: Target memory is equals to current memory.
+                          Successfully powered on.,
+                          Fault Domain: Cluster1 (domain-cXX) , Created in: VSS > Development > APIDemo (group-XXX),
+                          Network adapter 1 (vmxnet3): 00:50:56:b0:a8:6c: Quarantine
+    errors              :
 
 
 Wait a few minutes until the virtual machine is deployed.
 
 .. code-block:: bash
 
-    vss-cli request new ls -s 'created_on desc' -c 1
+     vss-cli request new ls -s created_on=desc -c 1
 
-      id  created_on               updated_on               status     vm_name             vm_uuid
-    ----  -----------------------  -----------------------  ---------  ------------------  ------------------------------------
-    1234  2017-03-29 15:24:44 EDT  2017-03-29 15:27:06 EDT  Processed  1703T-CENTOS_1      36f95846c810-06cd-4971-c4ff-50124c39
+      id  created_on                   updated_on                   status     vm_moref    vm_name          approval.approved    built_from
+    ----  ---------------------------  ---------------------------  ---------  ----------  ---------------  -------------------  ------------
+      77  2020-04-24 Fri 16:49:28 EDT  2020-04-24 Fri 16:50:06 EDT  PROCESSED  vm-2184     2004T-CENTOS-1   True                 image
 
 
 Access Virtual Machine
 ----------------------
 
-Run ``vss-cli compute vm set <name-or-uuid> state on`` to power
-on virtual machine as shown below:
+Since we added the ``--power-on`` option, the virtual machine should have been powered on
+right after the Guest Operating System Customization task completed.
+
+In a few minutes the virtual machine will show the hostname and ip configuration by running
+``vss-cli compute vm get <name-or-vm-id> guest``:
 
 .. code-block:: bash
 
-    vss-cli compute vm set CENTOS_1 state on
+    vss-cli compute vm get docker-node1 guest
 
-In a few minutes the virtual machine will provide the ip configuration
-by running ``vss-cli compute vm get <vm_uuid> guest``:
+    hostname            : fe2
+    ip_address          : 142.1.217.228, fe80::250:56ff:fe92:323f
+    full_name           : CentOS 8 (64-bit)
+    guest_id            : centos8_64Guest
+    running_status      : guestToolsRunning
 
-.. code-block:: bash
 
-    vss-cli compute vm get CENTOS_1 guest
-
-    Uuid                : 36f95846c810-06cd-4971-c4ff-50124c39
-    Guest Guest Full Name: CentOS (64-bit)
-    Guest Guest Id      : centos64Guest
-    Guest Host Name     : localhost
-    Guest Ip Address    : 142.1.217.228, fe80::250:56ff:fe92:323f
-    Guest Tools Status  : guestToolsUnmanaged
-
-Now that an IP address has been allocated, you will be able to access via
-either ``ssh`` or the virtual machine console:
+The **Guest Host Name** shows that the hostname has been changed, and now
+you will be able to access via either ``ssh`` or the virtual machine console:
 
 .. code-block:: bash
 
@@ -304,10 +319,7 @@ either ``ssh`` or the virtual machine console:
 
 .. code-block:: bash
 
-    vss-cli compute vm get CENTOS_1 console -l
-
-.. warning:: To generate a console link you just need to have a valid vSphere session
-  (unfortunately), and this is due to the nature of vSphere API.
+    vss-cli compute vm get Frontend2 vsphere-link -l
 
 .. _`VMware Fusion - Export a VM to OVF`: http://pubs.vmware.com/fusion-8/topic/com.vmware.fusion.using.doc/GUID-16E390B1-829D-4289-8442-270A474C106A.html
 .. _`VMware Workstation - Export a VM to OVF`: https://pubs.vmware.com/workstation-12/topic/com.vmware.ws.using.doc/GUID-D1FEBF81-D0AA-469B-87C3-D8E8C45E4ED9.html
