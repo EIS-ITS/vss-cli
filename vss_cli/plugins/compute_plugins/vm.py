@@ -384,6 +384,26 @@ def compute_vm_get_folder(ctx: Configuration):
     click.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@compute_vm_get.command('os', short_help='Operating System')
+@pass_context
+def compute_vm_get_os(ctx: Configuration):
+    """Virtual machine Operating system"""
+    obj_vm = ctx.get_vm_os(ctx.moref)
+    obj_guest = ctx.get_vm_guest_os(ctx.moref)
+    obj = {'cfg': obj_vm, 'guest': obj_guest}
+    columns = ctx.columns or const.COLUMNS_VM_OS
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    if obj['guest']['guest_id'] is not None:
+        vm_os = obj_vm.get('guest_id')
+        g_os = obj_guest.get('guest_id')
+        status = True if vm_os == g_os else False
+        if not status:
+            _LOGGING.warning(
+                'Operating System does not match '
+                'Running Guest OS: {0} ≠ {1}'.format(vm_os, g_os)
+            )
+
+
 @compute_vm_get.group(
     'guest', short_help='Guest summary', invoke_without_command=True
 )
@@ -1630,7 +1650,7 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set.command('guest-os', short_help='Update guest operating system')
+@compute_vm_set.command('os', short_help='Update operating system')
 @click.argument(
     'guest-id',
     type=click.STRING,
@@ -1639,9 +1659,9 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
 )
 @pass_context
 def compute_vm_set_guest_os(ctx: Configuration, guest_id):
-    """Update guest operating system configuration:
+    """Update operating system configuration:
 
-        vss-cli compute vm set <name-or-vm_id> guest-os <name-or-name>
+        vss-cli compute vm set <name-or-vm_id> os <name-or-id>
 
     """
     g_os = ctx.get_os_by_name_or_guest(guest_id)
