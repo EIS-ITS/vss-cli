@@ -1,5 +1,20 @@
 # Changelog 📝
 
+## [v0.7.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.7.1) (2020-05-07)
+
+**Improvements:**
+
+- [#296](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/296): ``compute vm set guest-os``: renamed to ``os`` missing command.
+- [#298](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/298): ``core``: ``click`` v7.1.1 -> v7.1.2.
+- [#299](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/299): ``core``: ``pyvss``  v0.14.1 -> v0.14.2.
+- [#300](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/300): ``core``: ``pygments`` v2.4.2 -> v2.6.1.
+
+**Bug Fixes:**
+
+- [#295](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/295): ``compute vm get os``: os missing command.
+- [#297](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/297): ``compute vm rm``: does not allow deletion.
+
+
 ## [v0.7.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.7.0) (2020-04-24)
 
 **Improvements:**
