@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.7.2-dev0"
+__version__ = "0.8.0-dev0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -272,11 +272,7 @@ COLUMNS_VM_GUEST = [
     ("guest_id", "os.guest_id"),
     ("running_status", "tools.running_status"),
 ]
-COLUMNS_VM_GUEST_OS = [
-    ("guest_full_name",),
-    ("guest_id",),
-    ("guest_family",),
-]
+COLUMNS_VM_GUEST_OS = [("guest_full_name",), ("guest_id",), ("guest_family",)]
 COLUMNS_VM_GUEST_IP = [
     ("ip_address", "ip_address"),
     ("mac_address", "mac_address"),
