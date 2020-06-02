@@ -250,15 +250,15 @@ class Configuration(VssManager):
             if self.token or (self.username and self.password):
                 # setting defaults if required
                 self.set_defaults()
-                _LOGGING.debug(f'Loading from input')
+                _LOGGING.debug('Loading from input')
                 # don't load config file
                 if self.token:
-                    _LOGGING.debug(f'Checking token')
+                    _LOGGING.debug('Checking token')
                     # set api token
                     self.api_token = self.token
                     return self.username, self.password, self.api_token
                 elif self.username and self.password:
-                    _LOGGING.debug(f'Checking user/pass to generate token')
+                    _LOGGING.debug('Checking user/pass to generate token')
                     # generate a new token - won't save
                     _LOGGING.warning(
                         'A new token will be generated but not persisted. '
@@ -557,9 +557,9 @@ class Configuration(VssManager):
                     except (ValueError, TypeError) as ex:
                         _LOGGING.warning(f'Invalid config file: {ex}')
                         if click.confirm(
-                            f'An error occurred loading the '
-                            f'configuration file. '
-                            f'Would you like to recreate it?'
+                            'An error occurred loading the '
+                            'configuration file. '
+                            'Would you like to recreate it?'
                         ):
                             config_file = config_file_tmpl
                         else:
@@ -661,8 +661,8 @@ class Configuration(VssManager):
                 _LOGGING.warning(f'Invalid config file: {ex}')
                 confirm = click.confirm(
                     'An error occurred loading the '
-                    f'configuration file. '
-                    f'Would you like to recreate it?'
+                    'configuration file. '
+                    'Would you like to recreate it?'
                 )
                 if confirm:
                     endpoint_cfg = self._create_endpoint_config()
@@ -1150,7 +1150,7 @@ class Configuration(VssManager):
         if 199 < obj['status'] < 300:
             pass
         else:
-            raise VssCliError(f'Invalid response from the API.')
+            raise VssCliError('Invalid response from the API.')
         with self.spinner(disable=self.debug or threaded):
             r_url = obj['_links']['request']
             tries = 0
