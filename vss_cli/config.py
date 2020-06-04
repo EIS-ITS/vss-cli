@@ -883,6 +883,31 @@ class Configuration(VssManager):
             return self.pick(objs, options=[f"{i['label']}" for i in objs])
         return objs
 
+    def get_vss_groups_by_name_desc_or_id(
+        self, name_desc_or_id: Union[str, int]
+    ) -> List[Any]:
+        vss_groups = self.get_user_groups(
+            sort='name,desc', show_all=True, per_page=100
+        )
+        attributes = [('id', int), ('name', str), ('description', str)]
+        objs = self._filter_objects_by_attrs(
+            name_desc_or_id, vss_groups, attributes
+        )
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(f'{name_desc_or_id} could not be found')
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(
+                objs,
+                options=[
+                    f"{i['name']} ({i['id']}): {i['description'][:40]}... "
+                    for i in objs
+                ],
+            )
+        return objs
+
     def _get_images_by_name_path_or_id(
         self, f: Callable, name_or_path_or_id: Union[int, str]
     ):

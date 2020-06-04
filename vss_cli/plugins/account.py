@@ -50,21 +50,33 @@ def account_get_groups(ctx: Configuration):
     click.echo(format_output(ctx, objs, columns=columns))
 
 
-@account_get.command('group')
+@account_get.group('group', invoke_without_command=True)
 @click.argument(
-    'group_id',
-    type=click.INT,
+    'group_id_or_name',
+    type=click.STRING,
     required=True,
     autocompletion=autocompletion.groups,
 )
 @pass_context
-def account_get_group(ctx: Configuration, group_id):
+def account_get_group(ctx: Configuration, group_id_or_name):
     """Get given group info or members.
     User must be part of the group."""
+    _group = ctx.get_vss_groups_by_name_desc_or_id(group_id_or_name)
+    ctx.group = _group[0]['id']
+    if click.get_current_context().invoked_subcommand is None:
+        with ctx.spinner(disable=ctx.debug):
+            obj = ctx.get_group(ctx.group)
+        columns = ctx.columns or const.COLUMNS_GROUP
+        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@account_get_group.command('member')
+@pass_context
+def account_get_group_members(ctx: Configuration):
     with ctx.spinner(disable=ctx.debug):
-        obj = ctx.get_group(group_id)
-    columns = ctx.columns or const.COLUMNS_GROUP
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        objs = ctx.get_group_members(ctx.group)
+    columns = ctx.columns or const.COLUMNS_GROUP_MEMBERS
+    click.echo(format_output(ctx, objs, columns=columns))
 
 
 @account_get.command('access-role')
