@@ -159,3 +159,12 @@ class TestVssCLI(unittest.TestCase):
         )
         self.assertEqual(result.exit_code, 0)
         self.assertIn('username', result.output)
+
+    def test_account_get_groups(self):
+        result = self.runner.invoke(
+            cli.cli,
+            ['--endpoint', self.vss_api_endpoint, 'account', 'get', 'groups'],
+            catch_exceptions=False,
+        )
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn('hig-web-services', result.output)
