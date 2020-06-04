@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.8.0-dev1"
+__version__ = "0.8.0-dev2"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -390,14 +390,12 @@ COLUMNS_VM_CONTROLLERS = [('scsi.count',)]
 COLUMNS_EXTRA_CONFIG = [("key",), ("value",)]
 COLUMNS_VSS_OPTIONS = [("options", "[*]")]
 COLUMNS_GROUP = [
-    ("cn",),
+    ("name",),
     ("description",),
-    ("create_timestamp",),
-    ("modify_timestamp",),
-    ("unique_member_count",),
-    ("unique_member", "unique_member[*].uid"),
+    ("members.count",),
+    ("ldap.last_sync",),
 ]
-COLUMNS_GROUPS = [("groups", "groups[*]")]
+COLUMNS_GROUPS = [("id",), ("name",), ("description",), ('members.count',)]
 COLUMNS_ROLE = [
     ("name",),
     ("description",),

@@ -413,3 +413,15 @@ def vss_options(
         attrs=['option', 'description'],
         f_kwargs={"only_option": False},
     )
+
+
+def groups(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_groups,
+        incomplete,
+        attrs=['id', 'name'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
