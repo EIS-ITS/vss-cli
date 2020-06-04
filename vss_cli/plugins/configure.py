@@ -262,7 +262,7 @@ def ls(ctx: Configuration):
             )
     except FileNotFoundError as ex:
         _LOGGING.error(f'{str(ex)}')
-        ctx.secho(f'Have you run ' f'"vss-cli configure mk"?', fg='green')
+        ctx.secho('Have you run "vss-cli configure mk"?', fg='green')
 
     # checking env vars
     envs = [e for e in os.environ if 'VSS_' in e]

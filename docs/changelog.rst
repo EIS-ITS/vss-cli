@@ -2,6 +2,25 @@
 Changelog 📝
 ============
 
+`v0.8.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.0>`_ (2020-06-04)
+--------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#304 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/304>`_: ``core``: ``pyvss``  v0.14.2 -> v0.14.4.
+- `#306 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/306>`_: ``️account get groups``: update to recent api changes: **breaking**.
+- `#307 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/307>`_: ``account get group``: update to recent api changes (``group_name_desc_or_id`` is now required): **breaking**.
+- `#308 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/308>`_: ``account get group member``: new sub-command.
+- `#309 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/309>`_: ``docker``: base image upgrade to ``python:3.8-alpine``.
+
+**Bug Fixes:**
+
+- `#302 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/302>`_: ``compute vm set guest-cmd``: ``--env`` option is sent emtpy.
+- `#303 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/303>`_: ``compute vm get memory``: throws exception.
+- `#305 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/305>`_: ``core``: PEP8 check F541: f-string without any placeholders.
+- `#310 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/310>`_: ``docker``: image build broken due to dependency name change from man to man-pages.
+
+
 `v0.7.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.7.1>`_ (2020-05-07)
 --------------------------------------------------------------------------------------
 
@@ -16,6 +35,7 @@ Changelog 📝
 
 - `#295 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/295>`_: ``compute vm get os``: os missing command.
 - `#297 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/297>`_: ``compute vm rm``: does not allow deletion.
+
 
 `v0.7.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.7.0>`_ (2020-04-24)
 --------------------------------------------------------------------------------------

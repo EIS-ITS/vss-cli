@@ -1631,13 +1631,10 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
         )
     # creating payload
     payload = dict(
-        vm_id=ctx.moref,
-        user=username,
-        pwd=password,
-        cmd=cmd,
-        arg=cmd_args,
-        env=env,
+        vm_id=ctx.moref, user=username, pwd=password, cmd=cmd, arg=cmd_args,
     )
+    if env:
+        payload['env'] = env
     # add common options
     payload.update(ctx.payload_options)
     # request

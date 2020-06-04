@@ -250,15 +250,15 @@ class Configuration(VssManager):
             if self.token or (self.username and self.password):
                 # setting defaults if required
                 self.set_defaults()
-                _LOGGING.debug(f'Loading from input')
+                _LOGGING.debug('Loading from input')
                 # don't load config file
                 if self.token:
-                    _LOGGING.debug(f'Checking token')
+                    _LOGGING.debug('Checking token')
                     # set api token
                     self.api_token = self.token
                     return self.username, self.password, self.api_token
                 elif self.username and self.password:
-                    _LOGGING.debug(f'Checking user/pass to generate token')
+                    _LOGGING.debug('Checking user/pass to generate token')
                     # generate a new token - won't save
                     _LOGGING.warning(
                         'A new token will be generated but not persisted. '
@@ -557,9 +557,9 @@ class Configuration(VssManager):
                     except (ValueError, TypeError) as ex:
                         _LOGGING.warning(f'Invalid config file: {ex}')
                         if click.confirm(
-                            f'An error occurred loading the '
-                            f'configuration file. '
-                            f'Would you like to recreate it?'
+                            'An error occurred loading the '
+                            'configuration file. '
+                            'Would you like to recreate it?'
                         ):
                             config_file = config_file_tmpl
                         else:
@@ -661,8 +661,8 @@ class Configuration(VssManager):
                 _LOGGING.warning(f'Invalid config file: {ex}')
                 confirm = click.confirm(
                     'An error occurred loading the '
-                    f'configuration file. '
-                    f'Would you like to recreate it?'
+                    'configuration file. '
+                    'Would you like to recreate it?'
                 )
                 if confirm:
                     endpoint_cfg = self._create_endpoint_config()
@@ -881,6 +881,31 @@ class Configuration(VssManager):
         o_count = len(objs)
         if o_count > 1:
             return self.pick(objs, options=[f"{i['label']}" for i in objs])
+        return objs
+
+    def get_vss_groups_by_name_desc_or_id(
+        self, name_desc_or_id: Union[str, int]
+    ) -> List[Any]:
+        vss_groups = self.get_user_groups(
+            sort='name,desc', show_all=True, per_page=100
+        )
+        attributes = [('id', int), ('name', str), ('description', str)]
+        objs = self._filter_objects_by_attrs(
+            name_desc_or_id, vss_groups, attributes
+        )
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(f'{name_desc_or_id} could not be found')
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(
+                objs,
+                options=[
+                    f"{i['name']} ({i['id']}): {i['description'][:40]}... "
+                    for i in objs
+                ],
+            )
         return objs
 
     def _get_images_by_name_path_or_id(
@@ -1150,7 +1175,7 @@ class Configuration(VssManager):
         if 199 < obj['status'] < 300:
             pass
         else:
-            raise VssCliError(f'Invalid response from the API.')
+            raise VssCliError('Invalid response from the API.')
         with self.spinner(disable=self.debug or threaded):
             r_url = obj['_links']['request']
             tries = 0
