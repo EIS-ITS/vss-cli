@@ -1,4 +1,4 @@
-FROM python:3.6-alpine
+FROM python:3.8-alpine
 # Defining env vars
 ENV VSSCLI_VERSION="0.8.0-dev4"
 ARG CI_BUILD_REF
@@ -13,9 +13,8 @@ WORKDIR /usr/src/app
 COPY . .
 # install OS reqs
 RUN apk add --no-cache --virtual build-dependencies \
-    gcc musl-dev bash man \
+    gcc musl-dev bash man-pages \
     libxml2-dev libxslt-dev && \
-    mkdir /usr/share/man/man1 && \
     rm -rf /var/cache/apk/*
 # install app
 RUN pip3 install --upgrade pip && \
