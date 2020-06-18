@@ -1043,17 +1043,17 @@ class Configuration(VssManager):
                 spec_payload['built'] = built
                 spec_payload['client'] = metadata_section['client']
                 # optional
-                if 'inform' in metadata_section:
+                if metadata_section.get('inform') is not None:
                     spec_payload['inform'] = [
                         validate_email(None, 'inform', i)
                         for i in metadata_section['inform']
                     ]
-                if 'vss_service' in metadata_section:
+                if metadata_section.get('vss_service') is not None:
                     service = self.get_vss_service_by_name_label_or_id(
                         metadata_section['vss_service']
                     )[0]['id']
                     spec_payload['vss_service'] = service
-                if 'admin' in metadata_section:
+                if metadata_section.get('metadata_section') is not None:
                     admin_name = metadata_section['admin']['name']
                     admin_email = metadata_section['admin']['email']
                     admin_phone = metadata_section['admin']['phone']
