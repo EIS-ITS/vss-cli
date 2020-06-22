@@ -87,10 +87,7 @@ class VssCli(click.Group):
         """Import the commands of the plugins."""
         try:
             mod = __import__(
-                '{}.plugins.{}'.format(const.PACKAGE_NAME, cmd_name),
-                {},
-                {},
-                ['cli'],
+                f'{const.PACKAGE_NAME}.plugins.{cmd_name}', {}, {}, ['cli']
             )
             _LOGGER.debug(f'Loading {mod}')
         except ImportError as ex:

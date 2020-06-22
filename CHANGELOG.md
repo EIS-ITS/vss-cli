@@ -1,5 +1,17 @@
 # Changelog 📝
 
+## [v0.8.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.1) (2020-06-22)
+
+**Improvements:**
+
+- [#314](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/314): ``tests``: Adding/Updating pre-commit hooks.
+
+**Bug Fixes:**
+
+- [#312](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/312): ``compute vm mk from-file``: throws TypeError exception.
+- [#313](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/313): ``docs``: deploy-image outdated command options. 
+
+
 ## [v0.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.0) (2020-06-04)
 
 **Improvements:**
