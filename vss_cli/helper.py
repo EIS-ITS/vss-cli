@@ -1,4 +1,4 @@
-"""Helpers used by Home Assistant CLI (hass-cli)."""
+"""Helpers used by VSS CLI (vss-cli)."""
 import contextlib
 import csv
 from http.client import HTTPConnection
@@ -8,7 +8,7 @@ import logging
 import re
 import shlex
 import shutil
-from typing import Any, Dict, Generator, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, Generator, List, Optional, Tuple, cast
 
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
@@ -169,6 +169,7 @@ def raw_format_output(
 
 
 def _sort_table(result: List[Any], sort_by: str) -> List[Any]:
+    """Sort table based on attribute."""
     from jsonpath_rw import parse
 
     expr = parse(sort_by)
@@ -241,7 +242,7 @@ def debug_requests() -> Generator:
 def get_hostname_from_url(
     url: str, hostname_regex: str = const.DEFAULT_HOST_REGEX
 ) -> str:
-    """Parse hostname from URL"""
+    """Parse hostname from URL."""
     re_search = re.search(hostname_regex, url)
     _, _hostname = re_search.groups() if re_search else ('', '')
     _host = _hostname.split('.')[0] if _hostname.split('.') else ''
@@ -249,16 +250,17 @@ def get_hostname_from_url(
 
 
 def capitalize(value: str) -> str:
-    """Capitalize string"""
+    """Capitalize string."""
     return re.sub(r"(\w)([A-Z])", r"\1 \2", value).title()
 
 
 def str2bool(value: str) -> bool:
+    """Convert string to boolean."""
     return value.lower() in ("yes", "true", "t", "1", "y")
 
 
 def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
-    """Dumps dictionary in kv fmt"""
+    """Dump dictionary in kv format."""
     for key, value in obj.items():
         if isinstance(value, list):
             for i in value:
@@ -274,6 +276,7 @@ def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
 
 
 def process_sort(ctx, param, value: List[str]) -> List[str]:
+    """Process sort parameters from input."""
     ops = ['asc', 'desc']
     processed_sorts = []
     sorts = [s.split('=') for s in value]
@@ -297,6 +300,7 @@ def process_sort(ctx, param, value: List[str]) -> List[str]:
 
 
 def process_filters(ctx, param, value: List[str]) -> List[str]:
+    """Process filter parameter."""
     ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
     processed_filters = []
     wc = '%'
