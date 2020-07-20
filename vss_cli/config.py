@@ -68,6 +68,10 @@ class Configuration(VssManager):
         self.check_for_messages = None  # type: Optional[bool]
         self.config_file = None  # type: Optional[ConfigFile]
         self.spinner = spinner
+        self.wait = None  # type: Optional[bool]
+        self.moref = None  # type: Optional[str]
+        self.unit = None  # type: Optional[str, int]
+        self.payload_options = None  # type: Optional[Dict]
 
     @property
     def debug(self) -> bool:
