@@ -4,13 +4,12 @@ import functools
 import json
 import logging
 import os
+from pathlib import Path
 import platform
-import shutil
 import sys
 from time import sleep
 from typing import (  # noqa: F401
     Any, Callable, Dict, List, Optional, Tuple, Union, cast)
-from uuid import UUID
 
 import click
 from click_spinner import spinner
@@ -60,11 +59,11 @@ class Configuration(VssManager):
         self.showexceptions = False  # type: bool
         self.columns = None  # type: Optional[List[Tuple[str, str]]]
         self.columns_width = None  # type: Optional[int]
-        self.no_headers = False
+        self.no_headers = False  # type: Optional[bool]
         self.table_format = None  # type: Optional[str]
-        self.sort_by = None
-        self.output = None
-        self.config = None
+        self.sort_by = None  # type: Optional[str]
+        self.output = None  # type: Optional[str]
+        self.config_path = None  # type: Optional[str]
         self.check_for_updates = None  # type: Optional[bool]
         self.check_for_messages = None  # type: Optional[bool]
         self.config_file = None  # type: Optional[ConfigFile]
@@ -212,7 +211,7 @@ class Configuration(VssManager):
         self.endpoint_name = name
         return
 
-    def load_profile_from_config(
+    def load_profile(
         self, endpoint: str = None
     ) -> Tuple[Optional[ConfigEndpoint], Optional[str], Optional[str]]:
         """Load profile from configuration file."""
@@ -235,19 +234,24 @@ class Configuration(VssManager):
         else:
             return None, username, password
 
-    def load_config_file(self, config: str = None) -> Optional[ConfigFile]:
+    def load_config_file(
+        self, config: Union[Path, str] = None
+    ) -> Optional[ConfigFile]:
         """Load raw configuration file and return ConfigFile object."""
         raw_config = self.load_raw_config_file(config=config)
         self.config_file = ConfigFile.from_json(raw_config)
         return self.config_file
 
-    def load_raw_config_file(self, config: str = None) -> Optional[str]:
+    def load_raw_config_file(
+        self, config: Optional[Union[Path, str]] = None
+    ) -> Optional[str]:
         """Load raw configuration file from path."""
-        config_file = config or self.config
+        config_file = config or self.config_path
         try:
-            with open(config_file) as f:
-                config_dict = yaml.load_yaml(self.yaml(), f)
-                return json.dumps(config_dict)
+            if isinstance(config_file, str):
+                config_file = Path(config_file)
+            cfg_dict = self.yaml_load(config_file)
+            return json.dumps(cfg_dict)
         except ValueError as ex:
             _LOGGING.error(f'Error loading configuration file: {ex}')
             raise VssCliError(
@@ -271,7 +275,7 @@ class Configuration(VssManager):
                 # setting defaults if required
                 self.set_defaults()
                 _LOGGING.debug('Loading from input')
-                # don't load config file
+                # don't load config_path file
                 if self.token:
                     _LOGGING.debug('Checking token')
                     # set api token
@@ -294,16 +298,19 @@ class Configuration(VssManager):
                         'VSS_TOKEN or VSS_USER and VSS_USER_PASS'
                     )
             else:
-                _LOGGING.debug(f'Loading configuration file: {self.config}')
-                if os.path.isfile(self.config):
+                cfg_path = Path(self.config_path)
+                _LOGGING.debug(
+                    f'Loading configuration file: {self.config_path}'
+                )
+                if cfg_path.is_file():
                     # load configuration file from json string into class
-                    self.config_file = self.load_config_file()
+                    self.config_file = self.load_config_file(config=cfg_path)
                     # general area
                     if self.config_file.general:
                         _LOGGING.debug(
-                            f'Loading general settings from {self.config}'
+                            f'Loading general settings from {self.config_path}'
                         )
-                        # set config defaults
+                        # set config_path defaults
                         for setting in const.GENERAL_SETTINGS:
                             try:
                                 # check if setting hasn't been set
@@ -332,7 +339,8 @@ class Configuration(VssManager):
                     # load preferred endpoint from file if any
                     if self.config_file.endpoints:
                         _LOGGING.debug(
-                            f'Loading endpoint settings from {self.config}'
+                            f'Loading endpoint settings from '
+                            f'{self.config_path}'
                         )
                         _LOGGING.debug(
                             f'Looking for endpoint={self.endpoint},'
@@ -346,13 +354,7 @@ class Configuration(VssManager):
                                 f'input {self.endpoint}. \n'
                             )
                             # load endpoint from endpoints
-                            (
-                                config_endpoint,
-                                usr,
-                                pwd,
-                            ) = self.load_profile_from_config(  # NOQA: E501
-                                endpoint=self.endpoint
-                            )
+                            ep, usr, pwd = self.load_profile(self.endpoint)
                         # 2. provided by configuration file
                         #    (default_endpoint_name)
                         elif self.default_endpoint_name:
@@ -361,12 +363,8 @@ class Configuration(VssManager):
                                 f'{self.default_endpoint_name}. \n'
                             )
                             # load endpoint from endpoints
-                            (
-                                config_endpoint,
-                                usr,
-                                pwd,
-                            ) = self.load_profile_from_config(  # NOQA: E501
-                                endpoint=self.default_endpoint_name
+                            ep, usr, pwd = self.load_profile(
+                                self.default_endpoint_name
                             )
                         # 3. fallback to default settings
                         else:
@@ -374,38 +372,22 @@ class Configuration(VssManager):
                                 f"Invalid endpoint {self.endpoint_name} "
                                 f"configuration. \n"
                             )
-                            (
-                                config_endpoint,
-                                usr,
-                                pwd,
-                            ) = self.load_profile_from_config(  # NOQA: E501
-                                endpoint=self.endpoint_name
+                            ep, usr, pwd = self.load_profile(
+                                self.endpoint_name
                             )
                         # check valid creds
-                        if not (
-                            usr
-                            and pwd
-                            or getattr(config_endpoint, 'token', None)
-                        ):
+                        if not (usr and pwd or getattr(ep, 'token', None)):
                             _LOGGING.warning(msg)
                             default_endpoint = const.DEFAULT_ENDPOINT_NAME
                             _LOGGING.warning(
                                 f'Falling back to {default_endpoint}'
                             )
-                            (
-                                config_endpoint,
-                                usr,
-                                pwd,
-                            ) = self.load_profile_from_config(  # NOQA: E501
+                            (ep, usr, pwd,) = self.load_profile(  # NOQA: E501
                                 endpoint=const.DEFAULT_ENDPOINT_NAME
                             )
-                        # set config data
+                        # set config_path data
                         self.set_credentials(
-                            usr,
-                            pwd,
-                            config_endpoint.token,
-                            config_endpoint.url,
-                            config_endpoint.name,
+                            usr, pwd, ep.token, ep.url, ep.name,
                         )
                         if validate:
                             # last check cred
@@ -555,7 +537,8 @@ class Configuration(VssManager):
     def load_config_template(self) -> ConfigFile:
         """Load configuration from template."""
         # load template in case it fails
-        with open(const.DEFAULT_CONFIG_TMPL) as f:
+        cfg_default_path = Path(const.DEFAULT_CONFIG_TMPL)
+        with cfg_default_path.open() as f:
             config_tmpl = yaml.load_yaml(self.yaml(), f)
             raw_config_tmpl = json.dumps(config_tmpl)
             config_file_tmpl = ConfigFile.from_json(raw_config_tmpl)
@@ -571,16 +554,17 @@ class Configuration(VssManager):
         # load template in case it fails
         config_file_tmpl = self.load_config_template()
         try:
-            _LOGGING.debug(f'Writing configuration file: {self.config}')
+            _LOGGING.debug(f'Writing configuration file: {self.config_path}')
+            cfg_path = Path(self.config_path)
             # validate if file exists
-            if os.path.isfile(self.config):
-                with open(self.config, 'r+') as fp:
+            if cfg_path.is_file():
+                with cfg_path.open(mode='r+') as fp:
                     try:
                         _conf_dict = yaml.load_yaml(self.yaml(), fp)
                         raw_config = json.dumps(_conf_dict)
                         config_file = ConfigFile.from_json(raw_config)
                     except (ValueError, TypeError) as ex:
-                        _LOGGING.warning(f'Invalid config file: {ex}')
+                        _LOGGING.warning(f'Invalid config_path file: {ex}')
                         if click.confirm(
                             'An error occurred loading the '
                             'configuration file. '
@@ -594,7 +578,7 @@ class Configuration(VssManager):
                         config_file.update_endpoints(
                             *new_config_file.endpoints
                         )
-                    # update general config if required
+                    # update general config_path if required
                     if config_general:
                         config_file.general = config_general
                     # update endpoint if required
@@ -607,7 +591,7 @@ class Configuration(VssManager):
                     yaml.dump_yaml(self.yaml(), _conf_dict, stream=fp)
                     fp.truncate()
                 _LOGGING.debug(
-                    f'Configuration file {self.config} has been updated'
+                    f'Configuration file {self.config_path} has been updated'
                 )
             else:
                 if new_config_file:
@@ -621,10 +605,10 @@ class Configuration(VssManager):
                     # load and dump
                     config_file_dict = json.loads(config_file_tmpl.to_json())
                 # write file
-                with open(self.config, 'w') as fp:
+                with cfg_path.open(mode='w') as fp:
                     yaml.dump_yaml(self.yaml(), config_file_dict, stream=fp)
                 _LOGGING.debug(
-                    f'New {f_type} has been written to {self.config}.'
+                    f'New {f_type} has been written to {self.config_path}.'
                 )
         except OSError as e:
             raise Exception(
@@ -648,10 +632,11 @@ class Configuration(VssManager):
         if endpoint_name:
             self.endpoint_name = endpoint_name
         # directory available
-        if not os.path.isdir(os.path.dirname(self.config)):
-            os.mkdir(os.path.dirname(self.config))
-        # config file
-        if os.path.isfile(self.config):
+        cfg_path = Path(self.config_path)
+        if not cfg_path.parent.is_dir():
+            cfg_path.parent.mkdir()
+        # config_path file
+        if cfg_path.is_file():
             try:
                 self.config_file = self.load_config_file()
                 # load credentials by endpoint_name
@@ -659,7 +644,7 @@ class Configuration(VssManager):
                     config_endpoint,
                     e_username,
                     e_password,
-                ) = self.load_profile_from_config(  # NOQA: E501c
+                ) = self.load_profile(  # NOQA: E501c
                     endpoint=self.endpoint_name
                 )
                 # profile does not exist
@@ -684,7 +669,7 @@ class Configuration(VssManager):
                     else:
                         return False
             except Exception as ex:
-                _LOGGING.warning(f'Invalid config file: {ex}')
+                _LOGGING.warning(f'Invalid config_path file: {ex}')
                 confirm = click.confirm(
                     'An error occurred loading the '
                     'configuration file. '
