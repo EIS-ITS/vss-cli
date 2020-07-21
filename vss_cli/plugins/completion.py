@@ -12,8 +12,10 @@ from vss_cli.cli import pass_context
 )
 @pass_context
 def cli(ctx):
-    """Output shell completion code for the specified
-    shell (bash or zsh)."""
+    """Output shell completion code for the specified shell.
+
+    Supported shells: bash, zsh and fish.
+    """
 
 
 def dump_script(shell: str) -> None:
