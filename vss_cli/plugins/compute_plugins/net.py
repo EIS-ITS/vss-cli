@@ -1,3 +1,4 @@
+"""Compute Network plugin for VSS CLI (vss-cli)."""
 import logging
 
 import click
@@ -31,7 +32,7 @@ def network_ls(ctx: Configuration, filter_by, show_all, sort, page):
     Filter by path or name name=<name> or moref=<moref>.
     For example:
 
-        vss-cli compute net ls -f name=public
+    vss-cli compute net ls -f name=public
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
@@ -49,7 +50,7 @@ def network_ls(ctx: Configuration, filter_by, show_all, sort, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @cli.group(
@@ -63,12 +64,13 @@ def network_ls(ctx: Configuration, filter_by, show_all, sort, page):
 )
 @pass_context
 def network_get(ctx: Configuration, name_or_moref):
+    """Get Network object information."""
     _net = ctx.get_network_by_name_or_moref(name_or_moref)
     ctx.moref = _net[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_NET
         obj = ctx.get_network(ctx.moref)
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @network_get.command('vms', help='List vms on network.')
@@ -90,7 +92,7 @@ def net_get_vms(ctx: Configuration, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @network_get.command('perm', help='List network permissions.')
@@ -112,4 +114,4 @@ def net_get_permission(ctx: Configuration, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
