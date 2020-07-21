@@ -61,7 +61,7 @@ def request_mgmt_folder_ls(ctx, filter_by, page, sort, show_all, count):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @request_mgmt_folder.command('get', short_help='Folder request')
@@ -78,4 +78,4 @@ def request_mgmt_folder_get(ctx, rid):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_folder_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_FOLDER
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

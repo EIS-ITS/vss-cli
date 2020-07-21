@@ -59,7 +59,7 @@ def request_mgmt_new_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @request_mgmt_new.command('get', short_help='New vm request')
@@ -76,7 +76,7 @@ def request_mgmt_new_get(ctx: Configuration, rid):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_new_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_NEW
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @request_mgmt_new.command('retry', short_help='Retry vm new request')
@@ -88,4 +88,4 @@ def request_mgmt_new_retry(ctx: Configuration, rid):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.retry_new_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

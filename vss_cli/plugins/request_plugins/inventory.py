@@ -58,7 +58,7 @@ def request_mgmt_inventory_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @request_mgmt_inventory.command('get', short_help='Inventory request')
@@ -75,4 +75,4 @@ def request_mgmt_inventory_get(ctx: Configuration, rid):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_inventory_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_INVENTORY
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

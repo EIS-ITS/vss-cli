@@ -59,7 +59,7 @@ def request_mgmt_export_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @request_mgmt_export.command('get', short_help='Export request')
@@ -76,4 +76,4 @@ def request_mgmt_export_get(ctx: Configuration, rid):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_export_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_EXPORT
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

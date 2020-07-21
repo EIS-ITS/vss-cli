@@ -60,7 +60,7 @@ def image_sync_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @image_sync.command('get', help='Image sync request')
@@ -77,4 +77,4 @@ def image_sync_get(ctx, rid):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_image_sync_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_IMAGE_SYNC
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

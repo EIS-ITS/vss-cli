@@ -63,7 +63,7 @@ def request_mgmt_change_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @request_mgmt_change.command('get', short_help='Change request')
@@ -80,7 +80,7 @@ def request_mgmt_change_get(ctx: Configuration, rid):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_change_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @request_mgmt_change.command('retry', short_help='Retry vm change request')
@@ -97,7 +97,7 @@ def request_mgmt_change_retry(ctx: Configuration, rid):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.retry_change_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @request_mgmt_change.group(
@@ -144,7 +144,7 @@ def request_mgmt_change_set_schedule(ctx: Configuration, cancel, date_time):
     # no point of updating scheduling time if not scheduled
     if not obj.get('status') == 'Scheduled':
         raise click.BadArgumentUsage(
-            f'Change Request {ctx.request_id} is not ' f'scheduled.'
+            f'Change Request {ctx.request_id} is not scheduled.'
         )
     # create payload
     payload = dict(request_id=ctx.request_id)
@@ -169,4 +169,4 @@ def request_mgmt_change_set_schedule(ctx: Configuration, cancel, date_time):
         )
     # provide feedback
     columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
