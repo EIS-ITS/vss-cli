@@ -23,18 +23,17 @@ def cli(ctx: Configuration):
 @so.page_opt
 @pass_context
 def token_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
-    """List tokens based on:
+    """List tokens.
 
-        Filter list in the following format <field_name>=<operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: valid=eq,false
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: valid=eq,false
 
-            vss-cli token ls -f valid=eq,false
+    vss-cli token ls -f valid=eq,false
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli token ls -s created_on=desc
-
+    vss-cli token ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_TK_MIN
     params = dict()
@@ -60,6 +59,7 @@ def token_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 @click.argument('tid', type=click.INT, required=True)
 @pass_context
 def token_get(ctx: Configuration, tid):
+    """Get token info."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_token(tid)
     columns = ctx.columns or const.COLUMNS_TK
@@ -71,6 +71,7 @@ def token_get(ctx: Configuration, tid):
 @click.option('-s', '--summary', is_flag=True, help='Print request summary')
 @pass_context
 def token_rm(ctx: Configuration, tid, summary):
+    """Delete token."""
     result = []
     with click.progressbar(tid) as ids:
         for i in ids:

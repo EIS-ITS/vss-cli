@@ -64,7 +64,7 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
         endpoints = []
         if legacy_endpoints:
             n_ep = len(legacy_endpoints)
-            click.echo(
+            ctx.echo(
                 f'Found {n_ep} endpoints. Migrating to new configuration file.'
             )
             for ep_k, ep_v in legacy_endpoints.items():
@@ -286,7 +286,7 @@ def ls(ctx: Configuration):
             }
         )
     if cfg_endpoints:
-        click.echo(format_output(ctx, cfg_endpoints, columns=COLUMNS_DETAILS))
+        ctx.echo(format_output(ctx, cfg_endpoints, columns=COLUMNS_DETAILS))
     else:
         ctx.echo('No configuration was found')
 

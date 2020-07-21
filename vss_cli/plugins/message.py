@@ -1,4 +1,4 @@
-"""Token Management plugin for VSS CLI (vss-cli)."""
+"""Message Management plugin for VSS CLI (vss-cli)."""
 import click
 
 from vss_cli import const, rel_opts as so
@@ -24,18 +24,17 @@ def cli(ctx: Configuration):
 @so.page_opt
 @pass_context
 def message_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
-    """List messages based on:
+    """List messages.
 
-        Filter list in the following format <field_name>=<operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: kind eq,Notice
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: kind eq,Notice
 
-            vss-cli message ls -f kind=eq,Notice
+    vss-cli message ls -f kind=eq,Notice
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli message ls -s created_on=desc
-
+    vss-cli message ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_MESSAGE_MIN
     params = dict(expand=1, sort='status,asc')
@@ -66,7 +65,7 @@ def message_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 )
 @pass_context
 def message_get(ctx: Configuration, message_id):
-    """Get given user message id info"""
+    """Get message info."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_message(message_id)
     columns = ctx.columns or const.COLUMNS_MESSAGE
@@ -76,7 +75,7 @@ def message_get(ctx: Configuration, message_id):
 @cli.group('set', short_help='Set given user message attribute.')
 @pass_context
 def message_set(ctx):
-    """Update given user message id info"""
+    """Update message info."""
 
 
 @message_set.command('ack', short_help='Acknowledge user message')
@@ -90,6 +89,7 @@ def message_set(ctx):
 @click.option('-s', '--summary', is_flag=True, help='Print request summary')
 @pass_context
 def message_set_ack(ctx, message_id, summary):
+    """Acknowledge message."""
     result = []
     with click.progressbar(message_id) as ids:
         for i in ids:
