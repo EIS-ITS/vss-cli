@@ -28,8 +28,9 @@ _LOGGING = logging.getLogger(__name__)
 )
 @pass_context
 def cli(ctx: Configuration, upstream, git_branch):
-    """Upgrade existing install of VSS CLI to the latest version
-    (experimental). For example, to upgrade to the stable version:
+    """Upgrade existing install of VSS CLI to the latest version.
+
+    For example, to upgrade to the stable version:
 
     vss-cli upgrade stable
 
@@ -40,8 +41,6 @@ def cli(ctx: Configuration, upstream, git_branch):
     To upgrade to a given official vss-cli GitLab repository:
 
     vss-cli upgrade --git-branch=issue-145 branch
-
-
     """
     lookup = {
         'stable': {'pkg': 'vss-cli', 'args': ['--upgrade']},
@@ -71,7 +70,7 @@ def cli(ctx: Configuration, upstream, git_branch):
     cmd_str = f"{cmd_bin} -m pip install {cmd_args_str} {cmd_lookup['pkg']}"
     _LOGGING.debug(f'Executing {cmd_str}')
     # calling command
-    exit_code = call(cmd_str, shell=True)
+    exit_code = call(cmd_str.split())
     if exit_code > 0:
         raise click.ClickException(
             f'Could not perform upgrade, please try: ' f'\n\t{cmd_str}'
