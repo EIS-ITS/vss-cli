@@ -16,8 +16,11 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('folder', short_help='Manage logical folder requests.')
 @pass_context
 def request_mgmt_folder(ctx: Configuration):
-    """ Logical Folders are containers for storing and organizing
-    inventory objects, in this case virtual machines."""
+    """Manage logical Folders.
+
+    Logical Folders are containers for storing and organizing
+    inventory objects, in this case virtual machines.
+    """
     pass
 
 
@@ -29,18 +32,17 @@ def request_mgmt_folder(ctx: Configuration):
 @so.page_opt
 @pass_context
 def request_mgmt_folder_ls(ctx, filter_by, page, sort, show_all, count):
-    """List requests based on:
+    """List requests.
 
-        Filter list in the following format <field_name> <operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status=eq,PROCESSED
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,PROCESSED
 
-            vss-cli request folder ls -f status=eq,PROCESSED -f name,Dev
+    vss-cli request folder ls -f status=eq,PROCESSED -f name,Dev
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request folder ls -s created_on=desc
-
+    vss-cli request folder ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_FOLDER_MIN
     params = dict(expand=1, sort='created_on,desc')
@@ -71,6 +73,7 @@ def request_mgmt_folder_ls(ctx, filter_by, page, sort, show_all, count):
 )
 @pass_context
 def request_mgmt_folder_get(ctx, rid):
+    """Get Folder info."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_folder_request(rid)
