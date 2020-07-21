@@ -1,3 +1,4 @@
+"""Compute Image plugin for VSS CLI (vss-cli)."""
 import logging
 
 import click
@@ -14,14 +15,16 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('image', short_help='Manage personal and list public VM images.')
 @pass_context
 def compute_image(ctx):
-    """Available OVA/OVF images in both the VSS central store and your personal
-    VSKEY-STOR space."""
+    """Manage VM images.
+
+    Available VM images in the VSS central store and your personal space.
+    """
 
 
 @compute_image.group('public', short_help='Browse public images')
 @pass_context
 def compute_image_public(ctx):
-    """Available OVA/OVF images in the VSS central store"""
+    """Available OVA/OVF images in the VSS central store."""
 
 
 @compute_image_public.command('ls', short_help='list OVA/OVF images')
@@ -37,7 +40,7 @@ def compute_image_public_ls(
 
     Filter by name and sort desc. For example:
 
-        vss-cli compute image public ls -f name=like,Cent% -s path=asc
+    vss-cli compute image public ls -f name=like,Cent% -s path=asc
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
@@ -54,7 +57,7 @@ def compute_image_public_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @compute_image.group('personal', short_help='Browse current user images')
@@ -74,12 +77,13 @@ def compute_image_personal(ctx):
 @click.option('-q', '--quiet', is_flag=True, help='Display only path')
 @pass_context
 def compute_image_personal_ls(ctx: Configuration, page, quiet, no_header):
-    """List available OVA/OVF VM images stored in your personal
-    VSKEY-STOR space. If the image you uploaded is not listing here,
-    use the sync and try again.
+    """List OVA/OVF VM images stored in your personal VSKEY-STOR space.
 
-        vss-cli compute image personal sync
-        vss-cli compute image personal ls
+    If the image you uploaded is not listed, use the sync command
+    and try again.
+
+    vss-cli compute image personal sync
+    vss-cli compute image personal ls
     """
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_vm_images()
@@ -90,7 +94,7 @@ def compute_image_personal_ls(ctx: Configuration, page, quiet, no_header):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @compute_image_personal.command(
@@ -99,7 +103,9 @@ def compute_image_personal_ls(ctx: Configuration, page, quiet, no_header):
 @pass_context
 def compute_image_personal_sync(ctx: Configuration):
     """Synchronize OVA/OVF VM images stored in your personal VSKEY-STOR space.
-     Once processed it should be listed with the ls command."""
+
+    Once processed it should be listed with the ls command.
+    """
     obj = ctx.sync_user_vm_images()
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
