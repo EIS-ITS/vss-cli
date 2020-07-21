@@ -15,7 +15,7 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('new', short_help='Manage new virtual machine deployment requests')
 @pass_context
 def request_mgmt_new(ctx: Configuration):
-    """Manage new virtual machine deployment requests"""
+    """Manage new virtual machine deployment requests."""
     pass
 
 
@@ -29,18 +29,17 @@ def request_mgmt_new(ctx: Configuration):
 def request_mgmt_new_ls(
     ctx: Configuration, filter_by, page, sort, show_all, count
 ):
-    """List requests based on:
+    """List requests.
 
-        Filter list in the following format <field_name> <operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status=eq,PROCESSED
+    Filter list in the following format <field_name> <operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,PROCESSED
 
-            vss-cli request new ls -f status=eq,PROCESSED
+    vss-cli request new ls -f status=eq,PROCESSED
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request new ls -s created_on=desc
-
+    vss-cli request new ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_NEW_MIN
     _LOGGING.debug(f'Columns {columns}')
@@ -72,6 +71,7 @@ def request_mgmt_new_ls(
 )
 @pass_context
 def request_mgmt_new_get(ctx: Configuration, rid):
+    """Get New VM Request info."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_new_request(rid)
@@ -83,9 +83,7 @@ def request_mgmt_new_get(ctx: Configuration, rid):
 @click.argument('rid', type=click.INT, required=True)
 @pass_context
 def request_mgmt_new_retry(ctx: Configuration, rid):
-    """Retries given virtual machine new request with status
-    'Error Processed'.
-    """
+    """Retry new VM request with status 'Error Processed'."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.retry_new_request(rid)
