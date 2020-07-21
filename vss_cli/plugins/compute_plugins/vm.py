@@ -70,9 +70,7 @@ def compute_vm_ls(
 
 
 @compute_vm.group(
-    'get',
-    short_help='Given virtual machine info.',
-    invoke_without_command=True,
+    'get', short_help='Get virtual machine info.', invoke_without_command=True,
 )
 @click.argument(
     'vm_id_or_name',
