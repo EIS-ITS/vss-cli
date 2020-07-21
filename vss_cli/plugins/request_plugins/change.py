@@ -16,8 +16,11 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('change', short_help='Manage virtual machine change requests')
 @pass_context
 def request_mgmt_change(ctx: Configuration):
-    """ Updating any virtual machine attribute
-    will produce a virtual machine change request."""
+    """Manage VM change requests.
+
+    Updating any virtual machine attribute will produce
+    a virtual machine change request.
+    """
     pass
 
 
@@ -31,18 +34,17 @@ def request_mgmt_change(ctx: Configuration):
 def request_mgmt_change_ls(
     ctx: Configuration, filter_by, page, sort, show_all, count
 ):
-    """List requests based on:
+    """List requests.
 
-        Filter list in the following format <field_name>=<operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status=eq,Processed
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,Processed
 
-            vss-cli request change ls -f status=eq,PROCESSED
+    vss-cli request change ls -f status=eq,PROCESSED
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request change ls -s created_on=desc
-
+    vss-cli request change ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE_MIN
     params = dict(expand=1, sort='created_on,desc')
@@ -73,6 +75,7 @@ def request_mgmt_change_ls(
 )
 @pass_context
 def request_mgmt_change_get(ctx: Configuration, rid):
+    """Get VM change request info."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_change_request(rid)
@@ -89,9 +92,7 @@ def request_mgmt_change_get(ctx: Configuration, rid):
 )
 @pass_context
 def request_mgmt_change_retry(ctx: Configuration, rid):
-    """Retries given virtual machine change request with status
-    'Error Processed'.
-    """
+    """Retry vm change request with status 'Error Processed'."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.retry_change_request(rid)
@@ -110,6 +111,7 @@ def request_mgmt_change_retry(ctx: Configuration, rid):
 )
 @pass_context
 def request_mgmt_change_set(ctx: Configuration, rid):
+    """Set vm change request attribute."""
     ctx.request_id = rid
     if click.get_current_context().invoked_subcommand is None:
         raise click.UsageError('Sub command is required')
@@ -131,6 +133,7 @@ def request_mgmt_change_set(ctx: Configuration, rid):
 )
 @pass_context
 def request_mgmt_change_set_schedule(ctx: Configuration, cancel, date_time):
+    """Schedule VM change request."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_change_request(ctx.request_id)
