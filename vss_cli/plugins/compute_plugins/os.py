@@ -1,3 +1,4 @@
+"""Compute OS plugin for VSS CLI (vss-cli)."""
 import logging
 
 import click
@@ -15,8 +16,10 @@ _LOGGING = logging.getLogger(__name__)
 @pass_context
 def compute_os(ctx):
     """Supported operating systems by our infrastructure.
+
     This resource is useful when deploying a new or
-    reconfiguring an existing virtual machine."""
+    reconfiguring an existing virtual machine.
+    """
 
 
 @compute_os.command('ls', short_help='list operating systems')
@@ -27,18 +30,17 @@ def compute_os(ctx):
 @so.page_opt
 @pass_context
 def compute_os_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
-    """List requests based on:
+    """List requests.
 
-        Filter list in the following format <field_name>=<operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status=eq,PROCESSED
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,PROCESSED
 
-            vss-cli compute os ls -f full_name=like,CentOS%
+    vss-cli compute os ls -f full_name=like,CentOS%
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli compute os ls -s guest_id=asc
-
+    vss-cli compute os ls -s guest_id=asc
     """
     params = dict(expand=1, sort='guest_id,asc')
     if all(filter_by):
@@ -54,4 +56,4 @@ def compute_os_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
