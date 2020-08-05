@@ -1,5 +1,42 @@
 # Changelog 📝
 
+## [v0.8.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.2) (2020-08-05)
+
+**Improvements:**
+
+- [#343](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/343): ``core``: ``pyvss``  v0.14.4 -> v0.15.0.
+- [#342](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/342): ``core``: Add python ``3.8``.
+- [#340](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/340): ``key``: docstring improvements.
+- [#339](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/339): ``plugin``: docstring improvements.
+- [#338](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/338): ``key``: docstring improvements.
+- [#337](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/337): ``completion``: docstring improvements.
+- [#336](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/336): ``account``: docstring improvements.
+- [#335](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/335): ``request snapshot``: docstring improvements.
+- [#334](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/334): ``request new``: docstring improvements.
+- [#333](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/333): ``request inventory``: docstring improvements.
+- [#332](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/332): ``request image``: docstring improvements.
+- [#331](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/331): ``request folder``: docstring improvements.
+- [#330](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/330): ``request export``: docstring improvements.
+- [#329](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/329): ``request change``: docstring improvements.
+- [#328](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/328): ``request template``: docstring improvements.
+- [#327](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/327): ``compute os``: docstring improvements.
+- [#326](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/326): ``compute net``: docstring improvements.
+- [#325](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/325): ``compute iso``: docstring improvements.
+- [#324](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/324): ``compute inventory``: docstring improvements.
+- [#323](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/323): ``compute image``: docstring improvements.
+- [#322](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/322): ``compute folder``: docstring improvements.
+- [#321](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/321): ``compute floppy``: docstring improvements.
+- [#320](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/320): ``compute domain``: docstring improvements.
+- [#319](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/319): ``compute vm``: docstring improvements.
+- [#318](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/318): ``core``: ``config`` general improvements.
+- [#317](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/317): ``core``: ``helper`` general improvements.
+- [#316](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/316): ``docs``: ``asciicast`` general improvements.
+- [#214](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/214): ``compute vm set``: ``--dry-run`` option to simulate execution before submitting command.
+
+**Bug Fixes:**
+
+- [#341](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/341): ``upgrade``:  bandit warning HIGH. 
+
 ## [v0.8.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.1) (2020-06-22)
 
 **Improvements:**
