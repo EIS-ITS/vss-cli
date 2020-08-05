@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+from pathlib import Path
 from typing import Any
 
 import click
@@ -57,12 +58,13 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
     """Upgrade legacy configuration (config.json) to current (config.yaml)."""
     cfg_exc = False
     try:
-        with open(legacy_config, 'r') as f:
+        cfg_legacy = Path(legacy_config)
+        with cfg_legacy.open(mode='r') as f:
             legacy_endpoints = ctx.yaml_load(f)
         endpoints = []
         if legacy_endpoints:
             n_ep = len(legacy_endpoints)
-            click.echo(
+            ctx.echo(
                 f'Found {n_ep} endpoints. Migrating to new configuration file.'
             )
             for ep_k, ep_v in legacy_endpoints.items():
@@ -81,7 +83,7 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
             confirmation = confirm or click.confirm(
                 f'\nWould you like to upgrade {ep} endpoint(s)? '
                 f'This action will \n'
-                f'create a new configuration file {ctx.config} \n'
+                f'create a new configuration file {ctx.config_path} \n'
                 f'with your endpoints in it'
             )
             if confirmation:
@@ -89,11 +91,11 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
                 config_file = ctx.load_config_template()
                 config_file.update_endpoints(*endpoints)
                 # check if target exists
-                target_exists = os.path.isfile(ctx.config)
-                if target_exists:
+                cfg_path = Path(ctx.config_path)
+                if cfg_path.is_file():
                     if not (
                         overwrite
-                        or click.confirm(f'\nOverwrite {ctx.config}?')
+                        or click.confirm(f'\nOverwrite {ctx.config_path}?')
                     ):
                         raise click.Abort('Cancelled by user')
                 # all ok
@@ -139,7 +141,7 @@ def upgrade(ctx: Configuration, legacy_config, confirm, overwrite):
 )
 @pass_context
 def mk(ctx: Configuration, replace: bool, endpoint_name: str):
-    """Create new configuration or add profile to config file"""
+    """Create new configuration or add profile to config file."""
     new_endpoint = ctx.endpoint or click.prompt(
         'Endpoint',
         default=const.DEFAULT_ENDPOINT,
@@ -196,6 +198,7 @@ COLUMNS_DETAILS = [
 @click.argument('value', type=click.STRING)
 @pass_context
 def set_cfg(ctx: Configuration, setting: str, value: Any):
+    """Set configuration attribute in the general section."""
     ctx.load_config(validate=False)
     data_type = const.GENERAL_SETTINGS[setting]
     was = None
@@ -217,14 +220,14 @@ def set_cfg(ctx: Configuration, setting: str, value: Any):
         _LOGGING.warning(f'{setting} value must be {data_type}')
     ctx.secho(f"Updating {setting} from {was} -> {to}.")
     ctx.write_config_file(config_general=ctx.config_file.general)
-    ctx.secho(f"{ctx.config} updated {ej_save}", fg='green')
+    ctx.secho(f"{ctx.config_path} updated {ej_save}", fg='green')
     return
 
 
 @cli.command('ls', short_help='List existing endpoint configuration')
 @pass_context
 def ls(ctx: Configuration):
-    """List existing configuration"""
+    """List existing configuration."""
     from base64 import b64decode
 
     cfg_endpoints = list()
@@ -283,7 +286,7 @@ def ls(ctx: Configuration):
             }
         )
     if cfg_endpoints:
-        click.echo(format_output(ctx, cfg_endpoints, columns=COLUMNS_DETAILS))
+        ctx.echo(format_output(ctx, cfg_endpoints, columns=COLUMNS_DETAILS))
     else:
         ctx.echo('No configuration was found')
 
@@ -294,20 +297,20 @@ def ls(ctx: Configuration):
 )
 @pass_context
 def edit(ctx: Configuration, launch):
-    """Edit configuration file"""
+    """Edit configuration file."""
     # either launch or edit in
     if launch:
-        click.launch(ctx.config, locate=True)
+        click.launch(ctx.config_path, locate=True)
     else:
+        cfg_path = Path(ctx.config_path)
         # proceed to load file
-        with open(ctx.config, 'r') as data_file:
-            raw = data_file.read()
+        raw = cfg_path.read_text()
         # launch editor
         new_raw = click.edit(raw, extension='.yaml')
         if new_raw is not None:
-            ctx.secho(f"Updating {ctx.config} {ej_save}", fg='green')
+            ctx.secho(f"Updating {ctx.config_path} {ej_save}", fg='green')
             new_obj = ctx.yaml_load(new_raw)
-            with open(ctx.config, 'w') as fp:
+            with cfg_path.open(mode='w') as fp:
                 ctx.yaml_dump_stream(new_obj, stream=fp)
         else:
             ctx.echo("No edits/changes returned from editor.")

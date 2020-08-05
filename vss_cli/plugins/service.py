@@ -10,7 +10,7 @@ from vss_cli.helper import format_output
 @click.group('service', short_help='ITS Service catalog.')
 @pass_context
 def cli(ctx: Configuration):
-    """Available ITS Service catalog."""
+    """Browse ITS Service catalog."""
     with ctx.spinner(disable=ctx.debug):
         ctx.load_config()
 
@@ -23,18 +23,17 @@ def cli(ctx: Configuration):
 @so.page_opt
 @pass_context
 def service_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
-    """List services based on:
+    """List services.
 
-        Filter list in the following format <field_name> <operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: name=like,%VPN%
+    Filter list in the following format <field_name> <operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: name=like,%VPN%
 
-            vss-cli service ls -f name=like,%VPN%
+    vss-cli service ls -f name=like,%VPN%
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli service ls -s label=desc
-
+    vss-cli service ls -s label=desc
     """
     columns = ctx.columns or const.COLUMNS_VSS_SERVICE
     params = dict()
@@ -53,4 +52,4 @@ def service_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)

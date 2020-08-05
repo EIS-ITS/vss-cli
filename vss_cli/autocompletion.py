@@ -20,7 +20,7 @@ def _init_ctx(ctx: Configuration) -> None:
     ctx.client.timeout = int(
         os.environ.get('VSS_TIMEOUT', str(const.DEFAULT_TIMEOUT))
     )
-    ctx.client.config = os.environ.get('VSS_CONFIG', const.DEFAULT_CONFIG)
+    ctx.client.config_path = os.environ.get('VSS_CONFIG', const.DEFAULT_CONFIG)
     # fallback to load configuration
     ctx.client.load_config()
 
@@ -33,6 +33,7 @@ def _autocomplete(
     sort_index: int = 0,
     complete_index: int = 0,
 ) -> List[Tuple[str, str]]:
+    """Autocomplete main function."""
     try:
         response = f(**f_kwargs)
     except (HTTPError, VssError):
@@ -58,7 +59,7 @@ def _autocomplete(
 def table_formats(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
-    """Table Formats."""
+    """Provide table Formats."""
     _init_ctx(ctx)
 
     completions = [
@@ -97,6 +98,7 @@ def table_formats(
 def vm_templates(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM templates."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_templates,
@@ -111,6 +113,7 @@ def vm_templates(
 def virtual_machines(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VMs."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_vms,
@@ -125,6 +128,7 @@ def virtual_machines(
 def vm_controller_scsi_types(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM controller SCSI types."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_supported_scsi_controllers,
@@ -137,6 +141,7 @@ def vm_controller_scsi_types(
 def vm_disk_backing_modes(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM Disk Backing Modes."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_supported_disk_backing_modes,
@@ -149,6 +154,7 @@ def vm_disk_backing_modes(
 def domains(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete Domains."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_domains,
@@ -163,6 +169,7 @@ def domains(
 def folders(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM folders."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_folders,
@@ -182,6 +189,7 @@ def folders(
 def networks(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete Networks."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_networks,
@@ -196,6 +204,7 @@ def networks(
 def operating_systems(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM operating systems."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_os,
@@ -208,6 +217,7 @@ def operating_systems(
 def vss_services(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VSS Services."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_vss_services,
@@ -222,6 +232,7 @@ def vss_services(
 def isos(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete ISO images."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_isos,
@@ -236,6 +247,7 @@ def isos(
 def vm_images(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM images."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_images,
@@ -250,6 +262,7 @@ def vm_images(
 def floppies(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM Floppies."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_floppies,
@@ -264,6 +277,7 @@ def floppies(
 def inventory_properties(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM Inventory Properties."""
     _init_ctx(ctx)
     try:
         response = ctx.client.request('/inventory/options')
@@ -286,6 +300,7 @@ def inventory_properties(
 def inventory_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM Inventory Requests."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_inventory_requests,
@@ -298,6 +313,7 @@ def inventory_requests(
 def new_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete New VM Requests."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_new_requests,
@@ -310,6 +326,7 @@ def new_requests(
 def change_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete Change VM Requests."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_change_requests,
@@ -322,6 +339,7 @@ def change_requests(
 def export_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete Export VM Requests."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_export_requests,
@@ -334,6 +352,7 @@ def export_requests(
 def folder_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete Folder Requests."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_folder_requests,
@@ -346,6 +365,7 @@ def folder_requests(
 def image_sync_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete Image Sync Requests."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_folder_requests,
@@ -358,6 +378,7 @@ def image_sync_requests(
 def snapshot_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM Snapshot Requests."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_snapshot_requests,
@@ -370,6 +391,7 @@ def snapshot_requests(
 def account_messages(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete Account Messages."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_user_messages,
@@ -382,6 +404,7 @@ def account_messages(
 def virtual_nic_types(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM NIC Types."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_supported_nic_types,
@@ -394,6 +417,7 @@ def virtual_nic_types(
 def virtual_hw_types(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VM Virtual Hardware Types."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_supported_vmx_types,
@@ -406,6 +430,7 @@ def virtual_hw_types(
 def vss_options(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete VSS Options."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_supported_vss_options,
@@ -418,6 +443,7 @@ def vss_options(
 def groups(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
+    """Autocomplete User Groups."""
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_groups,

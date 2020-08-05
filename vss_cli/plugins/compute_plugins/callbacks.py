@@ -1,9 +1,11 @@
+"""Compute Callback module for VSS CLI (vss-cli)."""
 from vss_cli.autocompletion import _init_ctx
 from vss_cli.config import Configuration
 from vss_cli.helper import to_tuples
 
 
 def process_networks_opt(ctx: Configuration, param, value):
+    """Process network option."""
     _init_ctx(ctx)
     if value is not None:
         networks = list()

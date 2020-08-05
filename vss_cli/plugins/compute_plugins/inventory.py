@@ -1,3 +1,4 @@
+"""Compute Inventory plugin for VSS CLI (vss-cli)."""
 import logging
 from typing import List
 
@@ -16,9 +17,11 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('inventory', short_help='Manage inventory reports')
 @pass_context
 def cli(ctx: Configuration):
-    """Create or download an inventory file of your virtual machines
-    hosted. Inventory files are created and transferred to your VSKEY-STOR
-    space and are also available through the API."""
+    """Create or download an inventory file of your virtual machines.
+
+    Inventory files are created and transferred to your VSKEY-STOR
+    space and are also available through the API.
+    """
 
 
 @cli.command('dl', short_help='download inventory report')
@@ -41,9 +44,10 @@ def cli(ctx: Configuration):
 )
 @pass_context
 def compute_inventory_dl(ctx: Configuration, request_id, directory, launch):
-    """Downloads given inventory request to current directory or
-    provided path. Also, it's possible to open downloaded file in
-    default editor."""
+    """Download inventory request report.
+
+    Also, it's possible to open downloaded file in default editor.
+    """
     file_path = ctx.download_inventory_file(request_id, directory)
     # to launch or not
     if launch and file_path:
@@ -82,9 +86,9 @@ def compute_inventory_mk(
     wait: bool,
     transfer: bool,
 ):
-    """Submits an inventory report request to generate file in JSON or CSV
-    of your virtual machines.
+    """Submit an inventory report request.
 
+    Generate report file in JSON or CSV format of your virtual machines.
     """
     ctx.wait = wait
     attributes = ctx.get_inventory_properties() if all else list(attribute)
@@ -92,7 +96,7 @@ def compute_inventory_mk(
         fmt=fmt, props=attributes, transfer=transfer
     )
     # format output
-    click.echo(
+    ctx.echo(
         format_output(
             ctx, [obj], columns=const.COLUMNS_REQUEST_SUBMITTED, single=True
         )

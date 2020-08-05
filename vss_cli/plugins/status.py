@@ -17,7 +17,7 @@ _LOGGING = logging.getLogger(__name__)
 )
 @pass_context
 def cli(ctx: Configuration):
-    """Check API from https://healthchecks.io"""
+    """Check API from https://healthchecks.io."""
     ctx.set_defaults()
     with ctx.spinner(disable=ctx.debug):
         objs = [check_hcio(), check_sstatus()]
@@ -37,8 +37,7 @@ def cli(ctx: Configuration):
 )
 @pass_context
 def get_vss_status_and_maint(ctx: Configuration, maintenance):
-    """Check VSS Status from https://www.systemstatus.utoronto.ca/"""
-
+    """Check VSS Status from https://www.systemstatus.utoronto.ca/."""
     ctx.set_defaults()
     with ctx.spinner(disable=ctx.debug):
         system_status = check_sstatus()

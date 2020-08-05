@@ -1,3 +1,4 @@
+"""Compute Domain plugin for VSS CLI (vss-cli)."""
 import logging
 
 import click
@@ -16,9 +17,12 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('domain', short_help='List compute domains.')
 @pass_context
 def cli(ctx: Configuration):
-    """A fault domain consists of one or more ESXI hosts and
+    """Domain command.
+
+    A fault domain consists of one or more ESXI hosts and
     Datastore Clusters grouped together according to their
-    physical location in the datacenter."""
+    physical location in the datacenter.
+    """
 
 
 @cli.command('ls', short_help='list fault domains')
@@ -29,6 +33,7 @@ def cli(ctx: Configuration):
 @so.count_opt
 @pass_context
 def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
+    """List available fault domains."""
     columns = ctx.columns or const.COLUMNS_MOREF
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
@@ -44,7 +49,7 @@ def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @cli.group('get', help='Given domain info.', invoke_without_command=True)
@@ -56,13 +61,14 @@ def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
 )
 @pass_context
 def domain_get(ctx: Configuration, name_or_moref):
+    """Get fault domain information."""
     _domain = ctx.get_domain_by_name_or_moref(name_or_moref)
     ctx.moref = _domain[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_MOREF
         with ctx.spinner(disable=ctx.debug):
             obj = ctx.get_domain(ctx.moref)
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @domain_get.command('vms', help='Given domain vms.')
@@ -71,6 +77,7 @@ def domain_get(ctx: Configuration, name_or_moref):
 )
 @pass_context
 def domain_get_vms(ctx: Configuration, page):
+    """Get VMs in given fault domain."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_vms_by_domain(ctx.moref)
     if not obj:
@@ -83,4 +90,4 @@ def domain_get_vms(ctx: Configuration, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)

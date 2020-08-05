@@ -29,18 +29,17 @@ def cli(ctx: Configuration):
 @so.page_opt
 @pass_context
 def key_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
-    """List ssh public keys based on:
+    """List ssh public keys.
 
-        Filter list in the following format <field_name>=<operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: type eq,ssh-rsa
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: type eq,ssh-rsa
 
-            vss-cli key ls -f type=eq,ssh-rsa
+    vss-cli key ls -f type=eq,ssh-rsa
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli key ls -s created_on=desc
-
+    vss-cli key ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_SSH_KEY_MIN
     params = dict()
@@ -59,24 +58,26 @@ def key_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @cli.command('get', help='Display user key info.')
 @click.argument('kid', type=int, required=True)
 @pass_context
 def key_get(ctx: Configuration, kid):
+    """Get ssh key info."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_ssh_key(kid)
     columns = ctx.columns or const.COLUMNS_SSH_KEY
     # format output
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @cli.command('mk', help='Create SSH Public Key.')
 @click.argument('path_or_key', type=click.STRING, required=True, nargs=1)
 @pass_context
 def key_mk(ctx, path_or_key):
+    """Create ssh-key record."""
     with ctx.spinner(disable=ctx.debug):
         if os.path.isfile(path_or_key):
             obj = ctx.create_user_ssh_key_path(path_or_key)
@@ -87,7 +88,7 @@ def key_mk(ctx, path_or_key):
     # if key has been created print
     if obj:
         # format output
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     else:
         raise VssCliError(
             'Cloud not create key. '
@@ -101,13 +102,14 @@ def key_mk(ctx, path_or_key):
 @click.option('-s', '--summary', is_flag=True, help='Print request summary')
 @pass_context
 def key_rm(ctx: Configuration, kid, summary):
+    """Delete ssh keys."""
     result = []
     with click.progressbar(kid) as ids:
         for i in ids:
             result.append(ctx.delete_user_ssh_key(i))
     if summary:
         for res in result:
-            click.echo(
+            ctx.echo(
                 format_output(
                     ctx, [res], columns=[('STATUS', 'status')], single=True
                 )

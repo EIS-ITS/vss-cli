@@ -18,36 +18,36 @@ def cli(ctx: Configuration):
 @cli.group('get', short_help='get account attribute')
 @pass_context
 def account_get(ctx: Configuration):
-    """Obtain an account attribute"""
+    """Obtain an account attribute."""
     pass
 
 
 @account_get.group('digest')
 @pass_context
 def account_get_digest(ctx):
-    """Get digest status"""
+    """Get digest status."""
     pass
 
 
 @account_get_digest.command('message')
 @pass_context
 def account_get_digest_message(ctx: Configuration):
-    """Get message digest status"""
+    """Get message digest status."""
     with ctx.spinner(disable=ctx.debug):
         _obj = ctx.get_user_digest_settings()
     obj = {'message': _obj.get('message')}
     columns = ctx.columns or const.COLUMNS_MESSAGE_DIGEST
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @account_get.command('groups')
 @pass_context
 def account_get_groups(ctx: Configuration):
-    """User group membership"""
+    """User group membership."""
     with ctx.spinner(disable=ctx.debug):
         objs = ctx.get_user_groups(per_page=20)
     columns = ctx.columns or const.COLUMNS_GROUPS
-    click.echo(format_output(ctx, objs, columns=columns))
+    ctx.echo(format_output(ctx, objs, columns=columns))
 
 
 @account_get.group('group', invoke_without_command=True)
@@ -60,45 +60,46 @@ def account_get_groups(ctx: Configuration):
 @pass_context
 def account_get_group(ctx: Configuration, group_id_or_name):
     """Get given group info or members.
-    User must be part of the group."""
+
+    User must be part of the group.
+    """
     _group = ctx.get_vss_groups_by_name_desc_or_id(group_id_or_name)
     ctx.group = _group[0]['id']
     if click.get_current_context().invoked_subcommand is None:
         with ctx.spinner(disable=ctx.debug):
             obj = ctx.get_group(ctx.group)
         columns = ctx.columns or const.COLUMNS_GROUP
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @account_get_group.command('member')
 @pass_context
 def account_get_group_members(ctx: Configuration):
+    """Get group members."""
     with ctx.spinner(disable=ctx.debug):
         objs = ctx.get_group_members(ctx.group)
     columns = ctx.columns or const.COLUMNS_GROUP_MEMBERS
-    click.echo(format_output(ctx, objs, columns=columns))
+    ctx.echo(format_output(ctx, objs, columns=columns))
 
 
 @account_get.command('access-role')
 @pass_context
 def account_get_access_role(ctx: Configuration):
-    """Access role and entitlements"""
+    """Access role and entitlements."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_roles()
     columns = ctx.columns or const.COLUMNS_ROLE
-    click.echo(
-        format_output(ctx, [obj['access']], columns=columns, single=True)
-    )
+    ctx.echo(format_output(ctx, [obj['access']], columns=columns, single=True))
 
 
 @account_get.command('request-role')
 @pass_context
 def account_get_request_role(ctx: Configuration):
-    """Request role and entitlements"""
+    """Request role and entitlements."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_roles()
     columns = ctx.columns or const.COLUMNS_ROLE
-    click.echo(
+    ctx.echo(
         format_output(ctx, [obj['request']], columns=columns, single=True)
     )
 
@@ -106,63 +107,63 @@ def account_get_request_role(ctx: Configuration):
 @account_get.command('personal')
 @pass_context
 def account_get_personal(ctx: Configuration):
-    """User information"""
+    """Get user information."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_personal()
     obj.update(ctx.get_user_ldap())
     columns = ctx.columns or const.COLUMNS_USER_PERSONAL
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @account_get.command('status')
 @pass_context
 def account_get_pstatus(ctx: Configuration):
-    """Account status"""
+    """Get account status."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_status()
     columns = ctx.columns or const.COLUMNS_USER_STATUS
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @account_get.group('notification')
 @pass_context
 def account_get_notification(ctx: Configuration):
-    """Notification settings"""
+    """Get notification settings."""
     pass
 
 
 @account_get_notification.command('request')
 @pass_context
 def account_get_notification_request(ctx: Configuration):
-    """Get notification format"""
+    """Get notification format."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_request_notification_settings()
     columns = ctx.columns or const.COLUMNS_NOT_REQUEST
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @account_get_notification.command('format')
 @pass_context
 def account_get_notification_format(ctx: Configuration):
-    """Get notification format"""
+    """Get notification format."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_notification_format()
-    click.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))
 
 
 @account_get_notification.command('method')
 @pass_context
 def account_get_notification_method(ctx: Configuration):
-    """Get notification format"""
+    """Get notification format."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_notification_method()
-    click.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))
 
 
 @cli.group('set', short_help='set account attribute')
 @pass_context
 def account_set(ctx: Configuration):
-    """Set account attribute"""
+    """Set account attribute."""
     pass
 
 
@@ -171,7 +172,7 @@ def account_set(ctx: Configuration):
 )
 @pass_context
 def account_set_digest(ctx: Configuration):
-    """update weekly digest configuration"""
+    """Update weekly digest configuration."""
     pass
 
 
@@ -179,7 +180,7 @@ def account_set_digest(ctx: Configuration):
 @click.argument('state', type=click.Choice(['in', 'out']), required=True)
 @pass_context
 def account_set_digest_message(ctx: Configuration, state):
-    """Opt-in or opt-out of weekly message digest"""
+    """Opt-in or opt-out of weekly message digest."""
     with ctx.spinner(disable=ctx.debug):
         if state == 'in':
             ctx.enable_user_message_digest()
@@ -188,7 +189,7 @@ def account_set_digest_message(ctx: Configuration, state):
     _obj = ctx.get_user_digest_settings()
     obj = {'message': _obj.get('message')}
     columns = ctx.columns or const.COLUMNS_MESSAGE_DIGEST
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @account_set.group(
@@ -196,7 +197,7 @@ def account_set_digest_message(ctx: Configuration, state):
 )
 @pass_context
 def account_notification_set(ctx: Configuration):
-    """Set account notification settings"""
+    """Set account notification settings."""
     pass
 
 
@@ -209,7 +210,7 @@ def account_notification_set(ctx: Configuration):
 )
 @pass_context
 def account_notification_set_request(ctx: Configuration, notification_type):
-    """Customize request notification settings"""
+    """Customize request notification settings."""
     lookup = {
         'all': ctx.enable_user_request_all_notification,
         'none': ctx.disable_user_request_all_notification,
@@ -239,17 +240,17 @@ def account_notification_set_request(ctx: Configuration, notification_type):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_request_notification_settings()
     columns = ctx.columns or const.COLUMNS_NOT_REQUEST
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @account_notification_set.command('format')
 @click.argument('fmt', type=click.Choice(['html', 'text']), required=True)
 @pass_context
 def account_notification_set_format(ctx: Configuration, fmt):
-    """Update notification format where FMT can be html or text"""
+    """Update notification format where FMT can be html or text."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.update_user_notification_format(fmt)
-    click.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))
 
 
 @account_notification_set.command('method')
@@ -258,7 +259,7 @@ def account_notification_set_format(ctx: Configuration, fmt):
 )
 @pass_context
 def account_notification_set_method(ctx: Configuration, method):
-    """Update notification method where METHOD can be mail or message"""
+    """Update notification method where METHOD can be mail or message."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.update_user_notification_method(method)
-    click.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))

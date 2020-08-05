@@ -1,7 +1,7 @@
+"""Compute VM plugin for VSS CLI (vss-cli)."""
 import datetime
 import logging
 import os
-from typing import List, Tuple
 
 import click
 from click_plugins import with_plugins
@@ -12,8 +12,7 @@ import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
-from vss_cli.helper import (
-    format_output, process_filters, raw_format_output, to_tuples)
+from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_opts as c_so
 from vss_cli.validators import (
@@ -42,13 +41,13 @@ def compute_vm_ls(
 ):
     """List virtual machine instances.
 
-        Filter and sort list by any attribute. For example:
+    Filter and sort list by any attribute. For example:
 
-        vss-cli compute vm ls -f name=like,%vm-name% -f version=like,%13
+    vss-cli compute vm ls -f name=like,%vm-name% -f version=like,%13
 
-        Simple name filtering:
+    Simple name filtering:
 
-        vss-cli compute vm ls -f name=%vm-name% -s name=desc
+    vss-cli compute vm ls -f name=%vm-name% -s name=desc
 
     """
     params = dict(expand=1, sort='name,asc')
@@ -67,13 +66,11 @@ def compute_vm_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @compute_vm.group(
-    'get',
-    short_help='Given virtual machine info.',
-    invoke_without_command=True,
+    'get', short_help='Get virtual machine info.', invoke_without_command=True,
 )
 @click.argument(
     'vm_id_or_name',
@@ -91,48 +88,49 @@ def compute_vm_get(ctx: Configuration, vm_id_or_name):
         obj = ctx.get_vm(ctx.moref)
         if not obj:
             raise VssCliError('Virtual Machine not found')
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('admin', short_help='Admin (metadata)')
 @pass_context
 def compute_vm_get_admin(ctx: Configuration,):
-    """Virtual machine administrator. Part of the
-    VSS metadata."""
+    """Virtual machine administrator. Part of the VSS metadata."""
     columns = ctx.columns or const.COLUMNS_VM_ADMIN
     obj = ctx.get_vm_vss_admin(ctx.moref)
     if not obj:
         raise VssCliError('Virtual Machine Admin not found')
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('alarm', short_help='Triggered alarms')
 @click.argument('moref', type=click.STRING, required=False)
 @pass_context
 def compute_vm_get_alarms(ctx: Configuration, moref):
-    """Virtual machine triggered alarms"""
+    """Virtual machine triggered alarms."""
     if moref:
         columns = ctx.columns or const.COLUMNS_VM_ALARM
         obj = ctx.get_vm_alarm(ctx.moref, moref)
         obj = obj or []
-        click.echo(format_output(ctx, obj, columns=columns, single=True))
+        ctx.echo(format_output(ctx, obj, columns=columns, single=True))
     else:
         columns = ctx.columns or const.COLUMNS_VM_ALARM
         obj = ctx.get_vm_alarms(ctx.moref)
         obj = obj or []
-        click.echo(format_output(ctx, obj, columns=columns))
+        ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command('boot', short_help='Boot configuration')
 @pass_context
 def compute_vm_get_boot(ctx: Configuration,):
     """Virtual machine boot settings.
-       Including boot delay and whether or not
-       to boot and enter directly to BIOS."""
+
+    Including boot delay and whether or not
+    to boot and enter directly to BIOS.
+    """
     columns = ctx.columns or const.COLUMNS_VM_BOOT
     obj = ctx.get_vm_boot(ctx.moref)
     obj = obj or {}
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('cd', short_help='CD/DVD configuration')
@@ -144,37 +142,37 @@ def compute_vm_get_cds(ctx: Configuration, unit):
         obj = ctx.get_vm_cd(ctx.moref, unit)
         if obj:
             columns = ctx.columns or const.COLUMNS_VM_CD
-            click.echo(format_output(ctx, obj, columns=columns, single=True))
+            ctx.echo(format_output(ctx, obj, columns=columns, single=True))
         else:
             logging.error('Unit does not exist')
     else:
         devs = ctx.get_vm_cds(ctx.moref)
         obj = [d.get('data') for d in devs] if devs else []
         columns = ctx.columns or const.COLUMNS_VM_CD_MIN
-        click.echo(format_output(ctx, obj, columns=columns))
+        ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command('client', short_help='Client (Metadata)')
 @pass_context
 def compute_vm_get_client(ctx: Configuration):
     """Get current virtual machine client department.
+
     Part of the VSS metadata.
     """
     obj = ctx.get_vm_vss_client(ctx.moref)
     columns = ctx.columns or [('value',)]
     obj = obj or {}
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('client-note', short_help='Client note (Metadata)')
 @pass_context
 def compute_vm_get_client_notes(ctx):
-    """Virtual machine client notes. Part of the
-    VM metadata."""
+    """Virtual machine client notes. Part of the VM metadata."""
     obj = ctx.get_vm_notes(ctx.moref)
     columns = ctx.columns or [('value',)]
     obj = obj or {}
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('console', short_help='Virtual machine console link')
@@ -191,7 +189,7 @@ def compute_vm_get_client_notes(ctx):
 )
 @pass_context
 def compute_vm_get_console(ctx: Configuration, launch, client):
-    """'Get one-time HTML link to access console"""
+    """Get one-time HTML link to access console."""
     username = ctx.username or click.prompt(
         'Username', default=os.environ.get('VSS_USER', '')
     )
@@ -207,7 +205,7 @@ def compute_vm_get_console(ctx: Configuration, launch, client):
     link = obj.get('value')
     # print
     columns = ctx.columns or [('value',)]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # launch
     if launch:
         click.launch(link)
@@ -219,18 +217,18 @@ def compute_vm_get_consolidate(ctx):
     """Virtual Machine disk consolidation status."""
     obj = ctx.get_vm_consolidation(ctx.moref)
     columns = ctx.columns or const.COLUMNS_VM_CONSOLIDATION
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.group('controller', invoke_without_command=True)
 @pass_context
 def compute_vm_get_controllers(ctx: Configuration):
-    """Controllers (IDE, SCSI, etc.)"""
+    """Get Controllers (IDE, SCSI, etc)."""
     if click.get_current_context().invoked_subcommand is None:
         obj = ctx.get_vm_controllers(ctx.moref)
         obj = obj or {}
         columns = ctx.columns or const.COLUMNS_VM_CONTROLLERS
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get_controllers.command('scsi', short_help='SCSI adapters')
@@ -238,41 +236,42 @@ def compute_vm_get_controllers(ctx: Configuration):
 @click.option('--disks', '-d', help='include disks attached', is_flag=True)
 @pass_context
 def compute_vm_get_controller_scsi(ctx: Configuration, bus, disks):
-    """Virtual machine SCSI controllers and attached disks"""
+    """Virtual machine SCSI controllers and attached disks."""
     if bus is None:
         obj = ctx.get_vm_scsi_devices(ctx.moref)
         columns = ctx.columns or const.COLUMNS_VM_CTRL_MIN
-        click.echo(format_output(ctx, obj, columns=columns))
+        ctx.echo(format_output(ctx, obj, columns=columns))
     else:
         obj = ctx.get_vm_scsi_device(ctx.moref, bus, disks)
         if disks:
             obj = obj.get('devices', [])
             columns = ctx.columns or const.COLUMNS_VM_CTRL_DISK
-            click.echo(format_output(ctx, obj, columns=columns))
+            ctx.echo(format_output(ctx, obj, columns=columns))
         else:
             columns = ctx.columns or const.COLUMNS_VM_CTRL
-            click.echo(format_output(ctx, [obj], columns=columns, single=True))
+            ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('cpu', short_help='CPU configuration')
 @pass_context
 def compute_vm_get_cpu(ctx: Configuration):
     """Virtual machine cpu configuration.
-    Get CPU count and quick stats."""
+
+    Get CPU count and quick stats.
+    """
     columns = ctx.columns or const.COLUMNS_VM_CPU
     obj = ctx.get_vm_cpu(ctx.moref)
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('description', short_help='Description (Metadata)')
 @pass_context
 def compute_vm_get_description(ctx: Configuration):
-    """Virtual machine description. Part of the
-    VSS metadata."""
+    """Virtual machine description. Part of the VSS metadata."""
     obj = ctx.get_vm_vss_description(ctx.moref)
     # print
     columns = ctx.columns or [('value',)]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.group(
@@ -288,26 +287,24 @@ def compute_vm_get_disks(ctx: Configuration, unit):
             obj = ctx.get_vm_disk(ctx.moref, ctx.unit)
             if obj:
                 columns = ctx.columns or const.COLUMNS_VM_DISK
-                click.echo(
-                    format_output(ctx, obj, columns=columns, single=True)
-                )
+                ctx.echo(format_output(ctx, obj, columns=columns, single=True))
             else:
                 logging.error('Unit does not exist')
         else:
             obj = ctx.get_vm_disks(ctx.moref)
             obj = [d.get('data') for d in obj] if obj else []
             columns = ctx.columns or const.COLUMNS_VM_DISK_MIN
-            click.echo(format_output(ctx, obj, columns=columns))
+            ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get_disks.command('backing', short_help='backing info')
 @pass_context
 def compute_vm_get_disks_backing(ctx: Configuration):
-    """Virtual disk backing info"""
+    """Virtual disk backing info."""
     columns = ctx.columns or const.COLUMNS_VM_DISK_BACKING
     obj = ctx.get_vm_disk_backing(ctx.moref, ctx.unit)
     if obj:
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     else:
         logging.error('Disk %s backing could not be found' % ctx.unit)
 
@@ -315,11 +312,11 @@ def compute_vm_get_disks_backing(ctx: Configuration):
 @compute_vm_get_disks.command('scsi', short_help='scsi controller info')
 @pass_context
 def compute_vm_get_disks_scsi(ctx: Configuration):
-    """Virtual disk SCSI controller info"""
+    """Virtual disk SCSI controller info."""
     columns = ctx.columns or const.COLUMNS_VM_DISK_SCSI
     obj = ctx.get_vm_disk_scsi(ctx.moref, ctx.unit)
     if obj:
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     else:
         logging.error('Disk %s SCSI controller could not be found' % ctx.unit)
 
@@ -327,24 +324,24 @@ def compute_vm_get_disks_scsi(ctx: Configuration):
 @compute_vm_get.command('domain', short_help='Running domain')
 @pass_context
 def compute_vm_get_domain(ctx: Configuration):
-    """Virtual machine running domain"""
+    """Virtual machine running domain."""
     obj = ctx.get_vm_domain(ctx.moref)
     columns = ctx.columns or [
         ('MOREF', 'domain.moref'),
         ('NAME', 'domain.name'),
     ]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('event', short_help='Events')
 @click.option('-w', '--window', type=int, default=1, help='Time window')
 @pass_context
 def compute_vm_get_events(ctx: Configuration, window):
-    """Get virtual machine related events in given time window"""
+    """Get virtual machine related events in given time window."""
     obj = ctx.request(f'/vm/{ctx.moref}/event', params=dict(hours=window))
     obj = obj.get('data')
     columns = ctx.columns or const.COLUMNS_VM_EVENT
-    click.echo(format_output(ctx, obj, columns=columns))
+    ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command('extra-cfg', short_help='GuestInfo extra configs')
@@ -353,7 +350,7 @@ def compute_vm_get_extra_config(ctx: Configuration):
     """Get virtual machine guest info via VMware Tools."""
     objs = ctx.get_vm_extra_cfg_options(ctx.moref)
     columns = ctx.columns or const.COLUMNS_EXTRA_CONFIG
-    click.echo(format_output(ctx, objs, columns=columns))
+    ctx.echo(format_output(ctx, objs, columns=columns))
 
 
 @compute_vm_get.command('floppy', short_help='Floppy configuration')
@@ -365,14 +362,14 @@ def compute_vm_get_floppies(ctx: Configuration, unit):
         obj = ctx.get_vm_floppy(ctx.moref, unit)
         if obj:
             columns = ctx.columns or const.COLUMNS_VM_CD
-            click.echo(format_output(ctx, obj, columns=columns, single=True))
+            ctx.echo(format_output(ctx, obj, columns=columns, single=True))
         else:
             logging.error('Unit does not exist')
     else:
         devs = ctx.get_vm_floppies(ctx.moref)
         obj = [d.get('data') for d in devs] if devs else []
         columns = ctx.columns or const.COLUMNS_VM_CD_MIN
-        click.echo(format_output(ctx, obj, columns=columns))
+        ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command('folder', short_help='Logical folder')
@@ -381,18 +378,18 @@ def compute_vm_get_folder(ctx: Configuration):
     """Virtual machine logical folder."""
     obj = ctx.get_vm_folder(ctx.moref)
     columns = ctx.columns or const.COLUMNS_FOLDER
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('os', short_help='Operating System')
 @pass_context
 def compute_vm_get_os(ctx: Configuration):
-    """Virtual machine Operating system"""
+    """Virtual machine Operating system."""
     obj_vm = ctx.get_vm_os(ctx.moref)
     obj_guest = ctx.get_vm_guest_os(ctx.moref)
     obj = {'cfg': obj_vm, 'guest': obj_guest}
     columns = ctx.columns or const.COLUMNS_VM_OS
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     if obj['guest']['guest_id'] is not None:
         vm_os = obj_vm.get('guest_id')
         g_os = obj_guest.get('guest_id')
@@ -400,7 +397,7 @@ def compute_vm_get_os(ctx: Configuration):
         if not status:
             _LOGGING.warning(
                 'Operating System does not match '
-                'Running Guest OS: {0} ≠ {1}'.format(vm_os, g_os)
+                'Running Guest OS: {} ≠ {}'.format(vm_os, g_os)
             )
 
 
@@ -413,7 +410,7 @@ def compute_vm_get_guest(ctx: Configuration):
     obj = ctx.get_vm_guest(ctx.moref)
     if click.get_current_context().invoked_subcommand is None:
         columns = ctx.columns or const.COLUMNS_VM_GUEST
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get_guest.command('os', short_help='Guest OS configuration')
@@ -422,7 +419,7 @@ def compute_vm_get_guest_os(ctx: Configuration):
     """Get virtual machine guest OS."""
     obj = ctx.get_vm_guest_os(ctx.moref)
     columns = ctx.columns or const.COLUMNS_VM_GUEST_OS
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get_guest.command(
@@ -433,19 +430,23 @@ def compute_vm_get_guest_ip(ctx: Configuration):
     """Get virtual machine ip addresses via VMware Tools."""
     obj = ctx.get_vm_guest_ip(ctx.moref)
     columns = ctx.columns or const.COLUMNS_VM_GUEST_IP
-    click.echo(format_output(ctx, obj, columns=columns))
+    ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command('ha-group', short_help='HA Group (Metadata)')
 @pass_context
 def compute_vm_get_ha_group(ctx: Configuration):
+    """Get High Availability Group configuration.
+
+    Part of the VSS metadata.
+    """
     obj = ctx.get_vm_vss_ha_group(ctx.moref)
     if obj:
         obj = obj.get('vms', [])
     else:
         obj = []
     columns = ctx.columns or const.COLUMNS_VM_HAGROUP
-    click.echo(format_output(ctx, obj, columns=columns))
+    ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command(
@@ -453,13 +454,15 @@ def compute_vm_get_ha_group(ctx: Configuration):
 )
 @pass_context
 def compute_vm_get_inform(ctx: Configuration):
-    """Virtual machine informational contacts. Part of the
-    VSS metadata."""
+    """Virtual machine informational contacts.
+
+    Part of the VSS metadata.
+    """
     obj = ctx.get_vm_vss_inform(ctx.moref)
     if obj:
         obj = dict(inform=obj)
     columns = ctx.columns or [('inform', 'inform.[*]')]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('memory', short_help='Memory configuration')
@@ -468,7 +471,7 @@ def compute_vm_get_memory(ctx: Configuration):
     """Virtual machine memory configuration."""
     obj = ctx.get_vm_memory(str(ctx.moref))
     columns = ctx.columns or const.COLUMNS_VM_MEMORY
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('name', short_help='Logical name')
@@ -477,7 +480,7 @@ def compute_vm_get_name(ctx: Configuration):
     """Virtual machine human readable name."""
     obj = ctx.get_vm_name(ctx.moref)
     columns = ctx.columns or [('name',)]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('nic', short_help='NIC configuration')
@@ -485,19 +488,18 @@ def compute_vm_get_name(ctx: Configuration):
 @pass_context
 def compute_vm_get_nics(ctx: Configuration, unit):
     """Virtual machine network interface adapters configuration."""
-
     if unit:
         obj = ctx.get_vm_nic(ctx.moref, unit)
         if obj:
             columns = ctx.columns or const.COLUMNS_VM_NIC
-            click.echo(format_output(ctx, obj, columns=columns, single=True))
+            ctx.echo(format_output(ctx, obj, columns=columns, single=True))
         else:
             logging.error('Unit does not exist')
     else:
         obj = ctx.get_vm_nics(ctx.moref)
         obj = [d.get('data') for d in obj] if obj else []
         columns = ctx.columns or const.COLUMNS_VM_NIC_MIN
-        click.echo(format_output(ctx, obj, columns=columns))
+        ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command('perm', short_help='Permissions')
@@ -509,22 +511,22 @@ def compute_vm_get_perms(ctx: Configuration, page):
     """Obtain virtual machine group or user permissions."""
     obj = ctx.get_vm_permission(ctx.moref)
     columns = ctx.columns or const.COLUMNS_OBJ_PERMISSION
-    click.echo(format_output(ctx, obj, columns=columns))
+    ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command('snapshot', short_help='Snapshots')
 @click.argument('snapshot_id', type=int, required=False)
 @pass_context
 def compute_vm_get_snapshot(ctx: Configuration, snapshot_id):
-    """Virtual Machine snapshots"""
+    """Virtual Machine snapshots."""
     if snapshot_id:
         obj = ctx.get_vm_snapshot(ctx.moref, snapshot_id)
         columns = ctx.columns or const.COLUMNS_VM_SNAP
-        click.echo(format_output(ctx, obj, columns=columns, single=True))
+        ctx.echo(format_output(ctx, obj, columns=columns, single=True))
     else:
         obj = ctx.get_vm_snapshots(ctx.moref)
         columns = ctx.columns or const.COLUMNS_VM_SNAP_MIN
-        click.echo(format_output(ctx, obj, columns=columns))
+        ctx.echo(format_output(ctx, obj, columns=columns))
 
 
 @compute_vm_get.command(
@@ -550,7 +552,7 @@ def compute_vm_get_spec_api(ctx: Configuration, spec_file, edit):
         obj_raw = raw_format_output(
             ctx.output, obj, ctx.yaml(), highlighted=False
         )
-        new_raw = click.edit(obj_raw, extension='.{}'.format(ctx.output))
+        new_raw = click.edit(obj_raw, extension=f'.{ctx.output}')
 
     if ctx.output == 'json':
         import json
@@ -564,7 +566,7 @@ def compute_vm_get_spec_api(ctx: Configuration, spec_file, edit):
             obj = ctx.yaml_load(new_raw)
         with open(f_name, 'w') as fp:
             ctx.yaml_dump_stream(obj, stream=fp)
-    click.echo(f'Written to {f_name}')
+    ctx.echo(f'Written to {f_name}')
 
 
 @compute_vm_get.command(
@@ -587,7 +589,7 @@ def compute_vm_get_spec(ctx: Configuration, spec_file, edit):
     obj = ctx.get_vm_spec(ctx.moref)
     file_spec = os.path.join(const.DEFAULT_DATA_PATH, 'shell.yaml')
     # proceed to load file
-    with open(file_spec, 'r') as data_file:
+    with open(file_spec) as data_file:
         raw = data_file.read()
     template = ctx.yaml_load(raw)
     # obj rewritten with cli spec
@@ -597,7 +599,7 @@ def compute_vm_get_spec(ctx: Configuration, spec_file, edit):
         obj_raw = raw_format_output(
             ctx.output, obj, ctx.yaml(), highlighted=False
         )
-        new_raw = click.edit(obj_raw, extension='.{}'.format(ctx.output))
+        new_raw = click.edit(obj_raw, extension=f'.{ctx.output}')
 
     if ctx.output == 'json':
         import json
@@ -611,7 +613,7 @@ def compute_vm_get_spec(ctx: Configuration, spec_file, edit):
             obj = ctx.yaml_load(new_raw)
         with open(f_name, 'w') as fp:
             ctx.yaml_dump_stream(obj, stream=fp)
-    click.echo(f'Written to {f_name}')
+    ctx.echo(f'Written to {f_name}')
 
 
 @compute_vm_get.command('state', short_help='Power state')
@@ -620,16 +622,16 @@ def compute_vm_get_state(ctx: Configuration):
     """Virtual machine running and power state."""
     obj = ctx.get_vm_state(ctx.moref)
     columns = ctx.columns or const.COLUMNS_VM_STATE
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('stats', short_help='Performance statistics')
 @click.argument('kind', type=click.Choice(['memory', 'io', 'cpu', 'net']))
 @pass_context
 def compute_vm_get_stats(ctx: Configuration, kind):
-    """Get virtual machine memory, io, cpu and network
-     performance statistics. Choose between: io, memory,
-     cpu or net. For example:
+    """Get virtual machine memory, io, cpu and network performance statistics.
+
+    Choose between: io, memory, cpu or net. For example:
 
     vss-cli compute vm get <name-or-vm_id> stats memory
     """
@@ -644,7 +646,7 @@ def compute_vm_get_stats(ctx: Configuration, kind):
         raise VssCliError('Cannot perform operation in current power state')
     obj = lookup[kind](ctx.moref)
     columns = ctx.columns or [(i,) for i in obj.keys()]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('template', short_help='Template configuration')
@@ -653,7 +655,7 @@ def compute_vm_get_template(ctx: Configuration):
     """Virtual machine template state."""
     obj = ctx.is_vm_template(ctx.moref)
     columns = ctx.columns or [('is_template',)]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('tools', short_help='VMware Tools Status')
@@ -662,7 +664,7 @@ def compute_vm_get_tools(ctx: Configuration):
     """Virtual machine VMware Tools status."""
     obj = ctx.get_vm_tools(ctx.moref)
     columns = ctx.columns or const.COLUMNS_VM_TOOLS
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('usage', short_help='Usage (Metadata)')
@@ -673,19 +675,20 @@ def compute_vm_get_usage(ctx: Configuration):
     Part of the VSS metadata and the name prefix (YYMMP-) is composed
     by the virtual machine usage, which is intended to specify
     whether it will be hosting a Production, Development,
-    QA, or Testing system."""
+    QA, or Testing system.
+    """
     obj = ctx.get_vm_vss_usage(ctx.moref)
     columns = ctx.columns or [('usage', 'value')]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('version', short_help='Hardware (VMX) version')
 @pass_context
 def compute_vm_get_version(ctx: Configuration):
-    """Get VMX hardware version"""
+    """Get VMX hardware version."""
     obj = ctx.get_vm_version(ctx.moref)
     columns = ctx.columns or const.COLUMNS_VM_HW
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command(
@@ -696,27 +699,28 @@ def compute_vm_get_version(ctx: Configuration):
 )
 @pass_context
 def compute_vm_get_vmrc_copy_paste(ctx: Configuration, options):
+    """Get VMRC Copy-Paste settings."""
     obj = ctx.get_vm_vmrc_copy_paste(ctx.moref, options=options)
     columns = ctx.columns or const.COLUMNS_VMRC
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('vss-option', short_help='Get VSS Option status')
 @pass_context
 def compute_vm_get_vss_option(ctx: Configuration):
-    """Get VSS Option status"""
+    """Get VSS Option status."""
     obj = ctx.get_vm_vss_options(ctx.moref)
     columns = ctx.columns or const.COLUMNS_VSS_OPTIONS
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('vss-service', short_help='Get VSS Service')
 @pass_context
 def compute_vm_get_vss_service(ctx: Configuration):
-    """Get VSS Service"""
+    """Get VSS Service configuration."""
     obj = ctx.get_vm_vss_service(ctx.moref)
     columns = ctx.columns  # or const.COLUMNS_VSS_SERVICE
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('vsphere-link', short_help='Get vSphere link to VM')
@@ -725,12 +729,12 @@ def compute_vm_get_vss_service(ctx: Configuration):
 )
 @pass_context
 def compute_vm_get_vsphere_link(ctx: Configuration, launch: bool):
-    """Get vSphere Client Link to VM """
+    """Get vSphere Client Link to VM."""
     obj = ctx.get_vm_vsphere_link(ctx.moref)
     link = obj.get('value')
     # print
     columns = ctx.columns or [('value',)]
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # launch
     if launch:
         click.launch(link)
@@ -765,27 +769,36 @@ def compute_vm_get_vsphere_link(ctx: Configuration, launch: bool):
     default=None,
 )
 @so.wait_opt
+@so.dry_run_opt
 @pass_context
 def compute_vm_set(
-    ctx: Configuration, vm_id_or_name, schedule, user_meta: str, wait: bool
+    ctx: Configuration,
+    vm_id_or_name: str,
+    schedule,
+    user_meta: str,
+    wait: bool,
+    dry_run: bool,
 ):
-    """Manage virtual machine attributes such as cpu,
-    memory, disk, network backing, cd, etc.."""
-    _vm = ctx.get_vm_by_id_or_name(vm_id_or_name)
-    ctx.moref = _vm[0]['moref']
+    """Manage virtual machine resources.
+
+    Such as cpu, memory, disk, network backing, cd, etc.
+    """
     # setup payload opts
-    ctx.payload_options = dict()
     ctx.user_meta = dict(to_tuples(user_meta))
     ctx.schedule = schedule
     ctx.wait = wait
+    # check for vm
+    _vm = ctx.get_vm_by_id_or_name(vm_id_or_name)
+    ctx.moref = _vm[0]['moref']
     # set additional props
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
     if schedule:
-        # ctx.payload_options['schedule_obj'] = ctx.schedule
         ctx.payload_options['schedule'] = ctx.schedule.strftime(
             const.DEFAULT_DATETIME_FMT
         )
+    # set dry run and output to json
+    ctx.set_dry_run(dry_run)
     if click.get_current_context().invoked_subcommand is None:
         raise click.UsageError('Sub command is required')
 
@@ -812,7 +825,7 @@ def compute_vm_set_admin(ctx: Configuration, name, email, phone):
     obj = ctx.update_vm_vss_admin(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -829,11 +842,13 @@ def compute_vm_set_admin(ctx: Configuration, name, email, phone):
 )
 @pass_context
 def compute_vm_set_alarm(ctx: Configuration, action, alarm_moref):
-    """Acknowledge or clear a given alarm. Obtain alarm moref by:
+    """Acknowledge or clear a given alarm.
 
-        vss-cli compute vm get <name-or-vm_id> alarm
+    Obtain alarm moref by:
 
-        vss-cli compute vm set <name-or-vm_id> alarm <moref> --action ack
+    vss-cli compute vm get <name-or-vm_id> alarm
+
+    vss-cli compute vm set <name-or-vm_id> alarm <moref> --action ack
 
     """
     payload = dict(vm_id=ctx.moref, moref=alarm_moref)
@@ -846,7 +861,7 @@ def compute_vm_set_alarm(ctx: Configuration, action, alarm_moref):
         obj = ctx.clear_vm_alarm(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -863,8 +878,7 @@ def compute_vm_set_alarm(ctx: Configuration, action, alarm_moref):
 )
 @pass_context
 def compute_vm_set_boot_bios(ctx: Configuration, on):
-    """Update virtual machine boot configuration to
-    boot directly to BIOS.
+    """Update virtual machine boot configuration to boot directly to BIOS.
 
     vss-cli compute vm set <name-or-vm_id> boot-bios --on
     vss-cli compute vm set <name-or-vm_id> boot-bios --off
@@ -876,7 +890,7 @@ def compute_vm_set_boot_bios(ctx: Configuration, on):
     obj = ctx.update_vm_boot_bios(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -897,7 +911,7 @@ def compute_vm_set_boot_delay(ctx: Configuration, delay_in_ms):
     obj = ctx.update_vm_boot_delay(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -907,7 +921,9 @@ def compute_vm_set_boot_delay(ctx: Configuration, delay_in_ms):
 @pass_context
 def compute_vm_set_cd(ctx: Configuration):
     """Manage virtual CD/DVD devices.
-     Add and update CD/DVD backing"""
+
+    Add and update CD/DVD backing.
+    """
     pass
 
 
@@ -943,7 +959,7 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
     obj = ctx.create_vm_cd(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -978,7 +994,7 @@ def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
     obj = ctx.update_vm_cd(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1000,7 +1016,7 @@ def compute_vm_set_client(ctx: Configuration, client):
     obj = ctx.update_vm_vss_client(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1017,15 +1033,14 @@ def compute_vm_set_client(ctx: Configuration, client):
 )
 @pass_context
 def compute_vm_set_client_note(ctx: Configuration, notes, replace):
-    """Set or update virtual machine client notes
-     in metadata.
+    """Set or update virtual machine client notes in metadata.
 
-     vss-cli compute vm set <name-or-vm_id> client-note "New note"
-     """
+    vss-cli compute vm set <name-or-vm_id> client-note 'New note'
+    """
     if not replace:
         _old_notes = ctx.get_vm_notes(ctx.moref)
         old_notes = _old_notes.get('value') or ""
-        notes = "{}\n{}".format(old_notes, notes)
+        notes = f"{old_notes}\n{notes}"
     # generate payload
     payload = dict(vm_id=ctx.moref, notes=notes)
     # add common options
@@ -1034,7 +1049,7 @@ def compute_vm_set_client_note(ctx: Configuration, notes, replace):
     obj = ctx.update_vm_notes(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1043,7 +1058,7 @@ def compute_vm_set_client_note(ctx: Configuration, notes, replace):
 @compute_vm_set.command('consolidate', short_help='Disk consolidation')
 @pass_context
 def compute_vm_set_consolidate(ctx: Configuration):
-    """Perform virtual machine disk consolidation
+    """Perform virtual machine disk consolidation.
 
     vss-cli compute vm set --schedule <timestamp> <name-or-vm_id> consolidate
     """
@@ -1055,7 +1070,7 @@ def compute_vm_set_consolidate(ctx: Configuration):
     obj = ctx.consolidate_vm_disks(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1064,8 +1079,7 @@ def compute_vm_set_consolidate(ctx: Configuration):
 @compute_vm_set.group('cpu')
 @pass_context
 def compute_vm_set_cpu(ctx: Configuration):
-    """Update virtual machine CPU count and settings
-    """
+    """Update virtual machine CPU count and settings."""
     pass
 
 
@@ -1073,6 +1087,7 @@ def compute_vm_set_cpu(ctx: Configuration):
 @click.argument('cpu_count', type=click.INT, required=True)
 @pass_context
 def compute_vm_set_cpu_count(ctx: Configuration, cpu_count):
+    """Update CPU count."""
     # generate payload
     payload = dict(vm_id=ctx.moref, number=cpu_count)
     # add common options
@@ -1081,7 +1096,7 @@ def compute_vm_set_cpu_count(ctx: Configuration, cpu_count):
     obj = ctx.set_vm_cpu(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1091,6 +1106,7 @@ def compute_vm_set_cpu_count(ctx: Configuration, cpu_count):
 @click.argument('status', type=click.Choice(['on', 'off']), required=True)
 @pass_context
 def compute_vm_set_cpu_hot_add(ctx: Configuration, status):
+    """Update CPU hot add settings."""
     lookup = {'on': True, 'off': False}
     payload = dict(vm_id=ctx.moref, hot_add=lookup[status])
     # add common options
@@ -1099,7 +1115,7 @@ def compute_vm_set_cpu_hot_add(ctx: Configuration, status):
     obj = ctx.update_vm_cpu_hot_add(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1133,7 +1149,9 @@ def compute_vm_set_custom_spec(
     ctx: Configuration, hostname, domain, dns, interface
 ):
     """Set up Guest OS customization specification.
-    Virtual machine power state require is powered off."""
+
+    Virtual machine power state require is powered off.
+    """
     if ctx.is_powered_on_vm(ctx.moref):
         raise Exception(
             'Cannot perform operation ' 'on VM with current power state'
@@ -1166,7 +1184,7 @@ def compute_vm_set_custom_spec(
     obj = ctx.create_vm_custom_spec(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1177,10 +1195,11 @@ def compute_vm_set_custom_spec(
 )
 @pass_context
 def compute_vm_set_extra_config(ctx: Configuration):
-    """Manage VMware **guestinfo** interface options, which are
-    available to the VM guest operating system via VMware Tools:
+    """Manage VMware **guestinfo** interface options.
 
-      vmtoolsd --cmd "info-get guestinfo.<option>"
+    Available to the VM guest operating system via VMware Tools:
+
+    vmtoolsd --cmd "info-get guestinfo.<option>"
     """
     pass
 
@@ -1191,10 +1210,9 @@ def compute_vm_set_extra_config(ctx: Configuration):
 @click.argument('key-value', type=click.STRING, required=True, nargs=-1)
 @pass_context
 def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
-    """Create **guestinfo** interface extra configuration options:
+    """Create **guestinfo** interface extra configuration options.
 
     vss-cli compute vm set <name-or-vm_id> extra-cfg mk key1=value2 key2=value2
-
     """
     # process input
     try:
@@ -1211,7 +1229,7 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
     obj = ctx.create_vm_extra_cfg_options(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1229,10 +1247,9 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
 )
 @pass_context
 def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
-    """Update **guestinfo** interface extra configuration options:
+    """Update **guestinfo** interface extra configuration options.
 
     vss-cli compute vm set <name-or-vm_id> extra-cfg up key1=value2 key2=value2
-
     """
     # process input
     try:
@@ -1260,7 +1277,7 @@ def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
     obj = ctx.update_vm_extra_cfg_options(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1278,10 +1295,9 @@ def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
 )
 @pass_context
 def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
-    """Remove **guestinfo** interface extra configuration options:
+    """Remove **guestinfo** interface extra configuration options.
 
     vss-cli compute vm set <name-or-vm_id> extra-cfg rm key1 key2 keyN
-
     """
     # check if key exists
     if check:
@@ -1302,7 +1318,7 @@ def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
     obj = ctx.delete_vm_extra_cfg_options(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1314,7 +1330,7 @@ def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
 def compute_vm_set_description(ctx: Configuration, description):
     """Set or update virtual machine description in metadata.
 
-    vss-cli compute vm set <name-or-vm_id> description "new description"
+    vss-cli compute vm set <name-or-vm_id> description 'new description'
     """
     payload = dict(vm_id=ctx.moref, description=description)
     # add common options
@@ -1323,7 +1339,7 @@ def compute_vm_set_description(ctx: Configuration, description):
     obj = ctx.update_vm_vss_description(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1333,7 +1349,9 @@ def compute_vm_set_description(ctx: Configuration, description):
 @pass_context
 def compute_vm_set_disk(ctx: Configuration):
     """Manage virtual machine disks.
-     Add, expand and remove virtual disks."""
+
+    Add, expand and remove virtual disks.
+    """
     pass
 
 
@@ -1348,9 +1366,9 @@ def compute_vm_set_disk(ctx: Configuration):
 )
 @pass_context
 def compute_vm_set_disk_mk(ctx: Configuration, capacity):
-    """Create virtual machine disk:
+    """Create virtual machine disk.
 
-        vss-cli compute vm set <name-or-vm_id> disk mk -c 10 -c 40
+    vss-cli compute vm set <name-or-vm_id> disk mk -c 10 -c 40
     """
     payload = dict(vm_id=ctx.moref, values_in_gb=capacity)
     # add common options
@@ -1359,7 +1377,7 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
     obj = ctx.create_vm_disk(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1391,11 +1409,11 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
 def compute_vm_set_disk_up(
     ctx: Configuration, unit, capacity, scsi, backing_mode
 ):
-    """Update virtual machine disk capacity:
+    """Update virtual machine disk capacity.
 
-        vss-cli compute vm set <name-or-vm_id> disk up --capacity 30 <unit>
+    vss-cli compute vm set <name-or-vm_id> disk up --capacity 30 <unit>
 
-        vss-cli compute vm set <name-or-vm_id> disk up --scsi=<bus> <unit>
+    vss-cli compute vm set <name-or-vm_id> disk up --scsi=<bus> <unit>
     """
     payload = dict(vm_id=ctx.moref, disk=unit)
     # add common options
@@ -1416,7 +1434,7 @@ def compute_vm_set_disk_up(
         )
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1429,9 +1447,11 @@ def compute_vm_set_disk_up(
 )
 @pass_context
 def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
-    """Remove virtual machine disks. Warning: data will be lost:
+    """Remove virtual machine disks.
 
-        vss-cli compute vm set <name-or-vm_id> disk rm <unit> <unit> ...
+    vss-cli compute vm set <name-or-vm_id> disk rm <unit> <unit> ...
+
+    Warning: data will be lost.
     """
     payload = dict(vm_id=ctx.moref, units=list(unit))
     # add common options
@@ -1446,7 +1466,7 @@ def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
         raise click.ClickException('Cancelled by user.')
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1469,6 +1489,7 @@ def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
 @pass_context
 def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
     """Migrate a virtual machine to another fault domain.
+
     In order to proceed with the virtual machine relocation,
     in some cases the VM is required to be in a powered off state.
 
@@ -1491,7 +1512,7 @@ def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
     obj = ctx.update_vm_domain(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1511,7 +1532,7 @@ def compute_vm_set_export(ctx: Configuration):
     obj = ctx.export_vm(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1530,7 +1551,7 @@ def compute_vm_set_export(ctx: Configuration):
 )
 @pass_context
 def compute_vm_set_floppy(ctx: Configuration, unit, image):
-    """Update virtual machine floppy backend to Image or client"""
+    """Update virtual machine floppy backend to Image or client."""
     img_ref = ctx.get_floppy_by_name_or_path(image)
     _LOGGING.debug(f'Will mount {img_ref}')
     image = img_ref[0].get('path')
@@ -1542,7 +1563,7 @@ def compute_vm_set_floppy(ctx: Configuration, unit, image):
     obj = ctx.update_vm_floppy(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1557,11 +1578,7 @@ def compute_vm_set_floppy(ctx: Configuration, unit, image):
 )
 @pass_context
 def compute_vm_set_folder(ctx: Configuration, name_moref_path):
-    """Move vm from logical folder. Get folder moref from:
-
-        vss-cli compute folder ls
-
-    """
+    """Move vm from logical folder."""
     # create payload
     payload = dict(vm_id=ctx.moref)
     # lookup for folder
@@ -1573,7 +1590,7 @@ def compute_vm_set_folder(ctx: Configuration, name_moref_path):
     obj = ctx.update_vm_folder(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1604,8 +1621,7 @@ def compute_vm_set_folder(ctx: Configuration, name_moref_path):
 @click.argument('cmd-args', type=click.STRING, required=True)
 @pass_context
 def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
-    """
-    Execute a command in the Guest Operating system.
+    """Execute a command in the Guest Operating system.
 
     vss-cli compute vm set <name-or-vm_id> guest-cmd "/bin/echo"
     "Hello > /tmp/hello.txt"
@@ -1641,7 +1657,7 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
     obj = ctx.run_cmd_guest_vm(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1656,10 +1672,9 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
 )
 @pass_context
 def compute_vm_set_guest_os(ctx: Configuration, guest_id):
-    """Update operating system configuration:
+    """Update operating system configuration.
 
-        vss-cli compute vm set <name-or-vm_id> os <name-or-id>
-
+    vss-cli compute vm set <name-or-vm_id> os <name-or-id>
     """
     g_os = ctx.get_os_by_name_or_guest(guest_id)
     g_id = g_os[0]['guest_id']
@@ -1671,7 +1686,7 @@ def compute_vm_set_guest_os(ctx: Configuration, guest_id):
     obj = ctx.update_vm_os(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1680,12 +1695,10 @@ def compute_vm_set_guest_os(ctx: Configuration, guest_id):
 @compute_vm_set.group('ha-group', short_help='HA Group (Metadata)')
 @pass_context
 def compute_vm_set_ha_group(ctx: Configuration):
-    """Manage HA group by tagging virtual machines with given
-    virtual machine UUIDs.
+    """Manage HA group by tagging virtual machines.
 
     Checks will run every 3 hours to validate virtual machine
     association and domain separation.
-
     """
     pass
 
@@ -1693,7 +1706,7 @@ def compute_vm_set_ha_group(ctx: Configuration):
 @compute_vm_set_ha_group.command('rm', short_help='Remove VM from HA-Group')
 @pass_context
 def compute_vm_set_ha_group_rm(ctx: Configuration):
-    """Remove given VM from HA-Group
+    """Remove given VM from HA-Group.
 
     vss-cli compute vm set <name-or-vm_id> ha-group rm
     """
@@ -1701,7 +1714,7 @@ def compute_vm_set_ha_group_rm(ctx: Configuration):
     obj = ctx.delete_vm_vss_ha_group(vm_id=ctx.moref)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1710,7 +1723,7 @@ def compute_vm_set_ha_group_rm(ctx: Configuration):
 @compute_vm_set_ha_group.command('mg', short_help='Migrate VM HA-Group')
 @pass_context
 def compute_vm_set_ha_group_mg(ctx: Configuration):
-    """Remove given VM from HA-Group
+    """Remove given VM from HA-Group.
 
     vss-cli compute vm set <name-or-vm_id> ha-group mg
     """
@@ -1718,7 +1731,7 @@ def compute_vm_set_ha_group_mg(ctx: Configuration):
     obj = ctx.migrate_vm_vss_ha_group(vm_id=ctx.moref)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1737,7 +1750,7 @@ def compute_vm_set_ha_group_mg(ctx: Configuration):
 )
 @pass_context
 def compute_vm_set_ha_group_mk(ctx: Configuration, vm_id, replace):
-    """Create HA Group by tagging VMs together
+    """Create HA Group by tagging VMs together.
 
     vss-cli compute vm set <name-or-vm_id> ha-group mk -r <vm_id-1> <vm_id-n>
     """
@@ -1768,7 +1781,7 @@ def compute_vm_set_ha_group_mk(ctx: Configuration, vm_id, replace):
     obj = ctx.update_vm_vss_ha_group(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1787,8 +1800,7 @@ def compute_vm_set_ha_group_mk(ctx: Configuration, vm_id, replace):
 )
 @pass_context
 def compute_vm_set_inform(ctx: Configuration, email, replace):
-    """Update or set informational contacts emails in
-    metadata.
+    """Update or set informational contacts emails in metadata.
 
     vss-cli compute vm set <name-or-vm_id> inform <email-1> <email-n>
     """
@@ -1802,7 +1814,7 @@ def compute_vm_set_inform(ctx: Configuration, email, replace):
     obj = ctx.update_vm_vss_inform(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1811,8 +1823,7 @@ def compute_vm_set_inform(ctx: Configuration, email, replace):
 @compute_vm_set.group('memory')
 @pass_context
 def compute_vm_set_memory(ctx: Configuration):
-    """Update virtual machine Memory count and settings
-    """
+    """Update virtual machine Memory count and settings."""
     pass
 
 
@@ -1823,7 +1834,6 @@ def compute_vm_set_memory_size(ctx: Configuration, memory_gb):
     """Update virtual machine memory size in GB.
 
     vss-cli compute vm set <name-or-vm_id> memory size <memory_gb>
-
     """
     # create payload
     payload = dict(sizeGB=memory_gb, vm_id=ctx.moref)
@@ -1833,7 +1843,7 @@ def compute_vm_set_memory_size(ctx: Configuration, memory_gb):
     obj = ctx.set_vm_memory(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1845,7 +1855,7 @@ def compute_vm_set_memory_size(ctx: Configuration, memory_gb):
 @click.argument('status', type=click.Choice(['on', 'off']), required=True)
 @pass_context
 def compute_vm_set_memory_hot_add(ctx: Configuration, status):
-    """Enable or disable virtual machine memory hot-add setting
+    """Enable or disable virtual machine memory hot-add setting.
 
     vss-cli compute vm set <name-or-vm_id> memory hot-add on|off
 
@@ -1859,7 +1869,7 @@ def compute_vm_set_memory_hot_add(ctx: Configuration, status):
     obj = ctx.update_vm_memory_hot_add(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1869,11 +1879,11 @@ def compute_vm_set_memory_hot_add(ctx: Configuration, status):
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_set_name(ctx: Configuration, name):
-    """Update virtual machine name only. It does not update
-    VSS prefix YYMM{P|D|Q|T}.
+    """Update virtual machine name only.
 
     vss-cli compute vm set <name-or-vm_id> name <new-name>
 
+    Note. It does not update VSS prefix YYMM{P|D|Q|T}.
     """
     payload = dict(name=name, vm_id=ctx.moref)
     # add common options
@@ -1882,7 +1892,7 @@ def compute_vm_set_name(ctx: Configuration, name):
     obj = ctx.rename_vm(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1891,9 +1901,7 @@ def compute_vm_set_name(ctx: Configuration, name):
 @compute_vm_set.group('nic', short_help='Network adapter management')
 @pass_context
 def compute_vm_set_nic(ctx: Configuration):
-    """Add, remove or update virtual machine network adapters
-
-    """
+    """Add, remove or update virtual machine network adapters."""
     pass
 
 
@@ -1921,14 +1929,11 @@ def compute_vm_set_nic(ctx: Configuration):
 )
 @pass_context
 def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
-    """Update network adapter backing network, type or state
+    """Update network adapter backing network, type or state.
 
-        vss-cli compute vm set <name-or-vm_id> nic up <unit>
-        --adapter <type>
+    vss-cli compute vm set <name-or-vm_id> nic up <unit> --adapter <type>
 
-
-        vss-cli compute vm set <name-or-vm_id> nic up <unit>
-        --network <network>
+    vss-cli compute vm set <name-or-vm_id> nic up <unit> --network <network>
     """
     # create payload
     payload = dict(vm_id=ctx.moref, nic=unit)
@@ -1963,7 +1968,7 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
     obj = f(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -1975,8 +1980,8 @@ def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
 def compute_vm_set_nic_mk(ctx: Configuration, net):
     """Add network adapter specifying backing network and adapter type.
 
-        vss-cli compute vm set <name-or-vm_id> nic mk
-        -n <moref-or-name>=<nic-type> -n <moref-or-name>
+    vss-cli compute vm set <name-or-vm_id> nic mk
+    -n <moref-or-name>=<nic-type> -n <moref-or-name>
     """
     # create payload
     payload = dict(vm_id=ctx.moref)
@@ -1988,7 +1993,7 @@ def compute_vm_set_nic_mk(ctx: Configuration, net):
     obj = ctx.create_vm_nic(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2001,9 +2006,9 @@ def compute_vm_set_nic_mk(ctx: Configuration, net):
 )
 @pass_context
 def compute_vm_set_nic_rm(ctx: Configuration, unit, confirm):
-    """Remove given network adapters
+    """Remove given network adapters.
 
-        vss-cli compute vm set <name-or-vm_id> nic rm <unit> <unit> ...
+    vss-cli compute vm set <name-or-vm_id> nic rm <unit> <unit> ...
     """
     # create payload
     payload = dict(vm_id=ctx.moref)
@@ -2038,7 +2043,7 @@ def compute_vm_set_nic_rm(ctx: Configuration, unit, confirm):
         raise click.ClickException('Cancelled by user.')
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2047,8 +2052,11 @@ def compute_vm_set_nic_rm(ctx: Configuration, unit, confirm):
 @compute_vm_set.group('snapshot', short_help='Snapshot management')
 @pass_context
 def compute_vm_set_snapshot(ctx: Configuration):
-    """Manage virtual machine snapshots. Create, delete and revert
-    virtual machine snapshot on a given date and time."""
+    """Manage virtual machine snapshots.
+
+    Create, delete and revert virtual machine snapshot on a
+    given date and time.
+    """
     if ctx.payload_options.get('schedule'):
         _LOGGING.warning('schedule is ignored for snapshots. Removing.')
         del ctx.payload_options['schedule']
@@ -2095,15 +2103,14 @@ def compute_vm_set_snapshot(ctx: Configuration):
 def compute_vm_set_snapshot_mk(
     ctx: Configuration, description, timestamp, lifetime, consolidate
 ):
-    """Create virtual machine snapshot:
+    """Create virtual machine snapshot.
 
-       vss-cli compute vm set <name-or-vm_id> snapshot mk
-       --description 'Short description'
+    vss-cli compute vm set <name-or-vm_id> snapshot mk
+    --description 'Short description'
 
-       Note: if -t/--timestamp not specified, the snapshot request timestamp
-       is current time.
+    Note: if -t/--timestamp not specified, the snapshot request timestamp
+    is current time.
     """
-
     # create payload
     payload = dict(
         vm_id=ctx.moref,
@@ -2120,7 +2127,7 @@ def compute_vm_set_snapshot_mk(
     obj = ctx.create_vm_snapshot(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2130,9 +2137,9 @@ def compute_vm_set_snapshot_mk(
 @click.argument('snapshot_id', type=click.INT, required=True)
 @pass_context
 def compute_vm_set_snapshot_rm(ctx: Configuration, snapshot_id):
-    """Remove virtual machine snapshot:
+    """Remove virtual machine snapshot.
 
-        vss-cli compute vm set <name-or-vm_id> snapshot rm <snapshot-id>
+    vss-cli compute vm set <name-or-vm_id> snapshot rm <snapshot-id>
     """
     # create payload
     payload = dict(vm_id=ctx.moref, snapshot=snapshot_id)
@@ -2146,7 +2153,7 @@ def compute_vm_set_snapshot_rm(ctx: Configuration, snapshot_id):
     obj = ctx.delete_vm_snapshot(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2156,9 +2163,9 @@ def compute_vm_set_snapshot_rm(ctx: Configuration, snapshot_id):
 @click.argument('snapshot_id', type=click.INT, required=True)
 @pass_context
 def compute_vm_set_snapshot_re(ctx: Configuration, snapshot_id):
-    """Revert virtual machine snapshot:
+    """Revert virtual machine snapshot.
 
-        vss-cli compute vm set <name-or-vm_id> snapshot re <snapshot-id>
+    vss-cli compute vm set <name-or-vm_id> snapshot re <snapshot-id>
     """
     # create payload
     payload = dict(vm_id=ctx.moref, snapshot=snapshot_id)
@@ -2172,7 +2179,7 @@ def compute_vm_set_snapshot_re(ctx: Configuration, snapshot_id):
     obj = ctx.revert_vm_snapshot(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2189,14 +2196,12 @@ def compute_vm_set_snapshot_re(ctx: Configuration, snapshot_id):
 )
 @pass_context
 def compute_vm_set_state(ctx: Configuration, state, confirm):
-    """ Set given virtual machine power state.
+    """Set given virtual machine power state.
 
     vss-cli compute vm set <name-or-vm_id> state on|off|reset|reboot|shutdown
     --confirm
 
-    Reboot and shutdown send a guest OS restart signal
-    (VMware Tools required).
-
+    Reboot and shutdown send a guest OS restart signal (VMware Tools required).
     """
     # lookup dict for state
     lookup = {
@@ -2247,7 +2252,7 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
     obj = ctx.update_vm_state(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2264,7 +2269,7 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
 )
 @pass_context
 def compute_vm_set_template(ctx: Configuration, on):
-    """Marks virtual machine as template or template to virtual machine.
+    """Mark virtual machine as template or template to virtual machine.
 
     vss-cli compute vm set <name-or-vm_id> template --on/--off
     """
@@ -2276,7 +2281,7 @@ def compute_vm_set_template(ctx: Configuration, on):
     obj = ctx.mark_template_as_vm(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2289,6 +2294,7 @@ def compute_vm_set_template(ctx: Configuration, on):
 @pass_context
 def compute_vm_set_tools(ctx: Configuration, action):
     """Upgrade, mount and unmount official VMware Tools package.
+
     This command does not apply for Open-VM-Tools.
 
     vss-cli compute vm set <name-or-vm_id> tools upgrade|mount|unmount
@@ -2300,7 +2306,7 @@ def compute_vm_set_tools(ctx: Configuration, action):
     obj = ctx.update_vm_tools(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2312,8 +2318,7 @@ def compute_vm_set_tools(ctx: Configuration, action):
 )
 @pass_context
 def compute_vm_set_usage(ctx: Configuration, usage):
-    """Update virtual machine usage in both name prefix
-    and metadata.
+    """Update virtual machine usage in both name prefix and metadata.
 
     vss-cli compute vm set <name-or-vm_id> usage Prod|Test|Dev|QA
     """
@@ -2325,7 +2330,7 @@ def compute_vm_set_usage(ctx: Configuration, usage):
     obj = ctx.update_vm_vss_usage(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2357,7 +2362,7 @@ def compute_vm_set_version_policy_vmx(ctx: Configuration, vmx):
     obj = ctx.update_vm_version(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2382,7 +2387,7 @@ def compute_vm_set_version_policy(ctx: Configuration, policy):
     obj = ctx.update_vm_version_policy(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2398,7 +2403,7 @@ def compute_vm_set_version_policy(ctx: Configuration, policy):
 )
 @pass_context
 def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
-    """Enable or disable copy/paste between VMRC and VM OS"""
+    """Enable or disable copy/paste between VMRC and VM OS."""
     # create payload
     payload = dict(vm_id=ctx.moref)
     # add common options
@@ -2410,7 +2415,7 @@ def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
         obj = ctx.disable_vm_vmrc_copy_paste(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2430,7 +2435,7 @@ def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
 )
 @pass_context
 def compute_vm_set_vss_option(ctx: Configuration, vss_option, on):
-    """Enable or disable given VSS Option"""
+    """Enable or disable given VSS Option."""
     # create payload
     payload = dict(vm_id=ctx.moref, option_name=vss_option)
     # add common options
@@ -2442,7 +2447,7 @@ def compute_vm_set_vss_option(ctx: Configuration, vss_option, on):
         obj = ctx.disable_vm_vss_option(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2457,7 +2462,7 @@ def compute_vm_set_vss_option(ctx: Configuration, vss_option, on):
 )
 @pass_context
 def compute_vm_set_vss_service(ctx: Configuration, label_name_or_id):
-    """Update VSS service name or ID"""
+    """Update VSS service name or ID."""
     service = ctx.get_vss_service_by_name_label_or_id(label_name_or_id)[0][
         'id'
     ]
@@ -2468,7 +2473,7 @@ def compute_vm_set_vss_service(ctx: Configuration, label_name_or_id):
     obj = ctx.update_vm_vss_service(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2480,7 +2485,9 @@ def compute_vm_set_vss_service(ctx: Configuration, label_name_or_id):
 @pass_context
 def compute_vm_set_controller(ctx: Configuration):
     """Manage virtual machine IDE/SCSI controllers.
-     Add, update and remove controllers."""
+
+    Add, update and remove controllers.
+    """
     pass
 
 
@@ -2490,7 +2497,9 @@ def compute_vm_set_controller(ctx: Configuration):
 @pass_context
 def compute_vm_set_controller_scsi(ctx: Configuration):
     """Manage virtual machine SCSI controllers.
-     Add, update and remove controllers."""
+
+    Add, update and remove controllers.
+    """
     pass
 
 
@@ -2509,10 +2518,10 @@ def compute_vm_set_controller_scsi(ctx: Configuration):
 )
 @pass_context
 def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
-    """Create virtual machine SCSI controllers:
+    """Create virtual machine SCSI controllers.
 
-        vss-cli compute vm set <name-or-vm_id> controller scsi mk
-        -t paravirtual -t lsilogic
+    vss-cli compute vm set <name-or-vm_id> controller scsi mk
+    -t paravirtual -t lsilogic
     """
     payload = dict(vm_id=ctx.moref, types=scsi_type)
     # add common options
@@ -2521,7 +2530,7 @@ def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
     obj = ctx.create_vm_scsi_device(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2542,11 +2551,10 @@ def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
 def compute_vm_set_controller_scsi_up(
     ctx: Configuration, bus_number, scsi_type
 ):
-    """Update virtual machine SCSI controller type:
+    """Update virtual machine SCSI controller type.
 
-        vss-cli compute vm set <name-or-vm_id> controller scsi up
-        <bus> -t paravirtual
-
+    vss-cli compute vm set <name-or-vm_id> controller scsi up
+    <bus> -t paravirtual
     """
     # validate if unit exists
     bus = ctx.get_vm_scsi_device(ctx.moref, bus_number)
@@ -2558,7 +2566,7 @@ def compute_vm_set_controller_scsi_up(
     obj = ctx.update_vm_scsi_device_type(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2579,12 +2587,12 @@ def compute_vm_set_controller_scsi_up(
 def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     """Remove virtual machine SCSI controllers.
 
-        vss-cli compute vm set <name-or-vm_id> controller scsi rm <bus> ...
+    vss-cli compute vm set <name-or-vm_id> controller scsi rm <bus> ...
     """
     buses = list(bus_number)
     for bus in buses:
         # TODO: remove when get_vm_scsi_device is fixed
-        _bus = ctx.request('/vm/%s/controller/scsi/%s' % (ctx.moref, bus))
+        _bus = ctx.request(f'/vm/{ctx.moref}/controller/scsi/{bus}')
         if not _bus.get('data'):
             buses.remove(bus)
             _LOGGING.warning(
@@ -2615,7 +2623,7 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
         raise click.ClickException('Cancelled by user.')
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2658,10 +2666,9 @@ def compute_vm_rm(
     show_info: bool,
     wait: bool,
 ):
-    """ Delete a list of virtual machine ids:
+    """Delete a list of virtual machine ids.
 
-        vss-cli compute vm rm <name-or-vm-id> <name-or-vm-id> --show-info
-
+    vss-cli compute vm rm <name-or-vm-id> <name-or-vm-id> --show-info
     """
     _LOGGING.debug(f'Attempting to remove {vm_id}')
     if len(vm_id) > max_del:
@@ -2694,7 +2701,7 @@ def compute_vm_rm(
     # print
     if objs:
         columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-        click.echo(
+        ctx.echo(
             format_output(ctx, objs, columns=columns, single=len(objs) == 1)
         )
         if wait:
@@ -2718,13 +2725,15 @@ def compute_vm_rm(
     default=None,
 )
 @so.wait_opt
+@so.dry_run_opt
 @pass_context
-def compute_vm_mk(ctx: Configuration, user_meta: str, wait: bool):
-    """Manage virtual machine attributes such as cpu,
-    memory, disk, network backing, cd, etc.."""
-    ctx.payload_options = dict()
+def compute_vm_mk(
+    ctx: Configuration, user_meta: str, wait: bool, dry_run: bool
+):
+    """Deploy Virtual machines."""
     ctx.user_meta = dict(to_tuples(user_meta))
     ctx.wait = wait
+    ctx.tmp = dry_run
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
     if click.get_current_context().invoked_subcommand is None:
@@ -2766,15 +2775,15 @@ def compute_vm_from_file(
     Run the following command to deploy a vm based on a
     VSS CLI specification template:
 
-        vss-cli compute vm mk from-file -s -t shell -e vm.yaml
+    vss-cli compute vm mk from-file -s -t shell -e vm.yaml
 
     Or from an existing vm:
 
-        vss-cli compute vm get <name-or-vm_id> spec --edit vm.yaml
+    vss-cli compute vm get <name-or-vm_id> spec --edit vm.yaml
 
     Edit vm.yaml file and deploy as follows:
 
-        vss-cli compute vm mk from-file <cli-spec>.json|yaml
+    vss-cli compute vm mk from-file <cli-spec>.json|yaml
 
     """
     import time
@@ -2794,7 +2803,7 @@ def compute_vm_from_file(
             const.DEFAULT_DATA_PATH, f'{spec_template}.yaml'
         )
         # proceed to load file
-        with open(file_spec, 'r') as data_file:
+        with open(file_spec) as data_file:
             raw = data_file.read()
     # whether to launch the editor and save file
     # before submitting request
@@ -2822,12 +2831,13 @@ def compute_vm_from_file(
             payload=payload, built='os_install'
         )
     else:
-        raise click.UsageError('Not yet implemented. ')
+        raise click.UsageError('Not yet implemented.')
     # request
+    ctx.dry_run = ctx.tmp
     obj = ctx.create_vm(**spec_payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -2880,10 +2890,12 @@ def compute_vm_mk_spec(
     vss_service,
     instances,
 ):
-    """Create virtual machine based on another virtual machine
-     configuration specification. This command takes the vm
-     machine specification (memory, disk, networking, etc) as a
-     base for a new VM."""
+    """Create vm based on another vm configuration specification.
+
+    This command takes the vm specification
+    (memory, disk, networking, etc) as a
+    base for a new VM.
+    """
     built = 'os_install'
     _vm = ctx.get_vm_by_id_or_name(source)
     vm_id = _vm[0]['moref']
@@ -2952,7 +2964,7 @@ def compute_vm_mk_spec(
         _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
     columns = ctx.columns or _columns
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         if instances > 1:
@@ -3006,8 +3018,7 @@ def compute_vm_mk_shell(
     vss_service,
     instances,
 ):
-    """Create a new virtual machine with no operating system
-    pre-installed."""
+    """Create a new VM with no operating system pre-installed."""
     built = 'os_install'
     payload = dict(
         description=description,
@@ -3067,7 +3078,7 @@ def compute_vm_mk_shell(
         _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
     columns = ctx.columns or _columns
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         if instances > 1:
@@ -3121,7 +3132,7 @@ def compute_vm_mk_template(
     power_on,
     instances,
 ):
-    """Deploy virtual machine from template"""
+    """Deploy virtual machine from template."""
     # get source from uuid or name
     _vm = ctx.get_vm_by_id_or_name(source)
     vm_id = _vm[0]['moref']
@@ -3182,7 +3193,7 @@ def compute_vm_mk_template(
         _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
     columns = ctx.columns or _columns
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         if instances > 1:
@@ -3237,8 +3248,10 @@ def compute_vm_mk_clone(
     instances,
 ):
     """Clone virtual machine from running or powered off vm.
+
     If name argument is not specified, -clone suffix will be added to
-    resulting virtual machine"""
+    resulting virtual machine.
+    """
     # get source from uuid or name
     _vm = ctx.get_vm_by_id_or_name(source)
     vm_id = _vm[0]['moref']
@@ -3299,7 +3312,7 @@ def compute_vm_mk_clone(
         _columns = const.COLUMNS_REQUEST_SUBMITTED
     # print
     columns = ctx.columns or _columns
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         if instances > 1:
@@ -3355,7 +3368,7 @@ def compute_vm_mk_image(
     user_data,
     vss_service,
 ):
-    """Deploy virtual machine from image"""
+    """Deploy virtual machine from image."""
     # get reference to image by
     image_ref = ctx.get_vm_image_by_name_or_id_path(source)
     # payload
@@ -3410,7 +3423,7 @@ def compute_vm_mk_image(
     obj = ctx.create_vm_from_image(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)

@@ -16,8 +16,11 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('snapshot', short_help='Manage virtual machine snapshot requests')
 @pass_context
 def snapshot(ctx: Configuration):
-    """ Creating, deleting and reverting virtual machine
-    snapshots will produce a virtual machine snapshot request."""
+    """Manage VM snapshot requests.
+
+    Creating, deleting and reverting virtual machine
+    snapshots will produce a virtual machine snapshot request.
+    """
 
 
 @snapshot.command('ls', short_help='list snapshot requests')
@@ -28,18 +31,17 @@ def snapshot(ctx: Configuration):
 @so.page_opt
 @pass_context
 def snapshot_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
-    """List requests based on:
+    """List requests.
 
-        Filter list in the following format <field_name> <operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status=eq,PROCESSED
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,PROCESSED
 
-            vss-cli request snapshot ls -f status=eq,PROCESSED
+    vss-cli request snapshot ls -f status=eq,PROCESSED
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request snapshot ls -s created_on=desc
-
+    vss-cli request snapshot ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_SNAP_MIN
     params = dict(expand=1, sort='created_on,desc')
@@ -58,7 +60,7 @@ def snapshot_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @snapshot.command('get', help='Snapshot request')
@@ -70,13 +72,14 @@ def snapshot_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 )
 @pass_context
 def snapshot_get(ctx, rid):
+    """Get VM snapshot request info."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_snapshot_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST
     if not ctx.columns:
         columns.extend(const.COLUMNS_REQUEST_SNAP)
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @snapshot.group('set', help='Update snapshot request')
@@ -88,6 +91,7 @@ def snapshot_get(ctx, rid):
 )
 @pass_context
 def snapshot_set(ctx: Configuration, rid):
+    """Set snapshot attribute."""
     ctx.rid = rid
 
 
@@ -101,11 +105,11 @@ def snapshot_set(ctx: Configuration, rid):
 )
 @pass_context
 def snapshot_set_duration(ctx: Configuration, lifetime):
-    """Extend snapshot lifetime"""
+    """Extend snapshot lifetime."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.extend_snapshot_request(ctx.rid, lifetime)
     columns = ctx.columns or const.COLUMNS_REQUEST
     if not ctx.columns:
         columns.extend(const.COLUMNS_REQUEST_SNAP)
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

@@ -13,7 +13,7 @@ virtual machines and other services.
 .. raw:: html
 
   <script type="text/javascript" src="https://asciinema.org/a/14.js"
-          id="asciicast-JB2CT3GmfdFFUXEDxBV3xI0i0" async
+          id="asciicast-RpP8lQBxjW75SaYtubHqerEp7" async
           data-autoplay="true" data-loop="false"></script>
 
 .. toctree::

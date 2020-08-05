@@ -16,7 +16,7 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('inventory', short_help='Manage virtual machine inventory requests')
 @pass_context
 def request_mgmt_inventory(ctx: Configuration):
-    """Manage virtual machine inventory requests"""
+    """Manage virtual machine inventory requests."""
 
 
 @request_mgmt_inventory.command('ls', short_help='list inventory requests')
@@ -29,18 +29,17 @@ def request_mgmt_inventory(ctx: Configuration):
 def request_mgmt_inventory_ls(
     ctx: Configuration, filter_by, page, sort, show_all, count
 ):
-    """List requests based on:
+    """List requests.
 
-        Filter list in the following format <field_name> <operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status=eq,PROCESSED
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,PROCESSED
 
-            vss-cli request inventory ls -f status=eq,PROCESSED
+    vss-cli request inventory ls -f status=eq,PROCESSED
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request inventory ls -s created_on=desc
-
+    vss-cli request inventory ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_INVENTORY_MIN
     params = dict(expand=1, sort='created_on,desc')
@@ -59,7 +58,7 @@ def request_mgmt_inventory_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @request_mgmt_inventory.command('get', short_help='Inventory request')
@@ -71,8 +70,9 @@ def request_mgmt_inventory_ls(
 )
 @pass_context
 def request_mgmt_inventory_get(ctx: Configuration, rid):
+    """Get Inventory request info."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_inventory_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_INVENTORY
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

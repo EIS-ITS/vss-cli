@@ -1,3 +1,4 @@
+"""Compute Floppy plugin for VSS CLI (vss-cli)."""
 import logging
 
 import click
@@ -14,14 +15,16 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('floppy', short_help='Manage floppy images.')
 @pass_context
 def compute_floppy(ctx: Configuration):
-    """Available floppy images in both the VSS central store and your personal
-    VSKEY-STOR space."""
+    """Manage ISO images.
+
+    Available images in the VSS central store and your personal space.
+    """
 
 
 @compute_floppy.group('public', short_help='Browse public images')
 @pass_context
 def compute_floppy_public(ctx: Configuration):
-    """Available Floppy images in the VSS central store"""
+    """Available Floppy images in the VSS central store."""
 
 
 @compute_floppy_public.command('ls', short_help='list floppy images')
@@ -37,7 +40,7 @@ def compute_floppy_public_ls(
 
     Filter by path or name path=<path> or name=<name>. For example:
 
-        vss-cli compute floppy ls -f name=like,pv% -s path=asc
+    vss-cli compute floppy ls -f name=like,pv% -s path=asc
     """
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
@@ -54,7 +57,7 @@ def compute_floppy_public_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @compute_floppy.group('personal', short_help='Browse current user images')
@@ -72,10 +75,11 @@ def compute_floppy_personal(ctx):
 @pass_context
 def compute_floppy_personal_ls(ctx: Configuration, page):
     """List available Floppy images stored in your personal VSKEY-STOR space.
+
     If the image you uploaded is not listing here, use the sync and try again.
 
-        vss-cli compute floppy personal sync
-        vss-cli compute floppy personal ls
+    vss-cli compute floppy personal sync
+    vss-cli compute floppy personal ls
     """
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_user_floppies()
@@ -86,7 +90,7 @@ def compute_floppy_personal_ls(ctx: Configuration, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @compute_floppy_personal.command(
@@ -94,8 +98,10 @@ def compute_floppy_personal_ls(ctx: Configuration, page):
 )
 @pass_context
 def compute_floppy_personal_sync(ctx: Configuration):
-    """Synchronize Floppy images stored in your personal VSKEY-STOR space. Once
-    processed it should be listed with the ls command."""
+    """Synchronize Floppy images stored in your personal VSKEY-STOR space.
+
+    Once processed it should be listed with the ls command.
+    """
     obj = ctx.sync_user_floppies()
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

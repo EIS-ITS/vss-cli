@@ -1,3 +1,4 @@
+"""Compute Folder plugin for VSS CLI (vss-cli)."""
 import logging
 
 import click
@@ -16,8 +17,11 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('folder', short_help='Manage logical folders')
 @pass_context
 def compute_folder(ctx):
-    """Logical Folders are containers for storing and organizing
-    inventory objects, in this case virtual machines."""
+    """Logical Folders command.
+
+    Folders are containers for storing and organizing
+    inventory objects, in this case virtual machines.
+    """
 
 
 @compute_folder.command('ls', short_help='list folders')
@@ -27,18 +31,18 @@ def compute_folder(ctx):
 @so.page_opt
 @pass_context
 def compute_folder_ls(ctx: Configuration, filter_by, show_all, sort, page):
-    """ List logical folders based on:
+    """List logical folders based on.
 
-        Filter list in the following format <field_name>=<operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
 
-        For example: name like,%Project%
+    For example: name like,%Project%
 
-            vss-cli compute folder ls -f name=like,%Project%
+    vss-cli compute folder ls -f name=like,%Project%
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli compute folder ls -s path=desc
+    vss-cli compute folder ls -s path=desc
     """
     params = dict(expand=1, sort='path,asc')
     if all(filter_by):
@@ -56,7 +60,7 @@ def compute_folder_ls(ctx: Configuration, filter_by, show_all, sort, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @compute_folder.group('set', short_help='update folder')
@@ -77,10 +81,10 @@ def compute_folder_set(ctx, moref_or_name: str, wait: bool):
 @pass_context
 def compute_folder_set_parent(ctx: Configuration, parent_name_or_moref):
     """Move folder to given moref.
-     Use to obtain parent folder:
 
-       vss-cli compute folder ls
+    Use to obtain parent folder:
 
+    vss-cli compute folder ls
     """
     _LOGGING.debug(f'Attempting to move {ctx.moref} to {parent_name_or_moref}')
     # exist parent
@@ -91,7 +95,7 @@ def compute_folder_set_parent(ctx: Configuration, parent_name_or_moref):
     obj = ctx.move_folder(**payload)
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -102,10 +106,10 @@ def compute_folder_set_parent(ctx: Configuration, parent_name_or_moref):
 @pass_context
 def compute_folder_set_name(ctx: Configuration, name):
     """Rename folder to given name.
-     Use to obtain parent folder:
 
-       vss-cli compute folder ls
+    Use to obtain parent folder:
 
+    vss-cli compute folder ls
     """
     _LOGGING.debug(f'Attempting to rename {ctx.moref} to {name}')
     # exist folder
@@ -113,7 +117,7 @@ def compute_folder_set_name(ctx: Configuration, name):
     obj = ctx.rename_folder(**payload)
     # format output
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait:
         ctx.wait_for_request_to(obj)
@@ -133,8 +137,9 @@ def compute_folder_set_name(ctx: Configuration, name):
 def compute_folder_rm(
     ctx: Configuration, moref: str, max_del: int, wait: bool
 ):
-    """Delete a logical folder. Folder must be empty.
+    """Delete a logical folder.
 
+    Note. Folder must be empty.
     """
     _LOGGING.debug(f'Attempting to remove {moref}')
     if len(moref) > max_del:
@@ -154,9 +159,7 @@ def compute_folder_rm(
             objs.append(ctx.delete_folder(moref=mo_id))
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(
-        format_output(ctx, objs, columns=columns, single=len(objs) == 1)
-    )
+    ctx.echo(format_output(ctx, objs, columns=columns, single=len(objs) == 1))
     if wait:
         if len(objs) > 1:
             ctx.wait_for_requests_to(objs, in_multiple=True)
@@ -179,9 +182,7 @@ def compute_folder_rm(
 @so.wait_opt
 @pass_context
 def compute_folder_mk(ctx: Configuration, parent, name: list, wait: bool):
-    """Create a logical folder under a given name, path or moref of parent.
-
-    """
+    """Create a logical folder under a given name, path or moref of parent."""
     _LOGGING.debug(f'Attempting to create {name} under {parent}')
     # exist folder
     _parent = ctx.get_folder_by_name_or_moref_path(parent)
@@ -191,9 +192,7 @@ def compute_folder_mk(ctx: Configuration, parent, name: list, wait: bool):
         objs.append(ctx.create_folder(moref=parent, name=child))
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
-    click.echo(
-        format_output(ctx, objs, columns=columns, single=len(objs) == 1)
-    )
+    ctx.echo(format_output(ctx, objs, columns=columns, single=len(objs) == 1))
     if wait:
         if len(objs) > 1:
             ctx.wait_for_requests_to(objs, in_multiple=True)
@@ -212,6 +211,7 @@ def compute_folder_mk(ctx: Configuration, parent, name: list, wait: bool):
 )
 @pass_context
 def compute_folder_get(ctx: Configuration, moref_or_name):
+    """Get logical folder information."""
     _folder = ctx.get_folder_by_name_or_moref_path(moref_or_name)
     ctx.moref = _folder[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
@@ -220,7 +220,7 @@ def compute_folder_get(ctx: Configuration, moref_or_name):
         # set columns
         columns = ctx.columns or const.COLUMNS_FOLDER
         # format
-        click.echo(format_output(ctx, [obj], columns=columns, single=True))
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_folder_get.command('vms', short_help='list virtual machines.')
@@ -238,7 +238,7 @@ def compute_folder_get_vms(ctx: Configuration, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @compute_folder_get.command('children', short_help='list children folders.')
@@ -256,7 +256,7 @@ def compute_folder_get_children(ctx: Configuration, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @compute_folder_get.command('perm', short_help='list permissions.')
@@ -265,7 +265,7 @@ def compute_folder_get_children(ctx: Configuration, page):
 )
 @pass_context
 def compute_folder_get_perms(ctx: Configuration, page):
-    """Obtain logical folder group or user permissions."""
+    """Get logical folder group or user permissions."""
     obj = ctx.get_folder_permission(ctx.moref)
     if not obj:
         raise VssCliError(
@@ -278,4 +278,4 @@ def compute_folder_get_perms(ctx: Configuration, page):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)

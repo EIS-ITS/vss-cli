@@ -1,3 +1,4 @@
+"""Compute Template plugin for VSS CLI (vss-cli)."""
 import logging
 
 import click
@@ -14,7 +15,7 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('template', short_help='List virtual machine templates')
 @pass_context
 def compute_template(ctx):
-    """List virtual machine templates"""
+    """List virtual machine templates."""
     pass
 
 
@@ -30,13 +31,13 @@ def compute_template_ls(
 ):
     """List virtual machine templates.
 
-        Filter and sort list by any attribute. For example:
+    Filter and sort list by any attribute. For example:
 
-        vss-cli compute template ls -f name=like,%vm-name% -f version=like,%13
+    vss-cli compute template ls -f name=like,%vm-name% -f version=like,%13
 
-        Simple name filtering:
+    Simple name filtering:
 
-        vss-cli compute template ls -f name=%vm-name% -s name=desc
+    vss-cli compute template ls -f name=%vm-name% -s name=desc
 
     """
     params = dict(expand=1, sort='name,asc')
@@ -55,4 +56,4 @@ def compute_template_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)

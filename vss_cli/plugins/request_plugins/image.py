@@ -16,8 +16,11 @@ _LOGGING = logging.getLogger(__name__)
 @cli.group('image', short_help='Manage user-image synchronization requests')
 @pass_context
 def image_sync(ctx: Configuration):
-    """Synchronizing your personal store files with the VSS API produces a
-    image-sync request"""
+    """Manage Image requests.
+
+    Synchronizing your personal store files with the VSS API produces a
+    image-sync request.
+    """
 
 
 @image_sync.command('ls', short_help='list image-sync requests')
@@ -28,18 +31,17 @@ def image_sync(ctx: Configuration):
 @so.page_opt
 @pass_context
 def image_sync_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
-    """List requests based on:
+    """List requests.
 
-        Filter list in the following format <field_name> <operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status=eq,PROCESSED
+    Filter list in the following format <field_name> <operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,PROCESSED
 
-            vss-cli request image-sync ls -f status=eq,PROCESSED
+    vss-cli request image-sync ls -f status=eq,PROCESSED
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request image-sync ls -s created_on=desc
-
+    vss-cli request image-sync ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_IMAGE_SYNC_MIN
     params = dict(expand=1, sort='created_on,desc')
@@ -58,7 +60,7 @@ def image_sync_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @image_sync.command('get', help='Image sync request')
@@ -70,8 +72,9 @@ def image_sync_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
 )
 @pass_context
 def image_sync_get(ctx, rid):
+    """Get Image request info."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_image_sync_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_IMAGE_SYNC
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

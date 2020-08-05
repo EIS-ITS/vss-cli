@@ -1,3 +1,4 @@
+"""Compute Shared Options plugin for VSS CLI (vss-cli)."""
 import click
 
 import vss_cli.autocompletion as autocompletion

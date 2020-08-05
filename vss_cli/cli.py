@@ -244,7 +244,7 @@ def cli(
     ctx.verbose = verbose
     ctx.endpoint = endpoint
     ctx.token = token
-    ctx.config = config
+    ctx.config_path = config
     ctx.username = username
     ctx.password = password
     ctx.timeout = timeout

@@ -30,18 +30,17 @@ def request_mgmt_export(ctx: Configuration):
 def request_mgmt_export_ls(
     ctx: Configuration, filter_by, page, sort, show_all, count
 ):
-    """List requests based on:
+    """List requests.
 
-        Filter list in the following format <field_name> <operator>,<value>
-        where operator is eq, ne, lt, le, gt, ge, like, in.
-        For example: status=eq,PROCESSED
+    Filter list in the following format <field_name> <operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,PROCESSED
 
-            vss-cli request export ls -f status=eq,PROCESSED
+    vss-cli request export ls -f status=eq,PROCESSED
 
-        Sort list in the following format <field_name>=<asc|desc>. For example:
+    Sort list in the following format <field_name>=<asc|desc>. For example:
 
-            vss-cli request export ls -s created_on=desc
-
+    vss-cli request export ls -s created_on=desc
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_EXPORT_MIN
     params = dict(expand=1, sort='created_on,desc')
@@ -60,7 +59,7 @@ def request_mgmt_export_ls(
     if page:
         click.echo_via_pager(output)
     else:
-        click.echo(output)
+        ctx.echo(output)
 
 
 @request_mgmt_export.command('get', short_help='Export request')
@@ -72,8 +71,9 @@ def request_mgmt_export_ls(
 )
 @pass_context
 def request_mgmt_export_get(ctx: Configuration, rid):
+    """Get VM export request info."""
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_export_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_EXPORT
-    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
