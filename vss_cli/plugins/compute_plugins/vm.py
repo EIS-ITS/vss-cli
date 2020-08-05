@@ -769,29 +769,36 @@ def compute_vm_get_vsphere_link(ctx: Configuration, launch: bool):
     default=None,
 )
 @so.wait_opt
+@so.dry_run_opt
 @pass_context
 def compute_vm_set(
-    ctx: Configuration, vm_id_or_name, schedule, user_meta: str, wait: bool
+    ctx: Configuration,
+    vm_id_or_name: str,
+    schedule,
+    user_meta: str,
+    wait: bool,
+    dry_run: bool,
 ):
     """Manage virtual machine resources.
 
     Such as cpu, memory, disk, network backing, cd, etc.
     """
-    _vm = ctx.get_vm_by_id_or_name(vm_id_or_name)
-    ctx.moref = _vm[0]['moref']
     # setup payload opts
-    ctx.payload_options = dict()
     ctx.user_meta = dict(to_tuples(user_meta))
     ctx.schedule = schedule
     ctx.wait = wait
+    # check for vm
+    _vm = ctx.get_vm_by_id_or_name(vm_id_or_name)
+    ctx.moref = _vm[0]['moref']
     # set additional props
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
     if schedule:
-        # ctx.payload_options['schedule_obj'] = ctx.schedule
         ctx.payload_options['schedule'] = ctx.schedule.strftime(
             const.DEFAULT_DATETIME_FMT
         )
+    # set dry run and output to json
+    ctx.set_dry_run(dry_run)
     if click.get_current_context().invoked_subcommand is None:
         raise click.UsageError('Sub command is required')
 
@@ -2718,12 +2725,15 @@ def compute_vm_rm(
     default=None,
 )
 @so.wait_opt
+@so.dry_run_opt
 @pass_context
-def compute_vm_mk(ctx: Configuration, user_meta: str, wait: bool):
+def compute_vm_mk(
+    ctx: Configuration, user_meta: str, wait: bool, dry_run: bool
+):
     """Deploy Virtual machines."""
-    ctx.payload_options = dict()
     ctx.user_meta = dict(to_tuples(user_meta))
     ctx.wait = wait
+    ctx.tmp = dry_run
     if user_meta:
         ctx.payload_options['user_meta'] = ctx.user_meta
     if click.get_current_context().invoked_subcommand is None:
@@ -2821,8 +2831,9 @@ def compute_vm_from_file(
             payload=payload, built='os_install'
         )
     else:
-        raise click.UsageError('Not yet implemented. ')
+        raise click.UsageError('Not yet implemented.')
     # request
+    ctx.dry_run = ctx.tmp
     obj = ctx.create_vm(**spec_payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED

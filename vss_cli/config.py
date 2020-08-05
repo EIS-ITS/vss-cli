@@ -71,7 +71,16 @@ class Configuration(VssManager):
         self.wait = None  # type: Optional[bool]
         self.moref = None  # type: Optional[str]
         self.unit = None  # type: Optional[str, int]
-        self.payload_options = None  # type: Optional[Dict]
+        self.payload_options = {}  # type: Optional[Dict]
+        self.tmp = None  # type: Optional[Any]
+
+    def set_dry_run(self, val: bool) -> None:
+        """Set dry_run value."""
+        if val is not None:
+            if self.output not in ['json', 'yaml']:
+                self.output = 'json'
+            self.wait = not bool(val)
+            self.dry_run = bool(val)
 
     @property
     def debug(self) -> bool:
@@ -163,6 +172,7 @@ class Configuration(VssManager):
             "timeout": self.timeout,
             "debug": self.debug,
             "verbose": self.verbose,
+            "dry_run": self.dry_run,
         }
 
         return f"<Configuration({view})"

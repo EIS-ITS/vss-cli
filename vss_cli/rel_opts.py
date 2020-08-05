@@ -1,3 +1,5 @@
+"""Shared click options for VSS CLI (vss-cli)."""
+
 import click
 
 from vss_cli.helper import process_filters, process_sort
@@ -37,7 +39,7 @@ page_opt = click.option(
 wait_opt = click.option(
     '--wait', is_flag=True, help='wait for request(s) to complete'
 )
-
+dry_run_opt = click.option('--dry-run', is_flag=True, help='no changes')
 max_del_opt = click.option(
     '-m',
     '--max-del',
