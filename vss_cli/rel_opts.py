@@ -34,10 +34,18 @@ count_opt = click.option(
     '-c', '--count', type=click.INT, help='size of results', default=50
 )
 page_opt = click.option(
-    '-p', '--page', is_flag=True, help='page results in a less-like format'
+    '-p',
+    '--page',
+    is_flag=True,
+    help='page results in a less-like format',
+    show_default=True,
 )
 wait_opt = click.option(
-    '--wait', is_flag=True, help='wait for request(s) to complete'
+    '--wait/--no-wait',
+    is_flag=True,
+    help='wait for request(s) to complete',
+    default=False,
+    show_default=True,
 )
 dry_run_opt = click.option('--dry-run', is_flag=True, help='no changes')
 max_del_opt = click.option(

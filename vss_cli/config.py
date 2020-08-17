@@ -76,7 +76,7 @@ class Configuration(VssManager):
 
     def set_dry_run(self, val: bool) -> None:
         """Set dry_run value."""
-        if val is not None:
+        if val is True:
             if self.output not in ['json', 'yaml']:
                 self.output = 'json'
             self.wait = not bool(val)
@@ -172,6 +172,7 @@ class Configuration(VssManager):
             "timeout": self.timeout,
             "debug": self.debug,
             "verbose": self.verbose,
+            "wait": self.wait,
             "dry_run": self.dry_run,
         }
 
