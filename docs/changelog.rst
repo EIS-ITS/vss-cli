@@ -2,6 +2,19 @@
 Changelog 📝
 ============
 
+`v0.8.3 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.3>`_ (2020-08-17)
+--------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#347 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/347>`_: ``compute vm set``: ``--no-wait`` option to override ``--wait``.
+
+**Bug Fixes:**
+
+- `#345 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/345>`_: ``compute vm set``: output format always is ``json``.
+- `#346 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/346>`_: ``compute vm set``: ``--wait`` is always on.
+
+
 `v0.8.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.2>`_ (2020-08-05)
 --------------------------------------------------------------------------------------
 
