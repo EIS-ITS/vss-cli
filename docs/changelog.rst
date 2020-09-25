@@ -2,6 +2,21 @@
 Changelog 📝
 ============
 
+`v0.8.4 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.4>`_: (2020-09-25)
+--------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#349 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/349>`_: ``compute template rm``: command to allow decommissioning vm templates.
+- `#350 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/350>`_: ``core``: ``pyvss`` v0.15.0 -> v0.15.1.
+- `#351 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/351>`_: ``core``: ``pick`` v0.6.7 -> v1.0.0.
+- `#352 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/352>`_: ``core``: ``ruamel.yaml`` v0.16.10 -> v0.16.12.
+- `#353 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/353>`_: ``core``: ``dataclasses-json`` v0.2.2 -> v0.5.2.
+- `#354 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/354>`_: ``core``: ``validators`` v0.14.3 -> v0.18.1.
+- `#355 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/355>`_: ``core``: ``dateparser`` v0.7.4 -> 0.7.6.
+- `#356 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/356>`_: ``core``: ``Pygments`` v2.6.1 -> v2.7.1.
+
+
 `v0.8.3 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.3>`_ (2020-08-17)
 --------------------------------------------------------------------------------------
 
