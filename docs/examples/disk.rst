@@ -99,7 +99,7 @@ as shown below:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --capacity 50
+    vss-cli compute vm set vm-1234 disk up 1 --capacity 50
 
 
 Controller
@@ -110,7 +110,7 @@ as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --scsi 1
+    vss-cli compute vm set vm-1234 disk up 1 --scsi 1
 
 
 Backing Mode
@@ -121,7 +121,7 @@ Disk backing modes can be updated via
 
 .. code-block:: bash
 
-    vss-cli compute vm set 50128d83-0fcc-05e3-be71-d972ffdf3284 disk up 1 --backing-mode independent_persistent
+    vss-cli compute vm set vm-1234 disk up 1 --backing-mode independent_persistent
 
 Refer to the following table to pick the right **backing mode**:
 
@@ -136,6 +136,22 @@ persistent					Changes are immediately and permanently written to the virtual di
 undoable					Changes are made to a redo log, but you are given the option to commit or undo.
 =========================   ==================================================================================
 
+
+Backing Sharing Mode
+~~~~~~~~~~~~~~~~~~~~
+Disk backing sharing modes can be updated via
+``vss-cli compute vm set <name-or-vm-id> disk up <unit> -r <sharing>``:
+
+Refer to the following table to pick the right **backing sharing**:
+
+=========================   ==================================================================================
+Name						Description
+=========================   ==================================================================================
+sharingmultiwriter			The virtual disk is shared between multiple virtual machines.
+sharingnone	                 The virtual disk is not shared.
+=========================   ==================================================================================
+
+
 Create
 ------
 Creating a new virtual machine disk is as simple as updating,
@@ -143,7 +159,28 @@ but switching the sub-command to ``mk``, for example:
 
 .. code-block:: bash
 
-    vss-cli compute vm set vm-1233 disk mk --capacity 20
+    vss-cli compute vm set vm-1233 disk mk --disk 20
+
+Also, it supports providing both ``backing_mode`` and ``backing_sharing``
+in the following format ``<capacity_gb>=<backing_mode>=<backing_sharing>``.
+If no ``backing_mode`` and ``backing_sharing`` are provided, defaults are:
+
+- ``backing_mode``: ``persistent``
+- ``backing_sharing``: ``sharingnone``
+
+For instance:
+
+.. code-block:: bash
+
+    vss-cli compute vm set vm-1233 disk mk --disk 100 --disk 100=independent_persistent
+
+Or in particular use cases, there could be a need for a ``sharingmultiwriter``
+sharing mode:
+
+.. code-block:: bash
+
+    vss-cli compute vm set vm-1233 disk mk --disk 100=persistent=sharingmultiwriter
+
 
 Remove
 ------

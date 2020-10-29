@@ -95,7 +95,7 @@ as follows:
 
     Usage: vss-cli compute vm mk from-image [OPTIONS] [NAME]
 
-      Deploy virtual machine from image
+      Deploy virtual machine from image.
 
     Options:
       -s, --source TEXT               Source Virtual Machine OVA/OVF id, name or
@@ -117,7 +117,11 @@ as follows:
       -f, --folder TEXT               Logical folder moref name or path.
                                       [required]
 
-      -i, --disk INTEGER              Disks in GB.  [required]
+      -i, --disk TEXT                 Disk spec
+                                      <capacity>=<backing_mode>=<backing_sharing>.
+                                      optional: backing_mode, backing_sharing
+                                      [required]
+
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
                                       [required]
 

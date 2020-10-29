@@ -86,7 +86,7 @@ Or you can submit multiple folder creation for a given folder, for instance:
 
 .. code-block:: bash
 
-    vss-cli compute folder mk --wait --parent group-v8900 QA DEV PROD UAT 
+    vss-cli --wait compute folder mk --parent group-v8900 QA DEV PROD UAT
 
     id  status     task_id                               message
     ----  ---------  ------------------------------------  ----------------------------------------
@@ -165,14 +165,13 @@ for instance:
 
         Options:
         -m, --max-del INTEGER RANGE  Maximum items to delete  [default: 3]
-        --wait                       wait for request to complete
         --help                       Show this message and exit.
 
 To delete multiple folders and wait for requests to complete, execute the following command:
 
 .. code-block:: bash
 
-    vss-cli compute folder rm --wait Folder1 Folder2
+    vss-cli --wait compute folder rm Folder1 Folder2
 
     id  status     task_id                               message
     ----  ---------  ------------------------------------  ----------------------------------------

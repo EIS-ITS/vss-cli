@@ -125,6 +125,19 @@ def virtual_machines(
     )
 
 
+def vm_controller_scsi_sharing(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM controller SCSI types."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_scsi_sharing,
+        incomplete,
+        ['type', 'description'],
+        f_kwargs={'only_type': False},
+    )
+
+
 def vm_controller_scsi_types(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -145,6 +158,19 @@ def vm_disk_backing_modes(
     _init_ctx(ctx)
     return _autocomplete(
         ctx.client.get_supported_disk_backing_modes,
+        incomplete,
+        ['type', 'description'],
+        f_kwargs={'only_type': False},
+    )
+
+
+def vm_disk_sharing(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM Disk Backing Modes."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_disk_sharing,
         incomplete,
         ['type', 'description'],
         f_kwargs={'only_type': False},

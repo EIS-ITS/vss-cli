@@ -1,5 +1,6 @@
 """Compute Template plugin for VSS CLI (vss-cli)."""
 import logging
+from typing import List
 
 import click
 
@@ -38,10 +39,9 @@ def compute_template(ctx):
     autocompletion=autocompletion.virtual_machines,
 )
 @so.max_del_opt
-@so.wait_opt
 @pass_context
 def compute_template_rm(
-    ctx: Configuration, vm_id: list, max_del: int, show_info: bool, wait: bool,
+    ctx: Configuration, vm_id: List[str], max_del: int, show_info: bool,
 ):
     """Delete a list of virtual machine template ids.
 
@@ -80,7 +80,7 @@ def compute_template_rm(
         ctx.echo(
             format_output(ctx, objs, columns=columns, single=len(objs) == 1)
         )
-        if wait:
+        if ctx.wait_for_requests:
             if len(objs) > 1:
                 ctx.wait_for_requests_to(objs, in_multiple=True)
             else:

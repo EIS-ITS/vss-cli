@@ -67,13 +67,11 @@ def compute_folder_ls(ctx: Configuration, filter_by, show_all, sort, page):
 @click.argument(
     'moref_or_name', type=click.STRING, autocompletion=autocompletion.domains
 )
-@so.wait_opt
 @pass_context
-def compute_folder_set(ctx, moref_or_name: str, wait: bool):
+def compute_folder_set(ctx, moref_or_name: str):
     """Update given folder attribute."""
     _folder = ctx.get_folder_by_name_or_moref_path(moref_or_name)
     ctx.moref = _folder[0]['moref']
-    ctx.wait = wait
 
 
 @compute_folder_set.command('parent', short_help='move folder')
@@ -97,7 +95,7 @@ def compute_folder_set_parent(ctx: Configuration, parent_name_or_moref):
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
-    if ctx.wait:
+    if ctx.wait_for_requests:
         ctx.wait_for_request_to(obj)
 
 
@@ -119,7 +117,7 @@ def compute_folder_set_name(ctx: Configuration, name):
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
-    if ctx.wait:
+    if ctx.wait_for_requests:
         ctx.wait_for_request_to(obj)
 
 
@@ -132,11 +130,8 @@ def compute_folder_set_name(ctx: Configuration, name):
     autocompletion=autocompletion.folders,
 )
 @so.max_del_opt
-@so.wait_opt
 @pass_context
-def compute_folder_rm(
-    ctx: Configuration, moref: str, max_del: int, wait: bool
-):
+def compute_folder_rm(ctx: Configuration, moref: str, max_del: int):
     """Delete a logical folder.
 
     Note. Folder must be empty.
@@ -160,7 +155,7 @@ def compute_folder_rm(
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, objs, columns=columns, single=len(objs) == 1))
-    if wait:
+    if ctx.wait_for_requests:
         if len(objs) > 1:
             ctx.wait_for_requests_to(objs, in_multiple=True)
         else:
@@ -179,9 +174,8 @@ def compute_folder_rm(
     help='Parent folder name, path or moref',
     autocompletion=autocompletion.folders,
 )
-@so.wait_opt
 @pass_context
-def compute_folder_mk(ctx: Configuration, parent, name: list, wait: bool):
+def compute_folder_mk(ctx: Configuration, parent, name: list):
     """Create a logical folder under a given name, path or moref of parent."""
     _LOGGING.debug(f'Attempting to create {name} under {parent}')
     # exist folder
@@ -193,7 +187,7 @@ def compute_folder_mk(ctx: Configuration, parent, name: list, wait: bool):
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, objs, columns=columns, single=len(objs) == 1))
-    if wait:
+    if ctx.wait_for_requests:
         if len(objs) > 1:
             ctx.wait_for_requests_to(objs, in_multiple=True)
         else:

@@ -114,22 +114,6 @@ folder_opt = click.option(
     required=True,
     autocompletion=autocompletion.folders,
 )
-disks_nr_opt = click.option(
-    '--disk',
-    '-i',
-    help='Virtual disks in GB.',
-    type=click.INT,
-    multiple=True,
-    required=False,
-)
-disks_opt = click.option(
-    '--disk',
-    '-i',
-    help='Disks in GB.',
-    type=click.INT,
-    multiple=True,
-    required=True,
-)
 networks_nr_opt = click.option(
     '--net',
     '-n',
@@ -149,6 +133,36 @@ networks_opt = click.option(
     required=True,
     callback=callbacks.process_networks_opt,
     autocompletion=autocompletion.networks,
+)
+scsi_ctrllr_opt = click.option(
+    '--scsi',
+    '-s',
+    help='SCSI Controller <type>=<sharing>.',
+    type=click.STRING,
+    multiple=True,
+    required=True,
+    callback=callbacks.process_scsi_opt,
+    autocompletion=autocompletion.vm_controller_scsi_types,
+)
+disks_nr_opt = click.option(
+    '--disk',
+    '-i',
+    help='Disk spec <capacity>=<backing_mode>=<backing_sharing>. '
+    'optional: backing_mode, backing_sharing',
+    type=click.STRING,
+    multiple=True,
+    required=False,
+    callback=callbacks.process_disk_opt,
+)
+disk_opt = click.option(
+    '--disk',
+    '-i',
+    help='Disk spec <capacity>=<backing_mode>=<backing_sharing>. '
+    'optional: backing_mode, backing_sharing',
+    type=click.STRING,
+    multiple=True,
+    required=True,
+    callback=callbacks.process_disk_opt,
 )
 domain_opt = click.option(
     '--domain',

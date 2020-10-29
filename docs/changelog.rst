@@ -2,6 +2,33 @@
 Changelog 📝
 ============
 
+`v0.9.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.9.0>`_ (2020-10-29)
+----------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#358 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/358>`_: ``core``: ``pyvss`` v0.15.1 -> v0.16.0.
+- `#359 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/359>`_: ``compute vm set controller scsi up --sharing``: updates SCSI sharing mode.
+- `#360 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/360>`_: ``compute vm set disk up --sharing``: updates Disk sharing mode.
+- `#361 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/361>`_: ``compute vm set controller scsi mk --scsi``: create SCSI controller with new spec ``<type>=<sharing>``.
+- `#362 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/362>`_: ``compute vm set disk mk --disk``: create Disk with new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
+- `#363 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/363>`_: ``compute vm mk shell``: create VM with Disks using new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
+- `#363 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/363>`_: ``compute vm mk from-clone``: create VM with Disks using new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
+- `#363 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/363>`_: ``compute vm mk from-file``: create VM with Disks using new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
+- `#363 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/363>`_: ``compute vm mk from-image``: create VM with Disks using new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
+- `#363 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/363>`_: ``compute vm mk from-template``: create VM with Disks using new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``--wait/--no-wait``: add option to the main cli instead of per sub-command that submits requests. Also available with ``VSS_WAIT_FOR_REQUESTS``.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``config set``: add ``wait_for_requests`` option in general settings in configuration file.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``compute vm set``: remove ``--wait/--no-wait`` option.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``compute vm mk``: remove ``--wait/--no-wait`` option.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``compute vm rm``: remove ``--wait/--no-wait`` option.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``compute template rm``: remove ``--wait/--no-wait`` option.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``compute folder set``: remove ``--wait/--no-wait`` option.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``compute folder mk``: remove ``--wait/--no-wait`` option.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``compute folder rm``: remove ``--wait/--no-wait`` option.
+- `#364 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/364>`_: ``compute inventory mk``: remove ``--wait/--no-wait`` option.
+
+
 `v0.8.4 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.8.4>`_: (2020-09-25)
 --------------------------------------------------------------------------------------
 

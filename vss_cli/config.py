@@ -66,6 +66,7 @@ class Configuration(VssManager):
         self.config_path = None  # type: Optional[str]
         self.check_for_updates = None  # type: Optional[bool]
         self.check_for_messages = None  # type: Optional[bool]
+        self.wait_for_requests = None  # type: Optional[bool]
         self.config_file = None  # type: Optional[ConfigFile]
         self.spinner = spinner
         self.wait = None  # type: Optional[bool]
@@ -987,6 +988,44 @@ class Configuration(VssManager):
             self.get_images, name_or_path_or_id
         )
 
+    def _get_types_by_name(self, name: Union[str, int], types_f):
+        g_types = types_f(only_type=False)
+        attributes = [('type', str)]
+        objs = self._filter_objects_by_attrs(str(name), g_types, attributes)
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(f'{name} could not be found')
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(
+                objs,
+                options=[
+                    f"{i['type']} - {i['description'][:100]}..." for i in objs
+                ],
+            )
+        return objs
+
+    def get_vm_scsi_type_by_name(self, name: Union[str, int]):
+        """Get SCSI type by name."""
+        return self._get_types_by_name(
+            name, self.get_supported_scsi_controllers
+        )
+
+    def get_vm_scsi_sharing_by_name(self, name: Union[str, int]):
+        """Get SCSI sharing by name."""
+        return self._get_types_by_name(name, self.get_supported_scsi_sharing)
+
+    def get_vm_disk_backing_mode_by_name(self, name: Union[str, int]):
+        """Get Disk Backing Mode by name."""
+        return self._get_types_by_name(
+            name, self.get_supported_disk_backing_modes
+        )
+
+    def get_vm_disk_backing_sharing_by_name(self, name: Union[str, int]):
+        """Get Disk Sharing Mode by name."""
+        return self._get_types_by_name(name, self.get_supported_disk_sharing)
+
     def get_vm_nic_type_by_name(self, name: Union[str, int]):
         """Get VM NIC type by name."""
         g_types = self.get_supported_nic_types(only_type=False)
@@ -1072,6 +1111,22 @@ class Configuration(VssManager):
                         'type': n['type'],
                     }
                     for n in networking_section['interfaces']
+                ]
+                spec_payload['disks'] = [
+                    {
+                        "capacity_gb": d['capacity_gb'],
+                        "backing_mode": self.get_vm_disk_backing_mode_by_name(
+                            d['backing_mode']
+                        )
+                        if d.get('backing_mode')
+                        else 'persistent',
+                        "backing_sharing": self.get_vm_disk_backing_sharing_by_name(  # NOQA:
+                            d['backing_sharing']
+                        )
+                        if d.get('backing_sharing')
+                        else 'sharingnone',
+                    }
+                    for d in machine_section['disks']
                 ]
                 # other
                 machine_section['high_io'] = machine_section.get(

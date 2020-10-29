@@ -76,21 +76,18 @@ def compute_inventory_dl(ctx: Configuration, request_id, directory, launch):
     show_default=True,
 )
 @click.option('-a', '--all', is_flag=True, help='include all attributes')
-@so.wait_opt
 @pass_context
 def compute_inventory_mk(
     ctx: Configuration,
     fmt: str,
     all: bool,
     attribute: List[str],
-    wait: bool,
     transfer: bool,
 ):
     """Submit an inventory report request.
 
     Generate report file in JSON or CSV format of your virtual machines.
     """
-    ctx.wait = wait
     attributes = ctx.get_inventory_properties() if all else list(attribute)
     obj = ctx.create_inventory_file(
         fmt=fmt, props=attributes, transfer=transfer
@@ -102,7 +99,7 @@ def compute_inventory_mk(
         )
     )
     # wait for request
-    if ctx.wait:
+    if ctx.wait_for_requests:
         ctx.wait_for_request_to(obj)
         if click.confirm('Would you like to download?'):
             ctx.download_inventory_file(obj['request']['id'], '')

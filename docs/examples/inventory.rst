@@ -45,7 +45,6 @@ following options area available:
       --transfer / --no-transfer  Transfer report to personal store  [default:
                                   False]
       -a, --all                   include all attributes
-      --wait                      wait for request to complete
       --help                      Show this message and exit.
 
 
@@ -131,7 +130,7 @@ for the request complete and prompt for downloading the file as follows:
 
 .. code-block:: bash
 
-    vss-cli compute inventory mk memory provisionedSpace folder domain --fmt=csv --wait
+    vss-cli --wait  compute inventory mk memory provisionedSpace folder domain --fmt=csv
 
     id                  : 0000
     status              : SUBMITTED

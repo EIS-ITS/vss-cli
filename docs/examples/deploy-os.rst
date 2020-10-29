@@ -152,7 +152,7 @@ command takes:
 
     Usage: vss-cli compute vm mk shell [OPTIONS] NAME
 
-      Create a new virtual machine with no operating system pre-installed.
+      Create a new VM with no operating system pre-installed.
 
     Options:
       -d, --description TEXT          A brief description.  [required]
@@ -171,7 +171,11 @@ command takes:
       -f, --folder TEXT               Logical folder moref name or path.
                                       [required]
 
-      -i, --disk INTEGER              Disks in GB.  [required]
+      -i, --disk TEXT                 Disk spec
+                                      <capacity>=<backing_mode>=<backing_sharing>.
+                                      optional: backing_mode, backing_sharing
+                                      [required]
+
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
                                       [required]
 
@@ -187,13 +191,14 @@ command takes:
 
 
 Now that we have everything, proceed to deploy a new virtual machine with 1GB of memory,
-1 vCPU, 20GB disk and a tag Project:CMS as follows:
+1 vCPU, 20GB disk and 100GB disk (``independent_persistent``: not affected by snapshots)
+and a tag ``Project:CMS`` as follows:
 
 .. code-block:: bash
 
     vss-cli compute vm mk --wait shell --power-on --description 'NGINX web server' --client EIS \
-    --os centos8 --memory 1 --cpu 1 --folder APIDemo --disk 20 --net VSS --iso centos \
-    --notes 'Project: CMS' Frontend3
+    --os centos8 --memory 1 --cpu 1 --folder APIDemo --disk 20 --disk 100=independent_persistent \
+    --net VSS --iso centos --notes 'Project: CMS' Frontend3
 
 .. note::
 

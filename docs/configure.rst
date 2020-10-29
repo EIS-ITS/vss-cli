@@ -42,6 +42,7 @@ on Windows. The configuration file holds general settings configuration
         check_for_updates: yes
         check_for_messages: yes
         columns_width: 0
+        wait_for_requests: false
 
     endpoints:
         - name: cloud-api
@@ -88,6 +89,9 @@ The following table summarizes the **general** area configuration parameters
 +---------------------------+--------+--------------------------------------+
 |      ``columns_width``    | int    | ``0`` to auto. ``-1`` to disable or  |
 |                           |        | any other positive number.           |
++---------------------------+--------+--------------------------------------+
+|  ``wait_for_requests``    | bool   | If set to true, will wait for request|
+|                           |        | to complete.                         |
 +---------------------------+--------+--------------------------------------+
 
 Edit Configuration
@@ -146,7 +150,10 @@ command as follows:
 
     Usage: vss-cli configure set [OPTIONS] [check_for_messages|check_for_updates|d
                                  ebug|verbose|default_endpoint_name|output|table_f
-                                 ormat|timeout|columns_width] VALUE
+                                 ormat|timeout|columns_width|wait_for_requests]
+                                 VALUE
+
+      Set configuration attribute in the general section.
 
     Options:
       --help  Show this message and exit.
@@ -169,9 +176,10 @@ Or disable ``columns_width`` calculation:
     /Users/username/.vss-cli/config.yaml updated 💾
 
 
-Boolean values for ``check_for_updates``, ``verbose``, ``debug``, etc.
-can be enabled (``true``) by using any of the following values
-"yes", "true", "t", "1", "y", everything else is taken as ``false``.
+Boolean values for ``check_for_updates``, ``verbose``, ``debug``,
+and ``wait_for_requests`` etc. can be enabled (``true``) by using any
+of the following values "yes", "true", "t", "1", "y", everything else
+is taken as ``false``.
 
 .. code-block:: bash
 
@@ -253,35 +261,38 @@ Environment Variables
 The following table summarizes the environment variables
 supported by the ``vss-cli``:
 
-+------------------+--------------------------------------+
-| Name             | Description                          |
-+==================+======================================+
-| VSS_ENDPOINT     | Cloud API endpoint URL or endpoint   |
-|                  | name defined in configuration file.  |
-+------------------+--------------------------------------+
-| VSS_TIMEOUT      | Timeout for network operations.      |
-+------------------+--------------------------------------+
-| VSS_USER         | Default Username to use for          |
-|                  | generating an access token.          |
-|                  | Token will not persist.              |
-+------------------+--------------------------------------+
-| VSS_USER_PASS    | Default username password for        |
-|                  | generating an access token.          |
-|                  | Token will not persist.              |
-+------------------+--------------------------------------+
-| VSS_TOKEN        | Manually generated Cloud API Token.  |
-+------------------+--------------------------------------+
-| VSS_CONFIG       | Relative or full path to non-standard|
-|                  | location to configuration file.      |
-+------------------+--------------------------------------+
-| VSS_OUTPUT       | Output format. Either ``yaml``,      |
-|                  | ``table`` or ``json``.               |
-+------------------+--------------------------------------+
-| VSS_TABLE        | Table format to be used by tabulate. |
-+------------------+--------------------------------------+
-| VSS_COL_WIDTH    | ``0`` to auto. ``-1`` to disable or  |
-|                  | any other positive number.           |
-+------------------+--------------------------------------+
++-----------------------+--------------------------------------+
+| Name                  | Description                          |
++=======================+======================================+
+| VSS_ENDPOINT          | Cloud API endpoint URL or endpoint   |
+|                       | name defined in configuration file.  |
++-----------------------+--------------------------------------+
+| VSS_TIMEOUT           | Timeout for network operations.      |
++-----------------------+--------------------------------------+
+| VSS_USER              | Default Username to use for          |
+|                       | generating an access token.          |
+|                       | Token will not persist.              |
++-----------------------+--------------------------------------+
+| VSS_USER_PASS         | Default username password for        |
+|                       | generating an access token.          |
+|                       | Token will not persist.              |
++-----------------------+--------------------------------------+
+| VSS_TOKEN             | Manually generated Cloud API Token.  |
++-----------------------+--------------------------------------+
+| VSS_CONFIG            | Relative or full path to non-standard|
+|                       | location to configuration file.      |
++-----------------------+--------------------------------------+
+| VSS_OUTPUT            | Output format. Either ``yaml``,      |
+|                       | ``table`` or ``json``.               |
++-----------------------+--------------------------------------+
+| VSS_TABLE             | Table format to be used by tabulate. |
++-----------------------+--------------------------------------+
+| VSS_COL_WIDTH         | ``0`` to auto. ``-1`` to disable or  |
+|                       | any other positive number.           |
++-----------------------+--------------------------------------+
+| VSS_WAIT_FOR_REQUESTS | If set to true, will wait for request|
+|                       | to complete.                         |
++-----------------------+--------------------------------------+
 
 If you would like to have a stateless configuration, set ``VSS_USER``
 and ``VSS_USER_PASS`` or ``VSS_TOKEN`` with a token generated manually:
@@ -327,6 +338,8 @@ supported by the ``vss-cli``:
 | ``--columns``             | Custom columns key=value list.                |
 +---------------------------+-----------------------------------------------+
 | ``--columns-width``       | Truncates column values (0: auto, -1: disable)|
++---------------------------+-----------------------------------------------+
+| ``--wait / --no-wait``    |  Wait for request(s) to complete              |
 +---------------------------+-----------------------------------------------+
 
 The ``vss-cli`` configuration file can be configured using a mix
