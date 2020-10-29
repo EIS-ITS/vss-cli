@@ -2522,24 +2522,15 @@ def compute_vm_set_controller_scsi(ctx: Configuration):
 @compute_vm_set_controller_scsi.command(
     'mk', short_help='Create SCSI controller(s)'
 )
-@click.option(
-    '-t',
-    '--scsi-type',
-    required=True,
-    multiple=True,
-    autocompletion=autocompletion.vm_controller_scsi_types,
-    default='paravirtual',
-    help='Type of SCSI Controllers.',
-    show_default=True,
-)
+@c_so.scsi_ctrllr_opt
 @pass_context
-def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
+def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi):
     """Create virtual machine SCSI controllers.
 
     vss-cli compute vm set <name-or-vm_id> controller scsi mk
-    -t paravirtual -t lsilogic
+    -s paravirtual=virtualsharing -s paravirtual
     """
-    payload = dict(vm_id=ctx.moref, types=scsi_type)
+    payload = dict(vm_id=ctx.moref, devices=scsi)
     # add common options
     payload.update(ctx.payload_options)
     # request

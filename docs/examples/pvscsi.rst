@@ -50,7 +50,7 @@ the **ITS Private Cloud**.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-vm-id> controller scsi mk -t paravirtual
+    vss-cli compute vm set <vm-name-or-vm-id> controller scsi mk -s paravirtual
 
 4. Verify that a new SCSI controller has been created.
 
@@ -165,7 +165,7 @@ based Virtual Machine running on the **ITS Private Cloud** [3]_.
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait <vm-name-or-vm-id> controller scsi mk -t paravirtual
+    vss-cli compute vm set --wait <vm-name-or-vm-id> controller scsi mk -s paravirtual
 
 4. Verify that a new SCSI controller has been created.
 

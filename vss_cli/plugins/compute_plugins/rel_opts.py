@@ -150,6 +150,16 @@ networks_opt = click.option(
     callback=callbacks.process_networks_opt,
     autocompletion=autocompletion.networks,
 )
+scsi_ctrllr_opt = click.option(
+    '--scsi',
+    '-s',
+    help='SCSI Controller <type>=<sharing>.',
+    type=click.STRING,
+    multiple=True,
+    required=True,
+    callback=callbacks.process_scsi_opt,
+    autocompletion=autocompletion.vm_controller_scsi_types,
+)
 domain_opt = click.option(
     '--domain',
     '-t',
