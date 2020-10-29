@@ -52,11 +52,11 @@ Then update the **template** state by running
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait $MOREF template --on
+    vss-cli --wait compute vm set $MOREF template --on
 
     # or
 
-    vss-cli compute vm set --wait Front template --on
+    vss-cli --wait compute vm set Front template --on
 
 Once the request has been processed, verify the **template** state:
 

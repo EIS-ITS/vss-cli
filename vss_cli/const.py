@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.9.0-dev5"
+__version__ = "0.9.0-dev6"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -58,6 +58,7 @@ GENERAL_SETTINGS = {
     "table_format": str,
     "timeout": int,
     "columns_width": int,
+    "wait_for_requests": bool,
 }
 
 DEFAULT_HOST_REGEX = (

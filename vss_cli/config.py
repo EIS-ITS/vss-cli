@@ -66,6 +66,7 @@ class Configuration(VssManager):
         self.config_path = None  # type: Optional[str]
         self.check_for_updates = None  # type: Optional[bool]
         self.check_for_messages = None  # type: Optional[bool]
+        self.wait_for_requests = None  # type: Optional[bool]
         self.config_file = None  # type: Optional[ConfigFile]
         self.spinner = spinner
         self.wait = None  # type: Optional[bool]

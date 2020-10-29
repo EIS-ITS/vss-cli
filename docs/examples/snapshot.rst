@@ -119,7 +119,7 @@ snapshot starting from ``2020-04-27 16:53`` and valid until ``2017-03-15 22:30``
 
 .. code-block:: bash
 
-    vss-cli compute vm set --wait vm-123 snapshot mk \
+    vss-cli --wait  compute vm set vm-123 snapshot mk \
     --description 'Before doing a difficult upgrade' --timestamp '2020-04-27 16:53'
     --consolidate
 

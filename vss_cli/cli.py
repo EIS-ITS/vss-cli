@@ -203,6 +203,14 @@ def _default_token() -> Optional[str]:
     help='Truncates column values (0: auto, -1: disable).',
 )
 @click.option(
+    '--wait/--no-wait',
+    is_flag=True,
+    help='wait for request(s) to complete',
+    default=None,
+    envvar='VSS_WAIT_FOR_REQUESTS',
+    show_default=True,
+)
+@click.option(
     '-n',
     '--no-headers',
     default=False,
@@ -239,6 +247,7 @@ def cli(
     no_headers: bool,
     table_format: str,
     sort_by: Optional[str],
+    wait: Optional[bool],
 ):
     """Command line interface for the ITS Private Cloud."""
     ctx.verbose = verbose
@@ -256,5 +265,6 @@ def cli(
     ctx.no_headers = no_headers
     ctx.table_format = table_format
     ctx.sort_by = sort_by  # type: ignore
+    ctx.wait_for_requests = wait
 
     _LOGGER.debug(f"Using settings: {ctx}")

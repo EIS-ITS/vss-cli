@@ -10,6 +10,7 @@ general:
     table_format: simple
     check_for_updates: true
     check_for_messages: true
+    wait_for_requests: false
 
 endpoints:
     - name: cloud-api
