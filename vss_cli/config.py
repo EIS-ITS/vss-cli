@@ -1015,6 +1015,16 @@ class Configuration(VssManager):
         """Get SCSI sharing by name."""
         return self._get_types_by_name(name, self.get_supported_scsi_sharing)
 
+    def get_vm_disk_backing_mode_by_name(self, name: Union[str, int]):
+        """Get Disk Backing Mode by name."""
+        return self._get_types_by_name(
+            name, self.get_supported_disk_backing_modes
+        )
+
+    def get_vm_disk_backing_sharing_by_name(self, name: Union[str, int]):
+        """Get Disk Sharing Mode by name."""
+        return self._get_types_by_name(name, self.get_supported_disk_sharing)
+
     def get_vm_nic_type_by_name(self, name: Union[str, int]):
         """Get VM NIC type by name."""
         g_types = self.get_supported_nic_types(only_type=False)

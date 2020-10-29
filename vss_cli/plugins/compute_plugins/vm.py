@@ -1356,21 +1356,20 @@ def compute_vm_set_disk(ctx: Configuration):
 
 
 @compute_vm_set_disk.command('mk', short_help='Create disk(s)')
-@click.option(
-    '-c',
-    '--capacity',
-    type=click.INT,
-    required=True,
-    multiple=True,
-    help='Create given disk(s) capacity in GB.',
-)
+@c_so.disk_opt
 @pass_context
-def compute_vm_set_disk_mk(ctx: Configuration, capacity):
+def compute_vm_set_disk_mk(ctx: Configuration, disk):
     """Create virtual machine disk.
 
-    vss-cli compute vm set <name-or-vm_id> disk mk -c 10 -c 40
+    vss-cli compute vm set <name-or-vm_id> disk mk
+    -i <capacity>=<backing_mode>=<backing_sharing>
+
+    vss-cli compute vm set <name-or-vm_id> disk mk -i 10 -i 40
+
+    vss-cli compute vm set <name-or-vm_id> disk mk -i 10
+    -i 100=independent_persistent
     """
-    payload = dict(vm_id=ctx.moref, values_in_gb=capacity)
+    payload = dict(vm_id=ctx.moref, disks=disk)
     # add common options
     payload.update(ctx.payload_options)
     # request

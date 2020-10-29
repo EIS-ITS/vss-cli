@@ -160,6 +160,16 @@ scsi_ctrllr_opt = click.option(
     callback=callbacks.process_scsi_opt,
     autocompletion=autocompletion.vm_controller_scsi_types,
 )
+disk_opt = click.option(
+    '--disk',
+    '-i',
+    help='Disk spec <capacity>=<backing_mode>=<backing_sharing>. '
+    'optional: backing_mode, backing_sharing',
+    type=click.STRING,
+    multiple=True,
+    required=True,
+    callback=callbacks.process_disk_opt,
+)
 domain_opt = click.option(
     '--domain',
     '-t',
