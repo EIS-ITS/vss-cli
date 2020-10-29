@@ -3008,7 +3008,7 @@ def compute_vm_mk_spec(
 @c_so.memory_opt
 @c_so.cpu_opt
 @c_so.folder_opt
-@c_so.disks_opt
+@c_so.disk_opt
 @c_so.networks_opt
 @c_so.domain_opt
 @c_so.notes_opt
@@ -3059,7 +3059,7 @@ def compute_vm_mk_shell(
     if cpu:
         payload['cpu'] = cpu
     if disk:
-        payload['disks'] = list(disk)
+        payload['disks'] = disk
     if net:
         payload['networks'] = net
     if os:
@@ -3360,7 +3360,7 @@ def compute_vm_mk_clone(
 @c_so.memory_opt
 @c_so.cpu_opt
 @c_so.folder_opt
-@c_so.disks_opt
+@c_so.disk_opt
 @c_so.networks_opt
 @c_so.domain_opt
 @c_so.notes_opt
@@ -3411,7 +3411,7 @@ def compute_vm_mk_image(
     if cpu:
         payload['cpu'] = cpu
     if disk:
-        payload['disks'] = list(disk)
+        payload['disks'] = disk
     if net:
         payload['networks'] = net
     if os:

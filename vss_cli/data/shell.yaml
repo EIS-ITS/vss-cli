@@ -9,7 +9,9 @@ machine:
   memory: 1               # Optional: Memory in GB (Default: 1GB).
   folder: Name-or-Id      # Required: Folder name, path or ID.
   disks:
-    - 40                  # Optional: Disk capacity in GB (Default: 40GB).
+    - capacity: 40              # Disk capacity in GB (Default: 40GB).
+      backing_mode: persistent  # Optional Disk backing mode (Default: persistent).
+      backing_sharing: sharingnone  # Optional Disk sharing mode (Default: sharingnone).
   iso: CentOS             # Optional: ISO name or path to mount upon creation.
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).

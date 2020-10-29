@@ -61,8 +61,10 @@ arguments and options required:
 
     Usage: vss-cli compute vm mk from-clone [OPTIONS] [NAME]
 
-      Clone virtual machine from running or powered off vm. If name argument is
-      not specified, -clone suffix will be added to resulting virtual machine
+      Clone virtual machine from running or powered off vm.
+
+      If name argument is not specified, -clone suffix will be added to
+      resulting virtual machine.
 
     Options:
       -s, --source TEXT               Source virtual machine or template MOREF or
@@ -82,7 +84,10 @@ arguments and options required:
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
       -f, --folder TEXT               Logical folder moref name or path.
-      -i, --disk INTEGER              Virtual disks in GB.
+      -i, --disk TEXT                 Disk spec
+                                      <capacity>=<backing_mode>=<backing_sharing>.
+                                      optional: backing_mode, backing_sharing
+
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
       -t, --domain TEXT               Target fault domain name or moref.
       --notes TEXT                    Custom notes.
@@ -94,7 +99,7 @@ arguments and options required:
       --vss-service TEXT              VSS Service related to VM
       --instances INTEGER             Number of instances to deploy  [default: 1]
       --help                          Show this message and exit.
-                        Show this message and exit.
+
 
 
 Network

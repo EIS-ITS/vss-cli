@@ -84,7 +84,7 @@ list of arguments and options required:
 
     Usage: vss-cli compute vm mk from-template [OPTIONS] [NAME]
 
-      Deploy virtual machine from template
+      Deploy virtual machine from template.
 
     Options:
       -s, --source TEXT               Source virtual machine or template MOREF or
@@ -104,7 +104,10 @@ list of arguments and options required:
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
       -f, --folder TEXT               Logical folder moref name or path.
-      -i, --disk INTEGER              Virtual disks in GB.
+      -i, --disk TEXT                 Disk spec
+                                      <capacity>=<backing_mode>=<backing_sharing>.
+                                      optional: backing_mode, backing_sharing
+
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
       -t, --domain TEXT               Target fault domain name or moref.
       --notes TEXT                    Custom notes.

@@ -1111,6 +1111,22 @@ class Configuration(VssManager):
                     }
                     for n in networking_section['interfaces']
                 ]
+                spec_payload['disks'] = [
+                    {
+                        "capacity_gb": d['capacity_gb'],
+                        "backing_mode": self.get_vm_disk_backing_mode_by_name(
+                            d['backing_mode']
+                        )
+                        if d.get('backing_mode')
+                        else 'persistent',
+                        "backing_sharing": self.get_vm_disk_backing_sharing_by_name(  # NOQA:
+                            d['backing_sharing']
+                        )
+                        if d.get('backing_sharing')
+                        else 'sharingnone',
+                    }
+                    for d in machine_section['disks']
+                ]
                 # other
                 machine_section['high_io'] = machine_section.get(
                     'high_io', False

@@ -54,7 +54,6 @@ def process_disk_opt(ctx: Configuration, param, value):
         _sharing_mode = 'sharingnone'
         for dev in value:
             _dev = to_tuples(dev)[0]
-            print(_dev)
             try:
                 _capacity = int(_dev[0])
             except ValueError:
