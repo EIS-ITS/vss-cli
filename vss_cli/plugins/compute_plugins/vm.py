@@ -1383,7 +1383,7 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set_disk.command('up', short_help='Update disk capacity')
+@compute_vm_set_disk.command('up', short_help='Update disk settings')
 @click.argument('unit', type=click.INT, required=True)
 @click.option(
     '-c',
@@ -1405,15 +1405,26 @@ def compute_vm_set_disk_mk(ctx: Configuration, capacity):
     autocompletion=autocompletion.vm_disk_backing_modes,
     help='Update disk backing mode default [persistent]',
 )
+@click.option(
+    '-r',
+    '--sharing',
+    autocompletion=autocompletion.vm_disk_sharing,
+    help='Update disk sharing mode default [sharingnone]',
+)
 @pass_context
 def compute_vm_set_disk_up(
-    ctx: Configuration, unit, capacity, scsi, backing_mode
+    ctx: Configuration, unit, capacity, scsi, backing_mode, sharing
 ):
     """Update virtual machine disk capacity.
 
     vss-cli compute vm set <name-or-vm_id> disk up --capacity 30 <unit>
 
     vss-cli compute vm set <name-or-vm_id> disk up --scsi=<bus> <unit>
+
+    vss-cli compute vm set <name-or-vm_id> disk up
+    --backing-mode=independent_persistent <unit>
+
+    vss-cli compute vm set <name-or-vm_id> disk up --sharing=<mode> <unit>
     """
     payload = dict(vm_id=ctx.moref, disk=unit)
     # add common options
@@ -1428,9 +1439,14 @@ def compute_vm_set_disk_up(
     elif backing_mode is not None:
         payload['mode'] = backing_mode
         obj = ctx.update_vm_disk_backing_mode(**payload)
+    elif sharing is not None:
+        payload['sharing'] = sharing
+        obj = ctx.update_vm_disk_backing_sharing(**payload)
     else:
         raise click.BadOptionUsage(
-            '', 'Either -c/--capacity or -s/--scsi is required.'
+            '',
+            'Either -c/--capacity or -s/--scsi '
+            'or -m/--backing-mode or -r/--sharing is required.',
         )
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
@@ -2545,18 +2561,18 @@ def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
     '--scsi-type',
     autocompletion=autocompletion.vm_controller_scsi_types,
     required=False,
-    help='Type of SCSI Controllers.',
+    help='Type of SCSI Controller.',
 )
 @click.option(
-    '-t',
-    '--scsi-sharing',
+    '-s',
+    '--sharing',
     autocompletion=autocompletion.vm_controller_scsi_sharing,
     required=False,
-    help='Sharing mode of SCSI Controllers.',
+    help='Sharing mode of SCSI Controller.',
 )
 @pass_context
 def compute_vm_set_controller_scsi_up(
-    ctx: Configuration, bus_number, scsi_type, scsi_sharing
+    ctx: Configuration, bus_number, scsi_type, sharing
 ):
     """Update virtual machine SCSI controller type.
 
@@ -2573,15 +2589,15 @@ def compute_vm_set_controller_scsi_up(
     payload = dict(vm_id=ctx.moref, bus=bus_number)
     # add common options
     payload.update(ctx.payload_options)
-    if scsi_type:
+    if scsi_type is not None:
         payload['bus_type'] = scsi_type
         obj = ctx.update_vm_scsi_device_type(**payload)
-    elif scsi_sharing:
-        payload['sharing'] = scsi_sharing
+    elif sharing is not None:
+        payload['sharing'] = sharing
         obj = ctx.update_vm_scsi_device_sharing(**payload)
     else:
         raise click.BadOptionUsage(
-            '', 'Either -t/--scsi-type or -s/--scsi-sharing is required.'
+            '', 'Either -t/--scsi-type or -s/--sharing is required.'
         )
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED

@@ -164,6 +164,19 @@ def vm_disk_backing_modes(
     )
 
 
+def vm_disk_sharing(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM Disk Backing Modes."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_disk_sharing,
+        incomplete,
+        ['type', 'description'],
+        f_kwargs={'only_type': False},
+    )
+
+
 def domains(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
