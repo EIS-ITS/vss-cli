@@ -2544,26 +2544,45 @@ def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi_type):
     '-t',
     '--scsi-type',
     autocompletion=autocompletion.vm_controller_scsi_types,
-    required=True,
+    required=False,
     help='Type of SCSI Controllers.',
+)
+@click.option(
+    '-t',
+    '--scsi-sharing',
+    autocompletion=autocompletion.vm_controller_scsi_sharing,
+    required=False,
+    help='Sharing mode of SCSI Controllers.',
 )
 @pass_context
 def compute_vm_set_controller_scsi_up(
-    ctx: Configuration, bus_number, scsi_type
+    ctx: Configuration, bus_number, scsi_type, scsi_sharing
 ):
     """Update virtual machine SCSI controller type.
 
     vss-cli compute vm set <name-or-vm_id> controller scsi up
     <bus> -t paravirtual
+
+    vss-cli compute vm set <name-or-vm_id> controller scsi up
+    <bus> -s nosharing
     """
     # validate if unit exists
     bus = ctx.get_vm_scsi_device(ctx.moref, bus_number)
     if not bus:
         raise click.BadOptionUsage('', 'SCSI bus could not be found.')
-    payload = dict(vm_id=ctx.moref, bus=bus_number, bus_type=scsi_type)
+    payload = dict(vm_id=ctx.moref, bus=bus_number)
     # add common options
     payload.update(ctx.payload_options)
-    obj = ctx.update_vm_scsi_device_type(**payload)
+    if scsi_type:
+        payload['bus_type'] = scsi_type
+        obj = ctx.update_vm_scsi_device_type(**payload)
+    elif scsi_sharing:
+        payload['sharing'] = scsi_sharing
+        obj = ctx.update_vm_scsi_device_sharing(**payload)
+    else:
+        raise click.BadOptionUsage(
+            '', 'Either -t/--scsi-type or -s/--scsi-sharing is required.'
+        )
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
