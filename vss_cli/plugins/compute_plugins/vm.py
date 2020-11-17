@@ -14,9 +14,9 @@ from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
-from vss_cli.plugins.compute_plugins import rel_opts as c_so
+from vss_cli.plugins.compute_plugins import rel_args as c_sa, rel_opts as c_so
 from vss_cli.validators import (
-    process_options, validate_email, validate_json_type, validate_phone_number)
+    validate_email, validate_json_type, validate_phone_number)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -1205,13 +1205,7 @@ def compute_vm_set_extra_config(ctx: Configuration):
 @compute_vm_set_extra_config.command(
     'mk', short_help='Create guestInfo extra config entries.'
 )
-@click.argument(
-    'key-value',
-    type=click.STRING,
-    required=True,
-    nargs=-1,
-    callback=process_options,
-)
+@c_sa.extra_config_arg
 @pass_context
 def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
     """Create **guestinfo** interface extra configuration options.
@@ -1236,13 +1230,7 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
 @compute_vm_set_extra_config.command(
     'up', short_help='Update guestInfo extra config entries.'
 )
-@click.argument(
-    'key-value',
-    type=click.STRING,
-    required=True,
-    nargs=-1,
-    callback=process_options,
-)
+@c_sa.extra_config_arg
 @pass_context
 def compute_vm_set_extra_config_up(ctx: Configuration, key_value):
     """Update **guestinfo** interface extra configuration options.
@@ -1325,7 +1313,7 @@ def compute_vm_set_disk_mk(ctx: Configuration, disk):
     """Create virtual machine disk.
 
     vss-cli compute vm set <name-or-vm_id> disk mk
-    -i <capacity>=<backing_mode>=<backing_sharing>
+    -i <capacity>=<backing_mode>=<backing_sharing>=<backing_file>
 
     vss-cli compute vm set <name-or-vm_id> disk mk -i 10 -i 40
 

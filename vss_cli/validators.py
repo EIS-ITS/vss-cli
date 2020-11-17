@@ -6,21 +6,7 @@ from uuid import UUID
 
 import click
 
-from vss_cli.helper import to_tuples
-
 _LOGGING = logging.getLogger(__name__)
-
-
-def process_options(ctx, param, key_value):
-    """Process options."""
-    try:
-        _options = to_tuples(','.join(key_value))
-        options = [{opt[0]: opt[1]} for opt in _options]
-        _LOGGING.debug(f'_options={_options} -> options={options}')
-        return options
-    except Exception as ex:
-        _LOGGING.error(ex)
-        raise click.BadArgumentUsage('Argument must be key=value strings')
 
 
 def validate_phone_number(ctx, param, phone):

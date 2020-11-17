@@ -1,5 +1,7 @@
 """Compute Callback module for VSS CLI (vss-cli)."""
-from click.exceptions import BadParameter
+import json
+
+from click.exceptions import BadArgumentUsage, BadParameter
 
 from vss_cli.autocompletion import _init_ctx
 from vss_cli.config import Configuration
@@ -45,7 +47,16 @@ def process_scsi_opt(ctx: Configuration, param, value):
 def process_disk_opt(ctx: Configuration, param, value):
     """Process Disk spec option.
 
-    <capacity>=<backing_mode>=<backing_sharing>
+    <capacity>=<backing_mode>=<backing_sharing>=<backing_vmdk>
+
+     or
+
+    {
+     "capacity_gb": 100,
+     "backing_mode": "persistent",
+     "backing_sharing": "sharingnone",
+     "backing_vmdk": "[vssUser-xfers] vskey/user/disk-0.vmdk"
+    }
     """
     _init_ctx(ctx)
     if value is not None:
@@ -53,29 +64,77 @@ def process_disk_opt(ctx: Configuration, param, value):
         _backing_mode = 'persistent'
         _sharing_mode = 'sharingnone'
         for dev in value:
-            _dev = to_tuples(dev)[0]
+            disk = {}
             try:
-                _capacity = int(_dev[0])
+                _dev = json.loads(dev)
+                if not isinstance(_dev, dict):
+                    raise ValueError(
+                        'Must be an object with at least capacity_gb'
+                    )
+                is_json = True
+            except ValueError:
+                is_json = False
+                _dev = to_tuples(dev)[0]
+
+            try:
+                if is_json:
+                    _capacity = int(_dev['capacity_gb'])
+                else:
+                    _capacity = int(_dev[0])
+                disk['capacity_gb'] = _capacity
             except ValueError:
                 raise BadParameter('capacity must be a number')
-            # backing
-            if len(_dev) > 1:
-                _spec = to_tuples(_dev[1])[0]
-                if len(_spec) > 0:
+            if is_json:
+                if _dev.get('backing_mode'):
                     _backing_mode = ctx.client.get_vm_disk_backing_mode_by_name(  # NOQA:
-                        _spec[0]
+                        _dev.get('backing_mode')
                     )
                     _backing_mode = _backing_mode[0]['type']
-                if len(_spec) > 1:
-                    _sharing_mode = ctx.client.get_vm_disk_backing_sharing_by_name(  # NOQA
-                        _spec[1]
+                    disk['backing_mode'] = _backing_mode
+
+                if _dev.get('backing_sharing'):
+                    _sharing_mode = ctx.client.get_vm_disk_backing_sharing_by_name(  # NOQA:
+                        _dev.get('backing_sharing')
                     )
                     _sharing_mode = _sharing_mode[0]['type']
-            devices.append(
-                {
-                    'capacity_gb': _capacity,
-                    'backing_mode': _backing_mode,
-                    "backing_sharing": _sharing_mode,
-                }
-            )
+                    disk['backing_sharing'] = _sharing_mode
+                if _dev.get('backing_vmdk'):
+                    _backing_vmdk = ctx.client.get_vmdk_by_name_path_or_id(
+                        _dev.get('backing_vmdk')
+                    )
+                    disk['backing_vmdk'] = _backing_vmdk[0]['path']
+            else:
+                if len(_dev) > 1:
+                    _spec = to_tuples(_dev[1])[0]
+                    if len(_spec) > 0:
+                        _backing_mode = ctx.client.get_vm_disk_backing_mode_by_name(  # NOQA:
+                            _spec[0]
+                        )
+                        _backing_mode = _backing_mode[0]['type']
+                        disk['backing_mode'] = _backing_mode
+                    if len(_spec) > 1:
+                        _spec = to_tuples(_spec[1])[0]
+                        _sharing_mode = ctx.client.get_vm_disk_backing_sharing_by_name(  # NOQA
+                            _spec[0]
+                        )
+                        _sharing_mode = _sharing_mode[0]['type']
+                        disk['backing_sharing'] = _sharing_mode
+                    if len(_spec) > 1:
+                        _backing_vmdk = ctx.client.get_vmdk_by_name_path_or_id(
+                            _spec[1]
+                        )
+                        _backing_vmdk = _backing_vmdk[0]['path']
+                        disk['backing_vmdk'] = _backing_vmdk
+            devices.append(disk)
         return devices
+
+
+def process_options(ctx: Configuration, param, key_value):
+    """Process options."""
+    _init_ctx(ctx)
+    try:
+        _options = to_tuples(','.join(key_value))
+        options = [{opt[0]: opt[1]} for opt in _options]
+        return options
+    except Exception:
+        raise BadArgumentUsage(f'{param} must be key=value strings')

@@ -964,6 +964,14 @@ class Configuration(VssManager):
             return self.pick(objs, options=[f"{i['name']}" for i in objs])
         return objs
 
+    def get_vmdk_by_name_path_or_id(
+        self, name_or_path_or_id: Union[str, int]
+    ) -> List[Any]:
+        """Get vmdk by name, path or id."""
+        return self._get_images_by_name_path_or_id(
+            self.get_user_vmdks, name_or_path_or_id
+        )
+
     def get_floppy_by_name_or_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Dict]:

@@ -4,7 +4,7 @@ import click
 import vss_cli.autocompletion as autocompletion
 from vss_cli.plugins.compute_plugins import callbacks
 from vss_cli.validators import (
-    process_options, validate_admin, validate_inform, validate_json_type)
+    validate_admin, validate_inform, validate_json_type)
 
 source_opt = click.option(
     '--source',
@@ -211,7 +211,7 @@ extra_config_opt = click.option(
     type=click.STRING,
     required=False,
     multiple=True,
-    callback=process_options,
+    callback=callbacks.process_options,
 )
 user_data_opt = click.option(
     '--user-data',
