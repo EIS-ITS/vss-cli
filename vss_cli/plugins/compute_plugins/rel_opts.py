@@ -4,7 +4,7 @@ import click
 import vss_cli.autocompletion as autocompletion
 from vss_cli.plugins.compute_plugins import callbacks
 from vss_cli.validators import (
-    validate_admin, validate_inform, validate_json_type)
+    process_options, validate_admin, validate_inform, validate_json_type)
 
 source_opt = click.option(
     '--source',
@@ -207,10 +207,11 @@ power_on_opt = click.option(
 extra_config_opt = click.option(
     '--extra-config',
     '-e',
-    help='VMWare Guest Info Interface in JSON format.',
+    help='Extra configuration key=value format.',
     type=click.STRING,
     required=False,
-    callback=validate_json_type,
+    multiple=True,
+    callback=process_options,
 )
 user_data_opt = click.option(
     '--user-data',
