@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.10.0-dev1"
+__version__ = "0.10.0-dev2"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -388,7 +388,7 @@ COLUMNS_VM_HW = [
 ]
 COLUMNS_VM_CONSOLIDATION = [("require_disk_consolidation",)]
 COLUMNS_VM_CONTROLLERS = [('scsi.count',)]
-COLUMNS_EXTRA_CONFIG = [("key",), ("value",)]
+COLUMNS_EXTRA_CONFIG = [("options", "[*]")]
 COLUMNS_VSS_OPTIONS = [("options", "[*]")]
 COLUMNS_GROUP = [
     ("name",),

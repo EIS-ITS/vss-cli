@@ -16,7 +16,7 @@ from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_opts as c_so
 from vss_cli.validators import (
-    validate_email, validate_json_type, validate_phone_number)
+    process_options, validate_email, validate_json_type, validate_phone_number)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -1205,7 +1205,13 @@ def compute_vm_set_extra_config(ctx: Configuration):
 @compute_vm_set_extra_config.command(
     'mk', short_help='Create guestInfo extra config entries.'
 )
-@click.argument('key-value', type=click.STRING, required=True, nargs=-1)
+@click.argument(
+    'key-value',
+    type=click.STRING,
+    required=True,
+    nargs=-1,
+    callback=process_options,
+)
 @pass_context
 def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
     """Create **guestinfo** interface extra configuration options.
@@ -1213,14 +1219,8 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
     vss-cli compute vm set <name-or-vm_id> extra-cfg mk key1=value2 key2=value2
     """
     # process input
-    try:
-        _options = to_tuples(','.join(key_value))
-        options = dict(_options)
-    except Exception as ex:
-        _LOGGING.error(ex)
-        raise click.BadArgumentUsage('Argument must be key=value strings')
     # assemble payload
-    payload = dict(vm_id=ctx.moref, options=options)
+    payload = dict(vm_id=ctx.moref, options=key_value)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1236,39 +1236,21 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
 @compute_vm_set_extra_config.command(
     'up', short_help='Update guestInfo extra config entries.'
 )
-@click.argument('key-value', type=click.STRING, required=True, nargs=-1)
-@click.option(
-    '--check/--no-check',
-    is_flag=True,
-    default=False,
-    help='Check if options to update exist.',
+@click.argument(
+    'key-value',
+    type=click.STRING,
+    required=True,
+    nargs=-1,
+    callback=process_options,
 )
 @pass_context
-def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
+def compute_vm_set_extra_config_up(ctx: Configuration, key_value):
     """Update **guestinfo** interface extra configuration options.
 
     vss-cli compute vm set <name-or-vm_id> extra-cfg up key1=value2 key2=value2
     """
-    # process input
-    try:
-        _options = to_tuples(','.join(key_value))
-        options = dict(_options)
-    except Exception as ex:
-        _LOGGING.error(ex)
-        raise click.BadArgumentUsage('Argument must be key=value strings')
-    # check if key exists
-    if check:
-        ex_opts = [
-            i['key'].replace('guestinfo.', '')
-            for i in ctx.get_vm_extra_cfg_options(ctx.moref)
-        ]
-        no_opts = [k for k in options if k not in ex_opts]
-        if list(no_opts):
-            _LOGGING.warning(
-                f'Extra config options will be ignored: {", ".join(no_opts)}'
-            )
     # assemble payload
-    payload = dict(vm_id=ctx.moref, options=options)
+    payload = dict(vm_id=ctx.moref, options=key_value)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1285,29 +1267,12 @@ def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
     'rm', short_help='Remove guestInfo extra config option keys.'
 )
 @click.argument('key', type=click.STRING, required=True, nargs=-1)
-@click.option(
-    '--check/--no-check',
-    is_flag=True,
-    default=False,
-    help='Check if options to update exist.',
-)
 @pass_context
-def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
+def compute_vm_set_extra_config_rm(ctx: Configuration, key):
     """Remove **guestinfo** interface extra configuration options.
 
     vss-cli compute vm set <name-or-vm_id> extra-cfg rm key1 key2 keyN
     """
-    # check if key exists
-    if check:
-        ex_opts = [
-            i['key'].replace('guestinfo.', '')
-            for i in ctx.get_vm_extra_cfg_options(ctx.moref)
-        ]
-        no_opts = [k for k in key if k not in ex_opts]
-        if list(no_opts):
-            _LOGGING.warning(
-                f'Extra config options will be ignored: {", ".join(no_opts)}'
-            )
     # assemble payload
     payload = dict(vm_id=ctx.moref, options=key)
     # add common options
