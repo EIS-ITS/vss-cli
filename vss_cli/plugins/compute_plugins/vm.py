@@ -353,6 +353,15 @@ def compute_vm_get_extra_config(ctx: Configuration):
     ctx.echo(format_output(ctx, objs, columns=columns))
 
 
+@compute_vm_get.command('firmware', short_help='Firmware configuration')
+@pass_context
+def compute_vm_get_firmware(ctx: Configuration):
+    """Compute vm get firmware."""
+    obj = ctx.get_vm_firmware(ctx.moref)
+    columns = ctx.columns or const.COLUMNS_FIRMWARE
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
 @compute_vm_get.command('floppy', short_help='Floppy configuration')
 @click.argument('unit', type=int, required=False)
 @pass_context
