@@ -1,4 +1,4 @@
-image: docker:latest
+image: hub.eis.utoronto.ca/vss/docker/docker:latest
 
 stages:
 - test
@@ -6,7 +6,7 @@ stages:
 - release
 
 services:
-- docker:dind
+- hub.eis.utoronto.ca/vss/docker/docker:dind
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -24,7 +24,7 @@ variables:
 
 # Global jobs
 test-style:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: test
   script:
     - apk add --update --no-cache git
@@ -34,7 +34,7 @@ test-style:
     - python-3
 
 build-dist:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - pip install setuptools wheel
@@ -86,7 +86,7 @@ build-docker-hub:
 
 # Develop/branches
 test-code-develop:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: test
   script:
     - python -V
@@ -105,7 +105,7 @@ test-code-develop:
       - coverage/
 
 build-docs-develop:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
@@ -127,7 +127,7 @@ build-docs-develop:
     - python-3
 
 release-dist-develop:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make libffi-dev openssl-dev
@@ -144,7 +144,7 @@ release-dist-develop:
    - python-3
 
 release-checkin-develop:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - python -V
@@ -160,7 +160,7 @@ release-checkin-develop:
   when: manual
 
 release-docs-develop:
-  image: python:3
+  image: hub.eis.utoronto.ca/vss/docker/python:3
   stage: release
   script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -217,7 +217,7 @@ release-docker-hub-develop:
 
 # Master
 test-code-master:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: test
   script:
     - python -V
@@ -236,7 +236,7 @@ test-code-master:
       - coverage/
 
 build-docs-master:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
@@ -296,7 +296,7 @@ release-docker-hub-master:
 # PEP-440 compliant version (tags)
 
 release-dist-tag:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make libffi-dev openssl-dev
@@ -310,7 +310,7 @@ release-dist-tag:
    - python-3
 
 release-checkin-tag:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - python -V
@@ -325,7 +325,7 @@ release-checkin-tag:
   when: manual
 
 build-docs-tag:
-  image: python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
@@ -347,7 +347,7 @@ build-docs-tag:
     - python-3
 
 release-docs-tag:
-  image: python:3
+  image: hub.eis.utoronto.ca/vss/docker/python:3
   stage: release
   script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'

@@ -14,7 +14,7 @@ from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
-from vss_cli.plugins.compute_plugins import rel_opts as c_so
+from vss_cli.plugins.compute_plugins import rel_args as c_sa, rel_opts as c_so
 from vss_cli.validators import (
     validate_email, validate_json_type, validate_phone_number)
 
@@ -351,6 +351,15 @@ def compute_vm_get_extra_config(ctx: Configuration):
     objs = ctx.get_vm_extra_cfg_options(ctx.moref)
     columns = ctx.columns or const.COLUMNS_EXTRA_CONFIG
     ctx.echo(format_output(ctx, objs, columns=columns))
+
+
+@compute_vm_get.command('firmware', short_help='Firmware configuration')
+@pass_context
+def compute_vm_get_firmware(ctx: Configuration):
+    """Compute vm get firmware."""
+    obj = ctx.get_vm_firmware(ctx.moref)
+    columns = ctx.columns or const.COLUMNS_FIRMWARE
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @compute_vm_get.command('floppy', short_help='Floppy configuration')
@@ -1205,7 +1214,7 @@ def compute_vm_set_extra_config(ctx: Configuration):
 @compute_vm_set_extra_config.command(
     'mk', short_help='Create guestInfo extra config entries.'
 )
-@click.argument('key-value', type=click.STRING, required=True, nargs=-1)
+@c_sa.extra_config_arg
 @pass_context
 def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
     """Create **guestinfo** interface extra configuration options.
@@ -1213,14 +1222,8 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
     vss-cli compute vm set <name-or-vm_id> extra-cfg mk key1=value2 key2=value2
     """
     # process input
-    try:
-        _options = to_tuples(','.join(key_value))
-        options = dict(_options)
-    except Exception as ex:
-        _LOGGING.error(ex)
-        raise click.BadArgumentUsage('Argument must be key=value strings')
     # assemble payload
-    payload = dict(vm_id=ctx.moref, options=options)
+    payload = dict(vm_id=ctx.moref, options=key_value)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1236,39 +1239,15 @@ def compute_vm_set_extra_config_mk(ctx: Configuration, key_value):
 @compute_vm_set_extra_config.command(
     'up', short_help='Update guestInfo extra config entries.'
 )
-@click.argument('key-value', type=click.STRING, required=True, nargs=-1)
-@click.option(
-    '--check/--no-check',
-    is_flag=True,
-    default=False,
-    help='Check if options to update exist.',
-)
+@c_sa.extra_config_arg
 @pass_context
-def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
+def compute_vm_set_extra_config_up(ctx: Configuration, key_value):
     """Update **guestinfo** interface extra configuration options.
 
     vss-cli compute vm set <name-or-vm_id> extra-cfg up key1=value2 key2=value2
     """
-    # process input
-    try:
-        _options = to_tuples(','.join(key_value))
-        options = dict(_options)
-    except Exception as ex:
-        _LOGGING.error(ex)
-        raise click.BadArgumentUsage('Argument must be key=value strings')
-    # check if key exists
-    if check:
-        ex_opts = [
-            i['key'].replace('guestinfo.', '')
-            for i in ctx.get_vm_extra_cfg_options(ctx.moref)
-        ]
-        no_opts = [k for k in options if k not in ex_opts]
-        if list(no_opts):
-            _LOGGING.warning(
-                f'Extra config options will be ignored: {", ".join(no_opts)}'
-            )
     # assemble payload
-    payload = dict(vm_id=ctx.moref, options=options)
+    payload = dict(vm_id=ctx.moref, options=key_value)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -1285,29 +1264,12 @@ def compute_vm_set_extra_config_up(ctx: Configuration, key_value, check):
     'rm', short_help='Remove guestInfo extra config option keys.'
 )
 @click.argument('key', type=click.STRING, required=True, nargs=-1)
-@click.option(
-    '--check/--no-check',
-    is_flag=True,
-    default=False,
-    help='Check if options to update exist.',
-)
 @pass_context
-def compute_vm_set_extra_config_rm(ctx: Configuration, key, check):
+def compute_vm_set_extra_config_rm(ctx: Configuration, key):
     """Remove **guestinfo** interface extra configuration options.
 
     vss-cli compute vm set <name-or-vm_id> extra-cfg rm key1 key2 keyN
     """
-    # check if key exists
-    if check:
-        ex_opts = [
-            i['key'].replace('guestinfo.', '')
-            for i in ctx.get_vm_extra_cfg_options(ctx.moref)
-        ]
-        no_opts = [k for k in key if k not in ex_opts]
-        if list(no_opts):
-            _LOGGING.warning(
-                f'Extra config options will be ignored: {", ".join(no_opts)}'
-            )
     # assemble payload
     payload = dict(vm_id=ctx.moref, options=key)
     # add common options
@@ -1360,7 +1322,7 @@ def compute_vm_set_disk_mk(ctx: Configuration, disk):
     """Create virtual machine disk.
 
     vss-cli compute vm set <name-or-vm_id> disk mk
-    -i <capacity>=<backing_mode>=<backing_sharing>
+    -i <capacity>=<backing_mode>=<backing_sharing>=<backing_file>
 
     vss-cli compute vm set <name-or-vm_id> disk mk -i 10 -i 40
 
@@ -1543,6 +1505,21 @@ def compute_vm_set_export(ctx: Configuration):
     payload.update(ctx.payload_options)
     # request
     obj = ctx.export_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command('firmware', short_help='Update firmware')
+@c_sa.firmware_arg
+@pass_context
+def compute_vm_set_firmware(ctx: Configuration, firmware):
+    """Update current vm firmware."""
+    payload = dict(vm_id=ctx.moref, firmware=firmware)
+    obj = ctx.update_vm_firmware(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
@@ -2883,6 +2860,7 @@ def compute_vm_from_file(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
+@c_so.firmware_nr_opt
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_spec(
@@ -2907,6 +2885,7 @@ def compute_vm_mk_spec(
     power_on,
     vss_service,
     instances,
+    firmware,
 ):
     """Create vm based on another vm configuration specification.
 
@@ -2966,6 +2945,9 @@ def compute_vm_mk_spec(
     # Advanced
     if extra_config:
         payload['extra_config'] = extra_config
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     # updating spec with new vm spec
     s_payload.update(payload)
     _LOGGING.debug(f'source={s_payload}')
@@ -3011,6 +2993,7 @@ def compute_vm_mk_spec(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
+@c_so.firmware_nr_opt
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_shell(
@@ -3035,6 +3018,7 @@ def compute_vm_mk_shell(
     power_on,
     vss_service,
     instances,
+    firmware,
 ):
     """Create a new VM with no operating system pre-installed."""
     built = 'os_install'
@@ -3086,6 +3070,9 @@ def compute_vm_mk_shell(
     # Advanced
     if extra_config:
         payload['extra_config'] = extra_config
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3125,6 +3112,7 @@ def compute_vm_mk_shell(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
+@c_so.firmware_nr_opt
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_template(
@@ -3148,6 +3136,7 @@ def compute_vm_mk_template(
     extra_config,
     vss_service,
     power_on,
+    firmware,
     instances,
 ):
     """Deploy virtual machine from template."""
@@ -3201,6 +3190,9 @@ def compute_vm_mk_template(
         payload['extra_config'] = extra_config
     if custom_spec:
         payload['custom_spec'] = custom_spec
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3240,6 +3232,7 @@ def compute_vm_mk_template(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
+@c_so.firmware_nr_opt
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_clone(
@@ -3264,6 +3257,7 @@ def compute_vm_mk_clone(
     power_on,
     vss_service,
     instances,
+    firmware,
 ):
     """Clone virtual machine from running or powered off vm.
 
@@ -3320,6 +3314,9 @@ def compute_vm_mk_clone(
         payload['extra_config'] = extra_config
     if custom_spec:
         payload['custom_spec'] = custom_spec
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     if instances > 1:
         payload['count'] = instances
         obj = ctx.create_vms_from_clone(**payload)
@@ -3362,6 +3359,7 @@ def compute_vm_mk_clone(
 @c_so.power_on_opt
 @c_so.user_data_opt
 @c_so.vss_service_opt
+@c_so.firmware_nr_opt
 @pass_context
 def compute_vm_mk_image(
     ctx: Configuration,
@@ -3385,6 +3383,7 @@ def compute_vm_mk_image(
     extra_config,
     user_data,
     vss_service,
+    firmware,
 ):
     """Deploy virtual machine from image."""
     # get reference to image by
@@ -3437,6 +3436,9 @@ def compute_vm_mk_image(
         payload['custom_spec'] = custom_spec
     if user_data:
         payload['user_data'] = user_data.read()
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     # request
     obj = ctx.create_vm_from_image(**payload)
     # print

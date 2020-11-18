@@ -207,10 +207,11 @@ power_on_opt = click.option(
 extra_config_opt = click.option(
     '--extra-config',
     '-e',
-    help='VMWare Guest Info Interface in JSON format.',
+    help='Extra configuration key=value format.',
     type=click.STRING,
     required=False,
-    callback=validate_json_type,
+    multiple=True,
+    callback=callbacks.process_options,
 )
 user_data_opt = click.option(
     '--user-data',
@@ -233,8 +234,22 @@ instances = click.option(
     show_default=True,
 )
 vss_options_opt = click.option(
-    'vss-option',
+    '--vss-option',
     help='VSS Option to enable',
     autocompletion=autocompletion.vss_options,
     required=False,
+)
+firmware_nr_opt = click.option(
+    '--firmware',
+    '-w',
+    help='Firmware type.',
+    autocompletion=autocompletion.vm_firmware,
+    required=False,
+)
+firmware_opt = click.option(
+    '--firmware',
+    '-w',
+    help='Firmware type.',
+    autocompletion=autocompletion.vm_firmware,
+    required=True,
 )

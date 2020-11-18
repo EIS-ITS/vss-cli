@@ -964,6 +964,14 @@ class Configuration(VssManager):
             return self.pick(objs, options=[f"{i['name']}" for i in objs])
         return objs
 
+    def get_vmdk_by_name_path_or_id(
+        self, name_or_path_or_id: Union[str, int]
+    ) -> List[Any]:
+        """Get vmdk by name, path or id."""
+        return self._get_images_by_name_path_or_id(
+            self.get_user_vmdks, name_or_path_or_id
+        )
+
     def get_floppy_by_name_or_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Dict]:
@@ -988,9 +996,9 @@ class Configuration(VssManager):
             self.get_images, name_or_path_or_id
         )
 
-    def _get_types_by_name(self, name: Union[str, int], types_f):
+    def _get_types_by_name(self, name: Union[str, int], types_f, attrs=None):
         g_types = types_f(only_type=False)
-        attributes = [('type', str)]
+        attributes = attrs or [('type', str)]
         objs = self._filter_objects_by_attrs(str(name), g_types, attributes)
         # check if there's no ref
         if not objs:
@@ -1025,6 +1033,14 @@ class Configuration(VssManager):
     def get_vm_disk_backing_sharing_by_name(self, name: Union[str, int]):
         """Get Disk Sharing Mode by name."""
         return self._get_types_by_name(name, self.get_supported_disk_sharing)
+
+    def get_vm_firmware_by_type_or_desc(self, name: Union[str, int]):
+        """Get VM firmware by name."""
+        return self._get_types_by_name(
+            name,
+            self.get_supported_firmware_types,
+            attrs=[('type', str), ('description', str)],
+        )
 
     def get_vm_nic_type_by_name(self, name: Union[str, int]):
         """Get VM NIC type by name."""

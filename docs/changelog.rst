@@ -2,6 +2,37 @@
 Changelog 📝
 ============
 
+`v0.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.0>` (2020-11-18)
+-----------------------------------------------------------------------------------
+
+**New Features:**
+
+- `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk``: command to mange user ``vmdk`` files.
+- `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk ls``: command to list user ``vmdk`` files.
+- `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk sync``: command to sync user ``vmdk``files from ``vskey-stor``.
+- `#375 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/375>`_: ``compute vm set firmware``: update vm firmware configuration.
+- `#376 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/376>`_: ``compute vm get firmware``: get vm firmware configuration.
+
+**Improvements:**
+
+- `#366 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/366>`_: ``compute vm set extra-cfg``: update command to new payload.
+- `#367 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367>`_: ``compute vm mk shell``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- `#367 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367>`_: ``compute vm mk from-clone``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- `#367 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367>`_: ``compute vm mk from-spec``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- `#367 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367>`_: ``compute vm mk from-image``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- `#367 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367>`_: ``compute vm mk from-template``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- `#368 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/368>`_: ``core``: ``pyvss`` v0.16.0 -> v0.17.0.
+- `#369 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/369>`_: ``docker``: base image upgrade to ``hub.eis.utoronto.ca/vss/docker/python:3.8-alpine``.
+- `#370 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/370>`_: ``ci``: base docker services to use local repository.
+- `#372 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/372>`_: ``compute vm set disk mk``: support ``backing_vmdk`` in ``<capacity>=<backing_mode>=<backing_sharing>=<backing_vmdk>`` or ``JSON`` format.
+- `#373 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/373>`_: ``core``: ``pyvss`` v0.17.0 -> v0.17.1.
+- `#374 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374>`_: ``compute vm mk shell``: create VM with ``--firmware/-w``.
+- `#374 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374>`_: ``compute vm mk from-clone``: create VM with ``--firmware/-w``.
+- `#374 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374>`_: ``compute vm mk from-spec``: create VM with ``--firmware/-w``.
+- `#374 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374>`_: ``compute vm mk from-image``: create VM with ``--firmware/-w``.
+- `#374 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374>`_: ``compute vm mk from-template``: create VM with ``--firmware/-w``.
+
+
 `v0.9.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.9.0>`_ (2020-10-29)
 ----------------------------------------------------------------------------------
 

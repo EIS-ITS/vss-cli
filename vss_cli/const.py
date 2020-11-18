@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -105,6 +105,7 @@ COLUMNS_VIM_REQUEST = [("vm_moref",), ("vm_name",)]
 COLUMNS_MOREF = [("moref",), ("name",)]
 COLUMNS_FOLDER_MIN = [*COLUMNS_MOREF, ("path",), ("parent.name",)]
 COLUMNS_FOLDER = [*COLUMNS_FOLDER_MIN, ("parent.moref",), ("has_children",)]
+COLUMNS_FIRMWARE = [("firmware",)]
 COLUMNS_NET_MIN = [
     *COLUMNS_MOREF,
     ("description",),
@@ -388,7 +389,7 @@ COLUMNS_VM_HW = [
 ]
 COLUMNS_VM_CONSOLIDATION = [("require_disk_consolidation",)]
 COLUMNS_VM_CONTROLLERS = [('scsi.count',)]
-COLUMNS_EXTRA_CONFIG = [("key",), ("value",)]
+COLUMNS_EXTRA_CONFIG = [("options", "[*]")]
 COLUMNS_VSS_OPTIONS = [("options", "[*]")]
 COLUMNS_GROUP = [
     ("name",),
