@@ -1504,6 +1504,21 @@ def compute_vm_set_export(ctx: Configuration):
         ctx.wait_for_request_to(obj)
 
 
+@compute_vm_set.command('firmware', short_help='Update firmware')
+@c_sa.firmware_arg
+@pass_context
+def compute_vm_set_firmware(ctx: Configuration, firmware):
+    """Update current vm firmware."""
+    payload = dict(vm_id=ctx.moref, firmware=firmware)
+    obj = ctx.update_vm_firmware(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
 @compute_vm_set.command('floppy', short_help='Floppy backing')
 @click.argument('unit', type=click.INT, required=True)
 @click.option(
@@ -2836,7 +2851,7 @@ def compute_vm_from_file(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
-@c_so.firmware_opt
+@c_so.firmware_nr_opt
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_spec(
@@ -2969,7 +2984,7 @@ def compute_vm_mk_spec(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
-@c_so.firmware_opt
+@c_so.firmware_nr_opt
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_shell(
@@ -3088,7 +3103,7 @@ def compute_vm_mk_shell(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
-@c_so.firmware_opt
+@c_so.firmware_nr_opt
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_template(
@@ -3208,7 +3223,7 @@ def compute_vm_mk_template(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
-@c_so.firmware_opt
+@c_so.firmware_nr_opt
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_clone(
@@ -3335,7 +3350,7 @@ def compute_vm_mk_clone(
 @c_so.power_on_opt
 @c_so.user_data_opt
 @c_so.vss_service_opt
-@c_so.firmware_opt
+@c_so.firmware_nr_opt
 @pass_context
 def compute_vm_mk_image(
     ctx: Configuration,

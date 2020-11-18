@@ -138,3 +138,14 @@ def process_options(ctx: Configuration, param, key_value):
         return options
     except Exception:
         raise BadArgumentUsage(f'{param} must be key=value strings')
+
+
+def process_firmware(ctx: Configuration, param, value):
+    """Process firmware options."""
+    _init_ctx(ctx)
+    try:
+        _firmware = ctx.client.get_vm_firmware_by_type_or_desc(value)
+        return _firmware[0]['type']
+    except Exception:
+        valid = ctx.client.get_supported_firmware_types()
+        raise BadArgumentUsage(f'{param} must be one of: {", ".join(valid)}')

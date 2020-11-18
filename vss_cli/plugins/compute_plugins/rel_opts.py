@@ -239,10 +239,17 @@ vss_options_opt = click.option(
     autocompletion=autocompletion.vss_options,
     required=False,
 )
-firmware_opt = click.option(
+firmware_nr_opt = click.option(
     '--firmware',
     '-w',
     help='Firmware type.',
     autocompletion=autocompletion.vm_firmware,
     required=False,
+)
+firmware_opt = click.option(
+    '--firmware',
+    '-w',
+    help='Firmware type.',
+    autocompletion=autocompletion.vm_firmware,
+    required=True,
 )
