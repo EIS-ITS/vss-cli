@@ -1,14 +1,44 @@
 # Changelog 📝
 
+## [v0.10.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.0) (2020-11-18)
+
+**New Features:**
+
+- [#371](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371): ``compute vmdk``: command to mange user ``vmdk`` files.
+- [#371](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371): ``compute vmdk ls``: command to list user ``vmdk`` files.
+- [#371](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371): ``compute vmdk sync``: command to sync user ``vmdk``files from ``vskey-stor``.
+- [#375](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/375): ``compute vm set firmware``: update vm firmware configuration.
+- [#376](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/376): ``compute vm get firmware``: get vm firmware configuration.
+
+**Improvements:**
+
+- [#366](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/366): ``compute vm set extra-cfg``: update command to new payload.
+- [#367](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367): ``compute vm mk shell``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- [#367](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367): ``compute vm mk from-clone``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- [#367](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367): ``compute vm mk from-spec``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- [#367](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367): ``compute vm mk from-image``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- [#367](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/367): ``compute vm mk from-template``: create VM with ``--extra-config`` takes multiple ``key=value``.
+- [#368](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/368): ``core``: ``pyvss`` v0.16.0 -> v0.17.0.
+- [#369](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/369): ``docker``: base image upgrade to ``hub.eis.utoronto.ca/vss/docker/python:3.8-alpine``.
+- [#370](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/370): ``ci``: base docker services to use local repository.
+- [#372](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/372): ``compute vm set disk mk``: support ``backing_vmdk`` in ``<capacity>=<backing_mode>=<backing_sharing>=<backing_vmdk>`` or ``JSON`` format.
+- [#373](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/373): ``core``: ``pyvss`` v0.17.0 -> v0.17.1.
+- [#374](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374): ``compute vm mk shell``: create VM with ``--firmware/-w``.
+- [#374](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374): ``compute vm mk from-clone``: create VM with ``--firmware/-w``.
+- [#374](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374): ``compute vm mk from-spec``: create VM with ``--firmware/-w``.
+- [#374](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374): ``compute vm mk from-image``: create VM with ``--firmware/-w``.
+- [#374](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/374): ``compute vm mk from-template``: create VM with ``--firmware/-w``.
+
+
 ## [v0.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.9.0) (2020-10-29)
 
 **Improvements:**
 
 - [#358](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/358): ``core``: ``pyvss`` v0.15.1 -> v0.16.0.
 - [#359](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/359): ``compute vm set controller scsi up --sharing``: updates SCSI sharing mode.
-- [#360](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/360): ``compute vm set disk up --sharing``: updates Disk sharing mode.
+- [#360](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/360): ``compute vm set disk up --sharing``: updates Disk sharing mod``<capacity>=<backing_mode>=<backing_sharing>``.e.
 - [#361](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/361): ``compute vm set controller scsi mk --scsi``: create SCSI controller with new spec ``<type>=<sharing>``. 
-- [#362](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/362): ``compute vm set disk mk --disk``: create Disk with new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
+- [#362](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/362): ``compute vm set disk mk --disk``: create Disk with new spec 
 - [#363](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/363): ``compute vm mk shell``: create VM with Disks using new spec `` <capacity>=<backing_mode>=<backing_sharing>``. 
 - [#363](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/363): ``compute vm mk from-clone``: create VM with Disks using new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
 - [#363](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/363): ``compute vm mk from-file``: create VM with Disks using new spec `` <capacity>=<backing_mode>=<backing_sharing>``.
