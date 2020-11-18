@@ -477,3 +477,16 @@ def groups(
         attrs=['id', 'name'],
         f_kwargs={"sort": "created_on,desc", "per_page": 500},
     )
+
+
+def vm_firmware(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM firmware types."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_firmware_types,
+        incomplete,
+        attrs=['type', 'description'],
+        f_kwargs={"only_type": False},
+    )

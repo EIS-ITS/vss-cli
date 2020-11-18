@@ -234,8 +234,15 @@ instances = click.option(
     show_default=True,
 )
 vss_options_opt = click.option(
-    'vss-option',
+    '--vss-option',
     help='VSS Option to enable',
     autocompletion=autocompletion.vss_options,
+    required=False,
+)
+firmware_opt = click.option(
+    '--firmware',
+    '-w',
+    help='Firmware type.',
+    autocompletion=autocompletion.vm_firmware,
     required=False,
 )

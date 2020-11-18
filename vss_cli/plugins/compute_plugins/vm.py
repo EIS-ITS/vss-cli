@@ -2836,6 +2836,7 @@ def compute_vm_from_file(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
+@c_so.firmware_opt
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_spec(
@@ -2860,6 +2861,7 @@ def compute_vm_mk_spec(
     power_on,
     vss_service,
     instances,
+    firmware,
 ):
     """Create vm based on another vm configuration specification.
 
@@ -2919,6 +2921,9 @@ def compute_vm_mk_spec(
     # Advanced
     if extra_config:
         payload['extra_config'] = extra_config
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     # updating spec with new vm spec
     s_payload.update(payload)
     _LOGGING.debug(f'source={s_payload}')
@@ -2964,6 +2969,7 @@ def compute_vm_mk_spec(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
+@c_so.firmware_opt
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_shell(
@@ -2988,6 +2994,7 @@ def compute_vm_mk_shell(
     power_on,
     vss_service,
     instances,
+    firmware,
 ):
     """Create a new VM with no operating system pre-installed."""
     built = 'os_install'
@@ -3039,6 +3046,9 @@ def compute_vm_mk_shell(
     # Advanced
     if extra_config:
         payload['extra_config'] = extra_config
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3078,6 +3088,7 @@ def compute_vm_mk_shell(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
+@c_so.firmware_opt
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_template(
@@ -3101,6 +3112,7 @@ def compute_vm_mk_template(
     extra_config,
     vss_service,
     power_on,
+    firmware,
     instances,
 ):
     """Deploy virtual machine from template."""
@@ -3154,6 +3166,9 @@ def compute_vm_mk_template(
         payload['extra_config'] = extra_config
     if custom_spec:
         payload['custom_spec'] = custom_spec
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3193,6 +3208,7 @@ def compute_vm_mk_template(
 @c_so.power_on_opt
 @c_so.vss_service_opt
 @c_so.instances
+@c_so.firmware_opt
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_clone(
@@ -3217,6 +3233,7 @@ def compute_vm_mk_clone(
     power_on,
     vss_service,
     instances,
+    firmware,
 ):
     """Clone virtual machine from running or powered off vm.
 
@@ -3273,6 +3290,9 @@ def compute_vm_mk_clone(
         payload['extra_config'] = extra_config
     if custom_spec:
         payload['custom_spec'] = custom_spec
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     if instances > 1:
         payload['count'] = instances
         obj = ctx.create_vms_from_clone(**payload)
@@ -3315,6 +3335,7 @@ def compute_vm_mk_clone(
 @c_so.power_on_opt
 @c_so.user_data_opt
 @c_so.vss_service_opt
+@c_so.firmware_opt
 @pass_context
 def compute_vm_mk_image(
     ctx: Configuration,
@@ -3338,6 +3359,7 @@ def compute_vm_mk_image(
     extra_config,
     user_data,
     vss_service,
+    firmware,
 ):
     """Deploy virtual machine from image."""
     # get reference to image by
@@ -3390,6 +3412,9 @@ def compute_vm_mk_image(
         payload['custom_spec'] = custom_spec
     if user_data:
         payload['user_data'] = user_data.read()
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
     # request
     obj = ctx.create_vm_from_image(**payload)
     # print
