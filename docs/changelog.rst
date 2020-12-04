@@ -2,14 +2,14 @@
 Changelog 📝
 ============
 
-`v0.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.0>` (2020-11-18)
------------------------------------------------------------------------------------
+`v0.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.0>`_ (2020-11-18)
+------------------------------------------------------------------------------------
 
 **New Features:**
 
 - `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk``: command to mange user ``vmdk`` files.
 - `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk ls``: command to list user ``vmdk`` files.
-- `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk sync``: command to sync user ``vmdk``files from ``vskey-stor``.
+- `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk sync``: command to sync user ``vmdk`` files from ``vskey-stor``.
 - `#375 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/375>`_: ``compute vm set firmware``: update vm firmware configuration.
 - `#376 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/376>`_: ``compute vm get firmware``: get vm firmware configuration.
 

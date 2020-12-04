@@ -1133,12 +1133,16 @@ class Configuration(VssManager):
                         "capacity_gb": d['capacity_gb'],
                         "backing_mode": self.get_vm_disk_backing_mode_by_name(
                             d['backing_mode']
-                        )
+                        )[0]['type']
                         if d.get('backing_mode')
                         else 'persistent',
                         "backing_sharing": self.get_vm_disk_backing_sharing_by_name(  # NOQA:
                             d['backing_sharing']
-                        )
+                        )[
+                            0
+                        ][
+                            'type'
+                        ]
                         if d.get('backing_sharing')
                         else 'sharingnone',
                     }
