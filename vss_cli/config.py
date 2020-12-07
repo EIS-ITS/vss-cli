@@ -151,9 +151,13 @@ class Configuration(VssManager):
         self, msg: str, *args: Optional[str], **kwargs
     ) -> None:  # pylint: disable=no-self-use
         """Log a message to stdout with style."""
+        file = sys.stdout
         if args:
             msg %= args
-        click.secho(msg, file=sys.stdout, **kwargs)
+        if 'file' in kwargs:
+            file = kwargs['file']
+            del kwargs['file']
+        click.secho(msg, file=file, **kwargs)
 
     def vlog(self, msg: str, *args: Optional[str]) -> None:
         """Log a message only if verbose is enabled."""
@@ -482,16 +486,22 @@ class Configuration(VssManager):
                     self.secho(
                         f'Update available {current} -> {latest} '
                         f'{EMOJI_UNICODE.get(":upwards_button:")}.',
+                        file=sys.stderr,
                         fg='green',
                         nl=False,
                     )
-                    self.secho(' Run ', fg='green', nl=False)
-                    self.secho('vss-cli upgrade', fg='red', nl=False)
-                    self.secho(' to install latest. \n', fg='green')
+                    self.secho(' Run ', file=sys.stderr, fg='green', nl=False)
+                    self.secho(
+                        'vss-cli upgrade', file=sys.stderr, fg='red', nl=False
+                    )
+                    self.secho(
+                        ' to install latest. \n', file=sys.stderr, fg='green'
+                    )
             else:
                 self.secho(
                     f'Running latest version {const.__version__} '
                     f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}\n',
+                    file=sys.stderr,
                     fg='green',
                 )
         except Exception as ex:
@@ -509,14 +519,20 @@ class Configuration(VssManager):
                 self.secho(
                     f'You have {n_messages} unread messages '
                     f'{EMOJI_UNICODE.get(":envelope_with_arrow:")} ',
+                    file=sys.stderr,
                     fg='green',
                     nl=False,
                 )
-                self.secho('Run ', fg='green', nl=False)
+                self.secho('Run ', file=sys.stderr, fg='green', nl=False)
                 self.secho(
-                    'vss-cli message ls -f status=Created', fg='red', nl=False
+                    'vss-cli message ls -f status=Created',
+                    file=sys.stderr,
+                    fg='red',
+                    nl=False,
                 )
-                self.secho(' to list unread messages.', fg='green')
+                self.secho(
+                    ' to list unread messages.', file=sys.stderr, fg='green'
+                )
             else:
                 _LOGGING.debug('No messages with Created status')
         except Exception as ex:
@@ -584,7 +600,8 @@ class Configuration(VssManager):
                         if click.confirm(
                             'An error occurred loading the '
                             'configuration file. '
-                            'Would you like to recreate it?'
+                            'Would you like to recreate it?',
+                            err=True,
                         ):
                             config_file = config_file_tmpl
                         else:
@@ -677,7 +694,8 @@ class Configuration(VssManager):
                     confirm = replace or click.confirm(
                         f"Would you like to replace existing configuration?\n "
                         f"{self.endpoint_name}:"
-                        f"{username}: {config_endpoint.url}"
+                        f"{username}: {config_endpoint.url}",
+                        err=True,
                     )
                     if confirm:
                         endpoint_cfg = self._create_endpoint_config()
@@ -689,7 +707,8 @@ class Configuration(VssManager):
                 confirm = click.confirm(
                     'An error occurred loading the '
                     'configuration file. '
-                    'Would you like to recreate it?'
+                    'Would you like to recreate it?',
+                    err=True,
                 )
                 if confirm:
                     endpoint_cfg = self._create_endpoint_config()
