@@ -2,6 +2,18 @@
 Changelog 📝
 ============
 
+`v0.10.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.1>`_ (2020-12-09)
+------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#379 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/379>`_: ``core``: direct status messages and user-interaction prompts to ``stderr`` instead of ``stdout``.
+- `#380 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/380>`_: ``core``: migrate from ``jsonpath-rw`` to ``jsonpath-ng``.
+
+**Bug Fixes:**
+
+- `#378 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/378>`_:  ``compute vm mk from-file``: throws ``VssError`` exception.
+
 `v0.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.0>`_ (2020-11-18)
 ------------------------------------------------------------------------------------
 
