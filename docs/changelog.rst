@@ -2,14 +2,26 @@
 Changelog 📝
 ============
 
-`v0.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.0>` (2020-11-18)
------------------------------------------------------------------------------------
+`v0.10.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.1>`_ (2020-12-09)
+------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#379 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/379>`_: ``core``: direct status messages and user-interaction prompts to ``stderr`` instead of ``stdout``.
+- `#380 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/380>`_: ``core``: migrate from ``jsonpath-rw`` to ``jsonpath-ng``.
+
+**Bug Fixes:**
+
+- `#378 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/378>`_:  ``compute vm mk from-file``: throws ``VssError`` exception.
+
+`v0.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.0>`_ (2020-11-18)
+------------------------------------------------------------------------------------
 
 **New Features:**
 
 - `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk``: command to mange user ``vmdk`` files.
 - `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk ls``: command to list user ``vmdk`` files.
-- `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk sync``: command to sync user ``vmdk``files from ``vskey-stor``.
+- `#371 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/371>`_: ``compute vmdk sync``: command to sync user ``vmdk`` files from ``vskey-stor``.
 - `#375 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/375>`_: ``compute vm set firmware``: update vm firmware configuration.
 - `#376 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/376>`_: ``compute vm get firmware``: get vm firmware configuration.
 

@@ -191,7 +191,7 @@ def compute_vm_get_client_notes(ctx):
 def compute_vm_get_console(ctx: Configuration, launch, client):
     """Get one-time HTML link to access console."""
     username = ctx.username or click.prompt(
-        'Username', default=os.environ.get('VSS_USER', '')
+        'Username', default=os.environ.get('VSS_USER', ''), err=True
     )
     password = ctx.password or click.prompt(
         'Password',
@@ -199,6 +199,7 @@ def compute_vm_get_console(ctx: Configuration, launch, client):
         show_default=False,
         hide_input=True,
         confirmation_prompt=True,
+        err=True,
     )
     auth = (username.decode(), password.decode())
     obj = ctx.get_vm_console(ctx.moref, auth=auth, client=client)
@@ -1618,12 +1619,13 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
 
     Note: VMware Tools must be installed and running.
     """
-    username = username or click.prompt('Username')
+    username = username or click.prompt('Username', err=True)
     password = password or click.prompt(
         'Password',
         show_default=False,
         hide_input=True,
         confirmation_prompt=True,
+        err=True,
     )
     # check vmware tools status
     vmt = ctx.get_vm_tools(ctx.moref)

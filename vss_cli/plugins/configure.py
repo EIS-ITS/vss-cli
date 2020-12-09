@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import sys
 from typing import Any
 
 import click
@@ -147,15 +148,21 @@ def mk(ctx: Configuration, replace: bool, endpoint_name: str):
         default=const.DEFAULT_ENDPOINT,
         type=click.STRING,
         show_default=True,
+        err=True,
     )
     endpoint_name = endpoint_name or click.prompt(
         'Endpoint Name',
         default=ctx.endpoint_name,
         type=click.STRING,
         show_default=True,
+        err=True,
     )
     username = ctx.username or click.prompt(
-        'Username', default=ctx.username, show_default=True, type=click.STRING
+        'Username',
+        default=ctx.username,
+        show_default=True,
+        type=click.STRING,
+        err=True,
     )
     password = ctx.password or click.prompt(
         'Password',
@@ -164,6 +171,7 @@ def mk(ctx: Configuration, replace: bool, endpoint_name: str):
         hide_input=True,
         type=click.STRING,
         confirmation_prompt=True,
+        err=True,
     )
     is_configured = ctx.configure(
         username=username,
@@ -174,7 +182,11 @@ def mk(ctx: Configuration, replace: bool, endpoint_name: str):
     )
     if is_configured:
         # feedback message
-        ctx.secho(f'You are ready to use the vss-cli {ej_rkt}', fg='green')
+        ctx.secho(
+            f'You are ready to use the vss-cli {ej_rkt}',
+            file=sys.stderr,
+            fg='green',
+        )
     else:
         _LOGGING.warning(
             f'Houston, we have a problem {ej_warn}. '
@@ -218,9 +230,13 @@ def set_cfg(ctx: Configuration, setting: str, value: Any):
         setattr(ctx.config_file.general, setting, to)
     except ValueError:
         _LOGGING.warning(f'{setting} value must be {data_type}')
-    ctx.secho(f"Updating {setting} from {was} -> {to}.")
+    ctx.secho(
+        f"Updating {setting} from {was} -> {to}.", file=sys.stderr,
+    )
     ctx.write_config_file(config_general=ctx.config_file.general)
-    ctx.secho(f"{ctx.config_path} updated {ej_save}", fg='green')
+    ctx.secho(
+        f"{ctx.config_path} updated {ej_save}", file=sys.stderr, fg='green'
+    )
     return
 
 
@@ -265,7 +281,9 @@ def ls(ctx: Configuration):
             )
     except FileNotFoundError as ex:
         _LOGGING.error(f'{str(ex)}')
-        ctx.secho('Have you run "vss-cli configure mk"?', fg='green')
+        ctx.secho(
+            'Have you run "vss-cli configure mk"?', file=sys.stderr, fg='green'
+        )
 
     # checking env vars
     envs = [e for e in os.environ if 'VSS_' in e]
