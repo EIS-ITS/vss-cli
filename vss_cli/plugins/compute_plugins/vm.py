@@ -3437,7 +3437,7 @@ def compute_vm_mk_image(
     if custom_spec:
         payload['custom_spec'] = custom_spec
     if user_data:
-        payload['user_data'] = user_data.read()
+        payload['user_data'] = user_data
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']

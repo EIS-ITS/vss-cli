@@ -217,7 +217,8 @@ user_data_opt = click.option(
     '--user-data',
     help='Cloud-init user_data YML file path to '
     'pre-configure guest os upon first boot.',
-    type=click.File('r'),
+    type=click.STRING,
+    callback=callbacks.process_user_data,
     required=False,
 )
 vss_service_opt = click.option(

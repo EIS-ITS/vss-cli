@@ -1,5 +1,6 @@
 """Compute Callback module for VSS CLI (vss-cli)."""
 import json
+from pathlib import Path
 
 from click.exceptions import BadArgumentUsage, BadParameter
 
@@ -149,3 +150,19 @@ def process_firmware(ctx: Configuration, param, value):
     except Exception:
         valid = ctx.client.get_supported_firmware_types()
         raise BadArgumentUsage(f'{param} must be one of: {", ".join(valid)}')
+
+
+def process_user_data(ctx: Configuration, param, value):
+    """Process user_data."""
+    from pyvss.helper import compress_encode_string
+
+    _init_ctx(ctx)
+    try:
+        fp = Path(value)
+        txt = fp.read_text()
+        return {
+            'userdata': compress_encode_string(txt),
+            'userdata_encoding': 'gzip+base64',
+        }
+    except Exception:
+        raise BadArgumentUsage(f'{param} must a valid file path.')

@@ -2,6 +2,14 @@
 Changelog 📝
 ============
 
+`v0.10.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.2>`_ (2021-01-07)
+------------------------------------------------------------------------------------
+**Improvements:**
+
+- `#383 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/383>`_: ``compute vm mk from-image``: ``--user-data`` improvements to handle cloud config user data file.
+- `#382 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/382>`_: ``ci``: python package deployment on internal registry.
+
+
 `v0.10.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.1>`_ (2020-12-09)
 ------------------------------------------------------------------------------------
 
