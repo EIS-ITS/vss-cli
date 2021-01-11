@@ -3360,6 +3360,7 @@ def compute_vm_mk_clone(
 @c_so.extra_config_opt
 @c_so.power_on_opt
 @c_so.user_data_opt
+@c_so.net_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
 @pass_context
@@ -3384,6 +3385,7 @@ def compute_vm_mk_image(
     power_on,
     extra_config,
     user_data,
+    network_config,
     vss_service,
     firmware,
 ):
@@ -3437,7 +3439,16 @@ def compute_vm_mk_image(
     if custom_spec:
         payload['custom_spec'] = custom_spec
     if user_data:
-        payload['user_data'] = user_data
+        # Cloud-init nocloud config drive
+        udata_pload = {
+            'userdata': user_data[0],
+            'userdata_encoding': user_data[1],
+        }
+        if network_config is not None:
+            udata_pload['networkconfig'] = network_config[0]
+            udata_pload['networkconfig_encoding'] = network_config[1]
+        _LOGGING.debug(f'User data paylaod {udata_pload}')
+        payload['user_data'] = udata_pload
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']

@@ -1,5 +1,12 @@
 # Changelog 📝
 
+## [v0.10.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.3) (2021-01-14)
+
+**Improvements:**
+
+- [#385](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/385): ``compute vm mk from-image``: ``--network-config`` improvements to handle cloud config ``network-config`` file.
+
+
 ## [v0.10.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.2) (2021-01-07)
 
 **Improvements:**

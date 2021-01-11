@@ -215,7 +215,15 @@ extra_config_opt = click.option(
 )
 user_data_opt = click.option(
     '--user-data',
-    help='Cloud-init user_data YML file path to '
+    help='Cloud-init user_data YAML file path to '
+    'pre-configure guest os upon first boot.',
+    type=click.STRING,
+    callback=callbacks.process_user_data,
+    required=False,
+)
+net_cfg_opt = click.option(
+    '--network-config',
+    help='Cloud-init network-config YAML file path to '
     'pre-configure guest os upon first boot.',
     type=click.STRING,
     callback=callbacks.process_user_data,
