@@ -1,6 +1,7 @@
 """Compute Callback module for VSS CLI (vss-cli)."""
 import json
 from pathlib import Path
+from typing import Optional, Tuple
 
 from click.exceptions import BadArgumentUsage, BadParameter
 
@@ -152,7 +153,9 @@ def process_firmware(ctx: Configuration, param, value):
         raise BadArgumentUsage(f'{param} must be one of: {", ".join(valid)}')
 
 
-def process_user_data(ctx: Configuration, param, value):
+def process_user_data(
+    ctx: Configuration, param, value
+) -> Optional[Tuple[str, str]]:
     """Process user_data."""
     from pyvss.helper import compress_encode_string
 
@@ -160,9 +163,9 @@ def process_user_data(ctx: Configuration, param, value):
     try:
         fp = Path(value)
         txt = fp.read_text()
-        return {
-            'userdata': compress_encode_string(txt),
-            'userdata_encoding': 'gzip+base64',
-        }
+        return (
+            compress_encode_string(txt),
+            'gzip+base64',
+        )
     except Exception:
         raise BadArgumentUsage(f'{param} must a valid file path.')
