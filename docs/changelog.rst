@@ -2,7 +2,7 @@
 Changelog 📝
 ============
 
-`v0.10.3 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.3>`_ (2021-01-14)
+`v0.10.3 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.3>`_ (2021-01-22)
 ------------------------------------------------------------------------------------
 
 **Improvements:**
