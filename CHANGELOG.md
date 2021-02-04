@@ -1,5 +1,11 @@
 # Changelog 📝
 
+## [v0.10.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.4) (2021-02-04)
+
+**Improvements:**
+
+- [#387](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/387): ``compute vm set disk mk``: support ``scsi`` in ``JSON`` format.
+
 ## [v0.10.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.3) (2021-01-22)
 
 **Improvements:**
