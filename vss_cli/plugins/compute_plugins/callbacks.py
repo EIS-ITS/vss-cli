@@ -57,7 +57,8 @@ def process_disk_opt(ctx: Configuration, param, value):
      "capacity_gb": 100,
      "backing_mode": "persistent",
      "backing_sharing": "sharingnone",
-     "backing_vmdk": "[vssUser-xfers] vskey/user/disk-0.vmdk"
+     "backing_vmdk": "[vssUser-xfers] vskey/user/disk-0.vmdk",
+     "scsi": 1
     }
     """
     _init_ctx(ctx)
@@ -105,6 +106,12 @@ def process_disk_opt(ctx: Configuration, param, value):
                         _dev.get('backing_vmdk')
                     )
                     disk['backing_vmdk'] = _backing_vmdk[0]['path']
+                if _dev.get('scsi'):
+                    try:
+                        _scsi_crllr = int(_dev.get('scsi'))
+                    except ValueError:
+                        raise BadParameter('scsi must be a number')
+                    disk['scsi'] = _scsi_crllr
             else:
                 if len(_dev) > 1:
                     _spec = to_tuples(_dev[1])[0]
