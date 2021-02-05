@@ -212,7 +212,7 @@ just include the ``scsi`` attribute with the ``bus_number`` as value in the ``--
 
 .. code-block:: bash
 
-    vss-lci compute vm set vm-2551 disk mk --disk '{"capacity_gb": 100, "scsi": 1}'
+    vss-cli compute vm set vm-2551 disk mk --disk '{"capacity_gb": 100, "scsi": 1}'
 
 The previous command creates a disk in the next available slot of ``SCSI Controller 1``.
 
