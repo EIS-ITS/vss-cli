@@ -16,7 +16,8 @@ from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_args as c_sa, rel_opts as c_so
 from vss_cli.validators import (
-    validate_email, validate_json_type, validate_phone_number)
+    flexible_email_args, validate_email, validate_json_type,
+    validate_phone_number)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -1782,7 +1783,13 @@ def compute_vm_set_ha_group_mk(ctx: Configuration, vm_id, replace):
 @compute_vm_set.command(
     'inform', short_help='Informational contacts (Metadata)'
 )
-@click.argument('email', type=click.STRING, nargs=-1, required=True)
+@click.argument(
+    'email',
+    type=click.STRING,
+    nargs=-1,
+    required=True,
+    callback=flexible_email_args,
+)
 @click.option(
     '-r',
     '--replace',
