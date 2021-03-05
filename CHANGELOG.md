@@ -1,5 +1,24 @@
 # Changelog 📝
 
+## [v0.11.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.11.0) (2021-03-05)
+
+**New Features:**
+
+- [#390](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/390): ``compute vm get cr``:to get change requests by virtual machine.
+- [#396](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/396): ``compute vm get cr``: Add support for ``--output ndjson``.
+
+**Improvements:**
+
+- [#389](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/389): ``compute vm set inform``: take single comma-separated emails or multiple emails.
+- [#395](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/395): ``core``: minimum ``python`` version 3.7.0.
+- [#391](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/391): ``core``: update ``pyvss`` from v0.17.1 to v0.17.2.
+- [#392](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/392): ``core``: update ``tabulate`` from v0.8.7 to v0.8.9.
+- [#393](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/393): ``core``: update ``dateparser`` from v0.7.6 to v1.0.0
+- [#397](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/397): ``core``: update ``validators`` from v0.18.1 to v0.18.2.
+- [#398](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/398): ``core``: update ``Pygments`` from v2.7.1 to v2.8.0.
+- [#399](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/399): ``core``: update ``ruamel.yaml`` from v0.16.12 to v0.16.13.
+- [#394](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/394): ``ci``: pipeline release-dist jobs missing dependencies: ``rust`` and ``cargo``.
+
 ## [v0.10.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.10.4) (2021-02-04)
 
 **Improvements:**
