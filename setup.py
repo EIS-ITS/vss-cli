@@ -2,7 +2,6 @@
 """Setup script for ITS Private Cloud CLI."""
 import codecs
 from datetime import datetime as dt
-import io
 import os
 import re
 from typing import List
@@ -33,13 +32,13 @@ def find_version(*file_paths):
 
 def load_requirements(requires_file: str = 'requirements.txt') -> List[str]:
     """Load requirements from file"""
-    with io.open(requires_file, encoding='utf-8') as f:
+    with open(requires_file, encoding='utf-8') as f:
         return f.read().splitlines()
 
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
 
-REQUIRED_PYTHON_VER = (3, 6, 4)
+REQUIRED_PYTHON_VER = (3, 7, 0)
 REQUIRES = load_requirements()
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
