@@ -130,7 +130,7 @@ release-dist-develop:
   image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make libffi-dev openssl-dev
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
     - pip install twine setuptools wheel
     - twine upload -u ${PYPI_USER} -p ${PYPI_PASSWORD} dist/*
   dependencies:
@@ -147,7 +147,7 @@ release-dist-develop-local:
   image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
-   - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make libffi-dev openssl-dev
+   - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
    - pip install twine setuptools wheel
    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token twine upload --repository-url https://gitlab-ee.eis.utoronto.ca/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
   dependencies:
@@ -316,7 +316,7 @@ release-dist-tag:
   image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make libffi-dev openssl-dev
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
     - pip install twine setuptools wheel
     - twine upload -u ${PYPI_USER} -p ${PYPI_PASSWORD} dist/*
   dependencies:
@@ -330,7 +330,7 @@ release-dist-tag-local:
   image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make libffi-dev openssl-dev
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
     - pip install twine setuptools wheel
     - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token twine upload --repository-url https://gitlab-ee.eis.utoronto.ca/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
   dependencies:

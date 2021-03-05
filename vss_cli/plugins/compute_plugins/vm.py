@@ -16,7 +16,8 @@ from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_args as c_sa, rel_opts as c_so
 from vss_cli.validators import (
-    validate_email, validate_json_type, validate_phone_number)
+    flexible_email_args, validate_email, validate_json_type,
+    validate_phone_number)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -150,6 +151,48 @@ def compute_vm_get_cds(ctx: Configuration, unit):
         obj = [d.get('data') for d in devs] if devs else []
         columns = ctx.columns or const.COLUMNS_VM_CD_MIN
         ctx.echo(format_output(ctx, obj, columns=columns))
+
+
+@compute_vm_get.command('cr', short_help='Change Requests')
+@so.filter_opt
+@so.sort_opt
+@so.all_opt
+@so.count_opt
+@so.page_opt
+@pass_context
+def compute_vm_get_cr(
+    ctx: Configuration, filter_by, page, sort, show_all, count
+):
+    """Get associated Vm Change Requests.
+
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,Processed
+
+    vss-cli compute vm get <id> cr -f attribute=name
+
+    Sort list in the following format <field_name>=<asc|desc>. For example:
+
+    vss-cli compute vm get <id> cr -s created_on=desc
+    """
+    columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE_MIN_VM
+    params = dict(expand=1, sort='created_on,desc')
+    if all(filter_by):
+        params['filter'] = ';'.join(filter_by)
+    if all(sort):
+        params['sort'] = ';'.join(sort)
+    # make request
+    with ctx.spinner(disable=ctx.debug):
+        _requests = ctx.get_vm_change_requests(
+            ctx.moref, show_all=show_all, per_page=count, **params
+        )
+
+    output = format_output(ctx, _requests, columns=columns)
+    # page results
+    if page:
+        click.echo_via_pager(output)
+    else:
+        ctx.echo(output)
 
 
 @compute_vm_get.command('client', short_help='Client (Metadata)')
@@ -1782,7 +1825,13 @@ def compute_vm_set_ha_group_mk(ctx: Configuration, vm_id, replace):
 @compute_vm_set.command(
     'inform', short_help='Informational contacts (Metadata)'
 )
-@click.argument('email', type=click.STRING, nargs=-1, required=True)
+@click.argument(
+    'email',
+    type=click.STRING,
+    nargs=-1,
+    required=True,
+    callback=flexible_email_args,
+)
 @click.option(
     '-r',
     '--replace',

@@ -28,9 +28,23 @@ def validate_email(ctx, param, email):
     email_regex = r'([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+' r'\.[a-zA-Z0-9-.]+$)'
     if not re.match(email_regex, email):
         raise click.BadParameter(
-            'Value must be in the ' 'following format user@utoronto.ca'
+            f'Value must be in the following format user@utoronto.ca: {email}'
         )
     return email
+
+
+def flexible_email_args(ctx, param, value):
+    """Validate multiple emails."""
+    emails = []
+    for val in value:
+        if ',' in val:
+            n_val = [i.strip() for i in val.split(',')]
+            emails.extend(n_val)
+        else:
+            emails.append(val)
+    for e in emails:
+        validate_email(ctx, param, e)
+    return emails
 
 
 def validate_json_type(ctx, param, value):

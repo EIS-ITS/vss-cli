@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.10.4"
+__version__ = "0.11.0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -171,6 +171,15 @@ COLUMNS_REQUEST_CHANGE_MIN = [
     *COLUMNS_VIM_REQUEST,
     ("approval.approved",),
     ("attribute",),
+]
+COLUMNS_REQUEST_CHANGE_MIN_VM = [
+    ("id",),
+    ("created_on",),
+    ("status",),
+    *COLUMNS_VIM_REQUEST,
+    ("user.username",),
+    ("attribute",),
+    ("value[*]",),
 ]
 COLUMNS_REQUEST_CHANGE = [
     *COLUMNS_REQUEST_CHANGE_MIN,
