@@ -153,6 +153,48 @@ def compute_vm_get_cds(ctx: Configuration, unit):
         ctx.echo(format_output(ctx, obj, columns=columns))
 
 
+@compute_vm_get.command('cr', short_help='Change Requests')
+@so.filter_opt
+@so.sort_opt
+@so.all_opt
+@so.count_opt
+@so.page_opt
+@pass_context
+def compute_vm_get_cr(
+    ctx: Configuration, filter_by, page, sort, show_all, count
+):
+    """Get associated Vm Change Requests.
+
+    Filter list in the following format <field_name>=<operator>,<value>
+    where operator is eq, ne, lt, le, gt, ge, like, in.
+    For example: status=eq,Processed
+
+    vss-cli compute vm get <id> cr -f attribute=name
+
+    Sort list in the following format <field_name>=<asc|desc>. For example:
+
+    vss-cli compute vm get <id> cr -s created_on=desc
+    """
+    columns = ctx.columns or const.COLUMNS_REQUEST_CHANGE_MIN_VM
+    params = dict(expand=1, sort='created_on,desc')
+    if all(filter_by):
+        params['filter'] = ';'.join(filter_by)
+    if all(sort):
+        params['sort'] = ';'.join(sort)
+    # make request
+    with ctx.spinner(disable=ctx.debug):
+        _requests = ctx.get_vm_change_requests(
+            ctx.moref, show_all=show_all, per_page=count, **params
+        )
+
+    output = format_output(ctx, _requests, columns=columns)
+    # page results
+    if page:
+        click.echo_via_pager(output)
+    else:
+        ctx.echo(output)
+
+
 @compute_vm_get.command('client', short_help='Client (Metadata)')
 @pass_context
 def compute_vm_get_client(ctx: Configuration):
