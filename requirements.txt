@@ -12,6 +12,6 @@ prompt-toolkit==2.0.8
 Pygments==2.7.1
 pick==1.0.0
 dataclasses-json==0.5.2
-validators==0.18.1
+validators==0.18.2
 click-spinner==0.1.10
 ruamel.yaml==0.16.12
