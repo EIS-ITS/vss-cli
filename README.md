@@ -229,7 +229,7 @@ Options:
   -p, --password TEXT             The API password for VSS API.
   --timeout INTEGER               Timeout for network operations.  [default:
                                   30]
-  -o, --output [json|yaml|table|auto]
+  -o, --output [json|yaml|table|auto|ndjson]
                                   Output format.  [default: auto]
   -v, --verbose                   Enables verbose mode.
   -x                              Print back traces when exception occurs.

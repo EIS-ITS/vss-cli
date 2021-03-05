@@ -175,7 +175,7 @@ def _default_token() -> Optional[str]:
     '-o',
     '--output',
     help="Output format (default: auto).",
-    type=click.Choice(['json', 'yaml', 'table', 'auto']),
+    type=click.Choice(['json', 'yaml', 'table', 'auto', 'ndjson']),
     default=None,
     envvar='VSS_OUTPUT',
     show_default=True,
