@@ -167,12 +167,13 @@ def process_user_data(
     from pyvss.helper import compress_encode_string
 
     _init_ctx(ctx)
-    try:
-        fp = Path(value)
-        txt = fp.read_text()
-        return (
-            compress_encode_string(txt),
-            'gzip+base64',
-        )
-    except Exception:
-        raise BadArgumentUsage(f'{param} must a valid file path.')
+    if value:
+        try:
+            fp = Path(value)
+            txt = fp.read_text()
+            return (
+                compress_encode_string(txt),
+                'gzip+base64',
+            )
+        except Exception:
+            raise BadArgumentUsage(f'{param} must a valid file path.')
