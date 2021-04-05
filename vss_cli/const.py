@@ -34,10 +34,13 @@ DEFAULT_RAW_OUTPUT = "json"
 DEFAULT_OUTPUT = "auto"
 DEFAULT_VERBOSE = False
 DEFAULT_DEBUG = False
+DEFAULT_COLUMNS_WIDTH = -1
+DEFAULT_WAIT_FOR_REQUESTS = False
 
 DEFAULT_SETTINGS = {
     "endpoint": DEFAULT_ENDPOINT,
     "output": DEFAULT_OUTPUT,
+    "webdav_server": DEFAULT_WEBDAV_SERVER,
     "table_format": DEFAULT_TABLE_FORMAT,
     "check_for_messages": DEFAULT_CHECK_MESSAGES,
     "check_for_updates": DEFAULT_CHECK_UPDATES,
@@ -55,6 +58,7 @@ GENERAL_SETTINGS = {
     "verbose": bool,
     "default_endpoint_name": str,
     "output": str,
+    "webdav_server": str,
     "table_format": str,
     "timeout": int,
     "columns_width": int,

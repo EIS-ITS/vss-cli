@@ -29,13 +29,14 @@ class ConfigFileGeneral:
     check_for_updates: bool = const.DEFAULT_CHECK_UPDATES
     check_for_messages: bool = const.DEFAULT_CHECK_MESSAGES
     default_endpoint_name: str = const.DEFAULT_ENDPOINT_NAME
-    debug: bool = False
+    webdav_server: str = const.DEFAULT_WEBDAV_SERVER
+    debug: bool = const.DEFAULT_DEBUG
     output: str = const.DEFAULT_RAW_OUTPUT
-    table_format: str = 'simple'
+    table_format: str = const.DEFAULT_TABLE_FORMAT
     timeout: int = const.DEFAULT_TIMEOUT
-    verbose: bool = False
-    columns_width: int = -1
-    wait_for_requests: bool = False
+    verbose: bool = const.DEFAULT_VERBOSE
+    columns_width: int = const.DEFAULT_COLUMNS_WIDTH
+    wait_for_requests: bool = const.DEFAULT_WAIT_FOR_REQUESTS
 
 
 @dataclass_json

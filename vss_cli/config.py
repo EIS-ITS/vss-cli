@@ -50,7 +50,8 @@ class Configuration(VssManager):
         self.endpoint_name = const.DEFAULT_ENDPOINT_NAME
         # end of endpoint settings
         self.history = const.DEFAULT_HISTORY  # type: str
-        self.webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
+        self.webdav_server = None  # type: Optional[str]
+        self._webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.token = None  # type: Optional[str]
@@ -179,6 +180,7 @@ class Configuration(VssManager):
             "verbose": self.verbose,
             "wait": self.wait,
             "dry_run": self.dry_run,
+            "webdav_server": self.webdav_server,
         }
 
         return f"<Configuration({view})"
