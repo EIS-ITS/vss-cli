@@ -30,6 +30,14 @@ source_image_opt = click.option(
     required=True,
     autocompletion=autocompletion.vm_images,
 )
+source_clib_opt = click.option(
+    '--source',
+    '-s',
+    help='Source content library deployable item.',
+    type=click.STRING,
+    required=True,
+    autocompletion=autocompletion.clib_deployable_items,
+)
 description_opt = click.option(
     '--description',
     '-d',
