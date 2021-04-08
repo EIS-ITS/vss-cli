@@ -337,7 +337,13 @@ def process_filters(ctx, param, value: List[str]) -> List[str]:
                 if not has_op and op_query_val_type == int:
                     _LOGGING.debug('operator not found in query. using eq')
                     filter_by.insert(1, 'eq')
-                if not has_wc and op_query_val_type == str:
+                if has_op and op_query_val_type == str:
+                    _LOGGING.debug(
+                        f'operator found in query. '
+                        f'{op_query[0]} : {filter_by}'
+                    )
+                elif not has_wc and op_query_val_type == str:
+                    _LOGGING.debug(f'{filter_by}')
                     filter_by[2] = f'%{filter_by[2]}%'
             filter_by = ','.join(filter_by)
             processed_filters.append(filter_by)
