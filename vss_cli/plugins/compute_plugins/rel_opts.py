@@ -263,6 +263,12 @@ firmware_nr_opt = click.option(
     autocompletion=autocompletion.vm_firmware,
     required=False,
 )
+snapshot = click.option(
+    '--snapshot',
+    help='Snapshot to clone.',
+    autocompletion=autocompletion.vm_snapshots,
+    required=False,
+)
 firmware_opt = click.option(
     '--firmware',
     '-w',

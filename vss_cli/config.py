@@ -847,6 +847,25 @@ class Configuration(VssManager):
                 return [v[index]]
             return v
 
+    def get_vm_snapshot_by_id_name_or_desc(
+        self, vm_id: str, id_name_or_desc: str
+    ) -> List[Dict]:
+        """Get vm snapshot by id name or description."""
+        snapshots = self.get_vm_snapshots(vm_id)
+        attributes = [('id', int), ('name', str), ('description', str)]
+        objs = self._filter_objects_by_attrs(
+            id_name_or_desc, snapshots, attributes
+        )
+        if not objs:
+            raise click.BadParameter(f'{id_name_or_desc} could not be found')
+        d_count = len(objs)
+        if d_count > 1:
+            return self.pick(
+                objs,
+                options=[f"{i['name']} ({i['description']})" for i in objs],
+            )
+        return objs
+
     def get_domain_by_name_or_moref(self, name_or_moref: str) -> List[Dict]:
         """Get domain by name or mo reference."""
         g_domains = self.get_domains()

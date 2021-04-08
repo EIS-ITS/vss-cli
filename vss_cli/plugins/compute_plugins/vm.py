@@ -3284,6 +3284,7 @@ def compute_vm_mk_template(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.snapshot
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_clone(
@@ -3309,6 +3310,7 @@ def compute_vm_mk_clone(
     vss_service,
     instances,
     firmware,
+    snapshot,
 ):
     """Clone virtual machine from running or powered off vm.
 
@@ -3368,6 +3370,9 @@ def compute_vm_mk_clone(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    if snapshot:
+        _snap = ctx.get_vm_snapshot_by_id_name_or_desc(vm_id, snapshot)
+        payload['source_snap_id'] = _snap[0]['id']
     if instances > 1:
         payload['count'] = instances
         obj = ctx.create_vms_from_clone(**payload)
