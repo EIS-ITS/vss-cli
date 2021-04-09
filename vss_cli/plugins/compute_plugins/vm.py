@@ -3568,7 +3568,7 @@ def compute_vm_mk_clib(
     firmware,
 ):
     """Deploy virtual machine from Content Library."""
-    item_ref = ctx.get_content_library_item(source)
+    item_ref = ctx.get_clib_deployable_item_by_name_or_id_path(source)
     # payload
     payload = dict(
         description=description,

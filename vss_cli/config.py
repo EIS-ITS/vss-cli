@@ -1028,6 +1028,29 @@ class Configuration(VssManager):
             self.get_isos, name_or_path_or_id
         )
 
+    def get_clib_deployable_item_by_name_or_id_path(
+        self, name_or_id_or_path: Union[str, int]
+    ):
+        """Get content library deployable items."""
+        items = self.get_content_library_items(
+            show_all=True,
+            sort='path,desc',
+            per_page=500,
+            filter="type,in,OVF,VM_TEMPLATE",
+        )
+        attrs = [('id', int), ('name', str)]
+        objs = self._filter_objects_by_attrs(name_or_id_or_path, items, attrs)
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(
+                f'{name_or_id_or_path} could not be found'
+            )
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(objs, options=[f"{i['name']}" for i in objs])
+        return objs
+
     def get_vm_image_by_name_or_id_path(
         self, name_or_path_or_id: Union[str, int]
     ) -> List[Any]:
