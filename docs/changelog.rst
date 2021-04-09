@@ -1,6 +1,25 @@
-
 Changelog 📝
 ============
+
+
+`v0.12.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.12.0>`_ (2021-04-09)
+-------------------------------------------------------------------------------------
+
+**New Features:**
+
+- `#403 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/403>`_: ``compute contentlib``: content library integration.
+- `#405 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/405>`_: ``copmute vm mk from-clib``: deploy vms from content library.
+
+**Improvements:**
+
+- `#402 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/402>`_: ``core``: Add ``--webdav-server`` option to configuration file.
+- `#406 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/406>`_: ``compute vm mk from-clone``: ``--snapshot`` to clone from given snapshot
+- `#404 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/404>`_: ``core``: update ``pyvss`` from v0.17.2 to v0.18.1.
+
+**Bug Fixes:**
+
+- `#401 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/401>`_: ``compute vm mk from-image``: throws exception when user-data is not provided even if it's optional.
+- `#407 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/407>`_: ``core`` : ``--filter-by`` option ignored if operator is included.
 
 `v0.11.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.11.0>`_ (2021-03-05)
 ------------------------------------------------------------------------------------

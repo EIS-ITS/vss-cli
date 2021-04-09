@@ -12,6 +12,7 @@ please `open an issue <https://gitlab-ee.eis.utoronto.ca/vss/vsscli/issues/new>`
    deploy-clone
    deploy-template
    deploy-image
+   deploy-clib
    images
    inventory
    snapshot

@@ -3284,6 +3284,7 @@ def compute_vm_mk_template(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.snapshot
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_clone(
@@ -3309,6 +3310,7 @@ def compute_vm_mk_clone(
     vss_service,
     instances,
     firmware,
+    snapshot,
 ):
     """Clone virtual machine from running or powered off vm.
 
@@ -3368,6 +3370,9 @@ def compute_vm_mk_clone(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    if snapshot:
+        _snap = ctx.get_vm_snapshot_by_id_name_or_desc(vm_id, snapshot)
+        payload['source_snap_id'] = _snap[0]['id']
     if instances > 1:
         payload['count'] = instances
         obj = ctx.create_vms_from_clone(**payload)
@@ -3503,6 +3508,129 @@ def compute_vm_mk_image(
         payload['firmware'] = _firmw[0]['type']
     # request
     obj = ctx.create_vm_from_image(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_mk.command(
+    'from-clib', short_help='Create vm from Content Library item.'
+)
+@click.argument('name', type=click.STRING, required=False)
+@c_so.source_clib_opt
+@c_so.description_opt
+@c_so.client_opt
+@c_so.admin_opt
+@c_so.inform_opt
+@c_so.usage_opt
+@c_so.os_opt
+@c_so.memory_opt
+@c_so.cpu_opt
+@c_so.folder_opt
+@c_so.disk_opt
+@c_so.networks_opt
+@c_so.domain_opt
+@c_so.notes_opt
+@c_so.custom_spec_opt
+@c_so.extra_config_opt
+@c_so.power_on_opt
+@c_so.user_data_opt
+@c_so.net_cfg_opt
+@c_so.vss_service_opt
+@c_so.firmware_nr_opt
+@pass_context
+def compute_vm_mk_clib(
+    ctx: Configuration,
+    name,
+    source,
+    description,
+    client,
+    usage,
+    memory,
+    cpu,
+    folder,
+    disk,
+    notes,
+    admin,
+    inform,
+    net,
+    domain,
+    os,
+    custom_spec,
+    power_on,
+    extra_config,
+    user_data,
+    network_config,
+    vss_service,
+    firmware,
+):
+    """Deploy virtual machine from Content Library."""
+    item_ref = ctx.get_clib_deployable_item_by_name_or_id_path(source)
+    # payload
+    payload = dict(
+        description=description,
+        name=name,
+        usage=usage,
+        client=client,
+        item_id=item_ref[0]['id'],
+        power_on=power_on,
+    )
+    # Hardware
+    if memory:
+        payload['memory'] = memory
+    if cpu:
+        payload['cpu'] = cpu
+    if disk:
+        payload['disks'] = disk
+    if net:
+        payload['networks'] = net
+    if os:
+        _os = ctx.get_os_by_name_or_guest(os)
+        payload['os'] = _os[0]['guest_id']
+    # Logical
+    if folder:
+        _folder = ctx.get_folder_by_name_or_moref_path(folder)
+        payload['folder'] = _folder[0]['moref']
+    if domain:
+        _domain = ctx.get_domain_by_name_or_moref(domain)
+        payload['domain'] = _domain[0]['moref']
+    # Metadata
+    if notes:
+        payload['notes'] = notes
+    if admin:
+        name, phone, email = admin.split(':')
+        payload['admin_email'] = email
+        payload['admin_phone'] = phone
+        payload['admin_name'] = name
+    if inform:
+        payload['inform'] = inform
+    if vss_service:
+        _svc = ctx.get_vss_service_by_name_label_or_id(vss_service)
+        payload['vss_service'] = _svc[0]['id']
+    # Advanced
+    if extra_config:
+        payload['extra_config'] = extra_config
+    if custom_spec:
+        payload['custom_spec'] = custom_spec
+    if user_data:
+        # Cloud-init nocloud config drive
+        udata_pload = {
+            'userdata': user_data[0],
+            'userdata_encoding': user_data[1],
+        }
+        if network_config is not None:
+            udata_pload['networkconfig'] = network_config[0]
+            udata_pload['networkconfig_encoding'] = network_config[1]
+        _LOGGING.debug(f'User data paylaod {udata_pload}')
+        payload['user_data'] = udata_pload
+    if firmware:
+        _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
+        payload['firmware'] = _firmw[0]['type']
+    # request
+    obj = ctx.deploy_vm_from_clib_item(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

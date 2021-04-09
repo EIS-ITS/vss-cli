@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -34,10 +34,13 @@ DEFAULT_RAW_OUTPUT = "json"
 DEFAULT_OUTPUT = "auto"
 DEFAULT_VERBOSE = False
 DEFAULT_DEBUG = False
+DEFAULT_COLUMNS_WIDTH = -1
+DEFAULT_WAIT_FOR_REQUESTS = False
 
 DEFAULT_SETTINGS = {
     "endpoint": DEFAULT_ENDPOINT,
     "output": DEFAULT_OUTPUT,
+    "webdav_server": DEFAULT_WEBDAV_SERVER,
     "table_format": DEFAULT_TABLE_FORMAT,
     "check_for_messages": DEFAULT_CHECK_MESSAGES,
     "check_for_updates": DEFAULT_CHECK_UPDATES,
@@ -55,6 +58,7 @@ GENERAL_SETTINGS = {
     "verbose": bool,
     "default_endpoint_name": str,
     "output": str,
+    "webdav_server": str,
     "table_format": str,
     "timeout": int,
     "columns_width": int,
@@ -124,6 +128,7 @@ COLUMNS_PERMISSION = [("principal",), ("group",), ("propagate",)]
 COLUMNS_MIN = [("id",), ("created_on",), ("updated_on",)]
 COLUMNS_VSS_SERVICE = [("id",), ("label",), ("name",), ("group.name",)]
 COLUMNS_IMAGE = [("id",), ("path",), ("name",)]
+COLUMNS_CLIB_ITEMS = [("id",), ("name",), ("library.name",), ('size',)]
 COLUMNS_OS = [("id",), ("guest_id",), ("full_name",), ("family",)]
 COLUMNS_REQUEST = [*COLUMNS_MIN, ("status",)]
 COLUMNS_REQUEST_WAIT = [('warnings', 'warnings[*]'), ('errors', 'errors[*]')]

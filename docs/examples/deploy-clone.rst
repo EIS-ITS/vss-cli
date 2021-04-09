@@ -94,12 +94,13 @@ arguments and options required:
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
 
-      -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      -e, --extra-config TEXT         Extra configuration key=value format.
       --power-on                      Power on after successful deployment.
       --vss-service TEXT              VSS Service related to VM
       --instances INTEGER             Number of instances to deploy  [default: 1]
+      -w, --firmware TEXT             Firmware type.
+      --snapshot TEXT                 Snapshot to clone.
       --help                          Show this message and exit.
-
 
 
 Network
@@ -231,6 +232,12 @@ request. For this example, the request is made for 2GB of memory, 2 vCPU,
 .. note::
 
     Deploy multiple instances with the ``--instances`` flag.
+
+.. note::
+
+    Cloning a virtual machine from a specific snapshot state, use the ``--snapshot`` flag with the
+    snapshot ``id``. For more information about how to list snapshots, please refer to the
+    Snapshot example.
 
 .. code-block:: bash
 

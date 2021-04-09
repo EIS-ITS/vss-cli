@@ -270,6 +270,26 @@ def isos(
     )
 
 
+def clib_deployable_items(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete deployable items from content library."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_content_library_items,
+        incomplete,
+        attrs=['id', 'name', 'type'],
+        sort_index=1,
+        complete_index=1,
+        f_kwargs={
+            "show_all": True,
+            "sort": "path,desc",
+            "per_page": 500,
+            "filter": "type,in,OVF,VM_TEMPLATE",
+        },
+    )
+
+
 def vm_images(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -490,3 +510,23 @@ def vm_firmware(
         attrs=['type', 'description'],
         f_kwargs={"only_type": False},
     )
+
+
+def vm_snapshots(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM snapshots."""
+    _init_ctx(ctx)
+    if '--source' in args:
+        try:
+            s_pos = args.index('--source')
+            vm_id = args[s_pos + 1]
+            return _autocomplete(
+                ctx.client.get_vm_snapshots,
+                incomplete,
+                attrs=['id', 'name', 'description'],
+                f_kwargs={'vm_id': vm_id},
+            )
+        except IndexError:
+            return []
+    return []

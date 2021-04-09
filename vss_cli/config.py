@@ -50,7 +50,8 @@ class Configuration(VssManager):
         self.endpoint_name = const.DEFAULT_ENDPOINT_NAME
         # end of endpoint settings
         self.history = const.DEFAULT_HISTORY  # type: str
-        self.webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
+        self.webdav_server = None  # type: Optional[str]
+        self._webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.token = None  # type: Optional[str]
@@ -179,6 +180,7 @@ class Configuration(VssManager):
             "verbose": self.verbose,
             "wait": self.wait,
             "dry_run": self.dry_run,
+            "webdav_server": self.webdav_server,
         }
 
         return f"<Configuration({view})"
@@ -845,6 +847,25 @@ class Configuration(VssManager):
                 return [v[index]]
             return v
 
+    def get_vm_snapshot_by_id_name_or_desc(
+        self, vm_id: str, id_name_or_desc: str
+    ) -> List[Dict]:
+        """Get vm snapshot by id name or description."""
+        snapshots = self.get_vm_snapshots(vm_id)
+        attributes = [('id', int), ('name', str), ('description', str)]
+        objs = self._filter_objects_by_attrs(
+            id_name_or_desc, snapshots, attributes
+        )
+        if not objs:
+            raise click.BadParameter(f'{id_name_or_desc} could not be found')
+        d_count = len(objs)
+        if d_count > 1:
+            return self.pick(
+                objs,
+                options=[f"{i['name']} ({i['description']})" for i in objs],
+            )
+        return objs
+
     def get_domain_by_name_or_moref(self, name_or_moref: str) -> List[Dict]:
         """Get domain by name or mo reference."""
         g_domains = self.get_domains()
@@ -1006,6 +1027,29 @@ class Configuration(VssManager):
         return self._get_images_by_name_path_or_id(
             self.get_isos, name_or_path_or_id
         )
+
+    def get_clib_deployable_item_by_name_or_id_path(
+        self, name_or_id_or_path: Union[str, int]
+    ):
+        """Get content library deployable items."""
+        items = self.get_content_library_items(
+            show_all=True,
+            sort='path,desc',
+            per_page=500,
+            filter="type,in,OVF,VM_TEMPLATE",
+        )
+        attrs = [('id', int), ('name', str)]
+        objs = self._filter_objects_by_attrs(name_or_id_or_path, items, attrs)
+        # check if there's no ref
+        if not objs:
+            raise click.BadParameter(
+                f'{name_or_id_or_path} could not be found'
+            )
+        # count for dup results
+        o_count = len(objs)
+        if o_count > 1:
+            return self.pick(objs, options=[f"{i['name']}" for i in objs])
+        return objs
 
     def get_vm_image_by_name_or_id_path(
         self, name_or_path_or_id: Union[str, int]

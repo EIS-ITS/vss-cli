@@ -30,6 +30,14 @@ source_image_opt = click.option(
     required=True,
     autocompletion=autocompletion.vm_images,
 )
+source_clib_opt = click.option(
+    '--source',
+    '-s',
+    help='Source content library deployable item.',
+    type=click.STRING,
+    required=True,
+    autocompletion=autocompletion.clib_deployable_items,
+)
 description_opt = click.option(
     '--description',
     '-d',
@@ -253,6 +261,12 @@ firmware_nr_opt = click.option(
     '-w',
     help='Firmware type.',
     autocompletion=autocompletion.vm_firmware,
+    required=False,
+)
+snapshot = click.option(
+    '--snapshot',
+    help='Snapshot to clone.',
+    autocompletion=autocompletion.vm_snapshots,
     required=False,
 )
 firmware_opt = click.option(
