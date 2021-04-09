@@ -106,3 +106,35 @@ def compute_contentlib_ovf_ls(
 def compute_contentlib_iso(ctx: Configuration):
     """Available ISO images available in Content Library."""
     pass
+
+
+@compute_contentlib_iso.command('ls', short_help='list public ISO images')
+@so.filter_opt
+@so.sort_opt
+@so.all_opt
+@so.page_opt
+@pass_context
+def compute_contentlib_iso_ls(
+    ctx: Configuration, filter_by, show_all, sort, page
+):
+    """List available ISO files available in the Content Library.
+
+    Filter by name and sort desc. For example:
+
+    vss-cli compute contentlib iso ls -f name=ubuntu -s path=asc
+    """
+    params = dict(sort='name,asc')
+    if all(filter_by):
+        params['filter'] = ';'.join(filter_by)
+    if all(sort):
+        params['sort'] = ';'.join(sort)
+    with ctx.spinner(disable=ctx.debug):
+        obj = ctx.get_content_library_iso_items(show_all=show_all, **params)
+    # format
+    columns = ctx.columns or const.COLUMNS_CLIB_ITEMS
+    output = format_output(ctx, obj, columns=columns)
+    # page results
+    if page:
+        click.echo_via_pager(output)
+    else:
+        ctx.echo(output)
