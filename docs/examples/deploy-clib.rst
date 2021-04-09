@@ -238,7 +238,7 @@ descriptor configured and installed:
 Virtual Machine Template
 ------------------------
 
-We are working to get pre-configure virtual machine templates and will update
+We are working to get preconfigured virtual machine templates and will update
 the documentation when ready.
 
 .. _`ClodInit`: https://cloudinit.readthedocs.io/en/latest/topics/examples.html
