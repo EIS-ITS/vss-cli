@@ -3575,7 +3575,7 @@ def compute_vm_mk_clib(
         name=name,
         usage=usage,
         client=client,
-        item_id=item_ref['id'],
+        item_id=item_ref[0]['id'],
         power_on=power_on,
     )
     # Hardware
