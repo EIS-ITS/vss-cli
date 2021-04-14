@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.12.0"
+__version__ = "0.14.0-dev0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -408,10 +408,10 @@ COLUMNS_VSS_OPTIONS = [("options", "[*]")]
 COLUMNS_GROUP = [
     ("name",),
     ("description",),
-    ("members.count",),
+    ("users_count",),
     ("ldap.last_sync",),
 ]
-COLUMNS_GROUPS = [("id",), ("name",), ("description",), ('members.count',)]
+COLUMNS_GROUPS = [("id",), ("name",), ("description",), ('users_count',)]
 COLUMNS_GROUP_MEMBERS = [
     ("username",),
     ("first_name",),
