@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.14.0-dev2"
+__version__ = "0.14.0-dev3"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -138,12 +138,20 @@ COLUMNS_REQUEST_MAX = [
     ("task_id", "task_id"),
     ("user.username",),
 ]
-COLUMNS_REQUEST_IMAGE_SYNC_MIN = [*COLUMNS_REQUEST, ("type",)]
-COLUMNS_REQUEST_IMAGE_SYNC = [
-    *COLUMNS_REQUEST,
-    ("type",),
+COLUMNS_REQUEST_FILE_SYNC = [
     ("deleted",),
     ("added",),
+]
+COLUMNS_REQUEST_VMDK_SYNC_MIN = [*COLUMNS_REQUEST, ('run_time',)]
+COLUMNS_REQUEST_VMDK_SYNC = [
+    *COLUMNS_REQUEST_VMDK_SYNC_MIN,
+    *COLUMNS_REQUEST_FILE_SYNC,
+    *COLUMNS_REQUEST_MAX,
+]
+COLUMNS_REQUEST_IMAGE_SYNC_MIN = [*COLUMNS_REQUEST, ("type",)]
+COLUMNS_REQUEST_IMAGE_SYNC = [
+    *COLUMNS_REQUEST_IMAGE_SYNC_MIN,
+    *COLUMNS_REQUEST_FILE_SYNC,
     *COLUMNS_REQUEST_MAX,
 ]
 COLUMNS_REQUEST_SUBMITTED = [
