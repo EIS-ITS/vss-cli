@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.14.0-dev1"
+__version__ = "0.14.0-dev2"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -162,13 +162,13 @@ COLUMNS_REQUEST_SNAP_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,
     ("action",),
-    ("snapshot.from_date",),
-    ("snapshot.to_date",),
+    ("from_date",),
+    ("to_date",),
 ]
 COLUMNS_REQUEST_SNAP = [
     *COLUMNS_REQUEST_SNAP_MIN,
-    ("snapshot.description",),
-    ("snapshot.snap_id",),
+    ("description",),
+    ("snap_id",),
     ("extensions",),
 ]
 COLUMNS_REQUEST_CHANGE_MIN = [
