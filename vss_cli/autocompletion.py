@@ -414,9 +414,22 @@ def image_sync_requests(
     """Autocomplete Image Sync Requests."""
     _init_ctx(ctx)
     return _autocomplete(
-        ctx.client.get_folder_requests,
+        ctx.client.get_image_sync_requests,
         incomplete,
         attrs=['id', 'type'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
+
+
+def vmdk_sync_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete Image Sync Requests."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_vmdk_sync_requests,
+        incomplete,
+        attrs=['id', 'created_on'],
         f_kwargs={"sort": "created_on,desc", "per_page": 500},
     )
 

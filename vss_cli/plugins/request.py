@@ -21,4 +21,5 @@ from vss_cli.plugins.request_plugins import (  # isort:skip
     inventory,
     new,
     snapshot,
+    vmdk,
 )  # pylint: disable=unused-import

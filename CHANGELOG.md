@@ -1,5 +1,20 @@
 # Changelog 📝
 
+## [v0.12.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.12.1) (2021-04-15)
+
+**Improvements:**
+
+- [#409](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/409): ``account get groups``:  update default columns to recent api changes.
+- [#410](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/410): ``account get group``: update default columns to recent api changes.
+- [#411](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/411): ``request change get``: update default columns to recent api changes.
+- [#412](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/412): ``request new get``: update default columns to recent api changes.
+- [#413](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/413): ``request snapshot get``: update default columns to recent api changes.
+- [#416](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/416): ``docker``: base image ``hub.eis.utoronto.ca/vss/docker/python:3.9-alpine``.
+  
+**Bug Fixes:**
+
+- [#414](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/414): ``request vmdk``: missing command.
+
 ## [v0.12.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.12.0) (2021-04-09)
 
 **New Features:**

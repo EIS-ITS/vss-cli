@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.12.0"
+__version__ = "0.12.1-dev3"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -138,12 +138,20 @@ COLUMNS_REQUEST_MAX = [
     ("task_id", "task_id"),
     ("user.username",),
 ]
-COLUMNS_REQUEST_IMAGE_SYNC_MIN = [*COLUMNS_REQUEST, ("type",)]
-COLUMNS_REQUEST_IMAGE_SYNC = [
-    *COLUMNS_REQUEST,
-    ("type",),
+COLUMNS_REQUEST_FILE_SYNC = [
     ("deleted",),
     ("added",),
+]
+COLUMNS_REQUEST_VMDK_SYNC_MIN = [*COLUMNS_REQUEST, ('run_time',)]
+COLUMNS_REQUEST_VMDK_SYNC = [
+    *COLUMNS_REQUEST_VMDK_SYNC_MIN,
+    *COLUMNS_REQUEST_FILE_SYNC,
+    *COLUMNS_REQUEST_MAX,
+]
+COLUMNS_REQUEST_IMAGE_SYNC_MIN = [*COLUMNS_REQUEST, ("type",)]
+COLUMNS_REQUEST_IMAGE_SYNC = [
+    *COLUMNS_REQUEST_IMAGE_SYNC_MIN,
+    *COLUMNS_REQUEST_FILE_SYNC,
     *COLUMNS_REQUEST_MAX,
 ]
 COLUMNS_REQUEST_SUBMITTED = [
@@ -162,19 +170,19 @@ COLUMNS_REQUEST_SNAP_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,
     ("action",),
-    ("snapshot.from_date",),
-    ("snapshot.to_date",),
+    ("from_date",),
+    ("to_date",),
 ]
 COLUMNS_REQUEST_SNAP = [
     *COLUMNS_REQUEST_SNAP_MIN,
-    ("snapshot.description",),
-    ("snapshot.snap_id",),
+    ("description",),
+    ("snap_id",),
     ("extensions",),
 ]
 COLUMNS_REQUEST_CHANGE_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,
-    ("approval.approved",),
+    ("approved",),
     ("attribute",),
 ]
 COLUMNS_REQUEST_CHANGE_MIN_VM = [
@@ -221,7 +229,7 @@ COLUMNS_REQUEST_INVENTORY = [
 COLUMNS_REQUEST_NEW_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,
-    ("approval.approved",),
+    ("approved",),
     ("built_from",),
 ]
 COLUMNS_REQUEST_NEW = [
@@ -408,10 +416,10 @@ COLUMNS_VSS_OPTIONS = [("options", "[*]")]
 COLUMNS_GROUP = [
     ("name",),
     ("description",),
-    ("members.count",),
+    ("users_count",),
     ("ldap.last_sync",),
 ]
-COLUMNS_GROUPS = [("id",), ("name",), ("description",), ('members.count',)]
+COLUMNS_GROUPS = [("id",), ("name",), ("description",), ('users_count',)]
 COLUMNS_GROUP_MEMBERS = [
     ("username",),
     ("first_name",),
