@@ -234,13 +234,15 @@ the backslash ``\``:
 
 Command Output
 --------------
-The VSS CLI supports two different output formats:
+The VSS CLI supports the following formats:
 
 * Table (table)
 * JSON (json)
 * YAML (yaml)
+* NDJSON (ndjson)
+* auto (table)
 
-By default VSS CLI output is text, and this can be configured either by
+By default VSS CLI output is ``table``, and this can be configured either by
 the output option:
 
 .. code-block:: bash

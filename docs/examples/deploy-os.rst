@@ -183,10 +183,11 @@ command takes:
       --notes TEXT                    Custom notes.
       -s, --iso TEXT                  ISO image to be mounted after creation
       -h, --high-io                   Use VMware Paravirtual SCSIController.
-      -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      -e, --extra-config TEXT         Extra configuration key=value format.
       --power-on                      Power on after successful deployment.
       --vss-service TEXT              VSS Service related to VM
       --instances INTEGER             Number of instances to deploy  [default: 1]
+      -w, --firmware TEXT             Firmware type.
       --help                          Show this message and exit.
 
 
@@ -196,9 +197,12 @@ and a tag ``Project:CMS`` as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm mk --wait shell --power-on --description 'NGINX web server' --client EIS \
-    --os centos8 --memory 1 --cpu 1 --folder APIDemo --disk 20 --disk 100=independent_persistent \
-    --net VSS --iso centos --notes 'Project: CMS' Frontend3
+    vss-cli  --wait compute vm mk shell --description 'Application server' --client EIS \
+    --os centos8 --memory 1 --cpu 1 --folder APIDemo \
+    --disk 20 --disk 100=independent_persistent \
+    --net PUBLIC --iso centos \
+    --notes 'Project: CMS' --power-on \
+    AppServer3
 
 .. note::
 
