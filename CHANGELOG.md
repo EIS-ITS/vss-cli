@@ -1,5 +1,19 @@
 # Changelog 📝
 
+## [v2021.5.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.0) (2021-05-05)
+
+**New Features:**
+
+- [#418](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/418): ``compute vm set retire mk``: manage retirement requests for vms.
+- [#418](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/418): ``compute vm set retire confirm``: manage retirement requests for vms.
+- [#418](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/418): ``compute vm set retire cancel``: manage retirement requests for vms.
+- [#418](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/418): ``compute vm set retire send``: manage retirement requests for vms.
+- [#419](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/419): ``compute vm get retire``: get retirement requests for vm.
+
+**Improvements:**
+
+- [#417](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/417): ``core``: move from ``semver`` to ``calver``.
+
 ## [v0.12.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.12.1) (2021-04-15)
 
 **Improvements:**

@@ -166,6 +166,23 @@ COLUMNS_REQUEST_MULT_SUBMITTED = [
     ("task_id", "request.task_id[*]"),
     ("message",),
 ]
+COLUMNS_REQUEST_RETIRE = [
+    *COLUMNS_REQUEST,
+    *COLUMNS_VIM_REQUEST,
+    ("retire_on",),
+    ("warning",),
+    ("warning_on",),
+]
+COLUMNS_REQUEST_RETIRE_CANCEL = [
+    *COLUMNS_REQUEST_RETIRE,
+    ("cancelled_on",),
+    ("cancelled_by_user.username",),
+]
+COLUMNS_REQUEST_RETIRE_CONFIRM = [
+    *COLUMNS_REQUEST_RETIRE,
+    ("confirmed_on",),
+    ("confirmed_by_user.username",),
+]
 COLUMNS_REQUEST_SNAP_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,

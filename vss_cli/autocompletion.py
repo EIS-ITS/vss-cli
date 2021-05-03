@@ -543,3 +543,23 @@ def vm_snapshots(
         except IndexError:
             return []
     return []
+
+
+def vm_retirement_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM retirement requests."""
+    _init_ctx(ctx)
+    if '--source' in args:
+        try:
+            s_pos = args.index('--source')
+            vm_id = args[s_pos + 1]
+            return _autocomplete(
+                ctx.client.get_vm_retirement_requests,
+                incomplete,
+                attrs=['id', 'name', 'description'],
+                f_kwargs={'vm_id': vm_id},
+            )
+        except IndexError:
+            return []
+    return []

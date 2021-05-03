@@ -1,10 +1,13 @@
 """Validators module for the VSS-CLI."""
+from datetime import datetime
 import json
 import logging
 import re
 from uuid import UUID
 
 import click
+
+from vss_cli import const
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -104,3 +107,27 @@ def validate_vm_moref(ctx, param, value):
         if re.match(r'vm-[0-9]+', value):
             return value
     return False
+
+
+def retirement_value(ctx, param, value):
+    """Process retirement value."""
+    if value:
+        tup = value.split(',')
+        if len(tup) > 1:
+            try:
+                hours, days, months = value.split(',')
+            except ValueError:
+                raise click.BadParameter(
+                    'Value format does not match: <hours>,<days>,<months>'
+                )
+            return hours, months, days
+        else:
+            try:
+                _ = datetime.strptime(value, const.DEFAULT_DATETIME_FMT)
+            except ValueError:
+                raise click.BadParameter(
+                    f"Value format does not match "
+                    f"'{const.DEFAULT_DATETIME_FMT}'"
+                )
+            return value
+    return value

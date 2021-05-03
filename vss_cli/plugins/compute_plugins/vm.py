@@ -16,7 +16,7 @@ from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_args as c_sa, rel_opts as c_so
 from vss_cli.validators import (
-    flexible_email_args, validate_email, validate_json_type,
+    flexible_email_args, retirement_value, validate_email, validate_json_type,
     validate_phone_number)
 
 _LOGGING = logging.getLogger(__name__)
@@ -2084,6 +2084,176 @@ def compute_vm_set_nic_rm(ctx: Configuration, unit, confirm):
         raise click.ClickException('Cancelled by user.')
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.group('retire', short_help='VM retirement.')
+@pass_context
+def compute_vm_set_retirement(ctx: Configuration):
+    """Manage virtual machine retirement requests.
+
+    Create, confirm and cancel virtual machine retirement requests.
+    """
+    if ctx.payload_options.get('schedule'):
+        _LOGGING.warning(
+            'schedule is ignored for retirement requests. Removing.'
+        )
+        del ctx.payload_options['schedule']
+
+
+@compute_vm_set_retirement.command(
+    'mk', short_help='Create retirement request.'
+)
+@click.option(
+    '--rtype',
+    '-t',
+    type=click.Choice(['timedelta', 'datetime']),
+    help='Retirement request type.',
+    required=True,
+)
+@click.option(
+    '--warning-days',
+    '-w',
+    type=click.INT,
+    help='Days before retirement date to notify',
+)
+@click.option(
+    '--value',
+    '-v',
+    help='Value for given retirement type.',
+    required=True,
+    callback=retirement_value,
+)
+@click.option(
+    '-c', '--confirm', is_flag=True, default=False, help='Confirm state change'
+)
+@pass_context
+def compute_vm_set_retirement_mk(
+    ctx: Configuration, rtype, warning_days, value, confirm
+):
+    """Retire virtual machine on given time.
+
+    vss-cli compute vm set <id> retire mk -t timedelta -w <days> \
+    -v <hours>,<days>,<months>
+
+    vss-cli compute vm set <id> retire mk -t datetime -w <days> \
+    -v "YYYY-MM-DD HH:MM"
+    """
+    if rtype == 'timedelta':
+        payload = dict(
+            hours=value[0], days=value[1], months=value[2], rtype=rtype
+        )
+    else:
+        payload = dict(datetime=value, rtype=rtype)
+    # add if warning
+    if warning_days:
+        payload['warning'] = warning_days
+    else:
+        confirmation = confirm or click.confirm(
+            'No warning will be sent for confirmation or cancellation. \n'
+            'Retirement request will proceed when specified. \n'
+            'Are you sure?'
+        )
+        if not confirmation:
+            raise click.ClickException('Cancelled by user.')
+    # add common options
+    payload.update(ctx.payload_options)
+    # submit request
+    obj = ctx.retire_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_retirement.command(
+    'confirm', short_help='Confirm retirement request.'
+)
+@click.argument(
+    'request_id',
+    type=click.INT,
+    required=True,
+    autocompletion=autocompletion.vm_retirement_requests,
+)
+@pass_context
+def compute_vm_set_retirement_confirm(ctx: Configuration, request_id: int):
+    """Confirm retirement request."""
+    # create payload
+    payload = dict(request_id=request_id)
+    if not ctx.get_vm_retirement_requests(
+        vm_id=ctx.moref, filter=f'id,eq{request_id}'
+    ):
+        raise click.BadArgumentUsage(
+            f'Request ID {request_id} could not be found.'
+        )
+    # request
+    obj = ctx.confirm_retirement_request(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_RETIRE_CONFIRM
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_retirement.command(
+    'cancel', short_help='Cancel retirement request.'
+)
+@click.argument(
+    'request_id',
+    type=click.INT,
+    required=True,
+    autocompletion=autocompletion.vm_retirement_requests,
+)
+def compute_vm_set_retirement_cancel(ctx: Configuration, request_id: int):
+    """Cancel retirement request."""
+    # create payload
+    payload = dict(request_id=request_id)
+    if not ctx.get_vm_retirement_requests(
+        vm_id=ctx.moref, filter=f'id,eq{request_id}'
+    ):
+        raise click.BadArgumentUsage(
+            f'Request ID {request_id} could not be found.'
+        )
+    # request
+    obj = ctx.cancel_retirement_request(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_RETIRE_CANCEL
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_retirement.command(
+    'send', short_help='Send confirmation message.'
+)
+@click.argument(
+    'request_id',
+    type=click.INT,
+    required=True,
+    autocompletion=autocompletion.vm_retirement_requests,
+)
+@pass_context
+def compute_vm_set_retirement_notify(ctx: Configuration, request_id: int):
+    """Cancel retirement request."""
+    # create payload
+    payload = dict(request_id=request_id)
+    if not ctx.get_vm_retirement_requests(
+        vm_id=ctx.moref, filter=f'id,eq{request_id}'
+    ):
+        raise click.BadArgumentUsage(
+            f'Request ID {request_id} could not be found.'
+        )
+    # request
+    obj = ctx.send_confirmation_retirement_request(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_RETIRE_CANCEL
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
     # wait for request
     if ctx.wait_for_requests:
