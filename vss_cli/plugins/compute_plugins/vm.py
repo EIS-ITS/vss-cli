@@ -567,6 +567,37 @@ def compute_vm_get_perms(ctx: Configuration, page):
     ctx.echo(format_output(ctx, obj, columns=columns))
 
 
+@compute_vm_get.command('retire', short_help='Retirement Requests')
+@so.filter_opt
+@so.sort_opt
+@so.all_opt
+@so.count_opt
+@so.page_opt
+@pass_context
+def compute_vm_get_retirement(
+    ctx: Configuration, filter_by, page, sort, show_all, count
+):
+    """Virtual Machine retirement requests."""
+    columns = ctx.columns or const.COLUMNS_REQUEST_RETIRE
+    params = dict(expand=1, sort='created_on,desc')
+    if all(filter_by):
+        params['filter'] = ';'.join(filter_by)
+    if all(sort):
+        params['sort'] = ';'.join(sort)
+    # make request
+    with ctx.spinner(disable=ctx.debug):
+        _requests = ctx.get_vm_retirement_requests(
+            ctx.moref, show_all=show_all, per_page=count, **params
+        )
+
+    output = format_output(ctx, _requests, columns=columns)
+    # page results
+    if page:
+        click.echo_via_pager(output)
+    else:
+        ctx.echo(output)
+
+
 @compute_vm_get.command('snapshot', short_help='Snapshots')
 @click.argument('snapshot_id', type=int, required=False)
 @pass_context
@@ -2144,10 +2175,14 @@ def compute_vm_set_retirement_mk(
     """
     if rtype == 'timedelta':
         payload = dict(
-            hours=value[0], days=value[1], months=value[2], rtype=rtype
+            vm_id=ctx.moref,
+            value=dict(hours=value[0], days=value[1], months=value[2]),
+            rtype=rtype,
         )
     else:
-        payload = dict(datetime=value, rtype=rtype)
+        payload = dict(
+            vm_id=ctx.moref, value=dict(datetime=value), rtype=rtype
+        )
     # add if warning
     if warning_days:
         payload['warning'] = warning_days
@@ -2162,6 +2197,7 @@ def compute_vm_set_retirement_mk(
     # add common options
     payload.update(ctx.payload_options)
     # submit request
+    _LOGGING.debug(f'retire payload: {payload}')
     obj = ctx.retire_vm(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
@@ -2210,6 +2246,7 @@ def compute_vm_set_retirement_confirm(ctx: Configuration, request_id: int):
     required=True,
     autocompletion=autocompletion.vm_retirement_requests,
 )
+@pass_context
 def compute_vm_set_retirement_cancel(ctx: Configuration, request_id: int):
     """Cancel retirement request."""
     # create payload

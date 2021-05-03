@@ -116,11 +116,14 @@ def retirement_value(ctx, param, value):
         if len(tup) > 1:
             try:
                 hours, days, months = value.split(',')
+                hours = int(hours)
+                days = int(days)
+                months = int(months)
             except ValueError:
                 raise click.BadParameter(
                     'Value format does not match: <hours>,<days>,<months>'
                 )
-            return hours, months, days
+            return hours, days, months
         else:
             try:
                 _ = datetime.strptime(value, const.DEFAULT_DATETIME_FMT)
