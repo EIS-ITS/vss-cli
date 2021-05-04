@@ -545,10 +545,23 @@ def vm_snapshots(
     return []
 
 
-def vm_retirement_requests(
+def retirement_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM retirement requests."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_retirement_requests,
+        incomplete,
+        attrs=['id', 'vm_moref', 'vm_name', 'retire_on'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
+
+
+def vm_retirement_requests(
+    ctx: Configuration, args: List, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM retirement requests by VM."""
     _init_ctx(ctx)
     if '--source' in args:
         try:

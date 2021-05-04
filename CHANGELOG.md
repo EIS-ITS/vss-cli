@@ -9,10 +9,21 @@
 - [#418](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/418): ``compute vm set retire cancel``: manage retirement requests for vms.
 - [#418](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/418): ``compute vm set retire send``: manage retirement requests for vms.
 - [#419](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/419): ``compute vm get retire``: get retirement requests for vm.
+- [#420](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/420): ``request retire ls``: list retirement requests.
+- [#420](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/420): ``request retire get``: get retirement request info.
+- [#420](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/420): ``request retire confirm``: confirm retirement request.
+- [#420](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/420): ``request retire cancel``: cancel retirement request.
+- [#420](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/420): ``request retire send``: send notification for a retirement request.
+
 
 **Improvements:**
 
 - [#417](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/417): ``core``: move from ``semver`` to ``calver``.
+
+
+**Bug Fixes:**
+
+- [#421](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/421): ``request new retry``: ignores ``--wait`` option.
 
 ## [v0.12.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.12.1) (2021-04-15)
 
