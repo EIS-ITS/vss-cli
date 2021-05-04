@@ -2,7 +2,8 @@ Changelog 📝
 ============
 
 `v2021.5.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.0>`_ (2021-05-05)
--------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
 **New Features:**
 
 - `#418 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/418>`_: ``compute vm set retire mk``: manage retirement requests for vms.
@@ -23,6 +24,7 @@ Changelog 📝
 **Bug Fixes:**
 
 - `#421 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/421>`_: ``request new retry``: ignores ``--wait`` option.
+- `#422 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/422>`_: ``request change retry``: ignores ``--wait`` option.
 
 
 `v0.12.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.12.1>`_ (2021-04-15)

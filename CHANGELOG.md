@@ -15,15 +15,14 @@
 - [#420](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/420): ``request retire cancel``: cancel retirement request.
 - [#420](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/420): ``request retire send``: send notification for a retirement request.
 
-
 **Improvements:**
 
 - [#417](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/417): ``core``: move from ``semver`` to ``calver``.
 
-
 **Bug Fixes:**
 
 - [#421](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/421): ``request new retry``: ignores ``--wait`` option.
+- [#422](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/422): ``request change retry``: ignores ``--wait`` option.
 
 ## [v0.12.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v0.12.1) (2021-04-15)
 
