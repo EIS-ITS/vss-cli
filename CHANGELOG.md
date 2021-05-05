@@ -18,6 +18,7 @@
 **Improvements:**
 
 - [#417](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/417): ``core``: move from ``semver`` to ``calver``.
+- [#423](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/423): ``compute vm set custom-spec``: allow multiple ``--dns-suffix`` options for dns search settings.
 
 **Bug Fixes:**
 

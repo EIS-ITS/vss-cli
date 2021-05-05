@@ -1216,7 +1216,7 @@ def compute_vm_set_cpu_hot_add(ctx: Configuration, status):
     type=click.STRING,
     multiple=True,
     required=False,
-    help='DNS list.',
+    help='DNS servers list.',
 )
 @click.option(
     '--interface',
@@ -1226,9 +1226,17 @@ def compute_vm_set_cpu_hot_add(ctx: Configuration, status):
     multiple=True,
     help='Interfaces to customize in json format.',
 )
+@click.option(
+    '--dns-suffix',
+    '-s',
+    type=click.STRING,
+    multiple=True,
+    required=False,
+    help='list of DNS search domains to add to the DNS configuration.',
+)
 @pass_context
 def compute_vm_set_custom_spec(
-    ctx: Configuration, hostname, domain, dns, interface
+    ctx: Configuration, hostname, domain, dns, interface, dns_suffix
 ):
     """Set up Guest OS customization specification.
 
@@ -1236,12 +1244,14 @@ def compute_vm_set_custom_spec(
     """
     if ctx.is_powered_on_vm(ctx.moref):
         raise Exception(
-            'Cannot perform operation ' 'on VM with current power state'
+            'Cannot perform operation on VM with current power state'
         )
     # temp custom_spec
     _custom_spec = dict(hostname=hostname, domain=domain)
     if dns:
         _custom_spec['dns'] = dns
+    if dns_suffix:
+        _custom_spec['dns_suffix'] = dns_suffix
     interfaces = list()
     # interfaces
     if interface:

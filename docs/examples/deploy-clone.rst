@@ -190,6 +190,9 @@ structured as follows:
       "dns": [
         "string"
       ],
+      "dns_suffix": [
+        "string"
+      ],
       "interfaces": [{"dhcp": "bool",
                       "ip": "string",
                       "mask": "string",
