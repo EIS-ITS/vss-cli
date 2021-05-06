@@ -178,7 +178,7 @@ virtual machines are identical after deployed. To customize the guest
 operating system, VMware Tools and Perl must be installed in
 the source virtual machine.
 
-The ``vss-cli compute vm mk from-clone `` command provides the option
+The ``vss-cli compute vm mk from-clone`` command provides the option
 ``-p/--custom-spec`` to pass the guest os customization spec, which is
 structured as follows:
 
@@ -188,6 +188,9 @@ structured as follows:
       "hostname": "string",
       "domain": "string",
       "dns": [
+        "string"
+      ],
+      "dns_suffix": [
         "string"
       ],
       "interfaces": [{"dhcp": "bool",

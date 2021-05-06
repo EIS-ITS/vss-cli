@@ -89,3 +89,6 @@ def request_mgmt_new_retry(ctx: Configuration, rid):
         obj = ctx.retry_new_request(rid)
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)

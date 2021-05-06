@@ -4,7 +4,7 @@ import click
 import vss_cli.autocompletion as autocompletion
 from vss_cli.plugins.compute_plugins import callbacks
 from vss_cli.validators import (
-    validate_admin, validate_inform, validate_json_type)
+    retirement_value, validate_admin, validate_inform, validate_json_type)
 
 source_opt = click.option(
     '--source',
@@ -275,4 +275,22 @@ firmware_opt = click.option(
     help='Firmware type.',
     autocompletion=autocompletion.vm_firmware,
     required=True,
+)
+retire_type = click.option(
+    '--retire-type',
+    type=click.Choice(['timedelta', 'datetime']),
+    help='Retirement request type.',
+    required=False,
+)
+retire_warning = click.option(
+    '--retire-warning',
+    type=click.INT,
+    required=False,
+    help='Days before retirement date to notify',
+)
+retire_value = click.option(
+    '--retire-value',
+    help='Value for given retirement type. ' 'i.e. <hours>,<days>,<months>',
+    required=False,
+    callback=retirement_value,
 )

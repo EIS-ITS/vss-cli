@@ -15,8 +15,9 @@ from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_args as c_sa, rel_opts as c_so
+from vss_cli.plugins.compute_plugins.helper import process_retirement_new
 from vss_cli.validators import (
-    flexible_email_args, validate_email, validate_json_type,
+    flexible_email_args, retirement_value, validate_email, validate_json_type,
     validate_phone_number)
 
 _LOGGING = logging.getLogger(__name__)
@@ -565,6 +566,37 @@ def compute_vm_get_perms(ctx: Configuration, page):
     obj = ctx.get_vm_permission(ctx.moref)
     columns = ctx.columns or const.COLUMNS_OBJ_PERMISSION
     ctx.echo(format_output(ctx, obj, columns=columns))
+
+
+@compute_vm_get.command('retire', short_help='Retirement Requests')
+@so.filter_opt
+@so.sort_opt
+@so.all_opt
+@so.count_opt
+@so.page_opt
+@pass_context
+def compute_vm_get_retirement(
+    ctx: Configuration, filter_by, page, sort, show_all, count
+):
+    """Virtual Machine retirement requests."""
+    columns = ctx.columns or const.COLUMNS_REQUEST_RETIRE
+    params = dict(expand=1, sort='created_on,desc')
+    if all(filter_by):
+        params['filter'] = ';'.join(filter_by)
+    if all(sort):
+        params['sort'] = ';'.join(sort)
+    # make request
+    with ctx.spinner(disable=ctx.debug):
+        _requests = ctx.get_vm_retirement_requests(
+            ctx.moref, show_all=show_all, per_page=count, **params
+        )
+
+    output = format_output(ctx, _requests, columns=columns)
+    # page results
+    if page:
+        click.echo_via_pager(output)
+    else:
+        ctx.echo(output)
 
 
 @compute_vm_get.command('snapshot', short_help='Snapshots')
@@ -1185,7 +1217,7 @@ def compute_vm_set_cpu_hot_add(ctx: Configuration, status):
     type=click.STRING,
     multiple=True,
     required=False,
-    help='DNS list.',
+    help='DNS servers list.',
 )
 @click.option(
     '--interface',
@@ -1195,9 +1227,17 @@ def compute_vm_set_cpu_hot_add(ctx: Configuration, status):
     multiple=True,
     help='Interfaces to customize in json format.',
 )
+@click.option(
+    '--dns-suffix',
+    '-s',
+    type=click.STRING,
+    multiple=True,
+    required=False,
+    help='list of DNS search domains to add to the DNS configuration.',
+)
 @pass_context
 def compute_vm_set_custom_spec(
-    ctx: Configuration, hostname, domain, dns, interface
+    ctx: Configuration, hostname, domain, dns, interface, dns_suffix
 ):
     """Set up Guest OS customization specification.
 
@@ -1205,12 +1245,14 @@ def compute_vm_set_custom_spec(
     """
     if ctx.is_powered_on_vm(ctx.moref):
         raise Exception(
-            'Cannot perform operation ' 'on VM with current power state'
+            'Cannot perform operation on VM with current power state'
         )
     # temp custom_spec
     _custom_spec = dict(hostname=hostname, domain=domain)
     if dns:
         _custom_spec['dns'] = dns
+    if dns_suffix:
+        _custom_spec['dns_suffix'] = dns_suffix
     interfaces = list()
     # interfaces
     if interface:
@@ -2090,6 +2132,182 @@ def compute_vm_set_nic_rm(ctx: Configuration, unit, confirm):
         ctx.wait_for_request_to(obj)
 
 
+@compute_vm_set.group('retire', short_help='VM retirement.')
+@pass_context
+def compute_vm_set_retirement(ctx: Configuration):
+    """Manage virtual machine retirement requests.
+
+    Create, confirm and cancel virtual machine retirement requests.
+    """
+    if ctx.payload_options.get('schedule'):
+        _LOGGING.warning(
+            'schedule is ignored for retirement requests. Removing.'
+        )
+        del ctx.payload_options['schedule']
+
+
+@compute_vm_set_retirement.command(
+    'mk', short_help='Create retirement request.'
+)
+@click.option(
+    '--rtype',
+    '-t',
+    type=click.Choice(['timedelta', 'datetime']),
+    help='Retirement request type.',
+    required=True,
+)
+@click.option(
+    '--warning-days',
+    '-w',
+    type=click.INT,
+    help='Days before retirement date to notify',
+)
+@click.option(
+    '--value',
+    '-v',
+    help='Value for given retirement type. i.e. <hours>,<days>,<months>',
+    required=True,
+    callback=retirement_value,
+)
+@click.option(
+    '-c', '--confirm', is_flag=True, default=False, help='Confirm no warning.'
+)
+@pass_context
+def compute_vm_set_retirement_mk(
+    ctx: Configuration, rtype, warning_days, value, confirm
+):
+    """Retire virtual machine on given time.
+
+    vss-cli compute vm set <id> retire mk -t timedelta -w <days> \
+    -v <hours>,<days>,<months>
+
+    vss-cli compute vm set <id> retire mk -t datetime -w <days> \
+    -v "YYYY-MM-DD HH:MM"
+    """
+    if rtype == 'timedelta':
+        payload = dict(
+            vm_id=ctx.moref,
+            value=dict(hours=value[0], days=value[1], months=value[2]),
+            rtype=rtype,
+        )
+    else:
+        payload = dict(
+            vm_id=ctx.moref, value=dict(datetime=value), rtype=rtype
+        )
+    # add if warning
+    if warning_days:
+        payload['warning'] = warning_days
+    else:
+        confirmation = confirm or click.confirm(
+            'No warning will be sent for confirmation or cancellation. \n'
+            'Retirement request will proceed when specified. \n'
+            'Are you sure?'
+        )
+        if not confirmation:
+            raise click.ClickException('Cancelled by user.')
+    # add common options
+    payload.update(ctx.payload_options)
+    # submit request
+    _LOGGING.debug(f'retire payload: {payload}')
+    obj = ctx.retire_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_retirement.command(
+    'confirm', short_help='Confirm retirement request.'
+)
+@click.argument(
+    'request_id',
+    type=click.INT,
+    required=True,
+    autocompletion=autocompletion.vm_retirement_requests,
+)
+@pass_context
+def compute_vm_set_retirement_confirm(ctx: Configuration, request_id: int):
+    """Confirm retirement request."""
+    # create payload
+    payload = dict(request_id=request_id)
+    if not ctx.get_vm_retirement_requests(
+        vm_id=ctx.moref, filter=f'id,eq{request_id}'
+    ):
+        raise click.BadArgumentUsage(
+            f'Request ID {request_id} could not be found.'
+        )
+    # request
+    obj = ctx.confirm_retirement_request(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_RETIRE_CONFIRM
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_retirement.command(
+    'cancel', short_help='Cancel retirement request.'
+)
+@click.argument(
+    'request_id',
+    type=click.INT,
+    required=True,
+    autocompletion=autocompletion.vm_retirement_requests,
+)
+@pass_context
+def compute_vm_set_retirement_cancel(ctx: Configuration, request_id: int):
+    """Cancel retirement request."""
+    # create payload
+    payload = dict(request_id=request_id)
+    if not ctx.get_vm_retirement_requests(
+        vm_id=ctx.moref, filter=f'id,eq{request_id}'
+    ):
+        raise click.BadArgumentUsage(
+            f'Request ID {request_id} could not be found.'
+        )
+    # request
+    obj = ctx.cancel_retirement_request(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_RETIRE_CANCEL
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_retirement.command(
+    'send', short_help='Send confirmation message.'
+)
+@click.argument(
+    'request_id',
+    type=click.INT,
+    required=True,
+    autocompletion=autocompletion.vm_retirement_requests,
+)
+@pass_context
+def compute_vm_set_retirement_notify(ctx: Configuration, request_id: int):
+    """Cancel retirement request."""
+    # create payload
+    payload = dict(request_id=request_id)
+    if not ctx.get_vm_retirement_requests(
+        vm_id=ctx.moref, filter=f'id,eq{request_id}'
+    ):
+        raise click.BadArgumentUsage(
+            f'Request ID {request_id} could not be found.'
+        )
+    # request
+    obj = ctx.send_confirmation_retirement_request(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_RETIRE_CANCEL
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
 @compute_vm_set.group('snapshot', short_help='Snapshot management')
 @pass_context
 def compute_vm_set_snapshot(ctx: Configuration):
@@ -2912,6 +3130,9 @@ def compute_vm_from_file(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_spec(
@@ -2937,6 +3158,9 @@ def compute_vm_mk_spec(
     vss_service,
     instances,
     firmware,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Create vm based on another vm configuration specification.
 
@@ -2999,6 +3223,12 @@ def compute_vm_mk_spec(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # updating spec with new vm spec
     s_payload.update(payload)
     _LOGGING.debug(f'source={s_payload}')
@@ -3045,6 +3275,9 @@ def compute_vm_mk_spec(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_shell(
@@ -3070,6 +3303,9 @@ def compute_vm_mk_shell(
     vss_service,
     instances,
     firmware,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Create a new VM with no operating system pre-installed."""
     built = 'os_install'
@@ -3124,6 +3360,12 @@ def compute_vm_mk_shell(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3164,6 +3406,9 @@ def compute_vm_mk_shell(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_template(
@@ -3189,6 +3434,9 @@ def compute_vm_mk_template(
     power_on,
     firmware,
     instances,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Deploy virtual machine from template."""
     # get source from uuid or name
@@ -3244,6 +3492,12 @@ def compute_vm_mk_template(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3285,6 +3539,9 @@ def compute_vm_mk_template(
 @c_so.instances
 @c_so.firmware_nr_opt
 @c_so.snapshot
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_clone(
@@ -3311,6 +3568,9 @@ def compute_vm_mk_clone(
     instances,
     firmware,
     snapshot,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Clone virtual machine from running or powered off vm.
 
@@ -3373,6 +3633,12 @@ def compute_vm_mk_clone(
     if snapshot:
         _snap = ctx.get_vm_snapshot_by_id_name_or_desc(vm_id, snapshot)
         payload['source_snap_id'] = _snap[0]['id']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     if instances > 1:
         payload['count'] = instances
         obj = ctx.create_vms_from_clone(**payload)
@@ -3417,6 +3683,9 @@ def compute_vm_mk_clone(
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @pass_context
 def compute_vm_mk_image(
     ctx: Configuration,
@@ -3442,6 +3711,9 @@ def compute_vm_mk_image(
     network_config,
     vss_service,
     firmware,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Deploy virtual machine from image."""
     # get reference to image by
@@ -3506,6 +3778,12 @@ def compute_vm_mk_image(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # request
     obj = ctx.create_vm_from_image(**payload)
     # print
@@ -3541,6 +3819,9 @@ def compute_vm_mk_image(
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @pass_context
 def compute_vm_mk_clib(
     ctx: Configuration,
@@ -3566,6 +3847,9 @@ def compute_vm_mk_clib(
     network_config,
     vss_service,
     firmware,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Deploy virtual machine from Content Library."""
     item_ref = ctx.get_clib_deployable_item_by_name_or_id_path(source)
@@ -3629,6 +3913,12 @@ def compute_vm_mk_clib(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # request
     obj = ctx.deploy_vm_from_clib_item(**payload)
     # print

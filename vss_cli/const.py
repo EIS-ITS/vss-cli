@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "0.12.1"
+__version__ = "2021.5.0"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -166,6 +166,23 @@ COLUMNS_REQUEST_MULT_SUBMITTED = [
     ("task_id", "request.task_id[*]"),
     ("message",),
 ]
+COLUMNS_REQUEST_RETIRE = [
+    *COLUMNS_REQUEST,
+    *COLUMNS_VIM_REQUEST,
+    ("retire_on",),
+    ("warning",),
+    ("warning_on",),
+]
+COLUMNS_REQUEST_RETIRE_CANCEL = [
+    *COLUMNS_REQUEST_RETIRE,
+    ("cancelled_on",),
+    ("cancelled_by_user.username",),
+]
+COLUMNS_REQUEST_RETIRE_CONFIRM = [
+    *COLUMNS_REQUEST_RETIRE,
+    ("confirmed_on",),
+    ("confirmed_by_user.username",),
+]
 COLUMNS_REQUEST_SNAP_MIN = [
     *COLUMNS_REQUEST,
     *COLUMNS_VIM_REQUEST,
@@ -236,9 +253,8 @@ COLUMNS_REQUEST_NEW = [
     *COLUMNS_REQUEST_NEW_MIN,
     ('guest_os',),
     ("domain",),
-    ("source_vm",),
-    ("source_template",),
-    ("source_image",),
+    ("source",),
+    ("retirement",),
     ("folder",),
     ("cpu",),
     ("memory",),
