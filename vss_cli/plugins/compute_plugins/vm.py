@@ -15,6 +15,7 @@ from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_args as c_sa, rel_opts as c_so
+from vss_cli.plugins.compute_plugins.helper import process_retirement_new
 from vss_cli.validators import (
     flexible_email_args, retirement_value, validate_email, validate_json_type,
     validate_phone_number)
@@ -2164,7 +2165,7 @@ def compute_vm_set_retirement(ctx: Configuration):
 @click.option(
     '--value',
     '-v',
-    help='Value for given retirement type.',
+    help='Value for given retirement type. ' 'i.e. <hours>,<days>,<months>',
     required=True,
     callback=retirement_value,
 )
@@ -3129,6 +3130,9 @@ def compute_vm_from_file(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_spec(
@@ -3154,6 +3158,9 @@ def compute_vm_mk_spec(
     vss_service,
     instances,
     firmware,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Create vm based on another vm configuration specification.
 
@@ -3216,6 +3223,12 @@ def compute_vm_mk_spec(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # updating spec with new vm spec
     s_payload.update(payload)
     _LOGGING.debug(f'source={s_payload}')
@@ -3262,6 +3275,9 @@ def compute_vm_mk_spec(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @click.argument('name', type=click.STRING, required=True)
 @pass_context
 def compute_vm_mk_shell(
@@ -3287,6 +3303,9 @@ def compute_vm_mk_shell(
     vss_service,
     instances,
     firmware,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Create a new VM with no operating system pre-installed."""
     built = 'os_install'
@@ -3341,6 +3360,12 @@ def compute_vm_mk_shell(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3381,6 +3406,9 @@ def compute_vm_mk_shell(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_template(
@@ -3406,6 +3434,9 @@ def compute_vm_mk_template(
     power_on,
     firmware,
     instances,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Deploy virtual machine from template."""
     # get source from uuid or name
@@ -3461,6 +3492,12 @@ def compute_vm_mk_template(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3502,6 +3539,9 @@ def compute_vm_mk_template(
 @c_so.instances
 @c_so.firmware_nr_opt
 @c_so.snapshot
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @click.argument('name', type=click.STRING, required=False)
 @pass_context
 def compute_vm_mk_clone(
@@ -3528,6 +3568,9 @@ def compute_vm_mk_clone(
     instances,
     firmware,
     snapshot,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Clone virtual machine from running or powered off vm.
 
@@ -3590,6 +3633,12 @@ def compute_vm_mk_clone(
     if snapshot:
         _snap = ctx.get_vm_snapshot_by_id_name_or_desc(vm_id, snapshot)
         payload['source_snap_id'] = _snap[0]['id']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     if instances > 1:
         payload['count'] = instances
         obj = ctx.create_vms_from_clone(**payload)
@@ -3634,6 +3683,9 @@ def compute_vm_mk_clone(
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @pass_context
 def compute_vm_mk_image(
     ctx: Configuration,
@@ -3659,6 +3711,9 @@ def compute_vm_mk_image(
     network_config,
     vss_service,
     firmware,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Deploy virtual machine from image."""
     # get reference to image by
@@ -3723,6 +3778,12 @@ def compute_vm_mk_image(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # request
     obj = ctx.create_vm_from_image(**payload)
     # print
@@ -3758,6 +3819,9 @@ def compute_vm_mk_image(
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
+@c_so.retire_type
+@c_so.retire_warning
+@c_so.retire_value
 @pass_context
 def compute_vm_mk_clib(
     ctx: Configuration,
@@ -3783,6 +3847,9 @@ def compute_vm_mk_clib(
     network_config,
     vss_service,
     firmware,
+    retire_type,
+    retire_warning,
+    retire_value,
 ):
     """Deploy virtual machine from Content Library."""
     item_ref = ctx.get_clib_deployable_item_by_name_or_id_path(source)
@@ -3846,6 +3913,12 @@ def compute_vm_mk_clib(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    # retirement
+    if retire_value or retire_type or retire_warning:
+        retire = process_retirement_new(
+            retire_type, retire_value, retire_warning
+        )
+        payload['retirement'] = retire
     # request
     obj = ctx.deploy_vm_from_clib_item(**payload)
     # print

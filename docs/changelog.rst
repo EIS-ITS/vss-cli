@@ -21,6 +21,11 @@ Changelog 📝
 
 - `#417 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/417>`_: ``core``: move from ``semver`` to ``calver``.
 - `#423 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/423>`_: ``compute vm set custom-spec``: allow multiple ``--dns-suffix`` options for dns search settings.
+- `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk shell``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
+- `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-clone``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
+- `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-spec``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
+- `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-image``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
+- `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-template``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
 
 **Bug Fixes:**
 
