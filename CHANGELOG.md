@@ -24,6 +24,7 @@
 - [#424](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424): ``compute vm mk from-spec``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
 - [#424](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424): ``compute vm mk from-image``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
 - [#424](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424): ``compute vm mk from-template``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
+- [#426](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/426): ``core``: update ``pyvss`` from v0.18.1 to v2021.5.0.
 
 **Bug Fixes:**
 
