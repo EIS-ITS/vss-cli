@@ -2165,12 +2165,12 @@ def compute_vm_set_retirement(ctx: Configuration):
 @click.option(
     '--value',
     '-v',
-    help='Value for given retirement type. ' 'i.e. <hours>,<days>,<months>',
+    help='Value for given retirement type. i.e. <hours>,<days>,<months>',
     required=True,
     callback=retirement_value,
 )
 @click.option(
-    '-c', '--confirm', is_flag=True, default=False, help='Confirm state change'
+    '-c', '--confirm', is_flag=True, default=False, help='Confirm no warning.'
 )
 @pass_context
 def compute_vm_set_retirement_mk(

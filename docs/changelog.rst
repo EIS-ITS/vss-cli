@@ -24,6 +24,7 @@ Changelog 📝
 - `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk shell``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
 - `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-clone``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
 - `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-spec``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
+- `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-clib``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
 - `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-image``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
 - `#424 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/424>`_: ``compute vm mk from-template``: create VM with retirement request ``--retire-type``, ``--retire-value``, ``--retire-warning``.
 
