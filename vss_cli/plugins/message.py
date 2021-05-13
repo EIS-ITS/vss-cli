@@ -61,7 +61,7 @@ def message_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     'message_id',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.account_messages,
+    shell_complete=autocompletion.account_messages,
 )
 @pass_context
 def message_get(ctx: Configuration, message_id):
@@ -84,7 +84,7 @@ def message_set(ctx):
     type=click.INT,
     required=True,
     nargs=-1,
-    autocompletion=autocompletion.account_messages,
+    shell_complete=autocompletion.account_messages,
 )
 @click.option('-s', '--summary', is_flag=True, help='Print request summary')
 @pass_context

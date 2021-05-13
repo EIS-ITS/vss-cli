@@ -67,7 +67,7 @@ def request_mgmt_ret_ls(
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.retirement_requests,
+    shell_complete=autocompletion.retirement_requests,
 )
 @pass_context
 def request_mgmt_ret_get(ctx: Configuration, rid):

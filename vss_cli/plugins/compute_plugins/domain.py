@@ -57,7 +57,7 @@ def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
     'name_or_moref',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.domains,
+    shell_complete=autocompletion.domains,
 )
 @pass_context
 def domain_get(ctx: Configuration, name_or_moref):

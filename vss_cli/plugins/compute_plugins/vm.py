@@ -78,7 +78,7 @@ def compute_vm_ls(
     'vm_id_or_name',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.virtual_machines,
+    shell_complete=autocompletion.virtual_machines,
 )
 @pass_context
 def compute_vm_get(ctx: Configuration, vm_id_or_name):
@@ -834,7 +834,7 @@ def compute_vm_get_vsphere_link(ctx: Configuration, launch: bool):
     'vm_id_or_name',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.virtual_machines,
+    shell_complete=autocompletion.virtual_machines,
 )
 @click.option(
     '-s',
@@ -1018,7 +1018,7 @@ def compute_vm_set_cd(ctx: Configuration):
     required=True,
     multiple=True,
     help='Update CD/DVD backing device to given ISO path or Client device.',
-    autocompletion=autocompletion.isos,
+    shell_complete=autocompletion.isos,
 )
 @pass_context
 def compute_vm_set_cd_mk(ctx: Configuration, backing):
@@ -1056,7 +1056,7 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
     type=click.STRING,
     required=True,
     help='Update CD/DVD backing device ' 'to given ISO path or Client device.',
-    autocompletion=autocompletion.isos,
+    shell_complete=autocompletion.isos,
 )
 @pass_context
 def compute_vm_set_cd_up(ctx: Configuration, unit, backing):
@@ -1447,13 +1447,13 @@ def compute_vm_set_disk_mk(ctx: Configuration, disk):
 @click.option(
     '-m',
     '--backing-mode',
-    autocompletion=autocompletion.vm_disk_backing_modes,
+    shell_complete=autocompletion.vm_disk_backing_modes,
     help='Update disk backing mode default [persistent]',
 )
 @click.option(
     '-r',
     '--sharing',
-    autocompletion=autocompletion.vm_disk_sharing,
+    shell_complete=autocompletion.vm_disk_sharing,
     help='Update disk sharing mode default [sharingnone]',
 )
 @pass_context
@@ -1538,7 +1538,7 @@ def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
     'name_or_moref',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.domains,
+    shell_complete=autocompletion.domains,
 )
 @click.option(
     '-f',
@@ -1623,7 +1623,7 @@ def compute_vm_set_firmware(ctx: Configuration, firmware):
     required=False,
     default='client',
     help='Update floppy backing device to given flp image path.',
-    autocompletion=autocompletion.floppies,
+    shell_complete=autocompletion.floppies,
 )
 @pass_context
 def compute_vm_set_floppy(ctx: Configuration, unit, image):
@@ -1650,7 +1650,7 @@ def compute_vm_set_floppy(ctx: Configuration, unit, image):
     'name-moref-path',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.folders,
+    shell_complete=autocompletion.folders,
 )
 @pass_context
 def compute_vm_set_folder(ctx: Configuration, name_moref_path):
@@ -1745,7 +1745,7 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
     'guest-id',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.operating_systems,
+    shell_complete=autocompletion.operating_systems,
 )
 @pass_context
 def compute_vm_set_guest_os(ctx: Configuration, guest_id):
@@ -1995,7 +1995,7 @@ def compute_vm_set_nic(ctx: Configuration):
     '--network',
     type=click.STRING,
     help='Virtual network moref',
-    autocompletion=autocompletion.networks,
+    shell_complete=autocompletion.networks,
 )
 @click.option(
     '-s',
@@ -2008,7 +2008,7 @@ def compute_vm_set_nic(ctx: Configuration):
     '--adapter',
     type=click.STRING,
     help='Updates nic adapter type',
-    autocompletion=autocompletion.virtual_nic_types,
+    shell_complete=autocompletion.virtual_nic_types,
 )
 @pass_context
 def compute_vm_set_nic_up(ctx: Configuration, unit, network, state, adapter):
@@ -2225,7 +2225,7 @@ def compute_vm_set_retirement_mk(
     'request_id',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.vm_retirement_requests,
+    shell_complete=autocompletion.vm_retirement_requests,
 )
 @pass_context
 def compute_vm_set_retirement_confirm(ctx: Configuration, request_id: int):
@@ -2255,7 +2255,7 @@ def compute_vm_set_retirement_confirm(ctx: Configuration, request_id: int):
     'request_id',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.vm_retirement_requests,
+    shell_complete=autocompletion.vm_retirement_requests,
 )
 @pass_context
 def compute_vm_set_retirement_cancel(ctx: Configuration, request_id: int):
@@ -2285,7 +2285,7 @@ def compute_vm_set_retirement_cancel(ctx: Configuration, request_id: int):
     'request_id',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.vm_retirement_requests,
+    shell_complete=autocompletion.vm_retirement_requests,
 )
 @pass_context
 def compute_vm_set_retirement_notify(ctx: Configuration, request_id: int):
@@ -2607,7 +2607,7 @@ def compute_vm_set_version(ctx: Configuration):
 @click.argument(
     'vmx',
     type=click.STRING,
-    autocompletion=autocompletion.virtual_hw_types,
+    shell_complete=autocompletion.virtual_hw_types,
     required=False,
 )
 @pass_context
@@ -2686,7 +2686,7 @@ def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
 @click.argument(
     'vss-option',
     type=click.STRING,
-    autocompletion=autocompletion.vss_options,
+    shell_complete=autocompletion.vss_options,
     required=False,
 )
 @click.option(
@@ -2715,7 +2715,7 @@ def compute_vm_set_vss_option(ctx: Configuration, vss_option, on):
 @compute_vm_set.command('vss-service', short_help='VSS Service name or ID')
 @click.argument(
     'label-name-or-id',
-    autocompletion=autocompletion.vss_services,
+    shell_complete=autocompletion.vss_services,
     type=click.STRING,
     required=True,
 )
@@ -2793,14 +2793,14 @@ def compute_vm_set_controller_scsi_mk(ctx: Configuration, scsi):
 @click.option(
     '-t',
     '--scsi-type',
-    autocompletion=autocompletion.vm_controller_scsi_types,
+    shell_complete=autocompletion.vm_controller_scsi_types,
     required=False,
     help='Type of SCSI Controller.',
 )
 @click.option(
     '-s',
     '--sharing',
-    autocompletion=autocompletion.vm_controller_scsi_sharing,
+    shell_complete=autocompletion.vm_controller_scsi_sharing,
     required=False,
     help='Sharing mode of SCSI Controller.',
 )
@@ -2922,7 +2922,7 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     type=click.STRING,
     required=True,
     nargs=-1,
-    autocompletion=autocompletion.virtual_machines,
+    shell_complete=autocompletion.virtual_machines,
 )
 @so.max_del_opt
 @pass_context

@@ -36,7 +36,7 @@ def compute_template(ctx):
     type=click.STRING,
     required=True,
     nargs=-1,
-    autocompletion=autocompletion.virtual_machines,
+    shell_complete=autocompletion.virtual_machines,
 )
 @so.max_del_opt
 @pass_context

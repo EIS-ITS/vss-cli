@@ -185,7 +185,7 @@ def _default_token() -> Optional[str]:
     default=None,
     envvar='VSS_TABLE',
     help="Which table format to use (default: simple)",
-    autocompletion=autocompletion.table_formats,
+    shell_complete=autocompletion.table_formats,
 )
 @click.option(
     '--columns',

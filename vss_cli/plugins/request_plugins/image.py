@@ -68,7 +68,7 @@ def image_sync_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.image_sync_requests,
+    shell_complete=autocompletion.image_sync_requests,
 )
 @pass_context
 def image_sync_get(ctx, rid):

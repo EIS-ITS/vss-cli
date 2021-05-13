@@ -60,7 +60,7 @@ def network_ls(ctx: Configuration, filter_by, show_all, sort, page):
     'name_or_moref',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.networks,
+    shell_complete=autocompletion.networks,
 )
 @pass_context
 def network_get(ctx: Configuration, name_or_moref):

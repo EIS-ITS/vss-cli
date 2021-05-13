@@ -64,7 +64,7 @@ def vmdk_sync_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.vmdk_sync_requests,
+    shell_complete=autocompletion.vmdk_sync_requests,
 )
 @pass_context
 def vmdk_sync_get(ctx, rid):
