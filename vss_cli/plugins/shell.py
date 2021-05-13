@@ -38,13 +38,13 @@ def cli(ctx: Configuration, history):
     \ \ / / __/ __|      API Endpoint: {endpoint}
      \ V /\__ \__ \      Tab-completion & suggestions
       \_/ |___/___/      Prefix external commands with "!"
-       CLI v{version}        History is saved: {history}
+      CLI {version}      History is saved: {history}
 
     Exit shell with :exit, :q, :quit, ctrl+d
     """.format(
         version=const.__version__, history=history, endpoint=ctx.endpoint
     )
-    ctx.secho(welcome, fg='blue')
+    ctx.secho(welcome, fg='green')
     # create dir for history
     f_path = os.path.expanduser(history or ctx.history)
     dir_name = os.path.dirname(f_path)
