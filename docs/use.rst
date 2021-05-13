@@ -390,48 +390,74 @@ only if at least a dash has been provided. Example:
     vss-cli -<TAB><TAB>
     --config      --no-verbose  --output      --verbose     --version     -c            -o
 
+Source File
+~~~~~~~~~~~
 
-Activating `bash` or `zsh` or `fish` completion can be done by executing the
-following commands:
+To activate completion in ``bash`` or ``zsh`` or ``fish`` is recommended to use a generated
+script and source it to ensure responsiveness:
 
-For `bash`:
+For ``bash``:
+
+Save the script somewhere.
+
+.. code-block:: bash
+
+    _VSS_CLI_COMPLETE=bash_source vss-cli > ~/.vss-cli-complete.bash
+
+Source the file in ``~/.bashrc``.
+
+.. code-block:: bash
+
+    . ~/.vss-cli-complete.bash
+
+After modifying the shell config, you need to start a new shell in order for the changes to be loaded or
+source the file ``. ~/.vss-cli-complete.bash``.
+
+For ``zsh``:
+
+Save the script somewhere.
+
+.. code-block:: bash
+
+    _VSS_CLI_COMPLETE=zsh_source vss-cli > ~/.vss-cli-complete.zsh
+
+Source the file in ``~/.zshrc``.
+
+.. code-block:: zsh
+
+    . ~/.vss-cli-complete.zsh
+
+After modifying the shell config, you need to start a new shell in order for the changes to be loaded or
+source the file ``. ~/.vss-cli-complete.zsh``.
+
+For ``fish``:
+
+Save the script to ``~/.config/fish/completions/vss-cli.fish:``.
+
+.. code-block:: fish
+
+    _VSS_CLI_COMPLETE=fish_source vss-cli >  ~/.config/fish/completions/vss-cli.fish
+
+After modifying the shell config, you need to start a new shell in order for the changes to be loaded.
+
+Source
+~~~~~~
+
+However, there's also a non-persistent method:
+
+For ``bash``:
 
 .. code-block:: bash
 
     source <(vss-cli completion bash)
 
-For `zsh`
+
+For ``zsh``:
 
 .. code-block:: bash
 
     source <(vss-cli completion zsh)
 
-For `fish`
-
-.. code-block:: bash
-
-    _VSS_CLI_COMPLETE=source_fish vss-cli > ~/.config/fish/completions/vss-cli-complete.fish
-
-If you do it from your `.bashrc` or `.zshrc` it is recommend to use the
-form below as that does not trigger a run of vss-cli itself.
-
-For `bash`:
-
-.. code-block:: bash
-
-    eval "$(_VSS_CLI_COMPLETE=source vss-cli)"
-
-For `zsh`:
-
-.. code-block:: bash
-
-    eval "$(_VSS_CLI_COMPLETE=source_zsh vss-cli)"
-
-For `fish`:
-
-.. code-block:: bash
-
-    eval (env _VSS_CLI_COMPLETE=source_fish vss-cli)
 
 
 Shell
@@ -459,7 +485,7 @@ the following welcome message:
         \ \ / / __/ __|      API Endpoint: https://vss-api.eis.utoronto.ca/v2
          \ V /\__ \__ \      Tab-completion & suggestions
           \_/ |___/___/      Prefix external commands with "!"
-           CLI v0.2.0        History is saved: /Users/vss/.vss-cli/history
+          CLI v2021.5.2      History is saved: /Users/vss/.vss-cli/history
 
         Exit shell with :exit, :q, :quit, ctrl+d
 
