@@ -4,9 +4,11 @@ import codecs
 from datetime import datetime as dt
 import os
 import re
+from subprocess import getoutput
 from typing import List
 
 from setuptools import find_packages, setup
+from setuptools.command.install import install
 
 # shared consts using approach suggested at
 # https://stackoverflow.com/questions/17583443/what-is-the-correct-way-to-share-package-version-with-setup-py-and-the-package
@@ -102,7 +104,26 @@ EXTRAS_REQUIRE = {
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))
 
+
+class PostInstall(install):  # type: ignore
+    """Install direct dependency.
+
+    Pypi doesn't allow uploading packages with direct dependencies, so we need to
+    install them manually.
+    """
+
+    def run(self) -> None:
+        """Install dependencies."""
+        install.run(self)
+        print(
+            getoutput(
+                "pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade"
+            )
+        )
+
+
 setup(
+    cmdclass={'install': PostInstall},
     name=PROJECT_PACKAGE_NAME,
     version=__VERSION__,
     url=PROJECT_URL,
