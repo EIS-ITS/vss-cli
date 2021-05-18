@@ -67,7 +67,7 @@ def request_mgmt_new_ls(
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.new_requests,
+    shell_complete=autocompletion.new_requests,
 )
 @pass_context
 def request_mgmt_new_get(ctx: Configuration, rid):

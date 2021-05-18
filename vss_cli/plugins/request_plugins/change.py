@@ -71,7 +71,7 @@ def request_mgmt_change_ls(
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.change_requests,
+    shell_complete=autocompletion.change_requests,
 )
 @pass_context
 def request_mgmt_change_get(ctx: Configuration, rid):
@@ -88,7 +88,7 @@ def request_mgmt_change_get(ctx: Configuration, rid):
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.change_requests,
+    shell_complete=autocompletion.change_requests,
 )
 @pass_context
 def request_mgmt_change_retry(ctx: Configuration, rid):
@@ -110,7 +110,7 @@ def request_mgmt_change_retry(ctx: Configuration, rid):
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.change_requests,
+    shell_complete=autocompletion.change_requests,
 )
 @pass_context
 def request_mgmt_change_set(ctx: Configuration, rid):

@@ -67,7 +67,7 @@ def request_mgmt_export_ls(
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.export_requests,
+    shell_complete=autocompletion.export_requests,
 )
 @pass_context
 def request_mgmt_export_get(ctx: Configuration, rid):

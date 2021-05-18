@@ -1,6 +1,6 @@
 """Auto-completion for VSS CLI (vss-cli)."""
 import click
-from click._bashcomplete import get_completion_script
+from click.shell_completion import get_completion_class
 
 from vss_cli.cli import pass_context
 
@@ -21,9 +21,10 @@ def cli(ctx):
 def dump_script(shell: str) -> None:
     """Dump the script content."""
     prog_name = "vss-cli"
-    cvar = '_%s_COMPLETE' % (prog_name.replace('-', '_')).upper()
-
-    click.echo(get_completion_script(prog_name, cvar, shell))
+    complete_var = '_%s_COMPLETE' % (prog_name.replace('-', '_')).upper()
+    comp_cls = get_completion_class(shell)
+    comp = comp_cls(cli, dict(), prog_name, complete_var)
+    click.echo(comp.source())
 
 
 @cli.command()

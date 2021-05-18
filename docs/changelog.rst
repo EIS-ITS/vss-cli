@@ -1,6 +1,21 @@
 Changelog 📝
 ============
 
+`v2021.5.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.2>`_ (2021-05-18)
+----------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#427 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/427>`_: ``core``: update ``click`` from v7.1.1 to v8.0.0.
+- `#428 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/428>`_: ``completion``: update to support click 8 changes.
+- `#429 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/429>`_: ``shell``: formatting improvements.
+- `#430 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/430>`_: ``core``: update ``click-repl`` to custom repo/branch to support completion in click 8.
+- `#431 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/431>`_: ``core``: update ``dataclases-json`` from v0.5.2 to v0.5.3.
+- `#432 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/432>`_: ``core``: update ``Pygments`` from  v2.8.0 to v2.9.0
+- `#433 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/433>`_: ``core``: update ``ruamel.yaml`` from v0.16.13 to v0.17.4.
+- `#434 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/434>`_: ``docs``: update README with the latest info.
+- `#436 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/436>`_: ``docker``: Add ``git`` to base image.
+
 `v2021.5.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.1>`_ (2021-05-05)
 ----------------------------------------------------------------------------------------
 

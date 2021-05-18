@@ -69,7 +69,7 @@ def request_mgmt_folder_ls(ctx, filter_by, page, sort, show_all, count):
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.folder_requests,
+    shell_complete=autocompletion.folder_requests,
 )
 @pass_context
 def request_mgmt_folder_get(ctx, rid):

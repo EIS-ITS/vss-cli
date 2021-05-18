@@ -55,7 +55,7 @@ def account_get_groups(ctx: Configuration):
     'group_id_or_name',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.groups,
+    shell_complete=autocompletion.groups,
 )
 @pass_context
 def account_get_group(ctx: Configuration, group_id_or_name):

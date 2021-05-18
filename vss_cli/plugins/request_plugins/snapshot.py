@@ -68,7 +68,7 @@ def snapshot_ls(ctx: Configuration, filter_by, page, sort, show_all, count):
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.snapshot_requests,
+    shell_complete=autocompletion.snapshot_requests,
 )
 @pass_context
 def snapshot_get(ctx, rid):
@@ -87,7 +87,7 @@ def snapshot_get(ctx, rid):
     'rid',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.snapshot_requests,
+    shell_complete=autocompletion.snapshot_requests,
 )
 @pass_context
 def snapshot_set(ctx: Configuration, rid):

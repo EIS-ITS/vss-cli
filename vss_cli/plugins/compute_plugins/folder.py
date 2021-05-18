@@ -65,7 +65,7 @@ def compute_folder_ls(ctx: Configuration, filter_by, show_all, sort, page):
 
 @compute_folder.group('set', short_help='update folder')
 @click.argument(
-    'moref_or_name', type=click.STRING, autocompletion=autocompletion.domains
+    'moref_or_name', type=click.STRING, shell_complete=autocompletion.domains
 )
 @pass_context
 def compute_folder_set(ctx, moref_or_name: str):
@@ -127,7 +127,7 @@ def compute_folder_set_name(ctx: Configuration, name):
     type=click.STRING,
     required=True,
     nargs=-1,
-    autocompletion=autocompletion.folders,
+    shell_complete=autocompletion.folders,
 )
 @so.max_del_opt
 @pass_context
@@ -172,7 +172,7 @@ def compute_folder_rm(ctx: Configuration, moref: str, max_del: int):
     type=click.STRING,
     required=True,
     help='Parent folder name, path or moref',
-    autocompletion=autocompletion.folders,
+    shell_complete=autocompletion.folders,
 )
 @pass_context
 def compute_folder_mk(ctx: Configuration, parent, name: list):
@@ -201,7 +201,7 @@ def compute_folder_mk(ctx: Configuration, parent, name: list):
     'moref_or_name',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.folders,
+    shell_complete=autocompletion.folders,
 )
 @pass_context
 def compute_folder_get(ctx: Configuration, moref_or_name):

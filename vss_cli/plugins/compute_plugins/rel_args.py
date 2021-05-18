@@ -14,7 +14,7 @@ extra_config_arg = click.argument(
 )
 firmware_arg = click.argument(
     'firmware',
-    autocompletion=autocompletion.vm_firmware,
+    shell_complete=autocompletion.vm_firmware,
     required=True,
     callback=callbacks.process_firmware,
 )

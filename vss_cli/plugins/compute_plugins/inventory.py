@@ -29,7 +29,7 @@ def cli(ctx: Configuration):
     'request_id',
     type=click.INT,
     required=True,
-    autocompletion=autocompletion.inventory_requests,
+    shell_complete=autocompletion.inventory_requests,
 )
 @click.option(
     '-d',
@@ -59,7 +59,7 @@ def compute_inventory_dl(ctx: Configuration, request_id, directory, launch):
     'attribute',
     nargs=-1,
     default=None,
-    autocompletion=autocompletion.inventory_properties,
+    shell_complete=autocompletion.inventory_properties,
 )
 @click.option(
     '-f',

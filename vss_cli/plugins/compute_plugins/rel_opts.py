@@ -12,7 +12,7 @@ source_opt = click.option(
     help='Source virtual machine or template MOREF or UUID.',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.virtual_machines,
+    shell_complete=autocompletion.virtual_machines,
 )
 source_template_opt = click.option(
     '--source',
@@ -20,7 +20,7 @@ source_template_opt = click.option(
     help='Source virtual machine or template MOREF or UUID.',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.vm_templates,
+    shell_complete=autocompletion.vm_templates,
 )
 source_image_opt = click.option(
     '--source',
@@ -28,7 +28,7 @@ source_image_opt = click.option(
     help='Source Virtual Machine OVA/OVF id, name or path.',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.vm_images,
+    shell_complete=autocompletion.vm_images,
 )
 source_clib_opt = click.option(
     '--source',
@@ -36,7 +36,7 @@ source_clib_opt = click.option(
     help='Source content library deployable item.',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.clib_deployable_items,
+    shell_complete=autocompletion.clib_deployable_items,
 )
 description_opt = click.option(
     '--description',
@@ -90,7 +90,7 @@ os_nr_opt = click.option(
     help='Guest operating system id.',
     type=click.STRING,
     required=False,
-    autocompletion=autocompletion.operating_systems,
+    shell_complete=autocompletion.operating_systems,
 )
 os_opt = click.option(
     '--os',
@@ -98,7 +98,7 @@ os_opt = click.option(
     help='Guest operating system id.',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.operating_systems,
+    shell_complete=autocompletion.operating_systems,
 )
 memory_opt = click.option(
     '--memory', '-m', help='Memory in GB.', type=click.INT, required=False
@@ -112,7 +112,7 @@ folder_nr_opt = click.option(
     help='Logical folder moref name or path.',
     type=click.STRING,
     required=False,
-    autocompletion=autocompletion.folders,
+    shell_complete=autocompletion.folders,
 )
 folder_opt = click.option(
     '--folder',
@@ -120,7 +120,7 @@ folder_opt = click.option(
     help='Logical folder moref name or path.',
     type=click.STRING,
     required=True,
-    autocompletion=autocompletion.folders,
+    shell_complete=autocompletion.folders,
 )
 networks_nr_opt = click.option(
     '--net',
@@ -130,7 +130,7 @@ networks_nr_opt = click.option(
     multiple=True,
     required=False,
     callback=callbacks.process_networks_opt,
-    autocompletion=autocompletion.networks,
+    shell_complete=autocompletion.networks,
 )
 networks_opt = click.option(
     '--net',
@@ -140,7 +140,7 @@ networks_opt = click.option(
     multiple=True,
     required=True,
     callback=callbacks.process_networks_opt,
-    autocompletion=autocompletion.networks,
+    shell_complete=autocompletion.networks,
 )
 scsi_ctrllr_opt = click.option(
     '--scsi',
@@ -150,7 +150,7 @@ scsi_ctrllr_opt = click.option(
     multiple=True,
     required=True,
     callback=callbacks.process_scsi_opt,
-    autocompletion=autocompletion.vm_controller_scsi_types,
+    shell_complete=autocompletion.vm_controller_scsi_types,
 )
 disks_nr_opt = click.option(
     '--disk',
@@ -178,7 +178,7 @@ domain_opt = click.option(
     help='Target fault domain name or moref.',
     type=click.STRING,
     required=False,
-    autocompletion=autocompletion.domains,
+    shell_complete=autocompletion.domains,
 )
 notes_opt = click.option(
     '--notes', help='Custom notes.', type=click.STRING, required=False
@@ -197,7 +197,7 @@ iso_opt = click.option(
     help='ISO image to be mounted after creation',
     type=click.STRING,
     required=False,
-    autocompletion=autocompletion.isos,
+    shell_complete=autocompletion.isos,
 )
 high_io_opt = click.option(
     '--high-io',
@@ -240,7 +240,7 @@ net_cfg_opt = click.option(
 vss_service_opt = click.option(
     '--vss-service',
     help='VSS Service related to VM',
-    autocompletion=autocompletion.vss_services,
+    shell_complete=autocompletion.vss_services,
     required=False,
 )
 instances = click.option(
@@ -253,27 +253,27 @@ instances = click.option(
 vss_options_opt = click.option(
     '--vss-option',
     help='VSS Option to enable',
-    autocompletion=autocompletion.vss_options,
+    shell_complete=autocompletion.vss_options,
     required=False,
 )
 firmware_nr_opt = click.option(
     '--firmware',
     '-w',
     help='Firmware type.',
-    autocompletion=autocompletion.vm_firmware,
+    shell_complete=autocompletion.vm_firmware,
     required=False,
 )
 snapshot = click.option(
     '--snapshot',
     help='Snapshot to clone.',
-    autocompletion=autocompletion.vm_snapshots,
+    shell_complete=autocompletion.vm_snapshots,
     required=False,
 )
 firmware_opt = click.option(
     '--firmware',
     '-w',
     help='Firmware type.',
-    autocompletion=autocompletion.vm_firmware,
+    shell_complete=autocompletion.vm_firmware,
     required=True,
 )
 retire_type = click.option(

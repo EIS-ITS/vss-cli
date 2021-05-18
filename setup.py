@@ -4,9 +4,11 @@ import codecs
 from datetime import datetime as dt
 import os
 import re
+from subprocess import getoutput
 from typing import List
 
 from setuptools import find_packages, setup
+from setuptools.command.install import install
 
 # shared consts using approach suggested at
 # https://stackoverflow.com/questions/17583443/what-is-the-correct-way-to-share-package-version-with-setup-py-and-the-package
@@ -32,14 +34,21 @@ def find_version(*file_paths):
 
 def load_requirements(requires_file: str = 'requirements.txt') -> List[str]:
     """Load requirements from file"""
+    reqs = []
     with open(requires_file, encoding='utf-8') as f:
-        return f.read().splitlines()
+        _lines = f.read().splitlines()
+    for line in _lines:
+        line = line.strip('\n')
+        if not line.startswith('#') and line != '':
+            reqs.append(line)
+    return reqs
 
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
 
 REQUIRED_PYTHON_VER = (3, 7, 0)
 REQUIRES = load_requirements()
+# REQUIRES = [req for req in INSTALL_REQUIRES if req and not re.match(r'[^:]+://', req)]
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
 PACKAGE_DATA = {'vss_cli': ['data/*.yaml']}
@@ -94,6 +103,7 @@ EXTRAS_REQUIRE = {
 }
 
 MIN_PY_VERSION = '.'.join(map(str, REQUIRED_PYTHON_VER))
+
 
 setup(
     name=PROJECT_PACKAGE_NAME,
