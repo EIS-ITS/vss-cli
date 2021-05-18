@@ -13,7 +13,7 @@ WORKDIR /usr/src/app
 COPY . .
 # install OS reqs
 RUN apk add --no-cache --virtual build-dependencies \
-    gcc musl-dev bash man-pages \
+    gcc musl-dev bash man-pages git \
     libxml2-dev libxslt-dev && \
     rm -rf /var/cache/apk/*
 # install app
