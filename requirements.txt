@@ -14,4 +14,4 @@ pick==1.0.0
 dataclasses-json==0.5.3
 validators==0.18.2
 click-spinner==0.1.10
-ruamel.yaml==0.16.13
+ruamel.yaml==0.17.4
