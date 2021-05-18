@@ -1,5 +1,19 @@
 # Changelog 📝
 
+## [v2021.5.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.2) (2021-05-18)
+
+**Improvements:**
+
+- [#427](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/427): ``core``: update ``click`` from v7.1.1 to v8.0.0.
+- [#428](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/428): ``completion``: update to support click 8 changes.
+- [#429](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/429): ``shell``: formatting improvements.
+- [#430](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/430): ``core``: update ``click-repl`` to custom repo/branch to support completion in click 8.
+- [#431](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/431): ``core``: update ``dataclases-json`` from v0.5.2 to v0.5.3.
+- [#432](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/432): ``core``: update ``Pygments`` from  v2.8.0 to v2.9.0
+- [#433](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/433): ``core``: update ``ruamel.yaml`` from v0.16.13 to v0.17.4.
+- [#434](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/434): ``docs``: update README with the latest info.
+  
+
 ## [v2021.5.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.1) (2021-05-05)
 
 **New Features:**
