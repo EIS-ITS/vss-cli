@@ -32,14 +32,21 @@ def find_version(*file_paths):
 
 def load_requirements(requires_file: str = 'requirements.txt') -> List[str]:
     """Load requirements from file"""
+    reqs = []
     with open(requires_file, encoding='utf-8') as f:
-        return f.read().splitlines()
+        _lines = f.read().splitlines()
+    for line in _lines:
+        line = line.strip('\n')
+        if not line.startswith('#') and line != '':
+            reqs.append(line)
+    return reqs
 
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
 
 REQUIRED_PYTHON_VER = (3, 7, 0)
 REQUIRES = load_requirements()
+# REQUIRES = [req for req in INSTALL_REQUIRES if req and not re.match(r'[^:]+://', req)]
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
 PACKAGE_DATA = {'vss_cli': ['data/*.yaml']}
