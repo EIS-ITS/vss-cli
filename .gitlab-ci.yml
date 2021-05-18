@@ -92,7 +92,7 @@ test-code-develop:
     - python -V
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
     - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
-    - python setup.py install
+    - pip install .
     - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
   tags:
     - python-3
