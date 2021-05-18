@@ -12,8 +12,7 @@
 - [#432](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/432): ``core``: update ``Pygments`` from  v2.8.0 to v2.9.0
 - [#433](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/433): ``core``: update ``ruamel.yaml`` from v0.16.13 to v0.17.4.
 - [#434](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/434): ``docs``: update README with the latest info.
-- [#436](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/436): ``docker``: Add ``git`` to base image.
-- [#437](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/437): ``ci``: pipeline use pip instead of setuptools. 
+- [#436](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/436): ``docker``: Add ``git`` to base image. 
   
 ## [v2021.5.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.1) (2021-05-05)
 
