@@ -18,7 +18,8 @@ RUN apk add --no-cache --virtual build-dependencies \
     rm -rf /var/cache/apk/*
 # install app
 RUN pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir --no-use-pep517 -e .[dev]
+    pip3 install --no-cache-dir --no-use-pep517 -e .[dev] && \
+    pip3 install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
 # add man pages
 RUN python3 setup.py build_sphinx && \
     cp docs/_build/man/* /usr/share/man/man1

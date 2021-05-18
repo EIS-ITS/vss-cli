@@ -179,6 +179,14 @@ eval (env _VSS_CLI_COMPLETE=fish_source vss-cli)
 
 ## VSS Shell
 
+> **_NOTE:_** The ``shell`` command requires ``click-repl`` and compatibility with ``click`` version 8.0.0
+is still pending approval (see [Pull Request #76][Pull Request #76]). To use the shell command,
+please run the following command to install the ``click-repl`` version with the compatible code: 
+> ```
+> python3 -m pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
+> ````
+
+
 The VSS CLI provides a REPL interactive shell with tab-completion, suggestions and
 command history.
 
@@ -306,3 +314,4 @@ Refer to the [Changelog][Changelog] for details.
 [docker-image]: https://hub.docker.com/r/uofteis/vss-cli/
 [python-tabulate]: https://pypi.org/project/tabulate/
 [ITS Private Cloud RESTful API]: https://vss-wiki.eis.utoronto.ca/display/API
+[Pull Request #76]: https://github.com/click-contrib/click-repl/pull/76
