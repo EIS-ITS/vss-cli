@@ -38,7 +38,7 @@ def cli(ctx: Configuration, history):
     \ \ / / __/ __|      API Endpoint: {endpoint}
      \ V /\__ \__ \      Tab-completion & suggestions
       \_/ |___/___/      Prefix external commands with "!"
-      CLI {version}      History is saved: {history}
+      CLI {version}       History is saved: {history}
 
     Exit shell with :exit, :q, :quit, ctrl+d
     """.format(
