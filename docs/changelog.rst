@@ -15,7 +15,7 @@ Changelog 📝
 - `#433 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/433>`_: ``core``: update ``ruamel.yaml`` from v0.16.13 to v0.17.4.
 - `#434 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/434>`_: ``docs``: update README with the latest info.
 - `#436 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/436>`_: ``docker``: Add ``git`` to base image.
-
+- `#438 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/438>`_: ``core``: Add ``postinstall`` step for ``click-repl``.
 
 `v2021.5.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.1>`_ (2021-05-05)
 ----------------------------------------------------------------------------------------

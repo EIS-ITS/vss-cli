@@ -2,8 +2,7 @@ pyvss>=2021.5.0
 click==8.0.0
 click-log==0.3.2
 click-plugins==1.1.1
-# click-repl==0.1.6
-click-repl
+click-repl==0.1.6
 click-threading==0.4.4
 tabulate==0.8.9
 jsonpath-ng>=1.5.1,<2
