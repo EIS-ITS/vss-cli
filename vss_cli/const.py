@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2021.5.2-dev6"
+__version__ = "2021.5.2-dev7"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 

@@ -140,20 +140,20 @@ vss-cli -<TAB><TAB>
 Activating `bash` or `zsh` completion can be done by executing the following commands:
 
 For `bash`:
+
 ```bash
 source <(vss-cli completion bash)
 ```
 
-For `zsh`
-
+For `zsh`:
 ```bash
-source <(vss-cli completion zsh)
+    source <(vss-cli completion zsh)
+```
 
 For `fish`
 
-.. code-block:: bash
-
-    _VSS_CLI_COMPLETE=source_fish vss-cli > ~/.config/fish/completions/vss-cli-complete.fish
+```bash
+_VSS_CLI_COMPLETE=fish_source vss-cli > ~/.config/fish/completions/vss-cli-complete.fish
 ```
 
 If you do it from your `.bashrc` or `.zshrc` it is recommend to use the form below 
@@ -162,19 +162,19 @@ as that does not trigger a run of vss-cli itself.
 For `bash`:
 
 ```bash
-eval "$(_VSS_CLI_COMPLETE=source vss-cli)"
+eval "$(_VSS_CLI_COMPLETE=bash_source vss-cli)"
 ```
 
 For `zsh`:
 
 ```bash
-eval "$(_VSS_CLI_COMPLETE=source_zsh vss-cli)"
+eval "$(_VSS_CLI_COMPLETE=zsh_source vss-cli)"
 ```
 
 For `fish`:
 
 ```bash
-eval (env _VSS_CLI_COMPLETE=source_fish vss-cli)
+eval (env _VSS_CLI_COMPLETE=fish_source vss-cli)
 ```
 
 ## VSS Shell
@@ -199,7 +199,7 @@ To enter the shell just execute vss shell and you will get the following welcome
     \ \ / / __/ __|      API Endpoint: https://cloud-api.eis.utoronto.ca/v2
      \ V /\__ \__ \      Tab-completion & suggestions
       \_/ |___/___/      Prefix external commands with "!"
-       CLI v0.0.0        History is saved: /Users/user/.vss-cli/history
+       CLI v20xx.0.0      History is saved: /Users/user/.vss-cli/history
 
     Exit shell with :exit, :q, :quit, ctrl+d
 
@@ -219,30 +219,33 @@ Usage: vss-cli [OPTIONS] COMMAND [ARGS]...
   Command line interface for the ITS Private Cloud.
 
 Options:
-  -l, --loglevel LVL              Either CRITICAL, ERROR, WARNING, INFO or
-                                  DEBUG
-  -e, --endpoint TEXT             The Cloud API endpoint URL  [default:
-                                  https://cloud-api.eis.utoronto.ca]
+  -e, --endpoint TEXT             The Cloud API endpoint URL
   -c, --config TEXT               Configuration file
   -t, --token TEXT                The Bearer token for the VSS API.
   -u, --username TEXT             The API username for VSS API.
   -p, --password TEXT             The API password for VSS API.
-  --timeout INTEGER               Timeout for network operations.  [default:
-                                  30]
-  -o, --output [json|yaml|table|auto|ndjson]
-                                  Output format.  [default: auto]
+  --timeout INTEGER               Timeout for network operations.
+  -l, --loglevel LVL              Either CRITICAL, ERROR, WARNING, INFO or
+                                  DEBUG
   -v, --verbose                   Enables verbose mode.
-  -x                              Print back traces when exception occurs.
   --debug                         Enables debug mode.
-  --columns TEXT                  Custom columns key=value list. Example:
-                                  VM=uuid,PROVISIONED=storage.provisionedGB
-  --no-headers                    When printing tables don't use headers
-                                  (default: print headers)
+  -x                              Print back traces when exception occurs.
+  -o, --output [json|yaml|table|auto|ndjson]
+                                  Output format (default: auto).
   --table-format TEXT             Which table format to use (default: simple)
-  --sort-by TEXT                  Sort table by the jsonpath expression.
+  --columns TEXT                  Custom columns key=value list. Example:
+                                  VM=moref,PROVISIONED=storage.provisionedGB
+  --columns-width INTEGER         Truncates column values (0: auto, -1:
+                                  disable).
+  --wait / --no-wait              wait for request(s) to complete
+  -n, --no-headers                When printing tables don't use headers
+                                  (default: print headers)
+  -s, --sort-by TEXT              Sort table by the jsonpath expression.
                                   Example: updated_on
+  -w, --webdav-server TEXT        The Webdav server.
   --version                       Show the version and exit.
   --help                          Show this message and exit.
+
 
 Commands:
   account     Manage your VSS account
@@ -258,16 +261,17 @@ Commands:
   request     Manage various requests
   service     ITS Service catalog.
   shell       REPL interactive shell.
-  status      Check VSS Status.
+  status      Check API Status.
   stor        Manage your VSS storage account.
   token       Manage access tokens
   upgrade     Upgrade VSS CLI and dependencies.
+
 
 ```
 
 ## Versioning
 
-The `vss-cli` versions are tagged based on [Semantic Versioning][Semantic Versioning]. Versions available in the 
+The `vss-cli` versions are tagged based on [Calendar Versioning][Calendar Versioning]. Versions available in the 
 [tags section][tags section] or [PyPI package section][PyPI package section].
 
 
@@ -279,7 +283,7 @@ of conduct and the process of submitting code to the repository.
 
 Refer to the [Changelog][Changelog] for details. 
 
-[Semantic Versioning]: https://semver.org/
+[Calendar Versioning]: https://calver.org/
 [tags section]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags
 [PyPI package section]: https://pypi.org/project/vss-cli/#history
 [official documentation site]: https://eis.utoronto.ca/~vss/vss-cli/configure.html
