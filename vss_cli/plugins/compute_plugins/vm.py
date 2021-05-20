@@ -2860,12 +2860,11 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     """
     buses = list(bus_number)
     for bus in buses:
-        # TODO: remove when get_vm_scsi_device is fixed
-        _bus = ctx.request(f'/vm/{ctx.moref}/controller/scsi/{bus}')
-        if not _bus.get('data'):
+        _bus = ctx.get_vm_scsi_device(ctx.moref, bus)
+        if not _bus:
             buses.remove(bus)
             _LOGGING.warning(
-                f'Ignoring SCSI Controller {bus}. ' f'Could not be found.'
+                f'Ignoring SCSI Controller {bus}. Could not be found.'
             )
         else:
             devices = ctx.get_vm_disk_by_scsi_device(ctx.moref, bus)
