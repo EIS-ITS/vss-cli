@@ -183,7 +183,7 @@ eval (env _VSS_CLI_COMPLETE=fish_source vss-cli)
 is still pending approval (see [Pull Request #76][Pull Request #76]). To use the shell command,
 please run the following command to install the ``click-repl`` version with the compatible code: 
 > ```
-> python3 -m pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
+> python3 -m pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --force-reinstall
 > ````
 
 

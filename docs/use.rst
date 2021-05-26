@@ -471,7 +471,7 @@ Shell
 
     .. code-block:: bash
 
-        python3 -m pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
+        python3 -m pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --force-reinstall
 
 
 The VSS CLI provides a REPL interactive shell with tab-completion,
