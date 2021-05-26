@@ -1,6 +1,16 @@
 Changelog 📝
 ============
 
+`v2021.5.3 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.3>`_ (2021-05-26)
+----------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#439 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/439>`_: ``core``: update ``click`` from v8.0.0 to v8.0.1.
+- `#440 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/440>`_: ``compute vm set controller scsi rm``: update to implement ``pyvss.manager.get_vm_scsi_device``.
+- `#442 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/442>`_: ``core``: remove ``prompt-toolkit`` from dependencies.
+- `#443 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/443>`_: ``docs``: Update ``VSS Shell`` section in ``README.md`` and ``use.rst``.
+
 `v2021.5.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.2>`_ (2021-05-18)
 ----------------------------------------------------------------------------------------
 
