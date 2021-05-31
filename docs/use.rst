@@ -463,17 +463,6 @@ For ``zsh``:
 Shell
 -----
 
-.. note::
-
-    The ``shell`` command requires ``click-repl`` and compatibility with ``click`` v8
-    is still pending pull request approval (see `Pull Request #76`_). To use the shell command,
-    please run the following command to install the ``click-repl`` version with the compatible code:
-
-    .. code-block:: bash
-
-        python3 -m pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --force-reinstall
-
-
 The VSS CLI provides a REPL interactive shell with tab-completion,
 suggestions and command history.
 
