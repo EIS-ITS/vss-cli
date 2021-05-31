@@ -1,5 +1,7 @@
 # Changelog 📝
 
+## [v2021.5.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.4) (2021-05-31)
+
 ## [v2021.5.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.3) (2021-05-26)
 
 **Improvements:**
