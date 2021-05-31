@@ -2,6 +2,11 @@
 
 ## [v2021.5.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.4) (2021-05-31)
 
+**Improvements:**
+
+- [#444](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/444): ``core``: update ``click-repl`` from v0.1.6 to v0.2.0.
+- [#445](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/445): ``core``: update click-threading from v0.4.4 to v0.5.0.
+
 ## [v2021.5.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.3) (2021-05-26)
 
 **Improvements:**
