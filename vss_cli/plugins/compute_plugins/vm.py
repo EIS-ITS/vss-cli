@@ -3268,7 +3268,6 @@ def compute_vm_mk_spec(
 @c_so.domain_opt
 @c_so.notes_opt
 @c_so.iso_opt
-@c_so.high_io_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
 @c_so.vss_service_opt
@@ -3292,7 +3291,6 @@ def compute_vm_mk_shell(
     notes,
     admin,
     inform,
-    high_io,
     iso,
     net,
     domain,
@@ -3313,7 +3311,6 @@ def compute_vm_mk_shell(
         name=name,
         usage=usage,
         built=built,
-        high_io=high_io,
         power_on=power_on,
     )
     # Hardware

@@ -1212,9 +1212,6 @@ class Configuration(VssManager):
                     for d in machine_section['disks']
                 ]
                 # other
-                machine_section['high_io'] = machine_section.get(
-                    'high_io', False
-                )
                 machine_section['power_on'] = machine_section.get(
                     'power_on', False
                 )
