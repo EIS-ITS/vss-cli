@@ -144,11 +144,19 @@ networks_opt = click.option(
 )
 scsi_ctrllr_opt = click.option(
     '--scsi',
-    '-s',
-    help='SCSI Controller <type>=<sharing>.',
+    help='SCSI Controller Spec <type>=<sharing>.',
     type=click.STRING,
     multiple=True,
     required=True,
+    callback=callbacks.process_scsi_opt,
+    shell_complete=autocompletion.vm_controller_scsi_types,
+)
+scsi_ctrllr_nr_opt = click.option(
+    '--scsi',
+    help='SCSI Controller Spec <type>=<sharing>.',
+    type=click.STRING,
+    multiple=True,
+    required=False,
     callback=callbacks.process_scsi_opt,
     shell_complete=autocompletion.vm_controller_scsi_types,
 )

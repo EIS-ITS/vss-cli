@@ -29,20 +29,68 @@ def process_networks_opt(ctx: Configuration, param, value):
 
 
 def process_scsi_opt(ctx: Configuration, param, value):
-    """Process SCSI spec option."""
+    """Process SCSI spec option.
+
+    <type>=<sharing>
+
+     or
+
+    {
+     "type": "paravirtual",
+     "sharing": "nosharing",
+     "bus": 0,
+    }
+    """
     _init_ctx(ctx)
     if value is not None:
         devices = list()
+        _sharing = 'nosharing'
         for dev in value:
-            _dev = to_tuples(dev)[0]
-            _type = _dev[0]
-            if len(_dev) > 1:
-                _sharing = ctx.client.get_vm_scsi_sharing_by_name(_dev[1])
-                _sharing = _sharing[0]['type']
+            scsi = {}
+            try:
+                _dev = json.loads(dev)
+                if not isinstance(_dev, dict):
+                    raise BadParameter(
+                        'Must be an object with at least the type attribute'
+                    )
+                is_json = True
+            except ValueError:
+                is_json = False
+                _dev = to_tuples(dev)[0]
+            # get values either from tuple or dict
+            try:
+                if is_json:
+                    _type = _dev['type']
+                else:
+                    _type = _dev[0]
+                # lookup device type
+                _type = ctx.client.get_vm_scsi_type_by_name(_type)
+                _type = _type[0]['type']
+                scsi['type'] = _type
+            except KeyError:
+                raise BadParameter('at least type must be provided')
+
+            if is_json:
+                if _dev.get('sharing') is not None:
+                    _sharing = ctx.client.get_vm_scsi_sharing_by_name(
+                        _dev.get('sharing')
+                    )
+                    _sharing = _sharing[0]['type']
+                    scsi['sharing'] = _sharing
+                if _dev.get('bus') is not None:
+                    try:
+                        _bus = int(_dev['bus'])
+                    except ValueError:
+                        raise BadParameter('bus must be a number')
+                    scsi['bus'] = _bus
             else:
-                _sharing = 'nosharing'
-            _t = ctx.client.get_vm_scsi_type_by_name(_type)
-            devices.append({'type': _t[0]['type'], 'sharing': _sharing})
+                if len(_dev) > 1:
+                    _sharing = ctx.client.get_vm_scsi_sharing_by_name(_dev[1])
+                    _sharing = _sharing[0]['type']
+                    scsi['sharing'] = _sharing
+                else:
+                    scsi['sharing'] = _sharing
+            devices.append(scsi)
         return devices
 
 
@@ -94,7 +142,6 @@ def process_disk_opt(ctx: Configuration, param, value):
                     )
                     _backing_mode = _backing_mode[0]['type']
                     disk['backing_mode'] = _backing_mode
-
                 if _dev.get('backing_sharing'):
                     _sharing_mode = ctx.client.get_vm_disk_backing_sharing_by_name(  # NOQA:
                         _dev.get('backing_sharing')
