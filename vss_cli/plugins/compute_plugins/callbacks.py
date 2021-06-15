@@ -153,7 +153,7 @@ def process_disk_opt(ctx: Configuration, param, value):
                         _dev.get('backing_vmdk')
                     )
                     disk['backing_vmdk'] = _backing_vmdk[0]['path']
-                if _dev.get('scsi'):
+                if _dev.get('scsi') is not None:
                     try:
                         _scsi_crllr = int(_dev.get('scsi'))
                     except ValueError:
