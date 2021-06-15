@@ -1,11 +1,36 @@
 # Changelog 📝
 
+## [v2021.6.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.6.6) (2021-06-14)
+
+**Improvements:**
+
+- [#447](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447): ``compute vm mk shell``: deprecate ``--high-io`` **breaking**.
+- [#447](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447): ``compute vm mk from-clone``: deprecate ``--high-io`` **breaking**.
+- [#447](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447): ``compute vm mk from-spec``: deprecate ``--high-io`` **breaking**.
+- [#447](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447): ``compute vm mk from-image``: deprecate ``--high-io`` **breaking**.
+- [#447](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447): ``compute vm mk from-template``: deprecate ``--high-io`` **breaking**.
+- [#448](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448): ``compute vm mk shell``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- [#448](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448): ``compute vm mk from-clone``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- [#448](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448): ``compute vm mk from-spec``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- [#448](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448): ``compute vm mk from-image``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- [#448](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448): ``compute vm mk from-template``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- [#449](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/449): ``core``: update ``pyvss`` from v2021.5.0 to v2021.6.0.
+
+**Bug Fixes:**
+
+- [#450](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450): ``compute vm mk shell``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+- [#450](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450): ``compute vm mk from-clone``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+- [#450](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450): ``compute vm mk from-spec``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+- [#450](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450): ``compute vm mk from-image``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+- [#450](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450): ``compute vm mk from-template``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+
+
 ## [v2021.5.4](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.4) (2021-05-31)
 
 **Improvements:**
 
 - [#444](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/444): ``core``: update ``click-repl`` from v0.1.6 to v0.2.0.
-- [#445](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/445): ``core``: update click-threading from v0.4.4 to v0.5.0.
+- [#445](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/445): ``core``: update ``click-threading`` from v0.4.4 to v0.5.0.
 
 ## [v2021.5.3](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.3) (2021-05-26)
 
