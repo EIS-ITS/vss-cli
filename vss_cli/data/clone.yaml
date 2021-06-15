@@ -13,7 +13,6 @@ machine:
     - 40                  # Optional: Disk capacity in GB (Default: source vm disk capacity)
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
-#  high_io: false         # Optional: created with a VMware Paravirtual SCSIController.
 #  power_on: true         # Optional: Power on after successful deployment.
 # Networking
 networking:

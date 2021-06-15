@@ -1,6 +1,32 @@
 Changelog 📝
 ============
 
+`v2021.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.6.6>`_ (2021-06-14)
+----------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#447 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447>`_: ``compute vm mk shell``: deprecate ``--high-io`` **breaking**.
+- `#447 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447>`_: ``compute vm mk from-clone``: deprecate ``--high-io`` **breaking**.
+- `#447 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447>`_: ``compute vm mk from-spec``: deprecate ``--high-io`` **breaking**.
+- `#447 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447>`_: ``compute vm mk from-image``: deprecate ``--high-io`` **breaking**.
+- `#447 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/447>`_: ``compute vm mk from-template``: deprecate ``--high-io`` **breaking**.
+- `#448 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448>`_: ``compute vm mk shell``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- `#448 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448>`_: ``compute vm mk from-clone``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- `#448 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448>`_: ``compute vm mk from-spec``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- `#448 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448>`_: ``compute vm mk from-image``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- `#448 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/448>`_: ``compute vm mk from-template``: option ``--scsi`` to define controllers with payload: ``{"type": "paravirtual", "bus": 0}``.
+- `#449 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/449>`_: ``core``: update ``pyvss`` from v2021.5.0 to v2021.6.0.
+
+**Bug Fixes:**
+
+- `#450 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450>`_: ``compute vm mk shell``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+- `#450 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450>`_: ``compute vm mk from-clone``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+- `#450 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450>`_: ``compute vm mk from-spec``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+- `#450 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450>`_: ``compute vm mk from-image``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+- `#450 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/450>`_: ``compute vm mk from-template``: ``"scsi": 0`` ignored when provided in ``--disk`` option.
+
+
 `v2021.5.4 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.5.4>`_ (2021-05-31)
 ----------------------------------------------------------------------------------------
 

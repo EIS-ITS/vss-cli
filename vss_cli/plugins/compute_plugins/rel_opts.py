@@ -144,11 +144,19 @@ networks_opt = click.option(
 )
 scsi_ctrllr_opt = click.option(
     '--scsi',
-    '-s',
-    help='SCSI Controller <type>=<sharing>.',
+    help='SCSI Controller Spec <type>=<sharing>.',
     type=click.STRING,
     multiple=True,
     required=True,
+    callback=callbacks.process_scsi_opt,
+    shell_complete=autocompletion.vm_controller_scsi_types,
+)
+scsi_ctrllr_nr_opt = click.option(
+    '--scsi',
+    help='SCSI Controller Spec <type>=<sharing>.',
+    type=click.STRING,
+    multiple=True,
+    required=False,
     callback=callbacks.process_scsi_opt,
     shell_complete=autocompletion.vm_controller_scsi_types,
 )
@@ -198,13 +206,6 @@ iso_opt = click.option(
     type=click.STRING,
     required=False,
     shell_complete=autocompletion.isos,
-)
-high_io_opt = click.option(
-    '--high-io',
-    '-h',
-    help='Use VMware Paravirtual SCSIController.',
-    is_flag=True,
-    required=False,
 )
 power_on_opt = click.option(
     '--power-on',

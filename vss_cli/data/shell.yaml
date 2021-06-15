@@ -15,7 +15,6 @@ machine:
   iso: CentOS             # Optional: ISO name or path to mount upon creation.
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
-#  high_io: false         # Optional: created with a VMware Paravirtual SCSIController.
 #  power_on: true         # Optional: Power on after successful deployment.
 networking:
   interfaces:

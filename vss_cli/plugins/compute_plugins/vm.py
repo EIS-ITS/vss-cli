@@ -3119,6 +3119,7 @@ def compute_vm_from_file(
 @c_so.memory_opt
 @c_so.cpu_opt
 @c_so.folder_nr_opt
+@c_so.scsi_ctrllr_nr_opt
 @c_so.disks_nr_opt
 @c_so.networks_nr_opt
 @c_so.domain_opt
@@ -3144,6 +3145,7 @@ def compute_vm_mk_spec(
     memory,
     cpu,
     folder,
+    scsi,
     disk,
     notes,
     admin,
@@ -3184,6 +3186,8 @@ def compute_vm_mk_spec(
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if scsi:
+        payload['scsi'] = list(scsi)
     if disk:
         payload['disks'] = list(disk)
     if net:
@@ -3263,12 +3267,12 @@ def compute_vm_mk_spec(
 @c_so.memory_opt
 @c_so.cpu_opt
 @c_so.folder_opt
+@c_so.scsi_ctrllr_nr_opt
 @c_so.disk_opt
 @c_so.networks_opt
 @c_so.domain_opt
 @c_so.notes_opt
 @c_so.iso_opt
-@c_so.high_io_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
 @c_so.vss_service_opt
@@ -3288,11 +3292,11 @@ def compute_vm_mk_shell(
     memory,
     cpu,
     folder,
+    scsi,
     disk,
     notes,
     admin,
     inform,
-    high_io,
     iso,
     net,
     domain,
@@ -3313,7 +3317,6 @@ def compute_vm_mk_shell(
         name=name,
         usage=usage,
         built=built,
-        high_io=high_io,
         power_on=power_on,
     )
     # Hardware
@@ -3321,6 +3324,8 @@ def compute_vm_mk_shell(
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if scsi:
+        payload['scsi'] = scsi
     if disk:
         payload['disks'] = disk
     if net:
@@ -3365,6 +3370,7 @@ def compute_vm_mk_shell(
             retire_type, retire_value, retire_warning
         )
         payload['retirement'] = retire
+    _LOGGING.debug(f'payload: {payload}')
     # request
     if instances > 1:
         payload['count'] = instances
@@ -3395,6 +3401,7 @@ def compute_vm_mk_shell(
 @c_so.memory_opt
 @c_so.cpu_opt
 @c_so.folder_nr_opt
+@c_so.scsi_ctrllr_nr_opt
 @c_so.disks_nr_opt
 @c_so.networks_nr_opt
 @c_so.domain_opt
@@ -3420,6 +3427,7 @@ def compute_vm_mk_template(
     memory,
     cpu,
     folder,
+    scsi,
     disk,
     notes,
     admin,
@@ -3454,6 +3462,8 @@ def compute_vm_mk_template(
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if scsi:
+        payload['scsi'] = list(scsi)
     if disk:
         payload['disks'] = list(disk)
     if net:
@@ -3527,6 +3537,7 @@ def compute_vm_mk_template(
 @c_so.memory_opt
 @c_so.cpu_opt
 @c_so.folder_nr_opt
+@c_so.scsi_ctrllr_nr_opt
 @c_so.disks_nr_opt
 @c_so.networks_nr_opt
 @c_so.domain_opt
@@ -3553,6 +3564,7 @@ def compute_vm_mk_clone(
     memory,
     cpu,
     folder,
+    scsi,
     disk,
     notes,
     admin,
@@ -3592,6 +3604,8 @@ def compute_vm_mk_clone(
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if scsi:
+        payload['scsi'] = scsi
     if disk:
         payload['disks'] = list(disk)
     if net:
@@ -3671,6 +3685,7 @@ def compute_vm_mk_clone(
 @c_so.memory_opt
 @c_so.cpu_opt
 @c_so.folder_opt
+@c_so.scsi_ctrllr_nr_opt
 @c_so.disk_opt
 @c_so.networks_opt
 @c_so.domain_opt
@@ -3696,6 +3711,7 @@ def compute_vm_mk_image(
     memory,
     cpu,
     folder,
+    scsi,
     disk,
     notes,
     admin,
@@ -3733,6 +3749,8 @@ def compute_vm_mk_image(
         payload['cpu'] = cpu
     if disk:
         payload['disks'] = disk
+    if scsi:
+        payload['scsi'] = scsi
     if net:
         payload['networks'] = net
     if os:
@@ -3807,6 +3825,7 @@ def compute_vm_mk_image(
 @c_so.memory_opt
 @c_so.cpu_opt
 @c_so.folder_opt
+@c_so.scsi_ctrllr_nr_opt
 @c_so.disk_opt
 @c_so.networks_opt
 @c_so.domain_opt
@@ -3832,6 +3851,7 @@ def compute_vm_mk_clib(
     memory,
     cpu,
     folder,
+    scsi,
     disk,
     notes,
     admin,
@@ -3866,6 +3886,8 @@ def compute_vm_mk_clib(
         payload['memory'] = memory
     if cpu:
         payload['cpu'] = cpu
+    if scsi:
+        payload['scsi'] = scsi
     if disk:
         payload['disks'] = disk
     if net:
