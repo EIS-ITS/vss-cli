@@ -2883,7 +2883,7 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     payload.update(ctx.payload_options)
     # confirm
     confirm = rm or click.confirm(
-        f'Are you sure you want to SCSI bus {buses}?'
+        f'Are you sure you want to remove SCSI bus {buses}?'
     )
     if confirm:
         obj = ctx.delete_vm_scsi_devices(**payload)
