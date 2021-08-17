@@ -213,6 +213,12 @@ power_on_opt = click.option(
     is_flag=True,
     required=False,
 )
+template_opt = click.option(
+    '--template',
+    help='Mark the VM as template after deployment.',
+    is_flag=True,
+    required=False,
+)
 extra_config_opt = click.option(
     '--extra-config',
     '-e',

@@ -3127,6 +3127,7 @@ def compute_vm_from_file(
 @c_so.iso_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
@@ -3156,6 +3157,7 @@ def compute_vm_mk_spec(
     os,
     extra_config,
     power_on,
+    template,
     vss_service,
     instances,
     firmware,
@@ -3180,6 +3182,7 @@ def compute_vm_mk_spec(
         usage=usage,
         built=built,
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
@@ -3275,6 +3278,7 @@ def compute_vm_mk_spec(
 @c_so.iso_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
@@ -3303,6 +3307,7 @@ def compute_vm_mk_shell(
     os,
     extra_config,
     power_on,
+    template,
     vss_service,
     instances,
     firmware,
@@ -3318,6 +3323,7 @@ def compute_vm_mk_shell(
         usage=usage,
         built=built,
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
@@ -3409,6 +3415,7 @@ def compute_vm_mk_shell(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
@@ -3439,6 +3446,7 @@ def compute_vm_mk_template(
     extra_config,
     vss_service,
     power_on,
+    template,
     firmware,
     instances,
     retire_type,
@@ -3456,6 +3464,7 @@ def compute_vm_mk_template(
         usage=usage,
         source_template=vm_id,
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
@@ -3545,6 +3554,7 @@ def compute_vm_mk_template(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
@@ -3575,6 +3585,7 @@ def compute_vm_mk_clone(
     custom_spec,
     extra_config,
     power_on,
+    template,
     vss_service,
     instances,
     firmware,
@@ -3598,6 +3609,7 @@ def compute_vm_mk_clone(
         usage=usage,
         source=vm_id,
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
@@ -3693,6 +3705,7 @@ def compute_vm_mk_clone(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.user_data_opt
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
@@ -3721,6 +3734,7 @@ def compute_vm_mk_image(
     os,
     custom_spec,
     power_on,
+    template,
     extra_config,
     user_data,
     network_config,
@@ -3741,6 +3755,7 @@ def compute_vm_mk_image(
         client=client,
         image=image_ref[0]['path'],
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
@@ -3833,6 +3848,7 @@ def compute_vm_mk_image(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.user_data_opt
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
@@ -3861,6 +3877,7 @@ def compute_vm_mk_clib(
     os,
     custom_spec,
     power_on,
+    template,
     extra_config,
     user_data,
     network_config,
@@ -3880,6 +3897,7 @@ def compute_vm_mk_clib(
         client=client,
         item_id=item_ref[0]['id'],
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
