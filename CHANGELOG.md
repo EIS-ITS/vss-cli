@@ -1,6 +1,28 @@
 # Changelog 📝
 
-## [v2021.6.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.6.6) (2021-06-14)
+## [v2021.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.8.0) (2021-08-18)
+
+**Improvements:**
+
+- [#453](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/453): ``compute vm mk shell``: option ``--template`` to mark vm as template.
+- [#453](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/453): ``compute vm mk from-clone``: option ``--template`` to mark vm as template.
+- [#453](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/453): ``compute vm mk from-spec``: option ``--template`` to mark vm as template.
+- [#453](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/453): ``compute vm mk from-image``: option ``--template`` to mark vm as template.
+- [#453](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/453): ``compute vm mk from-template``: option ``--template`` to mark vm as template.
+- [#454](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/454): ``compute vm mk shell``: option ``--cores-per-socket`` to set advanced cpu config.
+- [#454](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/454): ``compute vm mk from-clone``: option ``--cores-per-socket`` to set advanced cpu config.
+- [#454](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/454): ``compute vm mk from-spec``: option ``--cores-per-socket`` to set advanced cpu config.
+- [#454](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/454): ``compute vm mk from-image``: option ``--cores-per-socket`` to set advanced cpu config.
+- [#454](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/454): ``compute vm mk from-template``: option ``--cores-per-socket`` to set advanced cpu config.
+- [#455](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/455): ``compute vm set cpu count`` : option ``--cores-per-socket`` for advanced settings.
+- [#456](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/456): ``core``: update ``pyvss`` from v2021.6.0 to v2021.8.0.
+
+**Bug Fixes:**
+
+- [#452](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/452): ``compute vm set controller scsi rm``: Missing verb in removal confirmation.
+
+
+## [v2021.6.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.6.0) (2021-06-14)
 
 **Improvements:**
 

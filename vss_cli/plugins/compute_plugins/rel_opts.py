@@ -106,6 +106,13 @@ memory_opt = click.option(
 cpu_opt = click.option(
     '--cpu', '-c', help='Cpu count.', type=click.INT, required=False
 )
+cpu_cps_opt = click.option(
+    '--cores-per-socket',
+    help='Cores per socket.',
+    type=click.INT,
+    required=False,
+    default=1,
+)
 folder_nr_opt = click.option(
     '--folder',
     '-f',
@@ -210,6 +217,12 @@ iso_opt = click.option(
 power_on_opt = click.option(
     '--power-on',
     help='Power on after successful deployment.',
+    is_flag=True,
+    required=False,
+)
+template_opt = click.option(
+    '--template',
+    help='Mark the VM as template after deployment.',
     is_flag=True,
     required=False,
 )

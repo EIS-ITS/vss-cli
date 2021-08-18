@@ -2,6 +2,7 @@
 import datetime
 import logging
 import os
+from typing import Optional
 
 import click
 from click_plugins import with_plugins
@@ -1166,13 +1167,25 @@ def compute_vm_set_cpu(ctx: Configuration):
     pass
 
 
-@compute_vm_set_cpu.command('count', short_help='Update CPU count')
+@compute_vm_set_cpu.command(
+    'count', short_help='Update CPU count and cores per socket.'
+)
+@c_so.cpu_cps_opt
 @click.argument('cpu_count', type=click.INT, required=True)
 @pass_context
-def compute_vm_set_cpu_count(ctx: Configuration, cpu_count):
-    """Update CPU count."""
+def compute_vm_set_cpu_count(
+    ctx: Configuration, cpu_count: int, cores_per_socket: Optional[int] = 1
+):
+    """Update CPU count and cores per socket.
+
+    Note: Refer to Setting the number of cores per
+    CPU (https://kb.vmware.com/s/article/1010184) when setting
+    cores per socket.
+    """
     # generate payload
-    payload = dict(vm_id=ctx.moref, number=cpu_count)
+    payload = dict(
+        vm_id=ctx.moref, number=cpu_count, cores_per_socket=cores_per_socket
+    )
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2883,7 +2896,7 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     payload.update(ctx.payload_options)
     # confirm
     confirm = rm or click.confirm(
-        f'Are you sure you want to SCSI bus {buses}?'
+        f'Are you sure you want to remove SCSI bus {buses}?'
     )
     if confirm:
         obj = ctx.delete_vm_scsi_devices(**payload)
@@ -3118,6 +3131,7 @@ def compute_vm_from_file(
 @c_so.os_nr_opt
 @c_so.memory_opt
 @c_so.cpu_opt
+@c_so.cpu_cps_opt
 @c_so.folder_nr_opt
 @c_so.scsi_ctrllr_nr_opt
 @c_so.disks_nr_opt
@@ -3127,6 +3141,7 @@ def compute_vm_from_file(
 @c_so.iso_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
@@ -3144,6 +3159,7 @@ def compute_vm_mk_spec(
     usage,
     memory,
     cpu,
+    cores_per_socket,
     folder,
     scsi,
     disk,
@@ -3156,6 +3172,7 @@ def compute_vm_mk_spec(
     os,
     extra_config,
     power_on,
+    template,
     vss_service,
     instances,
     firmware,
@@ -3180,12 +3197,16 @@ def compute_vm_mk_spec(
         usage=usage,
         built=built,
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
-        payload['cpu'] = cpu
+        payload['cpu'] = {
+            'count': cpu,
+            'cores_per_socket': cores_per_socket or 1,
+        }
     if scsi:
         payload['scsi'] = list(scsi)
     if disk:
@@ -3266,6 +3287,7 @@ def compute_vm_mk_spec(
 @c_so.os_opt
 @c_so.memory_opt
 @c_so.cpu_opt
+@c_so.cpu_cps_opt
 @c_so.folder_opt
 @c_so.scsi_ctrllr_nr_opt
 @c_so.disk_opt
@@ -3275,6 +3297,7 @@ def compute_vm_mk_spec(
 @c_so.iso_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
@@ -3291,6 +3314,7 @@ def compute_vm_mk_shell(
     usage,
     memory,
     cpu,
+    cores_per_socket,
     folder,
     scsi,
     disk,
@@ -3303,6 +3327,7 @@ def compute_vm_mk_shell(
     os,
     extra_config,
     power_on,
+    template,
     vss_service,
     instances,
     firmware,
@@ -3318,12 +3343,16 @@ def compute_vm_mk_shell(
         usage=usage,
         built=built,
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
-        payload['cpu'] = cpu
+        payload['cpu'] = {
+            'count': cpu,
+            'cores_per_socket': cores_per_socket or 1,
+        }
     if scsi:
         payload['scsi'] = scsi
     if disk:
@@ -3400,6 +3429,7 @@ def compute_vm_mk_shell(
 @c_so.os_nr_opt
 @c_so.memory_opt
 @c_so.cpu_opt
+@c_so.cpu_cps_opt
 @c_so.folder_nr_opt
 @c_so.scsi_ctrllr_nr_opt
 @c_so.disks_nr_opt
@@ -3409,6 +3439,7 @@ def compute_vm_mk_shell(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
@@ -3426,6 +3457,7 @@ def compute_vm_mk_template(
     usage,
     memory,
     cpu,
+    cores_per_socket,
     folder,
     scsi,
     disk,
@@ -3439,6 +3471,7 @@ def compute_vm_mk_template(
     extra_config,
     vss_service,
     power_on,
+    template,
     firmware,
     instances,
     retire_type,
@@ -3456,12 +3489,16 @@ def compute_vm_mk_template(
         usage=usage,
         source_template=vm_id,
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
-        payload['cpu'] = cpu
+        payload['cpu'] = {
+            'count': cpu,
+            'cores_per_socket': cores_per_socket or 1,
+        }
     if scsi:
         payload['scsi'] = list(scsi)
     if disk:
@@ -3536,6 +3573,7 @@ def compute_vm_mk_template(
 @c_so.os_nr_opt
 @c_so.memory_opt
 @c_so.cpu_opt
+@c_so.cpu_cps_opt
 @c_so.folder_nr_opt
 @c_so.scsi_ctrllr_nr_opt
 @c_so.disks_nr_opt
@@ -3545,6 +3583,7 @@ def compute_vm_mk_template(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
@@ -3563,6 +3602,7 @@ def compute_vm_mk_clone(
     usage,
     memory,
     cpu,
+    cores_per_socket,
     folder,
     scsi,
     disk,
@@ -3575,6 +3615,7 @@ def compute_vm_mk_clone(
     custom_spec,
     extra_config,
     power_on,
+    template,
     vss_service,
     instances,
     firmware,
@@ -3598,12 +3639,16 @@ def compute_vm_mk_clone(
         usage=usage,
         source=vm_id,
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
-        payload['cpu'] = cpu
+        payload['cpu'] = {
+            'count': cpu,
+            'cores_per_socket': cores_per_socket or 1,
+        }
     if scsi:
         payload['scsi'] = scsi
     if disk:
@@ -3684,6 +3729,7 @@ def compute_vm_mk_clone(
 @c_so.os_opt
 @c_so.memory_opt
 @c_so.cpu_opt
+@c_so.cpu_cps_opt
 @c_so.folder_opt
 @c_so.scsi_ctrllr_nr_opt
 @c_so.disk_opt
@@ -3693,6 +3739,7 @@ def compute_vm_mk_clone(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.user_data_opt
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
@@ -3710,6 +3757,7 @@ def compute_vm_mk_image(
     usage,
     memory,
     cpu,
+    cores_per_socket,
     folder,
     scsi,
     disk,
@@ -3721,6 +3769,7 @@ def compute_vm_mk_image(
     os,
     custom_spec,
     power_on,
+    template,
     extra_config,
     user_data,
     network_config,
@@ -3741,12 +3790,16 @@ def compute_vm_mk_image(
         client=client,
         image=image_ref[0]['path'],
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
-        payload['cpu'] = cpu
+        payload['cpu'] = {
+            'count': cpu,
+            'cores_per_socket': cores_per_socket or 1,
+        }
     if disk:
         payload['disks'] = disk
     if scsi:
@@ -3824,6 +3877,7 @@ def compute_vm_mk_image(
 @c_so.os_opt
 @c_so.memory_opt
 @c_so.cpu_opt
+@c_so.cpu_cps_opt
 @c_so.folder_opt
 @c_so.scsi_ctrllr_nr_opt
 @c_so.disk_opt
@@ -3833,6 +3887,7 @@ def compute_vm_mk_image(
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
 @c_so.power_on_opt
+@c_so.template_opt
 @c_so.user_data_opt
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
@@ -3850,6 +3905,7 @@ def compute_vm_mk_clib(
     usage,
     memory,
     cpu,
+    cores_per_socket,
     folder,
     scsi,
     disk,
@@ -3861,6 +3917,7 @@ def compute_vm_mk_clib(
     os,
     custom_spec,
     power_on,
+    template,
     extra_config,
     user_data,
     network_config,
@@ -3880,12 +3937,16 @@ def compute_vm_mk_clib(
         client=client,
         item_id=item_ref[0]['id'],
         power_on=power_on,
+        template=template,
     )
     # Hardware
     if memory:
         payload['memory'] = memory
     if cpu:
-        payload['cpu'] = cpu
+        payload['cpu'] = {
+            'count': cpu,
+            'cores_per_socket': cores_per_socket or 1,
+        }
     if scsi:
         payload['scsi'] = scsi
     if disk:
