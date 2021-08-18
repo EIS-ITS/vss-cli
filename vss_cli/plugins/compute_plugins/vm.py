@@ -2,6 +2,7 @@
 import datetime
 import logging
 import os
+from typing import Optional
 
 import click
 from click_plugins import with_plugins
@@ -1166,13 +1167,25 @@ def compute_vm_set_cpu(ctx: Configuration):
     pass
 
 
-@compute_vm_set_cpu.command('count', short_help='Update CPU count')
+@compute_vm_set_cpu.command(
+    'count', short_help='Update CPU count and cores per socket.'
+)
+@c_so.cpu_cps_opt
 @click.argument('cpu_count', type=click.INT, required=True)
 @pass_context
-def compute_vm_set_cpu_count(ctx: Configuration, cpu_count):
-    """Update CPU count."""
+def compute_vm_set_cpu_count(
+    ctx: Configuration, cpu_count: int, cores_per_socket: Optional[int] = 1
+):
+    """Update CPU count and cores per socket.
+
+    Note: Refer to Setting the number of cores per
+    CPU (https://kb.vmware.com/s/article/1010184) when setting
+    cores per socket.
+    """
     # generate payload
-    payload = dict(vm_id=ctx.moref, number=cpu_count)
+    payload = dict(
+        vm_id=ctx.moref, number=cpu_count, cores_per_socket=cores_per_socket
+    )
     # add common options
     payload.update(ctx.payload_options)
     # request

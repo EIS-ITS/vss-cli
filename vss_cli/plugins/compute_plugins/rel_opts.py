@@ -111,6 +111,7 @@ cpu_cps_opt = click.option(
     help='Cores per socket.',
     type=click.INT,
     required=False,
+    default=1,
 )
 folder_nr_opt = click.option(
     '--folder',
