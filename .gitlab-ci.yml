@@ -1,12 +1,7 @@
-image: hub.eis.utoronto.ca/vss/docker/docker:latest
-
 stages:
 - test
 - build
 - release
-
-services:
-- hub.eis.utoronto.ca/vss/docker/docker:dind
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -24,7 +19,7 @@ variables:
 
 # Global jobs
 test-style:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: test
   script:
     - apk add --update --no-cache git
@@ -34,7 +29,7 @@ test-style:
     - python-3
 
 build-dist:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: build
   script:
     - pip install setuptools wheel
@@ -86,12 +81,12 @@ build-docker-hub:
 
 # Develop/branches
 test-code-develop:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: test
   script:
     - python -V
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
-    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - pip install nose coverage pytz git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@develop
     - python setup.py install
     - pip uninstall click-repl -y && pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
     - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
@@ -106,11 +101,11 @@ test-code-develop:
       - coverage/
 
 build-docs-develop:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@develop
     - python setup.py install build_sphinx
     - mkdir -p ./public
     - mkdir -p ./man
@@ -128,7 +123,7 @@ build-docs-develop:
     - python-3
 
 release-dist-develop:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
@@ -145,12 +140,12 @@ release-dist-develop:
    - python-3
 
 release-dist-develop-local:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: release
   script:
    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
    - pip install twine setuptools wheel
-   - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token twine upload --repository-url https://gitlab-ee.eis.utoronto.ca/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+   - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
   dependencies:
     - build-dist
   only:
@@ -162,12 +157,12 @@ release-dist-develop-local:
    - python-3
 
 release-checkin-develop:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: release
   script:
     - python -V
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev curl
-    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - pip install nose coverage pytz git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@develop
     - python setup.py install
     - export VSSCLI_VERSION=$(python -c "from vss_cli.const import __version__; print(__version__)")
     - "curl -X PUT $_VSS_API_CI_ENDPOINT_DEV -d '{\"version\": \"'\"${VSSCLI_VERSION}\"'\", \"git_sha\": \"'\"${CI_COMMIT_SHA}\"'\"}' -H \"Authorization: Bearer $_VSS_API_CI_TOKEN_DEV\""
@@ -235,12 +230,12 @@ release-docker-hub-develop:
 
 # Master
 test-code-master:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: test
   script:
     - python -V
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
-    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
+    - pip install nose coverage pytz git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@master
     - python setup.py install
     - pip uninstall click-repl -y && pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
     - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
@@ -255,12 +250,12 @@ test-code-master:
       - coverage/
 
 build-docs-master:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
     - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
-    - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
+    - pip install git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@master
     - python setup.py install build_sphinx
     - mkdir -p ./public
     - mkdir -p ./man
@@ -315,7 +310,7 @@ release-docker-hub-master:
 # PEP-440 compliant version (tags)
 
 release-dist-tag:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
@@ -329,12 +324,12 @@ release-dist-tag:
    - python-3
 
 release-dist-tag-local:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
     - pip install twine setuptools wheel
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token twine upload --repository-url https://gitlab-ee.eis.utoronto.ca/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
   dependencies:
     - build-dist
   only:
@@ -343,7 +338,7 @@ release-dist-tag-local:
    - python-3
 
 release-checkin-tag:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: release
   script:
     - python -V
@@ -358,7 +353,7 @@ release-checkin-tag:
   when: manual
 
 build-docs-tag:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
