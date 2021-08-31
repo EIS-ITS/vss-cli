@@ -173,7 +173,7 @@ release-checkin-develop:
   when: manual
 
 release-docs-develop:
-  image: hub.eis.utoronto.ca/vss/docker/python:3
+  image: registry.gitlab.com/its-eis-vss/docker/python:3
   stage: release
   script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -375,7 +375,7 @@ build-docs-tag:
     - python-3
 
 release-docs-tag:
-  image: hub.eis.utoronto.ca/vss/docker/python:3
+  image: registry.gitlab.com/its-eis-vss/docker/python:3
   stage: release
   script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
