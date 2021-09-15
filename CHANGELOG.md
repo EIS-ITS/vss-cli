@@ -1,5 +1,14 @@
 # Changelog 📝
 
+## [v2021.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.9.0) (2021-09-15)
+
+**Improvements:**
+
+- [#458](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/458): ``ci``: standardize Pipeline settings to ensure portability to GL SaaS.
+- [#459](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/459): ``core``: update ``Pygments`` to 2.10.0.
+- [#460](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/460): ``core``: update ``dataclasses-json`` to 0.5.6.
+- [#461](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/461): ``core``: update ``ruamel.yaml`` to 0.17.16.
+
 ## [v2021.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.8.0) (2021-08-18)
 
 **Improvements:**
