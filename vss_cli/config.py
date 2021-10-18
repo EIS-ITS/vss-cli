@@ -108,6 +108,7 @@ class Configuration(VssManager):
         self.base_endpoint = value
         self.api_endpoint = f'{value}/v2'
         self.token_endpoint = f'{value}/auth/request-token'
+        self.tf_endpoint = f'{value}/tf'
         if value:
             self.endpoint_name = get_hostname_from_url(
                 value, const.DEFAULT_HOST_REGEX
