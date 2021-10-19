@@ -442,50 +442,9 @@ class Configuration(VssManager):
                             except Exception as ex:
                                 self.vlog(str(ex))
                                 _LOGGING.debug('Generating a new token')
-                                try:
-                                    self.api_token = self.get_token(
-                                        self.username, self.password, self.totp
-                                    )
-                                except Exception as ex:
-                                    _LOGGING.warning(
-                                        f'Could not generate new token: {ex}'
-                                    )
-                                    if (
-                                        'code: 400; message: '
-                                        'InvalidParameterValue: otp' in str(ex)
-                                    ):
-                                        # totp is required
-                                        spinner_cls.stop()
-                                        try:
-                                            _LOGGING.debug(
-                                                'Requesting a new timed '
-                                                'one-time password'
-                                            )
-                                            _ = self.request_totp(
-                                                self.username, self.password
-                                            )
-                                        except Exception as ex:
-                                            _LOGGING.warning(
-                                                f'Requesting totp: {ex}'
-                                            )
-                                            pass
-                                        self.totp = click.prompt(
-                                            'MFA enabled. '
-                                            'Provide Timed One-Time Password'
-                                        )
-                                        spinner_cls.start()
-                                        try:
-                                            self.api_token = self.get_token(
-                                                self.username,
-                                                self.password,
-                                                self.totp,
-                                            )
-                                        except Exception as ex:
-                                            _LOGGING.warning(
-                                                f'Could not generate '
-                                                f'new token: {ex}'
-                                            )
-
+                                self.api_token = self._get_token_with_mfa(
+                                    spinner_cls=spinner_cls
+                                )
                                 endpoint = self._create_endpoint_config(
                                     token=self.api_token
                                 )
@@ -583,15 +542,48 @@ class Configuration(VssManager):
         except Exception as ex:
             _LOGGING.error(f'Could not check for messages: {ex}')
 
+    def _get_token_with_mfa(
+        self,
+        token: Optional[str] = None,
+        spinner_cls: Optional[Spinner] = None,
+    ):
+        """Get token with MFA."""
+        try:
+            token = token or self.get_token(
+                self.username, self.password, self.totp
+            )
+        except Exception as ex:
+            if 'InvalidParameterValue: otp' in str(ex):
+                try:
+                    _LOGGING.debug(
+                        'Requesting a new timed ' 'one-time password'
+                    )
+                    _ = self.request_totp(self.username, self.password)
+                except Exception as ex:
+                    _LOGGING.warning(f'Requesting totp: {ex}')
+                    pass
+                if spinner_cls is not None:
+                    spinner_cls.stop()
+                self.totp = click.prompt(
+                    'MFA enabled. ' 'Provide Timed One-Time Password'
+                )
+                if spinner_cls is not None:
+                    spinner_cls.start()
+                try:
+                    token = token or self.get_token(
+                        self.username, self.password, self.totp
+                    )
+                except Exception as ex:
+                    _LOGGING.warning(f'Could not generate ' f'new token: {ex}')
+        return token
+
     def _create_endpoint_config(self, token: str = None) -> ConfigEndpoint:
         """Create endpoint configuration for a given token.
 
         Token might be ``None`` and will generate a new one
         using ``username`` and ``password``.
         """
-        token = token or self.get_token(
-            self.username, self.password, self.totp
-        )
+        token = self._get_token_with_mfa(token=token)
         # encode or save
         username = (
             self.username
