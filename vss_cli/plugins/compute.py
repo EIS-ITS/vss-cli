@@ -16,8 +16,8 @@ def cli(ctx: Configuration):
     Such as virtual machines, networks supported operating systems,
     logical folders, OVA/OVF images, floppy images, ISO images and more.
     """
-    with ctx.spinner(disable=ctx.debug):
-        ctx.load_config()
+    with ctx.spinner(disable=ctx.debug) as spinner_cls:
+        ctx.load_config(spinner_cls=spinner_cls)
 
 
 from vss_cli.plugins.compute_plugins import (  # isort:skip

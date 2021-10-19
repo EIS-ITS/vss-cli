@@ -27,6 +27,7 @@ DEFAULT_DATA_PATH = pkg_resources.resource_filename(PACKAGE_NAME, "data")
 DEFAULT_CONFIG_TMPL = os.path.join(DEFAULT_DATA_PATH, "config.yaml")
 DEFAULT_CHECK_UPDATES = True
 DEFAULT_CHECK_MESSAGES = True
+DEFAULT_TOTP = False
 
 DEFAULT_TABLE_FORMAT = "simple"
 DEFAULT_DATA_OUTPUT = "table"
