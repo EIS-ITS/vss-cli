@@ -377,13 +377,12 @@ def mfa_mk(ctx: Configuration, method: str, phone: str):
         obj = ctx.enable_totp(
             user=username, password=password, method=method, phone=phone
         )
-    success = True
+    recovery_codes = obj.get('recovery_codes')
+    issuer = obj.get('issuer')
     if method == 'AUTHENTICATOR':
         uri = obj.get('uri')
         key = obj.get('key')
         _ = obj.get('image')
-        recovery_codes = obj.get('recovery_codes')
-        issuer = obj.get('issuer')
         import qrcode
 
         qr = qrcode.QRCode()
@@ -408,22 +407,22 @@ def mfa_mk(ctx: Configuration, method: str, phone: str):
             ctx.secho(
                 f'{key}\n', file=sys.stderr, fg='blue', nl=True,
             )
-        if recovery_codes is not None:
-            ctx.secho(
-                f'Recovery codes are used to access your account in \n'
-                f'the event you cannot get two-factor authentication codes.\n',
-                file=sys.stderr,
-                nl=True,
-            )
-            rec_code_txt = '\n'.join(recovery_codes)
-            ctx.secho(f'{rec_code_txt}\n', file=sys.stderr, nl=True, fg='blue')
-            rec_code_obj = Path(f'{username}_{issuer}_recovery_codes.txt')
-            if click.confirm(
-                f'Would you like to save the codes into a text file?'
-            ):
-                rec_code_obj.write_text(rec_code_txt)
-                click.echo(f'Written {rec_code_obj} with recovery codes.')
-
+    # print recovery codes.
+    if recovery_codes is not None:
+        ctx.secho(
+            f'Recovery codes are used to access your account in \n'
+            f'the event you cannot get two-factor authentication codes.\n',
+            file=sys.stderr,
+            nl=True,
+        )
+        rec_code_txt = '\n'.join(recovery_codes)
+        ctx.secho(f'{rec_code_txt}\n', file=sys.stderr, nl=True, fg='blue')
+        rec_code_obj = Path(f'{username}_{issuer}_recovery_codes.txt')
+        if click.confirm(
+            f'Would you like to save the codes into a text file?'
+        ):
+            rec_code_obj.write_text(rec_code_txt)
+            click.echo(f'Written {rec_code_obj} with recovery codes.')
     # verify
     if method in ['SMS', 'EMAIL']:
         _ = ctx.request_totp(user=username, password=password)
