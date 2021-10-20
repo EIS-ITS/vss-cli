@@ -329,6 +329,24 @@ def mfa_rm(ctx: Configuration):
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@mfa_set.command('request-token')
+@pass_context
+def mfa_request_token(ctx: Configuration, otp):
+    """Request TOTP token."""
+    endpoint, username, password = get_endpoint_and_creds(ctx)
+    try:
+        ctx.endpoint = endpoint
+        with ctx.spinner(disable=ctx.debug):
+            _ = ctx.request_totp(user=username, password=password)
+        ctx.secho(
+            f'\nVerification code requested {ej_mail}.\n',
+            file=sys.stderr,
+            fg='green',
+        )
+    except Exception as ex:
+        _LOGGING.error(f'Could not verify TOTP setup: {ex}')
+
+
 @mfa_set.command('verify')
 @click.argument('otp', type=click.STRING, required=False)
 @pass_context
