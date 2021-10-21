@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2021.11.0-dev3"
+__version__ = "2021.11.0-dev5"
 
 REQUIRED_PYTHON_VER = (3, 6, 4)
 
@@ -463,6 +463,12 @@ COLUMNS_USER_STATUS = [
     ("updated_on",),
     ("last_access",),
     ("ip_address",),
+]
+COLUMNS_USER_MFA = [
+    ("enabled",),
+    ("method",),
+    ("enabled_on",),
+    ("disabled_on",),
 ]
 COLUMNS_MESSAGE_DIGEST = [("message",)]
 COLUMNS_NOT_REQUEST = [

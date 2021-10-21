@@ -84,6 +84,16 @@ def account_get_digest_message(ctx: Configuration):
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@account_get.command('mfa')
+@pass_context
+def account_get_mfa(ctx: Configuration):
+    """Get MFA account settings."""
+    with ctx.spinner(disable=ctx.debug):
+        _obj = ctx.get_user_totp()
+    columns = ctx.columns or const.COLUMNS_USER_MFA
+    ctx.echo(format_output(ctx, [_obj], columns=columns, single=True))
+
+
 @account_get.command('groups')
 @pass_context
 def account_get_groups(ctx: Configuration):
@@ -417,8 +427,8 @@ def mfa_mk(ctx: Configuration, method: str, phone: str):
             qr.print_ascii(out=sys.stderr)
         if click.confirm('Do you like to display the security key?'):
             ctx.secho(
-                f'Use the following key if you are unable '
-                f'to scan the QR Code:\n',
+                'Use the following key if you are unable '
+                'to scan the QR Code:\n',
                 file=sys.stderr,
                 nl=True,
             )
@@ -428,17 +438,15 @@ def mfa_mk(ctx: Configuration, method: str, phone: str):
     # print recovery codes.
     if recovery_codes is not None:
         ctx.secho(
-            f'Recovery codes are used to access your account in \n'
-            f'the event you cannot get two-factor authentication codes.\n',
+            'Recovery codes are used to access your account in \n'
+            'the event you cannot get two-factor authentication codes.\n',
             file=sys.stderr,
             nl=True,
         )
         rec_code_txt = '\n'.join(recovery_codes)
         ctx.secho(f'{rec_code_txt}\n', file=sys.stderr, nl=True, fg='blue')
         rec_code_obj = Path(f'{username}_{issuer}_recovery_codes.txt')
-        if click.confirm(
-            f'Would you like to save the codes into a text file?'
-        ):
+        if click.confirm('Would you like to save the codes into a text file?'):
             rec_code_obj.write_text(rec_code_txt)
             click.echo(f'Written {rec_code_obj} with recovery codes.')
     # verify
