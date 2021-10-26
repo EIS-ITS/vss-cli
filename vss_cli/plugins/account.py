@@ -339,9 +339,9 @@ def mfa_rm(ctx: Configuration):
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
-@mfa_set.command('request-token')
+@mfa_set.command('get-token')
 @pass_context
-def mfa_request_token(ctx: Configuration, otp):
+def mfa_request_token(ctx: Configuration):
     """Request TOTP token."""
     endpoint, username, password = get_endpoint_and_creds(ctx)
     try:

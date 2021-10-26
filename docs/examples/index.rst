@@ -24,3 +24,4 @@ please `open an issue <https://gitlab-ee.eis.utoronto.ca/vss/vsscli/issues/new>`
    schedule-change
    verify-permission
    pvscsi
+   mfa
