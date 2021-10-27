@@ -19,7 +19,7 @@ variables:
 
 # Global jobs
 test-style:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: test
   script:
     - apk add --update --no-cache git
@@ -29,7 +29,7 @@ test-style:
     - python-3
 
 build-dist:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - pip install setuptools wheel
@@ -81,14 +81,13 @@ build-docker-hub:
 
 # Develop/branches
 test-code-develop:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: test
   script:
     - python -V
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
-    - pip install nose coverage pytz git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@develop
+    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
     - python setup.py install
-    - pip uninstall click-repl -y && pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
     - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
   tags:
     - python-3
@@ -101,11 +100,11 @@ test-code-develop:
       - coverage/
 
 build-docs-develop:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@develop
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
     - python setup.py install build_sphinx
     - mkdir -p ./public
     - mkdir -p ./man
@@ -123,7 +122,7 @@ build-docs-develop:
     - python-3
 
 release-dist-develop:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: rhub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
@@ -140,7 +139,7 @@ release-dist-develop:
    - python-3
 
 release-dist-develop-local:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
@@ -157,12 +156,12 @@ release-dist-develop-local:
    - python-3
 
 release-checkin-develop:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - python -V
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev curl
-    - pip install nose coverage pytz git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@develop
+    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
     - python setup.py install
     - export VSSCLI_VERSION=$(python -c "from vss_cli.const import __version__; print(__version__)")
     - "curl -X PUT $_VSS_API_CI_ENDPOINT_DEV -d '{\"version\": \"'\"${VSSCLI_VERSION}\"'\", \"git_sha\": \"'\"${CI_COMMIT_SHA}\"'\"}' -H \"Authorization: Bearer $_VSS_API_CI_TOKEN_DEV\""
@@ -173,7 +172,7 @@ release-checkin-develop:
   when: manual
 
 release-docs-develop:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3
+  image: hub.eis.utoronto.ca/vss/docker/python:3
   stage: release
   script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -230,12 +229,12 @@ release-docker-hub-develop:
 
 # Master
 test-code-master:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: test
   script:
     - python -V
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
-    - pip install nose coverage pytz git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@master
+    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
     - python setup.py install
     - pip uninstall click-repl -y && pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
     - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
@@ -250,12 +249,12 @@ test-code-master:
       - coverage/
 
 build-docs-master:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eie.sutoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
     - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
-    - pip install git+https://gitlab.com/its-eis-vss/its-private-cloud/py-vss.git@master
+    - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
     - python setup.py install build_sphinx
     - mkdir -p ./public
     - mkdir -p ./man
@@ -310,7 +309,7 @@ release-docker-hub-master:
 # PEP-440 compliant version (tags)
 
 release-dist-tag:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
@@ -324,7 +323,7 @@ release-dist-tag:
    - python-3
 
 release-dist-tag-local:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
@@ -338,7 +337,7 @@ release-dist-tag-local:
    - python-3
 
 release-checkin-tag:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - python -V
@@ -353,7 +352,7 @@ release-checkin-tag:
   when: manual
 
 build-docs-tag:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
@@ -375,7 +374,7 @@ build-docs-tag:
     - python-3
 
 release-docs-tag:
-  image: registry.gitlab.com/its-eis-vss/docker/python:3
+  image: hub.eis.utoronto.ca/vss/docker/python:3
   stage: release
   script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
