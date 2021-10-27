@@ -7,7 +7,7 @@ click-threading==0.5.0
 tabulate==0.8.9
 jsonpath-ng>=1.5.1,<2
 jinja2>=2.10
-dateparser==1.0.0
+dateparser==1.1.0
 Pygments==2.10.0
 pick==1.0.0
 dataclasses-json==0.5.6
