@@ -5,9 +5,8 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2021.11.0-dev8"
+__version__ = "2021.11.1-dev0"
 
-REQUIRED_PYTHON_VER = (3, 6, 4)
 
 DEFAULT_TIMEOUT = 30
 DEFAULT_ENDPOINT = "https://cloud-api.eis.utoronto.ca"
