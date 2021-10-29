@@ -1,5 +1,28 @@
 # Changelog 📝
 
+## [v2021.11.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.11.0) (2021-11-01)
+
+**Improvements:**
+
+- [#463](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/463): ``account set mfa mk``: enable mfa with totp.
+- [#463](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/463): ``account set mfa rm``: disable mfa.
+- [#463](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/463): ``account set mfa verify``: verify mfa totp setup.
+- [#463](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/463): ``account set mfa get-token``: get totp.
+- [#464](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/464): ``core``: update ``pyvss`` from ``v2021.8.0`` to ``v2021.11.0``.
+- [#465](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/465): ``core``: support two-factor authentication.
+- [#466](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/466): ``configure``: support two-factor authentication.
+- [#467](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/467): ``account get mfa``: get account mfa status.
+- [#468](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/468): ``core``: update ``click`` from ``8.0.1`` to ``8.0.3``.
+- [#469](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/469): ``core``: update ``dateparser`` from ``1.0.0`` to ``1.1.0``.
+- [#470](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/470): ``docker``: remove custom requirement branch for ``click-repl``.
+- [#471](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/471): ``ci``: rollback #458 and use local images.
+- [#472](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/472): ``core``: ``setup.py`` update ``stor``, ``dev`` and min ``python`` version to ``3.8``.
+- [#473](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/473): ``docs``: remove ``microbadger`` backed images.
+
+**Bug Fixes:**
+
+- [#474](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/474): ``ci``: add missing ``rust`` dependency.
+
 ## [v2021.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.9.0) (2021-09-15)
 
 **Improvements:**

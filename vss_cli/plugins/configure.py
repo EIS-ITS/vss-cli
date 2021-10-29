@@ -199,6 +199,7 @@ COLUMNS_DETAILS = [
     ("ENDPOINT", "endpoint"),
     ("USER", "user"),
     ("PASS", "pass"),
+    ("MFA", "mfa"),
     ("TOKEN", "token"),
     ("SOURCE", "source"),
     ('DEFAULT', 'default'),
@@ -274,6 +275,7 @@ def ls(ctx: Configuration):
                     'name': endpoint.name,
                     'endpoint': url,
                     'user': user,
+                    'mfa': 'Yes' if endpoint.tf_enabled else 'No',
                     'pass': masked_pwd[:8],
                     'token': token,
                     'source': 'config file',
@@ -293,13 +295,15 @@ def ls(ctx: Configuration):
         masked_pwd = ''.join(['*' for i in range(len(pwd))])
         tk = os.environ.get('VSS_TOKEN', '')
         endpoint = os.environ.get('VSS_ENDPOINT', const.DEFAULT_ENDPOINT)
+        mfa = os.environ.get('VSS_API_USER_OTP', const.DEFAULT_TOTP)
         source = 'env'
         cfg_endpoints.append(
             {
                 'endpoint': endpoint,
                 'user': user,
                 'pass': masked_pwd,
-                'token': '{}...{}'.format(tk[:10], tk[-10:]),
+                'mfa': 'Yes' if mfa else 'No',
+                'token': f'{tk[:10]}...{tk[-10:]}',
                 'source': source,
             }
         )

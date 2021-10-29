@@ -12,7 +12,8 @@ from typing import (  # noqa: F401
     Any, Callable, Dict, List, Optional, Tuple, Union, cast)
 
 import click
-from click_spinner import spinner
+from click_spinner import Spinner, spinner
+import jwt
 from pick import pick
 from pyvss.const import __version__ as pyvss_version
 from pyvss.enums import RequestStatus
@@ -54,6 +55,7 @@ class Configuration(VssManager):
         self._webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
+        self.totp = None  # type: Optional[str]
         self.token = None  # type: Optional[str]
         self.timeout = None  # type: Optional[int]
         self._debug = False  # type: Optional[bool]
@@ -108,6 +110,7 @@ class Configuration(VssManager):
         self.base_endpoint = value
         self.api_endpoint = f'{value}/v2'
         self.token_endpoint = f'{value}/auth/request-token'
+        self.tf_endpoint = f'{value}/tf'
         if value:
             self.endpoint_name = get_hostname_from_url(
                 value, const.DEFAULT_HOST_REGEX
@@ -121,9 +124,15 @@ class Configuration(VssManager):
                 setattr(self, setting, default)
         _LOGGING.debug(self)
 
-    def get_token(self, user: str = '', password: str = '') -> str:
+    def get_token(
+        self,
+        user: Optional[str] = '',
+        password: Optional[str] = '',
+        otp: Optional[str] = None,
+    ) -> str:
         """Generate token and returns value."""
-        self.api_token = super().get_token(user, password)
+        self.api_token = super().get_token(user, password, otp)
+        _LOGGING.debug(f'Token generated successfully: {self.api_token}')
         return self.api_token
 
     def update_endpoints(self, endpoint: str = '') -> None:
@@ -131,6 +140,7 @@ class Configuration(VssManager):
         self.base_endpoint = endpoint
         self.api_endpoint = f'{endpoint}/v2'
         self.token_endpoint = f'{endpoint}/auth/request-token'
+        self.tf_endpoint = f'{endpoint}/tf'
 
     def echo(self, msg: str, *args: Optional[Any]) -> None:
         """Put content message to stdout."""
@@ -174,6 +184,7 @@ class Configuration(VssManager):
             "access_token": 'yes' if self.token is not None else 'no',
             "user": 'yes' if self.username is not None else 'no',
             "user_password": 'yes' if self.password is not None else 'no',
+            "tf_enabled": 'yes' if self.tf_enabled is not None else 'no',
             "output": self.output,
             "timeout": self.timeout,
             "debug": self.debug,
@@ -284,7 +295,7 @@ class Configuration(VssManager):
             )
 
     def load_config(
-        self, validate: bool = True
+        self, validate: bool = True, spinner_cls: Optional[Spinner] = None
     ) -> Optional[Tuple[str, str, str]]:
         """Load configuration and validate.
 
@@ -311,8 +322,7 @@ class Configuration(VssManager):
                         'Consider running command "configure mk" to save your '
                         'credentials.'
                     )
-                    self.get_token(self.username, self.password)
-                    _LOGGING.debug(f'Token generated {self.api_token}')
+                    self.get_token(self.username, self.password, self.totp)
                     return self.username, self.password, self.api_token
                 else:
                     raise VssCliError(
@@ -432,17 +442,9 @@ class Configuration(VssManager):
                             except Exception as ex:
                                 self.vlog(str(ex))
                                 _LOGGING.debug('Generating a new token')
-                                try:
-                                    self.api_token = self.get_token(
-                                        self.username, self.password
-                                    )
-                                    _LOGGING.debug(
-                                        'Token generated successfully'
-                                    )
-                                except Exception as ex:
-                                    _LOGGING.warning(
-                                        f'Could not generate new token: {ex}'
-                                    )
+                                self.api_token = self._get_token_with_mfa(
+                                    spinner_cls=spinner_cls
+                                )
                                 endpoint = self._create_endpoint_config(
                                     token=self.api_token
                                 )
@@ -540,13 +542,48 @@ class Configuration(VssManager):
         except Exception as ex:
             _LOGGING.error(f'Could not check for messages: {ex}')
 
+    def _get_token_with_mfa(
+        self,
+        token: Optional[str] = None,
+        spinner_cls: Optional[Spinner] = None,
+    ):
+        """Get token with MFA."""
+        try:
+            token = token or self.get_token(
+                self.username, self.password, self.totp
+            )
+        except Exception as ex:
+            if 'InvalidParameterValue: otp' in str(ex):
+                try:
+                    _LOGGING.debug(
+                        'Requesting a new timed ' 'one-time password'
+                    )
+                    _ = self.request_totp(self.username, self.password)
+                except Exception as ex:
+                    _LOGGING.warning(f'Requesting totp: {ex}')
+                    pass
+                if spinner_cls is not None:
+                    spinner_cls.stop()
+                self.totp = click.prompt(
+                    'MFA enabled. ' 'Provide Timed One-Time Password'
+                )
+                if spinner_cls is not None:
+                    spinner_cls.start()
+                try:
+                    token = token or self.get_token(
+                        self.username, self.password, self.totp
+                    )
+                except Exception as ex:
+                    _LOGGING.warning(f'Could not generate ' f'new token: {ex}')
+        return token
+
     def _create_endpoint_config(self, token: str = None) -> ConfigEndpoint:
         """Create endpoint configuration for a given token.
 
         Token might be ``None`` and will generate a new one
         using ``username`` and ``password``.
         """
-        token = token or self.get_token(self.username, self.password)
+        token = self._get_token_with_mfa(token=token)
         # encode or save
         username = (
             self.username
@@ -560,13 +597,20 @@ class Configuration(VssManager):
         )
         credentials = b':'.join([username, password])
         auth = b64encode(credentials).strip().decode('utf-8')
+        # decode jwt to verify if otp is enabled.
+        payload = jwt.decode(
+            self.api_token, options=dict(verify_signature=False)
+        )
         endpoint_cfg = {
             'url': self.base_endpoint,
             'name': self.endpoint_name,
             'auth': auth,
             'token': token,
+            'tf_enabled': payload.get('otp', False),
         }
-        return ConfigEndpoint.from_json(json.dumps(endpoint_cfg))
+        ep_cfg = ConfigEndpoint.from_json(json.dumps(endpoint_cfg))
+        _LOGGING.debug(f'Configuration endpoint created: {ep_cfg}')
+        return ep_cfg
 
     def load_config_template(self) -> ConfigFile:
         """Load configuration from template."""

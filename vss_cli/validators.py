@@ -14,15 +14,16 @@ _LOGGING = logging.getLogger(__name__)
 
 def validate_phone_number(ctx, param, phone):
     """Validate phone number."""
-    phone_regex = (
-        r'(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|'
-        r'\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d'
-        r'{3}[-\.\s]??\d{4})+'
-    )
-    if not re.match(phone_regex, phone):
-        raise click.BadParameter(
-            'Value must be in the ' 'following format 416-166-6666'
+    if phone:
+        phone_regex = (
+            r'(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|'
+            r'\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d'
+            r'{3}[-\.\s]??\d{4})+'
         )
+        if not re.match(phone_regex, phone):
+            raise click.BadParameter(
+                'Value must be in the ' 'following format 416-166-6666'
+            )
     return phone
 
 

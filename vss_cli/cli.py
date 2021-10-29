@@ -141,6 +141,12 @@ def _default_token() -> Optional[str]:
     envvar='VSS_USER_PASS',
 )
 @click.option(
+    '--totp',
+    default=_default_token,
+    help='Timed One Time Password.',
+    envvar='VSS_API_USER_OTP',
+)
+@click.option(
     '--timeout',
     help='Timeout for network operations.',
     type=click.INT,
@@ -245,6 +251,7 @@ def cli(
     token: Optional[str],
     username: Optional[str],
     password: Optional[str],
+    totp: Optional[str],
     config: str,
     output: str,
     timeout: Optional[int],
@@ -265,6 +272,7 @@ def cli(
     ctx.config_path = config
     ctx.username = username
     ctx.password = password
+    ctx.totp = totp
     ctx.timeout = timeout
     ctx.output = output
     ctx.debug = debug

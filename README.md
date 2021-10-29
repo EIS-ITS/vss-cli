@@ -4,9 +4,6 @@
 [![Coverage][coverage-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
 [![PyPI][pypi-img]](https://pypi.python.org/pypi/vss-cli)
 [![PyPI version][pyver-img]](https://pypi.python.org/pypi/vss-cli)
-[![Docker Image Pulls][docker-pulls-img]][docker-image]
-[![Docker Image Layers][docker-layer-img]][docker-image]
-[![Docker Image Version][docker-version-img]][docker-image]
 
 
 The ITS Private Cloud Command-Line Interface ``vss-cli`` simplifies the interaction with the 
@@ -301,8 +298,6 @@ Refer to the [Changelog][Changelog] for details.
 [pypi-img]: https://img.shields.io/pypi/v/vss-cli.svg
 [pyver-img]: https://img.shields.io/pypi/pyversions/vss-cli.svg
 [docker-pulls-img]:  https://img.shields.io/docker/pulls/uofteis/vss-cli.svg
-[docker-layer-img]: https://images.microbadger.com/badges/image/uofteis/vss-cli.svg
-[docker-version-img]: https://images.microbadger.com/badges/version/uofteis/vss-cli.svg
 [docker-image]: https://hub.docker.com/r/uofteis/vss-cli/
 [python-tabulate]: https://pypi.org/project/tabulate/
 [ITS Private Cloud RESTful API]: https://vss-wiki.eis.utoronto.ca/display/API

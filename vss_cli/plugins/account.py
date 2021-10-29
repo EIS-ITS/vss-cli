@@ -1,18 +1,62 @@
 """Account Management plugin for VSS CLI (vss-cli)."""
+import logging
+from pathlib import Path
+import sys
+from typing import Tuple
+
 import click
 
 from vss_cli import autocompletion, const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
+from vss_cli.utils.emoji import EMOJI_UNICODE
+from vss_cli.validators import validate_phone_number
+
+ej_tada = EMOJI_UNICODE.get(':party_popper:')
+ej_mail = EMOJI_UNICODE.get(':closed_mailbox_with_raised_flag:')
+
+_LOGGING = logging.getLogger(__name__)
+
+
+def get_endpoint_and_creds(ctx: Configuration) -> Tuple[str, str, str]:
+    """Get endpoint credentials."""
+    endpoint = ctx.endpoint or click.prompt(
+        'Endpoint',
+        default=const.DEFAULT_ENDPOINT,
+        type=click.STRING,
+        show_default=True,
+        err=True,
+    )
+    username = ctx.username or click.prompt(
+        'Username',
+        default=ctx.username,
+        show_default=True,
+        type=click.STRING,
+        err=True,
+    )
+    password = ctx.password or click.prompt(
+        'Password',
+        default=ctx.password,
+        show_default=False,
+        hide_input=True,
+        type=click.STRING,
+        confirmation_prompt=True,
+        err=True,
+    )
+    return endpoint, username, password
 
 
 @click.group('account', short_help='Manage your VSS account')
+@click.option(
+    '--no-load', is_flag=True, default=False, help='do not load config'
+)
 @pass_context
-def cli(ctx: Configuration):
+def cli(ctx: Configuration, no_load: bool):
     """Manage your VSS account."""
     with ctx.spinner(disable=ctx.debug):
-        ctx.load_config()
+        if not no_load:
+            ctx.load_config()
 
 
 @cli.group('get', short_help='get account attribute')
@@ -38,6 +82,16 @@ def account_get_digest_message(ctx: Configuration):
     obj = {'message': _obj.get('message')}
     columns = ctx.columns or const.COLUMNS_MESSAGE_DIGEST
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@account_get.command('mfa')
+@pass_context
+def account_get_mfa(ctx: Configuration):
+    """Get MFA account settings."""
+    with ctx.spinner(disable=ctx.debug):
+        _obj = ctx.get_user_totp()
+    columns = ctx.columns or const.COLUMNS_USER_MFA
+    ctx.echo(format_output(ctx, [_obj], columns=columns, single=True))
 
 
 @account_get.command('groups')
@@ -263,3 +317,168 @@ def account_notification_set_method(ctx: Configuration, method):
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.update_user_notification_method(method)
     ctx.echo(format_output(ctx, [obj], columns=ctx.columns, single=True))
+
+
+@account_set.group('mfa', short_help='mfa account settings')
+@pass_context
+def mfa_set(ctx: Configuration):
+    """Set account MFA settings."""
+    pass
+
+
+@mfa_set.command('rm')
+@pass_context
+def mfa_rm(ctx: Configuration):
+    """Disable existing MFA setup."""
+    endpoint, username, password = get_endpoint_and_creds(ctx)
+    ctx.endpoint = endpoint
+    with ctx.spinner(disable=ctx.debug):
+        obj = ctx.disable_totp(user=username, password=password)
+    ctx.set_defaults()
+    columns = ctx.columns or const.COLUMNS_MFA_MIN
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@mfa_set.command('get-token')
+@pass_context
+def mfa_request_token(ctx: Configuration):
+    """Request TOTP token."""
+    endpoint, username, password = get_endpoint_and_creds(ctx)
+    try:
+        ctx.endpoint = endpoint
+        with ctx.spinner(disable=ctx.debug):
+            _ = ctx.request_totp(user=username, password=password)
+        ctx.secho(
+            f'\nVerification code requested {ej_mail}.\n',
+            file=sys.stderr,
+            fg='green',
+        )
+    except Exception as ex:
+        _LOGGING.error(f'Could not verify TOTP setup: {ex}')
+
+
+@mfa_set.command('verify')
+@click.argument('otp', type=click.STRING, required=False)
+@pass_context
+def mfa_verify(ctx: Configuration, otp):
+    """Verify existing MFA setup."""
+    endpoint, username, password = get_endpoint_and_creds(ctx)
+    totp = otp or click.prompt(
+        'TOTP Code', hide_input=False, type=click.STRING, err=True,
+    )
+
+    try:
+        ctx.endpoint = endpoint
+        with ctx.spinner(disable=ctx.debug):
+            obj = ctx.verify_totp(user=username, password=password, otp=totp)
+        ctx.secho(
+            f'Verification complete: {obj.get("message")}'
+            f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}\n',
+            file=sys.stderr,
+            fg='green',
+        )
+    except Exception as ex:
+        _LOGGING.error(f'Could not verify TOTP setup: {ex}')
+
+
+@mfa_set.command('mk')
+@click.argument(
+    'method',
+    type=click.Choice(['EMAIL', 'AUTHENTICATOR', 'SMS']),
+    required=True,
+)
+@click.option(
+    '--phone',
+    type=click.STRING,
+    help='phone number to receive SMS',
+    callback=validate_phone_number,
+    required=False,
+)
+@pass_context
+def mfa_mk(ctx: Configuration, method: str, phone: str):
+    """Enable MFA with Time-based One-Time Password."""
+    if method == 'SMS' and phone is None:
+        raise click.BadParameter('--phone is required when using SMS')
+    endpoint, username, password = get_endpoint_and_creds(ctx)
+    ctx.endpoint = endpoint
+    with ctx.spinner(disable=ctx.debug):
+        obj = ctx.enable_totp(
+            user=username, password=password, method=method, phone=phone
+        )
+    recovery_codes = obj.get('recovery_codes')
+    issuer = obj.get('issuer')
+    if method == 'AUTHENTICATOR':
+        uri = obj.get('uri')
+        key = obj.get('key')
+        _ = obj.get('image')
+        import qrcode
+
+        qr = qrcode.QRCode()
+        qr.add_data(uri)
+        qr.make(fit=True)
+        if click.confirm(
+            'Do you have a phone to scan a QR Code to generate TOTP codes?'
+        ):
+            click.secho(
+                '\nPlease, scan the QR code with any authenticator App \n'
+                '(DUO, Google Authenticator, Authy, etc) or password manager.',
+                file=sys.stderr,
+            )
+            qr.print_ascii(out=sys.stderr)
+        if click.confirm('Do you like to display the security key?'):
+            ctx.secho(
+                'Use the following key if you are unable '
+                'to scan the QR Code:\n',
+                file=sys.stderr,
+                nl=True,
+            )
+            ctx.secho(
+                f'{key}\n', file=sys.stderr, fg='blue', nl=True,
+            )
+    # print recovery codes.
+    if recovery_codes is not None:
+        ctx.secho(
+            'Recovery codes are used to access your account in \n'
+            'the event you cannot get two-factor authentication codes.\n',
+            file=sys.stderr,
+            nl=True,
+        )
+        rec_code_txt = '\n'.join(recovery_codes)
+        ctx.secho(f'{rec_code_txt}\n', file=sys.stderr, nl=True, fg='blue')
+        rec_code_obj = Path(f'{username}_{issuer}_recovery_codes.txt')
+        if click.confirm('Would you like to save the codes into a text file?'):
+            rec_code_obj.write_text(rec_code_txt)
+            click.echo(f'Written {rec_code_obj} with recovery codes.')
+    # verify
+    if method in ['SMS', 'EMAIL']:
+        _ = ctx.request_totp(user=username, password=password)
+        ctx.secho(
+            f'\nVerification code requested {ej_mail}.\n',
+            file=sys.stderr,
+            fg='green',
+        )
+    otp = click.prompt(
+        '\nEnter the 6-digit Code to verify enrolment was successful',
+        hide_input=False,
+        type=click.STRING,
+        err=True,
+    )
+    try:
+        obj = ctx.verify_totp(user=username, password=password, otp=otp)
+        ctx.secho(
+            f'\nVerification complete: {obj.get("message")}'
+            f'{EMOJI_UNICODE.get(":white_heavy_check_mark:")}\n',
+            file=sys.stderr,
+            fg='green',
+        )
+        success = True
+    except Exception as ex:
+        success = False
+        _LOGGING.error(f'Could not verify TOTP setup: {ex}')
+    if success:
+        ctx.secho(
+            f'You are ready to use the vss-cli '
+            f'with MFA via {method} {ej_tada}',
+            file=sys.stderr,
+            fg='green',
+        )

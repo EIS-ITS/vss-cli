@@ -4,11 +4,9 @@ import codecs
 from datetime import datetime as dt
 import os
 import re
-from subprocess import getoutput
 from typing import List
 
 from setuptools import find_packages, setup
-from setuptools.command.install import install
 
 # shared consts using approach suggested at
 # https://stackoverflow.com/questions/17583443/what-is-the-correct-way-to-share-package-version-with-setup-py-and-the-package
@@ -46,7 +44,7 @@ def load_requirements(requires_file: str = 'requirements.txt') -> List[str]:
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
 
-REQUIRED_PYTHON_VER = (3, 7, 0)
+REQUIRED_PYTHON_VER = (3, 8, 0)
 REQUIRES = load_requirements()
 # REQUIRES = [req for req in INSTALL_REQUIRES if req and not re.match(r'[^:]+://', req)]
 
@@ -76,20 +74,20 @@ PROJECT_URLS = {
     'Documentation': f'{PROJECT_DOCS}/',
     'Source': f'{PROJECT_URL}',
 }
-STOR_REQUIRE = ['webdavclient3==0.12']
+STOR_REQUIRE = ['webdavclient3==3.14.6']
 TESTS_REQUIRE = [
-    'flake8==3.7.7',
+    'flake8==4.0.1',
     'nose==1.3.7',
-    'coverage==4.5.3',
-    'pytz==2018.9',
-    'wheel==0.33.1',  # Otherwise setup.py bdist_wheel does not work
+    'coverage==6.0.2',
+    'pytz==2021.3',
+    'wheel==0.37.0',  # Otherwise setup.py bdist_wheel does not work
     *STOR_REQUIRE,
 ]
 DEV_REQUIRE = [
     *TESTS_REQUIRE,
     *STOR_REQUIRE,
-    'sphinx-rtd-theme==0.4.3',
-    'Sphinx==1.8.5',
+    'sphinx-rtd-theme==1.0.0',
+    'Sphinx==4.2.0',
 ]
 
 # Allow you to run

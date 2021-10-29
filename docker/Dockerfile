@@ -1,6 +1,6 @@
 FROM hub.eis.utoronto.ca/vss/docker/python:3.9-alpine
 # Defining env vars
-ENV VSSCLI_VERSION="2021.9.0"
+ENV VSSCLI_VERSION="2021.11.0"
 ARG CI_BUILD_REF
 # Defininig tags
 LABEL maintainer="Jose Manuel Lopez <jm@eis.utoronto.ca>" \
@@ -14,12 +14,11 @@ COPY . .
 # install OS reqs
 RUN apk add --no-cache --virtual build-dependencies \
     gcc musl-dev bash man-pages git \
-    libxml2-dev libxslt-dev && \
+    libxml2-dev libxslt-dev libffi-dev && \
     rm -rf /var/cache/apk/*
 # install app
 RUN pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir --no-use-pep517 -e .[dev] && \
-    pip3 install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
+    pip3 install --no-cache-dir --no-use-pep517 -e .[dev]
 # add man pages
 RUN python3 setup.py build_sphinx && \
     cp docs/_build/man/* /usr/share/man/man1

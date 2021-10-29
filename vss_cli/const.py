@@ -5,9 +5,8 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2021.9.0"
+__version__ = "2021.11.0"
 
-REQUIRED_PYTHON_VER = (3, 6, 4)
 
 DEFAULT_TIMEOUT = 30
 DEFAULT_ENDPOINT = "https://cloud-api.eis.utoronto.ca"
@@ -27,6 +26,7 @@ DEFAULT_DATA_PATH = pkg_resources.resource_filename(PACKAGE_NAME, "data")
 DEFAULT_CONFIG_TMPL = os.path.join(DEFAULT_DATA_PATH, "config.yaml")
 DEFAULT_CHECK_UPDATES = True
 DEFAULT_CHECK_MESSAGES = True
+DEFAULT_TOTP = False
 
 DEFAULT_TABLE_FORMAT = "simple"
 DEFAULT_DATA_OUTPUT = "table"
@@ -104,6 +104,7 @@ DEFAULT_VM_DEL_MSG = (
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
 COLUMNS_DEFAULT = [("all", "*")]
+COLUMNS_MFA_MIN = [("message",), ("type",)]
 COLUMNS_VM_MIN = [("moref",), ("name",)]
 COLUMNS_VIM_REQUEST = [("vm_moref",), ("vm_name",)]
 COLUMNS_MOREF = [("moref",), ("name",)]
@@ -461,6 +462,12 @@ COLUMNS_USER_STATUS = [
     ("updated_on",),
     ("last_access",),
     ("ip_address",),
+]
+COLUMNS_USER_MFA = [
+    ("enabled",),
+    ("method",),
+    ("enabled_on",),
+    ("disabled_on",),
 ]
 COLUMNS_MESSAGE_DIGEST = [("message",)]
 COLUMNS_NOT_REQUEST = [
