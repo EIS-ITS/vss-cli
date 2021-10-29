@@ -122,7 +122,7 @@ build-docs-develop:
     - python-3
 
 release-dist-develop:
-  image: rhub.eis.utoronto.ca/vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: release
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust cargo python3-dev musl-dev make libffi-dev openssl-dev
