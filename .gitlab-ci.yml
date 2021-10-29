@@ -85,7 +85,7 @@ test-code-develop:
   stage: test
   script:
     - python -V
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust python3-dev musl-dev
     - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
     - python setup.py install
     - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
@@ -233,7 +233,7 @@ test-code-master:
   stage: test
   script:
     - python -V
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev rust musl-dev
     - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
     - python setup.py install
     - pip uninstall click-repl -y && pip install git+https://github.com/jm66/click-repl.git@click8#egg=click-repl --upgrade
