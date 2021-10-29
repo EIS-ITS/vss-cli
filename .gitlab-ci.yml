@@ -249,7 +249,7 @@ test-code-master:
       - coverage/
 
 build-docs-master:
-  image: hub.eie.sutoronto.ca/vss/docker/python:3-alpine
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
