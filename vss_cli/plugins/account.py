@@ -419,17 +419,6 @@ def mfa_mk(ctx: Configuration, method: str, phone: str):
         if click.confirm(
             'Do you have a phone to scan a QR Code to generate TOTP codes?'
         ):
-            click.secho(
-                '\nPlease, scan the QR code with any authenticator App \n'
-                '(DUO, Google Authenticator, Authy, etc) or password manager.',
-                file=sys.stderr,
-            )
-            qr.print_ascii(out=sys.stderr)
-        if click.confirm(
-            'Some devices have reported issues scanning black-on-white,\n'
-            'if you encounter problems, we can try to invert the colours.\n'
-            'Would you like to try scanning white-on-black?'
-        ):
             qr.print_ascii(out=sys.stderr, invert=True)
         if click.confirm('Do you like to display the security key?'):
             ctx.secho(
