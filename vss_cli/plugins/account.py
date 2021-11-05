@@ -337,6 +337,16 @@ def mfa_rm(ctx: Configuration):
     ctx.set_defaults()
     columns = ctx.columns or const.COLUMNS_MFA_MIN
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    rm_tk = click.prompt(
+        'You should have received an email with a confirmation token. \n'
+        'Please, paste the token to continue'
+    )
+    if rm_tk is not None:
+        with ctx.spinner(disable=ctx.debug):
+            obj = ctx.disable_totp_confirm(
+                token=rm_tk, user=username, password=password
+            )
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @mfa_set.command('get-token')
