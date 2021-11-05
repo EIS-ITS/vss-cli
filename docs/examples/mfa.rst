@@ -106,3 +106,7 @@ which would have to be accessed for confirmation along with your credentials.
     Repeat for confirmation:
     message             : Confirmation email sent.
     type                : info
+    You should have received an email with a confirmation token.
+    Please, paste the token to continue: <token-here>
+    message             : TOTP has been disabled
+    type                : info
