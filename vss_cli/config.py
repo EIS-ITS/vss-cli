@@ -24,7 +24,7 @@ import vss_cli.const as const
 from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
-    debug_requests_on, format_output, get_hostname_from_url)
+    bytes_to_str, debug_requests_on, format_output, get_hostname_from_url)
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import (
@@ -263,9 +263,13 @@ class Configuration(VssManager):
                 credentials_decoded = b64decode(auth_enc)
                 # get user/pass
                 username, password = credentials_decoded.split(b':')
-            return config_endpoint[0], username, password
+            return (
+                config_endpoint[0],
+                bytes_to_str(username),
+                bytes_to_str(password),
+            )
         else:
-            return None, username, password
+            return None, bytes_to_str(username), bytes_to_str(password)
 
     def load_config_file(
         self, config: Union[Path, str] = None
@@ -736,7 +740,7 @@ class Configuration(VssManager):
                     self.write_config_file(new_endpoint=endpoint_cfg)
                 # profile exists
                 elif e_username and e_password and config_endpoint.token:
-                    username = e_username.decode('utf-8') if e_username else ''
+                    username = bytes_to_str(e_username) if e_username else ''
                     confirm = replace or click.confirm(
                         f"Would you like to replace existing configuration?\n "
                         f"{self.endpoint_name}:"

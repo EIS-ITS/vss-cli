@@ -8,7 +8,7 @@ import logging
 import re
 import shlex
 import shutil
-from typing import Any, Dict, Generator, List, Optional, Tuple, cast
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union, cast
 
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
@@ -20,6 +20,15 @@ import vss_cli.const as const
 import vss_cli.yaml as yaml
 
 _LOGGING = logging.getLogger(__name__)
+
+
+def bytes_to_str(item: Optional[Union[str, bytes]]) -> str:
+    """Convert bytes to string."""
+    if isinstance(item, bytes):
+        return item.decode('utf-8')
+    if item is None:
+        return ''
+    return str(item)
 
 
 def to_attributes(entry: str) -> Dict[str, str]:

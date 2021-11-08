@@ -337,6 +337,16 @@ def mfa_rm(ctx: Configuration):
     ctx.set_defaults()
     columns = ctx.columns or const.COLUMNS_MFA_MIN
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    rm_tk = click.prompt(
+        'You should have received an email with a confirmation token. \n'
+        'Please, paste the token to continue'
+    )
+    if rm_tk is not None:
+        with ctx.spinner(disable=ctx.debug):
+            obj = ctx.disable_totp_confirm(
+                token=rm_tk, user=username, password=password
+            )
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
 @mfa_set.command('get-token')
@@ -419,12 +429,7 @@ def mfa_mk(ctx: Configuration, method: str, phone: str):
         if click.confirm(
             'Do you have a phone to scan a QR Code to generate TOTP codes?'
         ):
-            click.secho(
-                '\nPlease, scan the QR code with any authenticator App \n'
-                '(DUO, Google Authenticator, Authy, etc) or password manager.',
-                file=sys.stderr,
-            )
-            qr.print_ascii(out=sys.stderr)
+            qr.print_ascii(out=sys.stderr, invert=True)
         if click.confirm('Do you like to display the security key?'):
             ctx.secho(
                 'Use the following key if you are unable '
