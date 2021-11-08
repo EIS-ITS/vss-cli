@@ -1,6 +1,19 @@
 Changelog 📝
 ============
 
+`v2021.11.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.11.1>`_ (2021-11-08)
+---------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#476 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/476>`_: ``account set mfa mk``: improve QR code compatibility.
+- `#478 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/478>`_: ``account set mfa rm``: prompt for token.
+- `#479 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/479>`_: ``core``: update ``pyvss`` from ``v2021.11.0`` to ``v2021.11.1``.
+
+**Bug Fixes:**
+
+- `#477 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/477>`_: ``account set mfa mk``: ``recovery_codes.txt`` naming issue.
+
 `v2021.11.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.11.0>`_ (2021-11-01)
 ------------------------------------------------------------------------------------------
 
