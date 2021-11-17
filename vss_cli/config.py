@@ -609,7 +609,7 @@ class Configuration(VssManager):
             'url': self.base_endpoint,
             'name': self.endpoint_name,
             'auth': auth,
-            'token': token,
+            'token': self.api_token,
             'tf_enabled': payload.get('otp', False),
         }
         ep_cfg = ConfigEndpoint.from_json(json.dumps(endpoint_cfg))
@@ -683,7 +683,9 @@ class Configuration(VssManager):
                 else:
                     # New configuration file. A new endpoint must be configured
                     f_type = 'Default template'
-                    config_endpoint = self._create_endpoint_config()
+                    config_endpoint = (
+                        new_endpoint or self._create_endpoint_config()
+                    )
                     config_file_tmpl.update_endpoint(config_endpoint)
                     # load and dump
                     config_file_dict = json.loads(config_file_tmpl.to_json())
