@@ -1,6 +1,20 @@
 Changelog 📝
 ============
 
+`v2021.11.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.11.2>`_ (2021-11-29)
+---------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#479 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/479>`_: ``core``: update ``pyvss`` from ``v2021.11.1`` to ``v2021.11.2``.
+- `#484 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/484>`_: ``core``: update ``ruamel.yaml`` to ``0.17.17``.
+
+**Bug Fixes:**
+
+- `#481 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/481>`_: ``configure mk``: empty token in configuration file when creating new endpoint.
+- `#483 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/483>`_: ``core``: exception when api is unavailable.
+
+
 `v2021.11.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.11.1>`_ (2021-11-08)
 ---------------------------------------------------------------------------------------------
 
