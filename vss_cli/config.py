@@ -17,6 +17,7 @@ import jwt
 from pick import pick
 from pyvss.const import __version__ as pyvss_version
 from pyvss.enums import RequestStatus
+from pyvss.exceptions import VssError
 from pyvss.manager import VssManager
 from ruamel.yaml import YAML
 
@@ -556,20 +557,22 @@ class Configuration(VssManager):
             token = token or self.get_token(
                 self.username, self.password, self.totp
             )
-        except Exception as ex:
-            if 'InvalidParameterValue: otp' in str(ex):
+        except VssError as ex:
+            if (
+                500 > ex.http_code > 399
+                and 'InvalidParameterValue: otp' in ex.message
+            ):
+                # try MFA Auth
                 try:
-                    _LOGGING.debug(
-                        'Requesting a new timed ' 'one-time password'
-                    )
+                    _LOGGING.debug('Requesting a new timed one-time password')
                     _ = self.request_totp(self.username, self.password)
-                except Exception as ex:
-                    _LOGGING.warning(f'Requesting totp: {ex}')
+                except Exception as exc:
+                    _LOGGING.warning(f'Requesting totp: {exc}')
                     pass
                 if spinner_cls is not None:
                     spinner_cls.stop()
                 self.totp = click.prompt(
-                    'MFA enabled. ' 'Provide Timed One-Time Password'
+                    'MFA enabled. Provide Timed One-Time Password'
                 )
                 if spinner_cls is not None:
                     spinner_cls.start()
@@ -577,8 +580,11 @@ class Configuration(VssManager):
                     token = token or self.get_token(
                         self.username, self.password, self.totp
                     )
-                except Exception as ex:
-                    _LOGGING.warning(f'Could not generate ' f'new token: {ex}')
+                except Exception as exc:
+                    _LOGGING.warning(f'Could not generate new token: {exc}')
+                    raise exc
+            else:
+                raise ex
         return token
 
     def _create_endpoint_config(self, token: str = None) -> ConfigEndpoint:
