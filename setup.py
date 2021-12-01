@@ -44,7 +44,7 @@ def load_requirements(requires_file: str = 'requirements.txt') -> List[str]:
 
 __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
 
-REQUIRED_PYTHON_VER = (3, 8, 0)
+REQUIRED_PYTHON_VER = (3, 7, 5)
 REQUIRES = load_requirements()
 # REQUIRES = [req for req in INSTALL_REQUIRES if req and not re.match(r'[^:]+://', req)]
 
