@@ -2371,9 +2371,18 @@ def compute_vm_set_snapshot(ctx: Configuration):
     show_default=True,
     help='Consolidate disks after snapshot deletion',
 )
+@click.option(
+    '-m',
+    '--memory/--no-memory',
+    is_flag=True,
+    default=True,
+    required=False,
+    show_default=True,
+    help='Include/exclude memory in snapshot.',
+)
 @pass_context
 def compute_vm_set_snapshot_mk(
-    ctx: Configuration, description, timestamp, lifetime, consolidate
+    ctx: Configuration, description, timestamp, lifetime, consolidate, memory
 ):
     """Create virtual machine snapshot.
 
@@ -2392,6 +2401,7 @@ def compute_vm_set_snapshot_mk(
         ),
         valid=lifetime,
         consolidate=consolidate,
+        with_memory=memory,
     )
     # add common options
     payload.update(ctx.payload_options)
