@@ -1,6 +1,17 @@
 Changelog 📝
 ============
 
+
+`v2021.12.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.12.0>`_ (2021-12-20)
+---------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#486 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/486>`_: ``core``: minimum ``python`` version to `3.7`.
+- `#487 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/487>`_: ``core``: upgrade ``pick`` from ``1.0.0`` to ``1.2.0``..
+- `#488 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/488>`_: ``core``: upgrade ``pyvss`` from ``2021.11.2`` to ``2021.12.0``.
+- `#489 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/489>`_: ``compute vm set snapshot mk``: new option `--memory/--no-memory`` to include or exclude memory.
+
 `v2021.11.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.11.2>`_ (2021-11-29)
 ---------------------------------------------------------------------------------------------
 
