@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 from click.exceptions import BadArgumentUsage, BadParameter
+from ruamel.yaml import YAML
+from ruamel.yaml.scanner import ScannerError
 
 from vss_cli.autocompletion import _init_ctx
 from vss_cli.config import Configuration
@@ -218,9 +220,12 @@ def process_user_data(
         try:
             fp = Path(value)
             txt = fp.read_text()
+            _ = YAML().load(txt)
             return (
                 compress_encode_string(txt),
                 'gzip+base64',
             )
-        except Exception:
+        except FileNotFoundError:
             raise BadArgumentUsage(f'{param} must a valid file path.')
+        except ScannerError as ex:
+            raise BadParameter(f'Invalid yaml provided: {str(ex)}')
