@@ -2932,6 +2932,14 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
     help='Force deletion if power state is on',
 )
 @click.option(
+    '-p',
+    '--prune',
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help='Prune virtual machine.',
+)
+@click.option(
     '-s',
     '--show-info',
     is_flag=True,
@@ -2954,6 +2962,7 @@ def compute_vm_rm(
     max_del: int,
     force: bool,
     show_info: bool,
+    prune: bool,
 ):
     """Delete a list of virtual machine ids.
 
@@ -2987,6 +2996,8 @@ def compute_vm_rm(
             if not skip:
                 # request
                 payload = dict(vm_id=moref, force=force)
+                if prune:
+                    payload['prune'] = True
                 objs.append(ctx.delete_vm(**payload))
     # print
     if objs:
