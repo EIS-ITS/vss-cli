@@ -1,5 +1,16 @@
 # Changelog 📝
 
+## [v2022.2.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.2.0) (2022-02-14)
+
+**Improvements:**
+
+- [#491](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/491): ``compute vm mk from-clib``: add yaml validation to ``--network-config`` and ``--user-data``.
+- [#491](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/491): ``compute vm mk from-template``: add yaml validation to ``--network-config`` and ``--user-data``.
+- [#492](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/492): ``compute vm rm``: add ``--prune`` option to completely remove instance.
+- [#493](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/493): ``core``: upgrade ``pyvss`` from ``2021.12.0`` to ``2022.2.0``.
+- [#494](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/494): ``core``: update ``ruamel.yaml`` from ``0.17.17`` to ``0.17.21``.
+- [#495](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/495): ``core``: update ``Pygments`` from ``2.10.0`` to ``2.11.2``.
+ 
 ## [v2021.12.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.12.0) (2021-12-20)
 
 **Improvements:**
