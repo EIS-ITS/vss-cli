@@ -337,10 +337,11 @@ def compute_vm_get_disks(ctx: Configuration, unit):
             else:
                 logging.error('Unit does not exist')
         else:
-            obj = ctx.get_vm_disks(ctx.moref)
-            obj = [d.get('data') for d in obj] if obj else []
+            objs = ctx.request(f'/vm/{ctx.moref}/disk')
+            if objs:
+                objs = objs.get('data')
             columns = ctx.columns or const.COLUMNS_VM_DISK_MIN
-            ctx.echo(format_output(ctx, obj, columns=columns))
+            ctx.echo(format_output(ctx, objs, columns=columns))
 
 
 @compute_vm_get_disks.command('backing', short_help='backing info')
