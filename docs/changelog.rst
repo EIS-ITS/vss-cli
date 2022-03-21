@@ -1,6 +1,18 @@
 Changelog 📝
 ============
 
+`v2022.3.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.3.0>`_ (2022-03-21)
+---------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#497 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/497>`_: ``core``: update ``click`` from ``8.0.3`` to ``8.0.4``.
+- `#498 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/498>`_: ``core``: update ``click-log`` from ``0.3.2`` to ``0.4.0``.
+- `#499 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/499>`_: ``core``: update ``dateparser`` from ``1.1.0`` to ``1.1.1``.
+- `#500 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/500>`_: ``compute vm set disk up``: option ``--notes`` to set notes to disk.
+- `#501 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/501>`_: ``core``: upgrade ``pyvss`` from ``2022.2.0`` to ``2022.3.0``.
+- `#502 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/502>`_: ``compute vm get disk``: include notes.
+
 `v2022.2.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.2.0>`_ (2022-02-14)
 ---------------------------------------------------------------------------------------------
 

@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2022.2.0"
+__version__ = "2022.3.0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -380,14 +380,16 @@ COLUMNS_VM_CTRL = [
     ("controller_key",),
     ("summary",),
     ("shared_bus",),
-    ("hot_add_rmove",),
+    ("hot_add_remove",),
 ]
 COLUMNS_VM_DISK_MIN = [
     ("label",),
     ("unit",),
-    ("controller.virtual_device_node",),
+    ("controller.label",),
+    ("capacity_gib",),
+    ("notes",),
 ]
-COLUMNS_VM_DISK = [*COLUMNS_VM_DISK_MIN, ("capacity_gb",), ("shares.level",)]
+COLUMNS_VM_DISK = [*COLUMNS_VM_DISK_MIN, ("shares.level",)]
 
 COLUMNS_VM_DISK_BACKING = [
     ("descriptor_file_name",),

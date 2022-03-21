@@ -337,10 +337,11 @@ def compute_vm_get_disks(ctx: Configuration, unit):
             else:
                 logging.error('Unit does not exist')
         else:
-            obj = ctx.get_vm_disks(ctx.moref)
-            obj = [d.get('data') for d in obj] if obj else []
+            objs = ctx.request(f'/vm/{ctx.moref}/disk')
+            if objs:
+                objs = objs.get('data')
             columns = ctx.columns or const.COLUMNS_VM_DISK_MIN
-            ctx.echo(format_output(ctx, obj, columns=columns))
+            ctx.echo(format_output(ctx, objs, columns=columns))
 
 
 @compute_vm_get_disks.command('backing', short_help='backing info')
@@ -1469,9 +1470,16 @@ def compute_vm_set_disk_mk(ctx: Configuration, disk):
     shell_complete=autocompletion.vm_disk_sharing,
     help='Update disk sharing mode default [sharingnone]',
 )
+@click.option(
+    '-n',
+    '--notes',
+    type=click.STRING,
+    required=False,
+    help='Update disk capacity notes.',
+)
 @pass_context
 def compute_vm_set_disk_up(
-    ctx: Configuration, unit, capacity, scsi, backing_mode, sharing
+    ctx: Configuration, unit, capacity, scsi, backing_mode, sharing, notes
 ):
     """Update virtual machine disk capacity.
 
@@ -1484,11 +1492,11 @@ def compute_vm_set_disk_up(
 
     vss-cli compute vm set <name-or-vm_id> disk up --sharing=<mode> <unit>
     """
-    payload = dict(vm_id=ctx.moref, disk=unit)
+    payload = dict(vm_id=ctx.moref, unit=unit)
     # add common options
     payload.update(ctx.payload_options)
     if capacity:
-        payload['valueGB'] = capacity
+        payload['value_gb'] = capacity
         # request
         obj = ctx.update_vm_disk_capacity(**payload)
     elif scsi is not None:
@@ -1500,6 +1508,20 @@ def compute_vm_set_disk_up(
     elif sharing is not None:
         payload['sharing'] = sharing
         obj = ctx.update_vm_disk_backing_sharing(**payload)
+    elif notes is not None:
+        payload['notes'] = notes
+        c_notes = ctx.get_vm_disk_notes(ctx.moref, unit)
+        if c_notes.get('notes'):
+            ctx.echo(f"Existing notes found: \t{c_notes.get('notes')}")
+            replace = click.confirm('Would you like to replace?')
+            payload['append'] = not replace
+        obj = ctx.update_vm_disk_notes(**payload)
+        ctx.echo(
+            format_output(
+                ctx, [obj], columns=[('label',), ('notes',)], single=True
+            )
+        )
+        return
     else:
         raise click.BadOptionUsage(
             '',
