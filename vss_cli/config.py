@@ -52,8 +52,8 @@ class Configuration(VssManager):
         self.endpoint_name = const.DEFAULT_ENDPOINT_NAME
         # end of endpoint settings
         self.history = const.DEFAULT_HISTORY  # type: str
-        self.webdav_server = None  # type: Optional[str]
-        self._webdav_server = const.DEFAULT_WEBDAV_SERVER  # type: str
+        self.s3_server = None  # type: Optional[str]
+        self._s3_server = const.DEFAULT_S3_SERVER  # type: str
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.totp = None  # type: Optional[str]
@@ -192,7 +192,7 @@ class Configuration(VssManager):
             "verbose": self.verbose,
             "wait": self.wait,
             "dry_run": self.dry_run,
-            "webdav_server": self.webdav_server,
+            "s3_server": self.s3_server,
         }
 
         return f"<Configuration({view})"
@@ -834,23 +834,25 @@ class Configuration(VssManager):
         return [objects[index]]
 
     def get_vskey_stor(self, **kwargs) -> bool:
-        """Create WebDav client to interact with remote CrushFTP."""
+        """Create s3 client to interact with remote minIO."""
         try:
-            from webdav3 import client as wc
+            from minio import Minio
         except ImportError:
             raise VssCliError(
-                'webdavclient3 dependency not found. '
+                'minio dependency not found. '
                 'try running "pip install vss-cli[stor]"'
             )
 
-        options = dict(
-            webdav_login=self.username,
-            webdav_password=self.password,
-            webdav_hostname=self.webdav_server,
-            verbose=self.verbose,
+        super().get_vskey_stor(
+            user=self.username,
+            password=self.password,
+            s3_endpoint=self.s3_server,
         )
-        self.vskey_stor = wc.Client(options=options)
-        return self.vskey_stor.valid()
+        _LOGGING.debug(
+            f's3_endpoint={self.vskey_stor_s3api} '
+            f'vskey_stor_s3_gui={self.vskey_stor_s3_gui}'
+        )
+        return self.vskey_stor
 
     def get_vm_by_id_or_name(self, vm_id: str, silent=False) -> Optional[List]:
         """Get virtual machine by identifier or name."""

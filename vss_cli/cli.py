@@ -230,12 +230,12 @@ def _default_token() -> Optional[str]:
     help='Sort table by the jsonpath expression. Example: updated_on',
 )
 @click.option(
-    '--webdav-server',
+    '--s3-server',
     '-w',
     help='The Webdav server.',
     default=None,
     show_default=True,
-    envvar='VSS_WEBDAV_SERVER',
+    envvar='VSS_S3_SERVER',
 )
 @click.version_option(
     version=f'{const.__version__} ('
@@ -263,7 +263,7 @@ def cli(
     table_format: str,
     sort_by: Optional[str],
     wait: Optional[bool],
-    webdav_server: Optional[str],
+    s3_server: Optional[str],
 ):
     """Command line interface for the ITS Private Cloud."""
     ctx.verbose = verbose
@@ -283,6 +283,6 @@ def cli(
     ctx.table_format = table_format
     ctx.sort_by = sort_by  # type: ignore
     ctx.wait_for_requests = wait
-    ctx.webdav_server = webdav_server
+    ctx.s3_server = s3_server
 
     _LOGGER.debug(f"Using settings: {ctx}")

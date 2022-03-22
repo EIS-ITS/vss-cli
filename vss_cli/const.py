@@ -5,13 +5,13 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2022.3.0"
+__version__ = "2022.3.1-dev0"
 
 
 DEFAULT_TIMEOUT = 30
 DEFAULT_ENDPOINT = "https://cloud-api.eis.utoronto.ca"
 DEFAULT_ENDPOINT_NAME = "cloud-api"
-DEFAULT_WEBDAV_SERVER = "https://vskey-stor.eis.utoronto.ca"
+DEFAULT_S3_SERVER = "https://vskey-stor.eis.utoronto.ca"
 _LEGACY_CONFIG = ("~", ".vss-cli", "config.json")
 _DEFAULT_CONFIG = ("~", ".vss-cli", "config.yaml")
 _DEFAULT_HISTORY = ("~", ".vss-cli", "history")
@@ -40,7 +40,7 @@ DEFAULT_WAIT_FOR_REQUESTS = False
 DEFAULT_SETTINGS = {
     "endpoint": DEFAULT_ENDPOINT,
     "output": DEFAULT_OUTPUT,
-    "webdav_server": DEFAULT_WEBDAV_SERVER,
+    "s3_server": DEFAULT_S3_SERVER,
     "table_format": DEFAULT_TABLE_FORMAT,
     "check_for_messages": DEFAULT_CHECK_MESSAGES,
     "check_for_updates": DEFAULT_CHECK_UPDATES,
@@ -58,7 +58,7 @@ GENERAL_SETTINGS = {
     "verbose": bool,
     "default_endpoint_name": str,
     "output": str,
-    "webdav_server": str,
+    "s3_server": str,
     "table_format": str,
     "timeout": int,
     "columns_width": int,
@@ -479,8 +479,13 @@ COLUMNS_NOT_REQUEST = [
     ("error",),
     ("submission",),
 ]
-COLUMNS_WEBDAV = [("files", "[*]")]
-COLUMNS_WEBDAV_INFO = [("created",), ("modified",), ("name",), ("size",)]
+COLUMNS_STOR = [("files", "[*]")]
+COLUMNS_STOR_INFO = [
+    ("name",),
+    ("bucket_name",),
+    ("last_modified",),
+    ("size",),
+]
 COLUMNS_SSH_KEY_MIN = [*COLUMNS_MIN, ("type",), ("comment",)]
 COLUMNS_SSH_KEY = [*COLUMNS_SSH_KEY_MIN, ("fingerprint",), ("value",)]
 COLUMNS_VMRC = [("enabled",), ("options",)]

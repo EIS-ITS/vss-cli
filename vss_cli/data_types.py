@@ -29,7 +29,7 @@ class ConfigFileGeneral:
     check_for_updates: bool = const.DEFAULT_CHECK_UPDATES
     check_for_messages: bool = const.DEFAULT_CHECK_MESSAGES
     default_endpoint_name: str = const.DEFAULT_ENDPOINT_NAME
-    webdav_server: str = const.DEFAULT_WEBDAV_SERVER
+    s3_server: str = const.DEFAULT_S3_SERVER
     debug: bool = const.DEFAULT_DEBUG
     output: str = const.DEFAULT_RAW_OUTPUT
     table_format: str = const.DEFAULT_TABLE_FORMAT
