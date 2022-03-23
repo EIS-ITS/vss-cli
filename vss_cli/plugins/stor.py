@@ -1,4 +1,5 @@
 """VSS Storage Management plugin for VSS CLI (vss-cli)."""
+from datetime import timedelta
 import logging
 import os
 
@@ -22,7 +23,7 @@ def cli(ctx: Configuration):
         ctx.load_config()
 
 
-@cli.command('launch', short_help='launch ui')
+@cli.command('la', short_help='launch ui')
 @click.argument(
     'ui_type', type=click.Choice(['gui', 'admin', 's3api']), required=True
 )
@@ -65,6 +66,38 @@ def stor_ls(ctx: Configuration, bucket, remote_path):
         )
         obj = [o.object_name for o in obj_gen]
     click.echo(format_output(ctx, obj, columns=columns))
+
+
+@cli.command('sh', short_help='share with pre-signed link')
+@click.option(
+    '--bucket',
+    type=click.STRING,
+    help='Bucket where file is stored.',
+    default='ut-vss',
+)
+@click.option(
+    '--expires', type=click.INT, help='Expiry time in hours.', default=2
+)
+@click.option('--launch', is_flag=True, help='Launch with default handler.')
+@click.argument('remote_path', type=click.STRING, required=True)
+@pass_context
+def stor_share(ctx, remote_path, bucket, expires, launch):
+    """Get a pre-signed link to download object."""
+    ctx.get_vskey_stor()
+    url = ctx.vskey_stor.get_presigned_url(
+        "GET",
+        bucket_name=bucket,
+        object_name=remote_path,
+        expires=timedelta(hours=expires),
+    )
+    obj = {'url': url}
+    columns = ctx.columns or const.COLUMNS_STOR_SHARE
+    click.echo(format_output(ctx, [obj], columns=columns, single=True))
+    if launch:
+        click.echo(
+            f'Launching {EMOJI_UNICODE[":globe_showing_Americas:"]}: {url}'
+        )
+        click.launch(url)
 
 
 @cli.command('get', short_help='get info')
