@@ -1,6 +1,22 @@
 Changelog 📝
 ============
 
+`v2022.3.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.3.1>`_ (2022-03-24)
+---------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#504 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504>`_: ``stor dl``: download object from your VSS personal store (s3 implementation).
+- `#504 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504>`_: ``stor get``: get objects info stored in your VSS personal store (s3 implementation).
+- `#504 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504>`_: ``stor la``: launch web interface to your VSS personal store (s3 implementation).
+- `#504 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504>`_: ``stor ls``: list objects in VSS personal store (s3 implementation).
+- `#504 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504>`_: ``stor sh``: generate a pre-signed link to share object stored in your VSS personal store (s3 implementation).
+- `#504 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504>`_: ``stor ul``: upload object to your VSS personal store (s3 implementation).
+- `#505 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/505>`_: ``core``: upgrade ``pyvss`` from ``2022.3.0`` to ``2022.3.1``.
+- `#506 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/506>`_: ``core``: upgrade ``dataclasses-json`` from ``0.5.6`` to ``0.5.7``.
+- `#508 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/508>`_: ``docker``: remove from image ``libxml2-dev`` ``libxslt-dev`` and ``libffi-dev`` dependencies.
+- `#509 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/509>`_: ``docs``: update vskey-stor related configuration settings.
+
 `v2022.3.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.3.0>`_ (2022-03-21)
 ---------------------------------------------------------------------------------------------
 

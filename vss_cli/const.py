@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2022.3.1-dev3"
+__version__ = "2022.3.1"
 
 
 DEFAULT_TIMEOUT = 30

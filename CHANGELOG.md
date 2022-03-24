@@ -1,5 +1,20 @@
 # Changelog 📝
 
+## [v2022.3.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.3.1) (2022-03-24)
+
+**Improvements:**
+
+- [#504](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504): ``stor dl``: download object from your VSS personal store (s3 implementation).
+- [#504](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504): ``stor get``: get objects info stored in your VSS personal store (s3 implementation).
+- [#504](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504): ``stor la``: launch web interface to your VSS personal store (s3 implementation).
+- [#504](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504): ``stor ls``: list objects in VSS personal store (s3 implementation).
+- [#504](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504): ``stor sh``: generate a pre-signed link to share object stored in your VSS personal store (s3 implementation).
+- [#504](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/504): ``stor ul``: upload object to your VSS personal store (s3 implementation).
+- [#505](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/505): ``core``: upgrade ``pyvss`` from ``2022.3.0`` to ``2022.3.1``.
+- [#506](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/506): ``core``: upgrade ``dataclasses-json`` from ``0.5.6`` to ``0.5.7``.
+- [#508](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/508): ``docker``: remove from image ``libxml2-dev`` ``libxslt-dev`` and ``libffi-dev`` dependencies.
+- [#509](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/509): ``docs``: update vskey-stor related configuration settings.
+
 ## [v2022.3.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.3.0) (2022-03-21)
 
 **Improvements:**
@@ -29,7 +44,7 @@
 - [#486](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/486): ``core``: minimum ``python`` version to `3.7`.
 - [#487](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/487): ``core``: upgrade ``pick`` from ``1.0.0`` to ``1.2.0``..
 - [#488](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/488): ``core``: upgrade ``pyvss`` from ``2021.11.2`` to ``2021.12.0``.
-- [#489](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/489): ``compute vm set snapshot mk``: new option `--memory/--no-memory`` to include or exclude memory.
+- [#489](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/489): ``compute vm set snapshot mk``: new option ``--memory/--no-memory`` to include or exclude memory.
  
 ## [v2021.11.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.11.2) (2021-11-29)
 
@@ -83,9 +98,9 @@
 **Improvements:**
 
 - [#458](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/458): ``ci``: standardize Pipeline settings to ensure portability to GL SaaS.
-- [#459](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/459): ``core``: update ``Pygments`` to 2.10.0.
-- [#460](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/460): ``core``: update ``dataclasses-json`` to 0.5.6.
-- [#461](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/461): ``core``: update ``ruamel.yaml`` to 0.17.16.
+- [#459](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/459): ``core``: update ``Pygments`` to ``2.10.0``.
+- [#460](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/460): ``core``: update ``dataclasses-json`` to ``0.5.6``.
+- [#461](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/461): ``core``: update ``ruamel.yaml`` to ``0.17.16``.
 
 ## [v2021.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2021.8.0) (2021-08-18)
 
@@ -102,7 +117,7 @@
 - [#454](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/454): ``compute vm mk from-image``: option ``--cores-per-socket`` to set advanced cpu config.
 - [#454](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/454): ``compute vm mk from-template``: option ``--cores-per-socket`` to set advanced cpu config.
 - [#455](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/455): ``compute vm set cpu count`` : option ``--cores-per-socket`` for advanced settings.
-- [#456](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/456): ``core``: update ``pyvss`` from v2021.6.0 to v2021.8.0.
+- [#456](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/456): ``core``: update ``pyvss`` from ``v2021.6.0`` to ``v2021.8.0``.
 
 **Bug Fixes:**
 
