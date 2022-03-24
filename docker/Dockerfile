@@ -13,8 +13,7 @@ WORKDIR /usr/src/app
 COPY . .
 # install OS reqs
 RUN apk add --no-cache --virtual build-dependencies \
-    gcc musl-dev bash man-pages git \
-    libxml2-dev libxslt-dev libffi-dev && \
+    gcc musl-dev bash man-pages git && \
     rm -rf /var/cache/apk/*
 # install app
 RUN pip3 install --upgrade pip && \
