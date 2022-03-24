@@ -63,7 +63,7 @@ The following table summarizes the **general** area configuration parameters
 |                           |        | one item from the ``endpoints``      |
 |                           |        | section.                             |
 +---------------------------+--------+--------------------------------------+
-| ``webdav_server``         | string | Webdav server for user file transfer.|
+| ``s3_server``             | string | S3 server for user file transfer.    |
 +---------------------------+--------+--------------------------------------+
 | ``timeout``               | int    | Timeout for network operations.      |
 +---------------------------+--------+--------------------------------------+
@@ -269,7 +269,7 @@ supported by the ``vss-cli``:
 | VSS_ENDPOINT          | Cloud API endpoint URL or endpoint   |
 |                       | name defined in configuration file.  |
 +-----------------------+--------------------------------------+
-| VSS_WEBDAV_SERVER     | Webdav server for user file transfer.|
+| VSS_S3_SERVER         | S3 server for user file transfer.    |
 +-----------------------+--------------------------------------+
 | VSS_TIMEOUT           | Timeout for network operations.      |
 +-----------------------+--------------------------------------+
@@ -321,7 +321,7 @@ supported by the ``vss-cli``:
 | ``-e``/``--endpoint``     | Cloud API endpoint URL endpoint name defined  |
 |                           | in configuration file.                        |
 +---------------------------+-----------------------------------------------+
-| ``-w``/``--webdav-server``| Webdav server for user file transfer.         |
+| ``-w``/``--s3-server``    | S3 server for user file transfer.         |
 +---------------------------+-----------------------------------------------+
 | ``--timeout``             | HTTP timeout value.                           |
 +---------------------------+-----------------------------------------------+

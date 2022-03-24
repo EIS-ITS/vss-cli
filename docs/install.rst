@@ -27,8 +27,7 @@ command:
 
     pip install vss-cli[stor]
 
-The command will install ``webdavclient3`` package from PyPI and Linux
-operating systems require  ``libxml2``.
+The command will install ``minio`` package from PyPI.
 
 .. note::
 

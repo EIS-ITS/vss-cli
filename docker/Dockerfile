@@ -1,6 +1,6 @@
 FROM hub.eis.utoronto.ca/vss/docker/python:3.9-alpine
 # Defining env vars
-ENV VSSCLI_VERSION="2022.3.0"
+ENV VSSCLI_VERSION="2022.3.1"
 ARG CI_BUILD_REF
 # Defininig tags
 LABEL maintainer="Jose Manuel Lopez <jm@eis.utoronto.ca>" \
@@ -13,8 +13,7 @@ WORKDIR /usr/src/app
 COPY . .
 # install OS reqs
 RUN apk add --no-cache --virtual build-dependencies \
-    gcc musl-dev bash man-pages git \
-    libxml2-dev libxslt-dev libffi-dev && \
+    gcc musl-dev bash man-pages git && \
     rm -rf /var/cache/apk/*
 # install app
 RUN pip3 install --upgrade pip && \

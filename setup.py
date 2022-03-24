@@ -74,7 +74,7 @@ PROJECT_URLS = {
     'Documentation': f'{PROJECT_DOCS}/',
     'Source': f'{PROJECT_URL}',
 }
-STOR_REQUIRE = ['webdavclient3==3.14.6']
+STOR_REQUIRE = ['minio==7.1.5']
 TESTS_REQUIRE = [
     'flake8==4.0.1',
     'nose==1.3.7',
