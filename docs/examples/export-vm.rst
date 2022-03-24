@@ -119,7 +119,7 @@ the status, execute ``vss-cli request export get <request-id>``.
     ...
     status              : Processed
     ...
-    files               : disk: ['../disk-0.vmdk', '../1812T-JMLpezLujn.ovf']
+    files               : disk: ['../disk-0.vmdk', '../2009T-nat.ovf']
     ...
     transferred         : Yes
 
@@ -134,32 +134,54 @@ get something like:
 
 .. code-block:: bash
 
-    vss-cli stor ls 50121d83-c93b-0685-b54f-27cd8befc894
+    vss-cli stor ls <vm_name-vm-moref>
 
-    items               : 1812T-JMLpezLujn.ovf, disk-0.vmdk
+    files
+    -------------------------------
+    2009T-nat-vm-2386/2009T-nat.ovf
+    2009T-nat-vm-2386/disk-0.vmdk
+    2009T-nat-vm-2386/disk-1.nvram
+
 
 
 Download virtual machine export
 -------------------------------
 
 To download the files you could either go to a web browser and
-open `VSKEY-STOR`_ and sign in, go to the ``<vm-id>`` folder and
-download the files or execute ``vss-cli stor dl <vm-id>/<file> -n t``
+open `VSKEY-STOR`_ and sign in, go to the ``<vm_name-vm_id>`` folder and
+download the files or execute ``vss-cli stor dl <vm_name-vm_id>/<file>``
 as follows:
 
 .. code-block:: bash
 
     # OVF descriptor
-    vss-cli stor dl <vm-id>/1812T-JMLpezLujn.ovf -d ~/Downloads -n 1812T-JMLpezLujn.ovf
+    vss-cli stor dl 2009T-nat-vm-2386/2009T-nat.ovf -d ~/Downloads
 
-    Download <vm-id>/1812T-JMLpezLujn.ovf to ~/Downloads/1812T-JMLpezLujn.ovf in progress...
-    Download complete.
+    Download 2009T-nat-vm-2386/2009T-nat.ovf to ~/Downloads/2009T-nat.ovf in progress ⏬
+    Download complete to ~/Downloads/2009T-nat.ovf ✅
 
     # disk file
-    vss-cli stor dl <vm-id>/disk-0.vmdk -d ~/Downloads -n disk-0.vmdk
+    vss-cli stor dl 2009T-nat-vm-2386/disk-0.vmdk -d ~/Downloads
 
-    Download <vm-id>/disk-0.vmdk to ~/Downloads/disk-0.vmdk in progress...
-    Download complete.
+    Download 2009T-nat-vm-2386/disk-0.vmdk to ~/Downloads/disk-0.vmdk in progress ⏬
+    Download complete to ~/Downloads/disk-0.vmdk ✅
+
+    # Optional: nvram file
+    vss-cli stor dl 2009T-nat-vm-2386/disk-1.nvram -d ~/Downloads
+
+    Download 2009T-nat-vm-2386/disk-1.nvram to ~/Downloads/disk-1.nvram in progress ⏬
+    Download complete to ~/Downloads/disk-1.nvram ✅
+
+Alternatively, you could just launch the web UI via the ``la`` command and browse the
+``ut-vss` bucket to download the files via your web browser:
+
+.. code-block:: bash
+
+    vss-cli stor la gui --show-cred
+
+    Launching 🌎: https://vskey-stor.eis.utoronto.ca:42047
+    username: [REDACTED]
+    password: [REDACTED]
 
 That's it, at this point the OVF and disks are ready to be imported to
 a desired platform.
