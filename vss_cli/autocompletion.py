@@ -1,12 +1,17 @@
 """Details for the auto-completion."""
+import logging
 import os
-from typing import Callable, Dict, List, Tuple  # NOQA
+from typing import Callable, Dict, List, Optional, Tuple  # NOQA
 
+import click
+from click.shell_completion import CompletionItem
 from requests.exceptions import HTTPError
 
 from vss_cli import const
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssError
+
+_LOGGING = logging.getLogger(__name__)
 
 
 def _init_ctx(ctx: Configuration) -> None:
@@ -25,6 +30,16 @@ def _init_ctx(ctx: Configuration) -> None:
     ctx.client.load_config()
 
 
+def to_completion_item(func: Callable):
+    """Decorate function and converts to CI."""
+
+    def wrapper_tci(*args, **kwargs):
+        results = func(*args, **kwargs)
+        return [CompletionItem(item[0], help=f'{item[1]}') for item in results]
+
+    return wrapper_tci
+
+
 def _autocomplete(
     f: Callable,
     incomplete: str,
@@ -38,7 +53,6 @@ def _autocomplete(
         response = f(**f_kwargs)
     except (HTTPError, VssError):
         response = []
-
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
@@ -56,8 +70,9 @@ def _autocomplete(
     return completions
 
 
+@to_completion_item
 def table_formats(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Provide table Formats."""
     _init_ctx(ctx)
@@ -95,8 +110,9 @@ def table_formats(
     return [c for c in completions if incomplete in c[0]]
 
 
+@to_completion_item
 def vm_templates(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM templates."""
     _init_ctx(ctx)
@@ -110,8 +126,9 @@ def vm_templates(
     )
 
 
+@to_completion_item
 def virtual_machines(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VMs."""
     _init_ctx(ctx)
@@ -125,8 +142,9 @@ def virtual_machines(
     )
 
 
+@to_completion_item
 def vm_controller_scsi_sharing(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM controller SCSI types."""
     _init_ctx(ctx)
@@ -138,8 +156,9 @@ def vm_controller_scsi_sharing(
     )
 
 
+@to_completion_item
 def vm_controller_scsi_types(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM controller SCSI types."""
     _init_ctx(ctx)
@@ -151,8 +170,9 @@ def vm_controller_scsi_types(
     )
 
 
+@to_completion_item
 def vm_disk_backing_modes(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM Disk Backing Modes."""
     _init_ctx(ctx)
@@ -164,8 +184,9 @@ def vm_disk_backing_modes(
     )
 
 
+@to_completion_item
 def vm_disk_sharing(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM Disk Backing Modes."""
     _init_ctx(ctx)
@@ -177,8 +198,9 @@ def vm_disk_sharing(
     )
 
 
+@to_completion_item
 def domains(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete Domains."""
     _init_ctx(ctx)
@@ -192,8 +214,9 @@ def domains(
     )
 
 
+@to_completion_item
 def folders(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM folders."""
     _init_ctx(ctx)
@@ -212,8 +235,9 @@ def folders(
     )
 
 
+@to_completion_item
 def networks(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete Networks."""
     _init_ctx(ctx)
@@ -227,8 +251,9 @@ def networks(
     )
 
 
+@to_completion_item
 def operating_systems(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM operating systems."""
     _init_ctx(ctx)
@@ -240,8 +265,9 @@ def operating_systems(
     )
 
 
+@to_completion_item
 def vss_services(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VSS Services."""
     _init_ctx(ctx)
@@ -255,9 +281,10 @@ def vss_services(
     )
 
 
+@to_completion_item
 def isos(
-    ctx: Configuration, args: List, incomplete: str
-) -> List[Tuple[str, str]]:
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[CompletionItem]:
     """Autocomplete ISO images."""
     _init_ctx(ctx)
     return _autocomplete(
@@ -270,8 +297,9 @@ def isos(
     )
 
 
+@to_completion_item
 def clib_deployable_items(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete deployable items from content library."""
     _init_ctx(ctx)
@@ -290,8 +318,9 @@ def clib_deployable_items(
     )
 
 
+@to_completion_item
 def vm_images(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM images."""
     _init_ctx(ctx)
@@ -305,8 +334,9 @@ def vm_images(
     )
 
 
+@to_completion_item
 def floppies(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM Floppies."""
     _init_ctx(ctx)
@@ -320,8 +350,9 @@ def floppies(
     )
 
 
+@to_completion_item
 def inventory_properties(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM Inventory Properties."""
     _init_ctx(ctx)
@@ -343,8 +374,9 @@ def inventory_properties(
     return completions
 
 
+@to_completion_item
 def inventory_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM Inventory Requests."""
     _init_ctx(ctx)
@@ -356,8 +388,9 @@ def inventory_requests(
     )
 
 
+@to_completion_item
 def new_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete New VM Requests."""
     _init_ctx(ctx)
@@ -369,8 +402,9 @@ def new_requests(
     )
 
 
+@to_completion_item
 def change_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete Change VM Requests."""
     _init_ctx(ctx)
@@ -382,8 +416,9 @@ def change_requests(
     )
 
 
+@to_completion_item
 def export_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete Export VM Requests."""
     _init_ctx(ctx)
@@ -395,8 +430,9 @@ def export_requests(
     )
 
 
+@to_completion_item
 def folder_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete Folder Requests."""
     _init_ctx(ctx)
@@ -408,8 +444,9 @@ def folder_requests(
     )
 
 
+@to_completion_item
 def image_sync_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete Image Sync Requests."""
     _init_ctx(ctx)
@@ -421,8 +458,9 @@ def image_sync_requests(
     )
 
 
+@to_completion_item
 def vmdk_sync_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete Image Sync Requests."""
     _init_ctx(ctx)
@@ -434,8 +472,9 @@ def vmdk_sync_requests(
     )
 
 
+@to_completion_item
 def snapshot_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM Snapshot Requests."""
     _init_ctx(ctx)
@@ -447,8 +486,9 @@ def snapshot_requests(
     )
 
 
+@to_completion_item
 def account_messages(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete Account Messages."""
     _init_ctx(ctx)
@@ -460,8 +500,9 @@ def account_messages(
     )
 
 
+@to_completion_item
 def virtual_nic_types(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM NIC Types."""
     _init_ctx(ctx)
@@ -473,8 +514,9 @@ def virtual_nic_types(
     )
 
 
+@to_completion_item
 def virtual_hw_types(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM Virtual Hardware Types."""
     _init_ctx(ctx)
@@ -486,8 +528,9 @@ def virtual_hw_types(
     )
 
 
+@to_completion_item
 def vss_options(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VSS Options."""
     _init_ctx(ctx)
@@ -499,8 +542,9 @@ def vss_options(
     )
 
 
+@to_completion_item
 def groups(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete User Groups."""
     _init_ctx(ctx)
@@ -512,8 +556,9 @@ def groups(
     )
 
 
+@to_completion_item
 def vm_firmware(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM firmware types."""
     _init_ctx(ctx)
@@ -525,28 +570,30 @@ def vm_firmware(
     )
 
 
+@to_completion_item
 def vm_snapshots(
-    ctx: Configuration, args: List, incomplete: str
-) -> List[Tuple[str, str]]:
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[Optional[Tuple[str, str]]]:
     """Autocomplete VM snapshots."""
     _init_ctx(ctx)
-    if '--source' in args:
+    args = ctx.params
+    if 'source' in args:
         try:
-            s_pos = args.index('--source')
-            vm_id = args[s_pos + 1]
+            vm_id = args['source']
             return _autocomplete(
                 ctx.client.get_vm_snapshots,
                 incomplete,
                 attrs=['id', 'name', 'description'],
                 f_kwargs={'vm_id': vm_id},
             )
-        except IndexError:
+        except KeyError:
             return []
     return []
 
 
+@to_completion_item
 def retirement_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM retirement requests."""
     _init_ctx(ctx)
@@ -558,15 +605,16 @@ def retirement_requests(
     )
 
 
+@to_completion_item
 def vm_retirement_requests(
-    ctx: Configuration, args: List, incomplete: str
+    ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
     """Autocomplete VM retirement requests by VM."""
     _init_ctx(ctx)
-    if '--source' in args:
+    args = ctx.params
+    if 'source' in args:
         try:
-            s_pos = args.index('--source')
-            vm_id = args[s_pos + 1]
+            vm_id = args['source']
             return _autocomplete(
                 ctx.client.get_vm_retirement_requests,
                 incomplete,

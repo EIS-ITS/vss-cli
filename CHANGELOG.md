@@ -1,5 +1,21 @@
 # Changelog 📝
 
+## [v2022.4.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.4.0) (2022-04-29)
+
+**Improvements:**
+
+- [#510](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/510): ``core``: upgrade ``pyvss`` from ``2022.3.1`` to ``2022.4.0``.
+- [#511](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/511): ``core``: upgrade ``click`` from ``8.0`` to ``8.1.3``.
+- [#512](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/512): ``ci``: upgrade ``pre-commit`` hook ``black`` version to ``22.3.0``.
+- [#513](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/513): ``ci``: upgrade ``pre-commit`` hook ``flake8`` version to ``3.7.9``.
+
+**Bug Fixes:**
+
+- [#514](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/514): ``core``: autocompletion errors during option and argument completion.
+- [#515](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/515): ``compute vm mk from-clone``: option ``--snapshot`` auto-completion throws exception.
+- [#516](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/516): ``request retirement get``: auto-completion throws exception.
+
+
 ## [v2022.3.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.3.1) (2022-03-24)
 
 **Improvements:**
