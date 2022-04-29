@@ -1,7 +1,8 @@
 """Details for the auto-completion."""
 import os
-from typing import Callable, Dict, List, Tuple  # NOQA
+from typing import Callable, Dict, List, Optional, Tuple  # NOQA
 
+from click.shell_completion import CompletionItem
 from requests.exceptions import HTTPError
 
 from vss_cli import const
@@ -25,6 +26,16 @@ def _init_ctx(ctx: Configuration) -> None:
     ctx.client.load_config()
 
 
+def to_completion_item(func: Callable):
+    """Decorate function and converts to CI."""
+
+    def wrapper_tci(*args, **kwargs):
+        results = func(*args, **kwargs)
+        return [CompletionItem(item[0], help=f'{item[1]}') for item in results]
+
+    return wrapper_tci
+
+
 def _autocomplete(
     f: Callable,
     incomplete: str,
@@ -38,7 +49,6 @@ def _autocomplete(
         response = f(**f_kwargs)
     except (HTTPError, VssError):
         response = []
-
     completions = []  # type: List[Tuple[str, str]]
     if response:
         for obj in response:
@@ -56,6 +66,7 @@ def _autocomplete(
     return completions
 
 
+@to_completion_item
 def table_formats(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -95,6 +106,7 @@ def table_formats(
     return [c for c in completions if incomplete in c[0]]
 
 
+@to_completion_item
 def vm_templates(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -110,6 +122,7 @@ def vm_templates(
     )
 
 
+@to_completion_item
 def virtual_machines(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -125,6 +138,7 @@ def virtual_machines(
     )
 
 
+@to_completion_item
 def vm_controller_scsi_sharing(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -138,6 +152,7 @@ def vm_controller_scsi_sharing(
     )
 
 
+@to_completion_item
 def vm_controller_scsi_types(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -151,6 +166,7 @@ def vm_controller_scsi_types(
     )
 
 
+@to_completion_item
 def vm_disk_backing_modes(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -164,6 +180,7 @@ def vm_disk_backing_modes(
     )
 
 
+@to_completion_item
 def vm_disk_sharing(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -177,6 +194,7 @@ def vm_disk_sharing(
     )
 
 
+@to_completion_item
 def domains(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -192,6 +210,7 @@ def domains(
     )
 
 
+@to_completion_item
 def folders(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -212,6 +231,7 @@ def folders(
     )
 
 
+@to_completion_item
 def networks(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -227,6 +247,7 @@ def networks(
     )
 
 
+@to_completion_item
 def operating_systems(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -240,6 +261,7 @@ def operating_systems(
     )
 
 
+@to_completion_item
 def vss_services(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -255,9 +277,10 @@ def vss_services(
     )
 
 
+@to_completion_item
 def isos(
     ctx: Configuration, args: List, incomplete: str
-) -> List[Tuple[str, str]]:
+) -> List[CompletionItem]:
     """Autocomplete ISO images."""
     _init_ctx(ctx)
     return _autocomplete(
@@ -270,6 +293,7 @@ def isos(
     )
 
 
+@to_completion_item
 def clib_deployable_items(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -290,6 +314,7 @@ def clib_deployable_items(
     )
 
 
+@to_completion_item
 def vm_images(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -305,6 +330,7 @@ def vm_images(
     )
 
 
+@to_completion_item
 def floppies(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -320,6 +346,7 @@ def floppies(
     )
 
 
+@to_completion_item
 def inventory_properties(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -343,6 +370,7 @@ def inventory_properties(
     return completions
 
 
+@to_completion_item
 def inventory_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -356,6 +384,7 @@ def inventory_requests(
     )
 
 
+@to_completion_item
 def new_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -369,6 +398,7 @@ def new_requests(
     )
 
 
+@to_completion_item
 def change_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -382,6 +412,7 @@ def change_requests(
     )
 
 
+@to_completion_item
 def export_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -395,6 +426,7 @@ def export_requests(
     )
 
 
+@to_completion_item
 def folder_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -408,6 +440,7 @@ def folder_requests(
     )
 
 
+@to_completion_item
 def image_sync_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -421,6 +454,7 @@ def image_sync_requests(
     )
 
 
+@to_completion_item
 def vmdk_sync_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -434,6 +468,7 @@ def vmdk_sync_requests(
     )
 
 
+@to_completion_item
 def snapshot_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -447,6 +482,7 @@ def snapshot_requests(
     )
 
 
+@to_completion_item
 def account_messages(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -460,6 +496,7 @@ def account_messages(
     )
 
 
+@to_completion_item
 def virtual_nic_types(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -473,6 +510,7 @@ def virtual_nic_types(
     )
 
 
+@to_completion_item
 def virtual_hw_types(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -486,6 +524,7 @@ def virtual_hw_types(
     )
 
 
+@to_completion_item
 def vss_options(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -499,6 +538,7 @@ def vss_options(
     )
 
 
+@to_completion_item
 def groups(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -512,6 +552,7 @@ def groups(
     )
 
 
+@to_completion_item
 def vm_firmware(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -525,9 +566,10 @@ def vm_firmware(
     )
 
 
+@to_completion_item
 def vm_snapshots(
     ctx: Configuration, args: List, incomplete: str
-) -> List[Tuple[str, str]]:
+) -> List[Optional[Tuple[str, str]]]:
     """Autocomplete VM snapshots."""
     _init_ctx(ctx)
     if '--source' in args:
@@ -545,6 +587,7 @@ def vm_snapshots(
     return []
 
 
+@to_completion_item
 def retirement_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
@@ -558,6 +601,7 @@ def retirement_requests(
     )
 
 
+@to_completion_item
 def vm_retirement_requests(
     ctx: Configuration, args: List, incomplete: str
 ) -> List[Tuple[str, str]]:
