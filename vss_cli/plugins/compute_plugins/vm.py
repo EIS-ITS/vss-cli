@@ -257,7 +257,9 @@ def compute_vm_get_console(ctx: Configuration, launch, client):
         confirmation_prompt=True,
         err=True,
     )
-    auth = (username.decode(), password.decode())
+    username = username.decode() if isinstance(username, bytes) else username
+    password = password.decode() if isinstance(password, bytes) else password
+    auth = (username, password)
     obj = ctx.get_vm_console(ctx.moref, auth=auth, client=client)
     link = obj.get('value')
     # print
