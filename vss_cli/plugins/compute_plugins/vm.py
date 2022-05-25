@@ -40,7 +40,12 @@ def compute_vm(ctx: Configuration):
 @so.count_opt
 @pass_context
 def compute_vm_ls(
-    ctx: Configuration, filter_by, show_all: bool, sort, page, count,
+    ctx: Configuration,
+    filter_by,
+    show_all: bool,
+    sort,
+    page,
+    count,
 ):
     """List virtual machine instances.
 
@@ -73,7 +78,9 @@ def compute_vm_ls(
 
 
 @compute_vm.group(
-    'get', short_help='Get virtual machine info.', invoke_without_command=True,
+    'get',
+    short_help='Get virtual machine info.',
+    invoke_without_command=True,
 )
 @click.argument(
     'vm_id_or_name',
@@ -96,7 +103,9 @@ def compute_vm_get(ctx: Configuration, vm_id_or_name):
 
 @compute_vm_get.command('admin', short_help='Admin (metadata)')
 @pass_context
-def compute_vm_get_admin(ctx: Configuration,):
+def compute_vm_get_admin(
+    ctx: Configuration,
+):
     """Virtual machine administrator. Part of the VSS metadata."""
     columns = ctx.columns or const.COLUMNS_VM_ADMIN
     obj = ctx.get_vm_vss_admin(ctx.moref)
@@ -124,7 +133,9 @@ def compute_vm_get_alarms(ctx: Configuration, moref):
 
 @compute_vm_get.command('boot', short_help='Boot configuration')
 @pass_context
-def compute_vm_get_boot(ctx: Configuration,):
+def compute_vm_get_boot(
+    ctx: Configuration,
+):
     """Virtual machine boot settings.
 
     Including boot delay and whether or not
@@ -1759,7 +1770,11 @@ def compute_vm_set_guest_cmd(ctx, cmd, cmd_args, env, username, password):
         )
     # creating payload
     payload = dict(
-        vm_id=ctx.moref, user=username, pwd=password, cmd=cmd, arg=cmd_args,
+        vm_id=ctx.moref,
+        user=username,
+        pwd=password,
+        cmd=cmd,
+        arg=cmd_args,
     )
     if env:
         payload['env'] = env
@@ -3923,12 +3938,13 @@ def compute_vm_mk_image(
 @c_so.cpu_cps_opt
 @c_so.folder_opt
 @c_so.scsi_ctrllr_nr_opt
-@c_so.disk_opt
+@c_so.disks_nr_opt
 @c_so.networks_opt
 @c_so.domain_opt
 @c_so.notes_opt
 @c_so.custom_spec_opt
 @c_so.extra_config_opt
+@c_so.additional_parameters_opt
 @c_so.power_on_opt
 @c_so.template_opt
 @c_so.user_data_opt
@@ -3962,6 +3978,7 @@ def compute_vm_mk_clib(
     power_on,
     template,
     extra_config,
+    additional_params,
     user_data,
     network_config,
     vss_service,
@@ -3981,6 +3998,7 @@ def compute_vm_mk_clib(
         item_id=item_ref[0]['id'],
         power_on=power_on,
         template=template,
+        disks=disk or [],
     )
     # Hardware
     if memory:
@@ -3992,8 +4010,6 @@ def compute_vm_mk_clib(
         }
     if scsi:
         payload['scsi'] = scsi
-    if disk:
-        payload['disks'] = disk
     if net:
         payload['networks'] = net
     if os:
@@ -4022,6 +4038,8 @@ def compute_vm_mk_clib(
     # Advanced
     if extra_config:
         payload['extra_config'] = extra_config
+    if additional_params:
+        payload['additional_parameters'] = additional_params
     if custom_spec:
         payload['custom_spec'] = custom_spec
     if user_data:

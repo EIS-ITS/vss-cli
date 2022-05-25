@@ -4,7 +4,8 @@ import click
 import vss_cli.autocompletion as autocompletion
 from vss_cli.plugins.compute_plugins import callbacks
 from vss_cli.validators import (
-    retirement_value, validate_admin, validate_inform, validate_json_type)
+    retirement_value, validate_admin, validate_inform,
+    validate_json_file_or_type, validate_json_type)
 
 source_opt = click.option(
     '--source',
@@ -205,6 +206,15 @@ custom_spec_opt = click.option(
     type=click.STRING,
     required=False,
     callback=validate_json_type,
+)
+additional_parameters_opt = click.option(
+    '--additional-params',
+    '-ap',
+    help='OVF additional parameters: PropertyParams '
+    'and DeploymentOptionParams.',
+    type=click.STRING,
+    required=False,
+    callback=validate_json_file_or_type,
 )
 iso_opt = click.option(
     '--iso',

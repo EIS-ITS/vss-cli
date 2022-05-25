@@ -2,6 +2,7 @@
 from datetime import datetime
 import json
 import logging
+from pathlib import Path
 import re
 from uuid import UUID
 
@@ -49,6 +50,31 @@ def flexible_email_args(ctx, param, value):
     for e in emails:
         validate_email(ctx, param, e)
     return emails
+
+
+def validate_json_file_or_type(ctx, param, value):
+    """Validate json file or type."""
+    val = None
+    try:
+        if value is not None:
+            val = json.loads(value)
+    except ValueError as ex:
+        _LOGGING.debug(f'Not string: {ex}')
+        val = None
+    try:
+        if value is not None:
+            p = Path(value)
+            with p.open(encoding="UTF-8") as source:
+                val = json.load(source)
+    except FileNotFoundError as ex:
+        _LOGGING.debug(f'Not file: {ex}')
+        val = None
+
+    if val is None:
+        raise click.BadParameter(
+            f'{param.name} should be a file or JSON parameter input.'
+        )
+    return val
 
 
 def validate_json_type(ctx, param, value):
