@@ -3085,7 +3085,7 @@ def compute_vm_mk(ctx: Configuration, user_meta: str, dry_run: bool):
     '-t',
     '--spec-template',
     required=False,
-    type=click.Choice(['shell']),
+    type=click.Choice(['shell', 'clib']),
     help='Specification template to load and edit.',
 )
 @click.option(
@@ -3134,7 +3134,7 @@ def compute_vm_from_file(
                 'Please choose a template to load '
                 '(press SPACE to mark, ENTER to continue): '
             )
-            spec_template, index = pick(['shell'], message)
+            spec_template, index = pick(['shell', 'clib'], message)
         file_spec = os.path.join(
             const.DEFAULT_DATA_PATH, f'{spec_template}.yaml'
         )
@@ -3166,11 +3166,17 @@ def compute_vm_from_file(
         spec_payload = ctx.get_api_spec_from_cli_spec(
             payload=payload, built='os_install'
         )
+        obj = ctx.create_vm(**spec_payload)
+    elif payload['built'] == 'clib':
+        spec_payload = ctx.get_api_spec_from_cli_spec(
+            payload=payload, built='contentlib'
+        )
+        obj = ctx.deploy_vm_from_clib_item(**spec_payload)
     else:
         raise click.UsageError('Not yet implemented.')
     # request
     ctx.dry_run = ctx.tmp
-    obj = ctx.create_vm(**spec_payload)
+
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

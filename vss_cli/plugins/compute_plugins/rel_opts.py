@@ -211,7 +211,7 @@ additional_parameters_opt = click.option(
     '--additional-params',
     '-ap',
     help='OVF additional parameters: PropertyParams '
-    'and DeploymentOptionParams.',
+    'and DeploymentOptionParams in YAML or JSON format.',
     type=click.STRING,
     required=False,
     callback=validate_json_file_or_type,

@@ -57,7 +57,7 @@ def validate_json_file_or_type(ctx, param, value):
     val = None
     try:
         if value is not None:
-            val = json.loads(value)
+            val = ctx.yaml_load(value)
     except ValueError as ex:
         _LOGGING.debug(f'Not string: {ex}')
         val = None
@@ -65,7 +65,7 @@ def validate_json_file_or_type(ctx, param, value):
         if value is not None:
             p = Path(value)
             with p.open(encoding="UTF-8") as source:
-                val = json.load(source)
+                val = ctx.yaml_load(source.read())
     except FileNotFoundError as ex:
         _LOGGING.debug(f'Not file: {ex}')
         val = None
