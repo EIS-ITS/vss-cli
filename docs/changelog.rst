@@ -1,6 +1,19 @@
 Changelog 📝
 ============
 
+`v2022.5.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.5.0>`_ (2022-05-30)
+----------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#520 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/520>`_: ``core``: upgrade ``pyvss`` from ``2022.4.0`` to ``2022.5.0``.
+- `#518 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/518>`_: ``compute vm mk from-clib``: support ``--additional-params`` in ``yaml`` or ``json`` format for OVA/OVF ``PropertyParams`` and ``DeploymentOptionParams``.
+- `#521 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/521>`_: ``️compute vm mk from-file``: support ``clib`` deployments.
+
+**Bug Fixes:**
+
+- `#519 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/519>`_: ``compute vm get console``: throws ``AttributeError``.
+
 `v2022.4.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.4.0>`_ (2022-04-29)
 ---------------------------------------------------------------------------------------------
 **Improvements:**

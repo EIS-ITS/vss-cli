@@ -1245,7 +1245,7 @@ class Configuration(VssManager):
                     [
                         {
                             "capacity_gb": d['capacity_gb'],
-                            "backing_mode": self.get_vm_disk_backing_mode_by_name(
+                            "backing_mode": self.get_vm_disk_backing_mode_by_name(  # NOQA:
                                 d['backing_mode']
                             )[
                                 0
