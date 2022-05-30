@@ -29,7 +29,8 @@ from vss_cli.helper import (
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import (
-    validate_email, validate_phone_number, validate_uuid, validate_vm_moref)
+    validate_email, validate_json_file_or_type, validate_phone_number,
+    validate_uuid, validate_vm_moref)
 import vss_cli.yaml as yaml
 
 _LOGGING = logging.getLogger(__name__)
@@ -424,7 +425,11 @@ class Configuration(VssManager):
                             )
                         # set config_path data
                         self.set_credentials(
-                            usr, pwd, ep.token, ep.url, ep.name,
+                            usr,
+                            pwd,
+                            ep.token,
+                            ep.url,
+                            ep.name,
                         )
                         if validate:
                             # last check cred
@@ -1220,22 +1225,53 @@ class Configuration(VssManager):
     def get_api_spec_from_cli_spec(self, payload: dict, built: str) -> Dict:
         """Get API specification from CLI specification."""
         try:
+            from vss_cli.plugins.compute_plugins.callbacks import (
+                process_user_data,
+            )
+
             spec_payload = dict()
             # sections
             machine_section = payload['machine']
             networking_section = payload['networking']
             metadata_section = payload['metadata']
-            if built == 'os_install':
-                # machine section parse and update
+
+            if built in ['contentlib', 'os_install']:
+                # other
+                machine_section['power_on'] = machine_section.get(
+                    'power_on', False
+                )
                 spec_payload.update(machine_section)
-                # replace with valid values
+                spec_payload['disks'] = (
+                    [
+                        {
+                            "capacity_gb": d['capacity_gb'],
+                            "backing_mode": self.get_vm_disk_backing_mode_by_name(  # NOQA:
+                                d['backing_mode']
+                            )[
+                                0
+                            ][
+                                'type'
+                            ]
+                            if d.get('backing_mode')
+                            else 'persistent',
+                            "backing_sharing": self.get_vm_disk_backing_sharing_by_name(  # NOQA:
+                                d['backing_sharing']
+                            )[
+                                0
+                            ][
+                                'type'
+                            ]
+                            if d.get('backing_sharing')
+                            else 'sharingnone',
+                        }
+                        for d in machine_section['disks']
+                    ]
+                    if 'disks' in machine_section
+                    else []
+                )
                 spec_payload['os'] = self.get_os_by_name_or_guest(
                     machine_section['os']
                 )[0]['guest_id']
-                spec_payload['iso'] = self.get_iso_by_name_or_path(
-                    machine_section['iso']
-                )[0]['path']
-                # folder
                 spec_payload['folder'] = self.get_folder_by_name_or_moref_path(
                     machine_section['folder']
                 )[0]['moref']
@@ -1249,30 +1285,6 @@ class Configuration(VssManager):
                     }
                     for n in networking_section['interfaces']
                 ]
-                spec_payload['disks'] = [
-                    {
-                        "capacity_gb": d['capacity_gb'],
-                        "backing_mode": self.get_vm_disk_backing_mode_by_name(
-                            d['backing_mode']
-                        )[0]['type']
-                        if d.get('backing_mode')
-                        else 'persistent',
-                        "backing_sharing": self.get_vm_disk_backing_sharing_by_name(  # NOQA:
-                            d['backing_sharing']
-                        )[
-                            0
-                        ][
-                            'type'
-                        ]
-                        if d.get('backing_sharing')
-                        else 'sharingnone',
-                    }
-                    for d in machine_section['disks']
-                ]
-                # other
-                machine_section['power_on'] = machine_section.get(
-                    'power_on', False
-                )
                 # metadata section
                 spec_payload.update(metadata_section)
                 spec_payload['built'] = built
@@ -1298,6 +1310,50 @@ class Configuration(VssManager):
                     spec_payload['admin'] = (
                         f"{admin_name}:" f"{admin_phone}:{admin_email}"
                     )
+
+            if built == 'contentlib':
+                spec_payload[
+                    'item_id'
+                ] = self.get_clib_deployable_item_by_name_or_id_path(
+                    machine_section['item']
+                )[
+                    0
+                ][
+                    'id'
+                ]
+                cloud_init = payload.get('cloud_init')
+                if cloud_init is not None:
+                    data, encoding = process_user_data(
+                        self,
+                        'user_data',
+                        cloud_init['user_data'],
+                    )
+                    udata_pload = {
+                        'userdata': data,
+                        'userdata_encoding': encoding,
+                    }
+                    if 'network_data' in cloud_init:
+                        ndata, ndata_encoding = process_user_data(
+                            self, 'network_data', cloud_init['network_data']
+                        )
+                        ndata_pload = {
+                            'networkconfig': ndata,
+                            'networkconfig_encoding': ndata_encoding,
+                        }
+                        udata_pload.update(ndata_pload)
+                    spec_payload['user_data'] = udata_pload
+                # additional parameters
+                add_params = payload.get('additional_parameters')
+                if add_params is not None:
+                    spec_payload[
+                        'additional_parameters'
+                    ] = validate_json_file_or_type(
+                        self, 'additional_parameters', add_params
+                    )
+            if built == 'os_install':
+                spec_payload['iso'] = self.get_iso_by_name_or_path(
+                    machine_section['iso']
+                )[0]['path']
             return spec_payload
         except KeyError as ex:
             raise click.BadParameter(f'Invalid CLI specification: {ex}')
