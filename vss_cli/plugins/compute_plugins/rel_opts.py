@@ -207,6 +207,22 @@ custom_spec_opt = click.option(
     required=False,
     callback=validate_json_type,
 )
+day0_cfg_opt = click.option(
+    '--day-zero',
+    '-d0',
+    help='Day0 config file path to pre-configure the os',
+    type=click.STRING,
+    callback=callbacks.process_day_zero,
+    required=False,
+)
+idtoken_cfg_opt = click.option(
+    '--id-token',
+    '-d0i',
+    help='Day0 Identity Token to register with the Smart Licensing server.',
+    type=click.STRING,
+    callback=callbacks.process_day_zero,
+    required=False,
+)
 additional_parameters_opt = click.option(
     '--additional-params',
     '-ap',

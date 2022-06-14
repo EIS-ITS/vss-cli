@@ -25,6 +25,10 @@ networking:
 # OVF additional parameters (Uncomment to enable)
 # PropertyParams and DeploymentOptionParams.
 # additional_parameters: additional_params.yaml
+# Day0 configuration (Uncomment to enable)
+#day-zero:
+#  config: configuration.txt
+#  id-token: id-token.txt
 # Cloud init post-deployment config (Uncomment to enable)
 # cloud_init:
 #  user_data: 'user_data.yaml'

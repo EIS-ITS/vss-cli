@@ -26,6 +26,7 @@ from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
     bytes_to_str, debug_requests_on, format_output, get_hostname_from_url)
+from vss_cli.plugins.compute_plugins.callbacks import process_day_zero
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import (
@@ -1350,6 +1351,23 @@ class Configuration(VssManager):
                     ] = validate_json_file_or_type(
                         self, 'additional_parameters', add_params
                     )
+                # day_zero
+                day_zero = payload.get('day-zero')
+                if day_zero is not None:
+                    _d0 = process_day_zero(
+                        self, 'day-zero', day_zero['config']
+                    )
+                    day_zero_payload = {
+                        'config': _d0[0],
+                        'config-encoding': _d0[1],
+                    }
+                    if 'id-token' in day_zero:
+                        _i0 = process_day_zero(
+                            self, 'id-token', day_zero['id-token']
+                        )
+                        _i0_d = {'idtoken': _i0[0], 'idtoken-encoding': _i0[1]}
+                        day_zero_payload.update(_i0_d)
+                    spec_payload['day_zero'] = day_zero_payload
             if built == 'os_install':
                 spec_payload['iso'] = self.get_iso_by_name_or_path(
                     machine_section['iso']

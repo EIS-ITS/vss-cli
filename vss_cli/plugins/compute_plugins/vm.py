@@ -4010,6 +4010,8 @@ def compute_vm_mk_image(
 @c_so.template_opt
 @c_so.user_data_opt
 @c_so.net_cfg_opt
+@c_so.day0_cfg_opt
+@c_so.idtoken_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
 @c_so.retire_type
@@ -4042,6 +4044,8 @@ def compute_vm_mk_clib(
     additional_params,
     user_data,
     network_config,
+    day_zero,
+    id_token,
     vss_service,
     firmware,
     retire_type,
@@ -4112,8 +4116,16 @@ def compute_vm_mk_clib(
         if network_config is not None:
             udata_pload['networkconfig'] = network_config[0]
             udata_pload['networkconfig_encoding'] = network_config[1]
-        _LOGGING.debug(f'User data paylaod {udata_pload}')
+        _LOGGING.debug(f'User data payload {udata_pload}')
         payload['user_data'] = udata_pload
+    if day_zero:
+        # day0 configuration
+        d0_payload = {'config': day_zero[0], 'config-encoding': day_zero[1]}
+        if id_token is not None:
+            d0_payload['idtoken'] = id_token[0]
+            d0_payload['idtoken-encoding'] = id_token[1]
+        _LOGGING.debug(f'Day0 payload {d0_payload}')
+        payload['day_zero'] = d0_payload
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
