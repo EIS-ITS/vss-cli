@@ -758,6 +758,15 @@ def compute_vm_get_template(ctx: Configuration):
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@compute_vm_get.command('tpm', short_help='vTPM configuration')
+@pass_context
+def compute_vm_get_tpm(ctx: Configuration):
+    """Virtual Trusted Platform Module."""
+    objs = ctx.get_vm_tpm(ctx.moref)
+    columns = ctx.columns or const.COLUMNS_VM_TPM
+    ctx.echo(format_output(ctx, objs, columns=columns))
+
+
 @compute_vm_get.command('tools', short_help='VMware Tools Status')
 @pass_context
 def compute_vm_get_tools(ctx: Configuration):
@@ -1410,6 +1419,50 @@ def compute_vm_set_description(ctx: Configuration, description):
     payload.update(ctx.payload_options)
     # request
     obj = ctx.update_vm_vss_description(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.group('tpm', short_help='TPM management')
+@pass_context
+def compute_vm_set_tpm(ctx: Configuration):
+    """Manage Trusted Platform Module.
+
+    Add and remove vTPM.
+    """
+    pass
+
+
+@compute_vm_set_tpm.command('mk', short_help='Create vTPM')
+@pass_context
+def compute_vm_set_tpm_mk(ctx: Configuration):
+    """Create virtual Trusted Platform Module."""
+    payload = dict(vm_id=ctx.moref)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_tpm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_tpm.command('rm', short_help='Remove vTPM')
+@pass_context
+def compute_vm_set_tpm_rm(ctx: Configuration):
+    """Remove virtual Trusted Platform Module."""
+    payload = dict(vm_id=ctx.moref)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.delete_vm_tpm(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

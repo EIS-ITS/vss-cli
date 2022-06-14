@@ -72,7 +72,7 @@ def validate_json_file_or_type(ctx, param, value):
 
     if val is None:
         raise click.BadParameter(
-            f'{param.name} should be a file or JSON parameter input.'
+            f'{param} should be a file or JSON parameter input.'
         )
     return val
 

@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2022.5.0"
+__version__ = "2022.6.0-dev0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -423,6 +423,7 @@ COLUMNS_VM_STATE = [
     ("domain_moref", "domain.moref"),
 ]
 COLUMNS_VM_TOOLS = [("version",), ("version_status",), ("running_status",)]
+COLUMNS_VM_TPM = [('label',), ('summary',), ('key',)]
 COLUMNS_VM_HW = [
     ("value",),
     ("status",),
