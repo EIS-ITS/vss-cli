@@ -758,6 +758,15 @@ def compute_vm_get_template(ctx: Configuration):
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@compute_vm_get.command('tpm', short_help='vTPM configuration')
+@pass_context
+def compute_vm_get_tpm(ctx: Configuration):
+    """Virtual Trusted Platform Module."""
+    objs = ctx.get_vm_tpm(ctx.moref)
+    columns = ctx.columns or const.COLUMNS_VM_TPM
+    ctx.echo(format_output(ctx, objs, columns=columns))
+
+
 @compute_vm_get.command('tools', short_help='VMware Tools Status')
 @pass_context
 def compute_vm_get_tools(ctx: Configuration):
@@ -1410,6 +1419,50 @@ def compute_vm_set_description(ctx: Configuration, description):
     payload.update(ctx.payload_options)
     # request
     obj = ctx.update_vm_vss_description(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.group('tpm', short_help='TPM management')
+@pass_context
+def compute_vm_set_tpm(ctx: Configuration):
+    """Manage Trusted Platform Module.
+
+    Add and remove vTPM.
+    """
+    pass
+
+
+@compute_vm_set_tpm.command('mk', short_help='Create vTPM')
+@pass_context
+def compute_vm_set_tpm_mk(ctx: Configuration):
+    """Create virtual Trusted Platform Module."""
+    payload = dict(vm_id=ctx.moref)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_tpm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_tpm.command('rm', short_help='Remove vTPM')
+@pass_context
+def compute_vm_set_tpm_rm(ctx: Configuration):
+    """Remove virtual Trusted Platform Module."""
+    payload = dict(vm_id=ctx.moref)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.delete_vm_tpm(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
@@ -3957,6 +4010,8 @@ def compute_vm_mk_image(
 @c_so.template_opt
 @c_so.user_data_opt
 @c_so.net_cfg_opt
+@c_so.day0_cfg_opt
+@c_so.idtoken_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
 @c_so.retire_type
@@ -3989,6 +4044,8 @@ def compute_vm_mk_clib(
     additional_params,
     user_data,
     network_config,
+    day_zero,
+    id_token,
     vss_service,
     firmware,
     retire_type,
@@ -4059,8 +4116,16 @@ def compute_vm_mk_clib(
         if network_config is not None:
             udata_pload['networkconfig'] = network_config[0]
             udata_pload['networkconfig_encoding'] = network_config[1]
-        _LOGGING.debug(f'User data paylaod {udata_pload}')
+        _LOGGING.debug(f'User data payload {udata_pload}')
         payload['user_data'] = udata_pload
+    if day_zero:
+        # day0 configuration
+        d0_payload = {'config': day_zero[0], 'config-encoding': day_zero[1]}
+        if id_token is not None:
+            d0_payload['idtoken'] = id_token[0]
+            d0_payload['idtoken-encoding'] = id_token[1]
+        _LOGGING.debug(f'Day0 payload {d0_payload}')
+        payload['day_zero'] = d0_payload
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']

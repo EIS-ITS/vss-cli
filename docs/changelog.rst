@@ -1,6 +1,19 @@
 Changelog 📝
 ============
 
+`v2022.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.6.0>`_ (2022-06-15)
+----------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#523 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/523>`_: ``compute vm set tpm mk``: create ``vTPM`` device.
+- `#523 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/523>`_: ``compute vm set tpm rm``: delete ``vTPM`` device.
+- `#524 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/524>`_: ``compute vm get tpm``: get ``vTPM`` device.
+- `#525 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/525>`_: ``compute vm mk from-clib``: support ``--day-zero`` config and ``--id-token`` for Day0 configuration.
+- `#526 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/526>`_: ``️compute vm mk from-file``: support ``day-zero`` configuration via ``config`` and ``id-token`` in ``vss-cli spec``.
+- `#527 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/527>`_: ``core``: upgrade ``pyvss`` from ``2022.5.0`` to ``2022.6.0``.
+- `#528 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/528>`_: ``core``: upgrade ``pyjwt`` from ``2.3.0`` to ``2.4.0``.
+
 `v2022.5.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.5.0>`_ (2022-05-30)
 ----------------------------------------------------------------------------------------
 

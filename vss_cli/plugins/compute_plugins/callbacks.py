@@ -139,8 +139,10 @@ def process_disk_opt(ctx: Configuration, param, value):
                 raise BadParameter('capacity must be a number')
             if is_json:
                 if _dev.get('backing_mode'):
-                    _backing_mode = ctx.client.get_vm_disk_backing_mode_by_name(  # NOQA:
-                        _dev.get('backing_mode')
+                    _backing_mode = (
+                        ctx.client.get_vm_disk_backing_mode_by_name(  # NOQA:
+                            _dev.get('backing_mode')
+                        )
                     )
                     _backing_mode = _backing_mode[0]['type']
                     disk['backing_mode'] = _backing_mode
@@ -207,6 +209,25 @@ def process_firmware(ctx: Configuration, param, value):
     except Exception:
         valid = ctx.client.get_supported_firmware_types()
         raise BadArgumentUsage(f'{param} must be one of: {", ".join(valid)}')
+
+
+def process_day_zero(
+    ctx: Configuration, param, value
+) -> Optional[Tuple[str, str]]:
+    """Process day zero configuration."""
+    from pyvss.helper import compress_encode_string
+
+    _init_ctx(ctx)
+    if value:
+        try:
+            fp = Path(value)
+            txt = fp.read_text()
+            return (
+                compress_encode_string(txt),
+                'gzip+base64',
+            )
+        except FileNotFoundError:
+            raise BadArgumentUsage(f'{param} must a valid file path.')
 
 
 def process_user_data(
