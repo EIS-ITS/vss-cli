@@ -1301,7 +1301,7 @@ class Configuration(VssManager):
                         metadata_section['vss_service']
                     )[0]['id']
                     spec_payload['vss_service'] = service
-                if metadata_section.get('metadata_section') is not None:
+                if metadata_section.get('admin') is not None:
                     admin_name = metadata_section['admin']['name']
                     admin_email = metadata_section['admin']['email']
                     admin_phone = metadata_section['admin']['phone']
