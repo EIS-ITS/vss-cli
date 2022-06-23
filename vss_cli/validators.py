@@ -70,7 +70,7 @@ def validate_json_file_or_type(ctx, param, value):
         _LOGGING.debug(f'Not file: {ex}')
         val = None
 
-    if val is None:
+    if value and val is None:
         raise click.BadParameter(
             f'{param} should be a file or JSON parameter input.'
         )
