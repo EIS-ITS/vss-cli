@@ -16,10 +16,9 @@ VMware workstation or fusion, please refer to the following links:
 * `VMware Fusion - Export a VM to OVF`_
 * `VMware Workstation - Export a VM to OVF`_
 
-.. note:: Since our virtualization platform is **VMware vSphere 6.7**,
-  VMX 15 hardware compatibility is supported. If you have the latest
-  VMware Fusion or Workstation, update VM compatibility settings to
-  version 15.
+.. note::  The ITS Private Cloud virtualization platform is **VMware vSphere 7.0**,
+  and the maximum **VMX hardware version is 19**. If you have the latest VMware
+  Fusion or Workstation, update VM compatibility settings to version 19.
 
 .. note:: As a best practice, we recommend to remove unused devices such as
   **sound cards**, **printer ports**, **USB** and other unused devices,
