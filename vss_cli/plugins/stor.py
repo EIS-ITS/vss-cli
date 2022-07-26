@@ -28,7 +28,9 @@ def cli(ctx: Configuration):
     'ui_type', type=click.Choice(['gui', 'admin', 's3api']), required=True
 )
 @click.option(
-    '--show-cred/--no-show-cred', help='Show credentials or not', is_flag=True,
+    '--show-cred/--no-show-cred',
+    help='Show credentials or not',
+    is_flag=True,
 )
 @pass_context
 def stor_launch(ctx: Configuration, ui_type, show_cred):
@@ -47,7 +49,9 @@ def stor_launch(ctx: Configuration, ui_type, show_cred):
                 f'username: {ctx.vskey_stor_s3_ak}\n'
                 f'password: {ctx.vskey_stor_s3_sk}\n'
             )
-    click.launch(url,)
+    click.launch(
+        url,
+    )
 
 
 @cli.command('ls', short_help='list remote dir contents')
@@ -206,7 +210,7 @@ def stor_ul(ctx: Configuration, file_path, name, dir, bucket, metadata):
     )
     with ctx.spinner(disable=ctx.debug):
         kwargs = dict(
-            bucket_name=bucket, object_name=name, file_path=file_path
+            bucket_name=bucket, object_name=file_name, file_path=file_path
         )
         if metadata is not None:
             kwargs['metadata'] = metadata

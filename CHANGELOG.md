@@ -1,5 +1,16 @@
 # Changelog 📝
 
+## [v2022.7.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.7.0) (2022-07-26)
+
+**Improvements:**
+
+- [#536](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/536): ``docs``: update vmx hardware version compatibility to ``vmx-19``.
+ 
+**Bug Fixes:**
+
+- [#535](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/535): ``stor ul``: error when uploading a file without ``--name``.
+
+
 ## [v2022.6.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.6.1) (2022-06-23)
 
 **Improvements:**
