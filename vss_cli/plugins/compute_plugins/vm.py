@@ -767,6 +767,19 @@ def compute_vm_get_tpm(ctx: Configuration):
     ctx.echo(format_output(ctx, objs, columns=columns))
 
 
+@compute_vm_get.command('vbs', short_help='VBS configuration')
+@pass_context
+def compute_vm_get_vbs(ctx: Configuration):
+    """Virtualization Based Security."""
+    obj = ctx.get_vm_vbs(ctx.moref)
+    firm = ctx.get_vm_firmware(ctx.moref)
+    tpm = ctx.get_vm_tpm(ctx.moref)
+    obj.update(firm)
+    obj.update({'tpm': tpm})
+    columns = ctx.columns or const.COLUMNS_VM_VBS
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
 @compute_vm_get.command('tools', short_help='VMware Tools Status')
 @pass_context
 def compute_vm_get_tools(ctx: Configuration):
@@ -1419,6 +1432,37 @@ def compute_vm_set_description(ctx: Configuration, description):
     payload.update(ctx.payload_options)
     # request
     obj = ctx.update_vm_vss_description(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command('vbs', short_help='VBS management')
+@click.argument(
+    'state',
+    type=click.Choice(['on', 'off']),
+    required=True,
+)
+@pass_context
+def compute_vm_set_vbs(ctx: Configuration, state):
+    """Manage Virtualization Based Security.
+
+    on: Enable VBS and switch BIOS -> EFI, Secure Boot and TPM device.
+
+    off: Disable VBS and switch EFI -> BIOS, disable secure boot.
+    """
+    payload = dict(vm_id=ctx.moref)
+    lookup = {'on': ctx.enable_vm_vbs, 'off': ctx.disable_vm_vbs}
+    try:
+        f = lookup[state]
+    except KeyError:
+        raise VssCliError(
+            f'Invalid state={state}. Options are {",".join(lookup.keys())}'
+        )
+    obj = f(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
