@@ -9,7 +9,7 @@ jsonpath-ng>=1.5.1,<2
 jinja2>=2.10
 dateparser==1.1.1
 Pygments==2.11.2
-pick==1.2.0
+pick==1.4.0
 dataclasses-json==0.5.7
 validators==0.20.0
 click-spinner==0.1.10
