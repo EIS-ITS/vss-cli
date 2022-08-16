@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2022.7.0"
+__version__ = "2022.8.0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -424,6 +424,7 @@ COLUMNS_VM_STATE = [
 ]
 COLUMNS_VM_TOOLS = [("version",), ("version_status",), ("running_status",)]
 COLUMNS_VM_TPM = [('label',), ('summary',), ('key',)]
+COLUMNS_VM_VBS = [('vbs_enabled',), ('firmware',), ('tpm', 'tpm[*].label')]
 COLUMNS_VM_HW = [
     ("value",),
     ("status",),

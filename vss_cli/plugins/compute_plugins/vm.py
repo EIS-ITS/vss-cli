@@ -767,6 +767,19 @@ def compute_vm_get_tpm(ctx: Configuration):
     ctx.echo(format_output(ctx, objs, columns=columns))
 
 
+@compute_vm_get.command('vbs', short_help='VBS configuration')
+@pass_context
+def compute_vm_get_vbs(ctx: Configuration):
+    """Virtualization Based Security."""
+    obj = ctx.get_vm_vbs(ctx.moref)
+    firm = ctx.get_vm_firmware(ctx.moref)
+    tpm = ctx.get_vm_tpm(ctx.moref)
+    obj.update(firm)
+    obj.update({'tpm': tpm})
+    columns = ctx.columns or const.COLUMNS_VM_VBS
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
 @compute_vm_get.command('tools', short_help='VMware Tools Status')
 @pass_context
 def compute_vm_get_tools(ctx: Configuration):
@@ -1079,7 +1092,7 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
     '--backing',
     type=click.STRING,
     required=True,
-    help='Update CD/DVD backing device ' 'to given ISO path or Client device.',
+    help='Update CD/DVD backing device to given ISO path or Client device.',
     shell_complete=autocompletion.isos,
 )
 @pass_context
@@ -1427,6 +1440,37 @@ def compute_vm_set_description(ctx: Configuration, description):
         ctx.wait_for_request_to(obj)
 
 
+@compute_vm_set.command('vbs', short_help='VBS management')
+@click.argument(
+    'state',
+    type=click.Choice(['on', 'off']),
+    required=True,
+)
+@pass_context
+def compute_vm_set_vbs(ctx: Configuration, state):
+    """Manage Virtualization Based Security.
+
+    on: Enable VBS and switch BIOS -> EFI, Secure Boot and TPM device.
+
+    off: Disable VBS and switch EFI -> BIOS, disable secure boot.
+    """
+    payload = dict(vm_id=ctx.moref)
+    lookup = {'on': ctx.enable_vm_vbs, 'off': ctx.disable_vm_vbs}
+    try:
+        f = lookup[state]
+    except KeyError:
+        raise VssCliError(
+            f'Invalid state={state}. Options are {",".join(lookup.keys())}'
+        )
+    obj = f(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
 @compute_vm_set.group('tpm', short_help='TPM management')
 @pass_context
 def compute_vm_set_tpm(ctx: Configuration):
@@ -1715,25 +1759,112 @@ def compute_vm_set_firmware(ctx: Configuration, firmware):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set.command('floppy', short_help='Floppy backing')
-@click.argument('unit', type=click.INT, required=True)
+@compute_vm_set.group('floppy', short_help='Floppy device management')
+@pass_context
+def compute_vm_set_floppy(ctx: Configuration):
+    """Manage virtual Floppy devices.
+
+    Add, update and remove Floppy devices.
+    """
+    pass
+
+
+@compute_vm_set_floppy.command('mk', short_help='Create Floppy unit')
 @click.option(
-    '-i',
-    '--image',
+    '-b',
+    '--backing',
     type=click.STRING,
-    required=False,
-    default='client',
-    help='Update floppy backing device to given flp image path.',
+    required=True,
+    multiple=True,
+    help='Create backing device to Image path or Client device.',
     shell_complete=autocompletion.floppies,
 )
 @pass_context
-def compute_vm_set_floppy(ctx: Configuration, unit, image):
-    """Update virtual machine floppy backend to Image or client."""
-    img_ref = ctx.get_floppy_by_name_or_path(image)
-    _LOGGING.debug(f'Will mount {img_ref}')
-    image = img_ref[0].get('path')
+def compute_vm_set_floppy_mk(ctx: Configuration, backing):
+    """Create virtual machine Floppy unit with Image or client backing.
+
+    vss-cli compute vm set <name-or-vm_id> floppy mk
+    --backing <name-or-path-or-id>
+
+    vss-cli compute vm set <name-or-vm_id> floppy mk --backing client
+    """
+    p_backing = []
+    for b in backing:
+        # get iso reference
+        img_ref = ctx.get_floppy_by_name_or_path(b)
+        _LOGGING.debug(f'Will create {img_ref}')
+        p_backing.append(str(img_ref[0]['id']))
     # generate payload
-    payload = dict(vm_id=ctx.moref, unit=unit, image=image)
+    payload = dict(vm_id=ctx.moref, backings=p_backing)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_floppy(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_floppy.command('rm', short_help='Remove Floppy device')
+@click.argument('unit', type=click.INT, required=True, nargs=-1)
+@click.option(
+    '-r', '--rm', is_flag=True, default=False, help='Confirm device removal'
+)
+@pass_context
+def compute_vm_set_floppy_rm(ctx: Configuration, unit, rm):
+    """Remove virtual machine floppy drivs.
+
+    vss-cli compute vm set <name-or-vm_id> floppy rm <unit> <unit> ...
+
+    """
+    payload = dict(vm_id=ctx.moref, units=list(unit))
+    # add common options
+    payload.update(ctx.payload_options)
+    # confirm
+    confirm = rm or click.confirm(
+        f'Are you sure you want to delete floppy unit {unit}?'
+    )
+    if confirm:
+        obj = ctx.delete_vm_floppies(**payload)
+    else:
+        raise click.ClickException('Cancelled by user.')
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_floppy.command('up', short_help='Update Floppy device')
+@click.argument('unit', type=click.INT, required=True)
+@click.option(
+    '-b',
+    '--backing',
+    type=click.STRING,
+    required=False,
+    default='client',
+    help='Update floppy backing device to given image path.',
+    shell_complete=autocompletion.floppies,
+)
+@pass_context
+def compute_vm_set_floppy_up(ctx: Configuration, unit, backing):
+    """Update virtual machine floppy backend to Image or client.
+
+    vss-cli compute vm set <name-or-vm_id> floppy
+    up <unit> -b <name-or-path-or-id>
+
+    vss-cli compute vm set <name-or-vm_id> floppy
+    up <unit> -b client
+    """
+    img_ref = ctx.get_floppy_by_name_or_path(backing)
+    _LOGGING.debug(f'Will mount {img_ref}')
+    backing = img_ref[0].get('path')
+    # generate payload
+    payload = dict(vm_id=ctx.moref, unit=unit, image=backing)
     # add common options
     payload.update(ctx.payload_options)
     # request
@@ -2467,14 +2598,27 @@ def compute_vm_set_snapshot(ctx: Configuration):
     '-m',
     '--memory/--no-memory',
     is_flag=True,
-    default=True,
+    default=False,
     required=False,
     show_default=True,
     help='Include/exclude memory in snapshot.',
 )
+@click.option(
+    '-c',
+    '--confirm',
+    is_flag=True,
+    default=False,
+    help='Confirm memory warning.',
+)
 @pass_context
 def compute_vm_set_snapshot_mk(
-    ctx: Configuration, description, timestamp, lifetime, consolidate, memory
+    ctx: Configuration,
+    description,
+    timestamp,
+    lifetime,
+    consolidate,
+    memory,
+    confirm,
 ):
     """Create virtual machine snapshot.
 
@@ -2485,6 +2629,27 @@ def compute_vm_set_snapshot_mk(
     is current time.
     """
     # create payload
+    if memory is False:
+        ctx.secho('No memory will be included in the snapshot.\n', bold=True)
+        confirm = confirm or click.confirm(
+            'Are you sure you want to exclude Memory from snapshot?'
+        )
+    if memory is True:
+        ctx.secho(
+            'A dump of the internal state of the '
+            'virtual machine\n'
+            'will be included in the snapshot.\n'
+        )
+        ctx.secho(
+            'Memory snapshots consume time and resources,\n'
+            'and thus take longer to create.\n',
+            bold=True,
+        )
+        confirm = confirm or click.confirm(
+            'Are you sure you want to include Memory from snapshot?'
+        )
+    if not confirm:
+        raise click.ClickException('Cancelled by user.')
     payload = dict(
         vm_id=ctx.moref,
         desc=description,
@@ -3420,6 +3585,7 @@ def compute_vm_mk_spec(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3450,6 +3616,7 @@ def compute_vm_mk_shell(
     vss_service,
     instances,
     firmware,
+    tpm,
     retire_type,
     retire_warning,
     retire_value,
@@ -3463,6 +3630,7 @@ def compute_vm_mk_shell(
         built=built,
         power_on=power_on,
         template=template,
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -3562,6 +3730,7 @@ def compute_vm_mk_shell(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3592,6 +3761,7 @@ def compute_vm_mk_template(
     power_on,
     template,
     firmware,
+    tpm,
     instances,
     retire_type,
     retire_warning,
@@ -3609,6 +3779,7 @@ def compute_vm_mk_template(
         source_template=vm_id,
         power_on=power_on,
         template=template,
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -3706,6 +3877,7 @@ def compute_vm_mk_template(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.snapshot
 @c_so.retire_type
 @c_so.retire_warning
@@ -3738,6 +3910,7 @@ def compute_vm_mk_clone(
     vss_service,
     instances,
     firmware,
+    tpm,
     snapshot,
     retire_type,
     retire_warning,
@@ -3759,6 +3932,7 @@ def compute_vm_mk_clone(
         source=vm_id,
         power_on=power_on,
         template=template,
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -3863,6 +4037,7 @@ def compute_vm_mk_clone(
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3894,6 +4069,7 @@ def compute_vm_mk_image(
     network_config,
     vss_service,
     firmware,
+    tpm,
     retire_type,
     retire_warning,
     retire_value,
@@ -3910,6 +4086,7 @@ def compute_vm_mk_image(
         image=image_ref[0]['path'],
         power_on=power_on,
         template=template,
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -4014,6 +4191,7 @@ def compute_vm_mk_image(
 @c_so.idtoken_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -4048,6 +4226,7 @@ def compute_vm_mk_clib(
     id_token,
     vss_service,
     firmware,
+    tpm,
     retire_type,
     retire_warning,
     retire_value,

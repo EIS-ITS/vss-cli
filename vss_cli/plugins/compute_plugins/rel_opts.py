@@ -240,6 +240,12 @@ iso_opt = click.option(
     required=False,
     shell_complete=autocompletion.isos,
 )
+tpm_enable_opt = click.option(
+    '--tpm',
+    help='Add Trusted Platform Module device.',
+    is_flag=True,
+    required=False,
+)
 power_on_opt = click.option(
     '--power-on',
     help='Power on after successful deployment.',
