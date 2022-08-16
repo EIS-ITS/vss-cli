@@ -2,6 +2,26 @@ Changelog 📝
 ============
 
 
+`v2022.8.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.8.0>`_ (2022-08-16)
+----------------------------------------------------------------------------------------
+**Improvements:**
+
+- `#538 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/538>`_: ``compute vm set snapshot set mk``: set ``--no-memory`` as  default.
+- `#539 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/539>`_: ``core``: upgrade ``pyvss`` from ``2022.6.0`` to ``2022.8.1``.
+- `#540 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/540>`_: ``core``: upgrade ``pick`` from ``1.2.0`` to ``1.4.0``.
+- `#541 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/541>`_: ``compute vm set vbs on``: enable Virtualization Based Security (``vbs``).
+- `#541 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/541>`_: ``compute vm set vbs off``: disable Virtualization Based Security (``vbs``).
+- `#542 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/542>`_: ``compute vm get vbs``: get Virtualization Based Security (``vbs``) settings.
+- `#543 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/543>`_: ``compute vm mk shell``: option ``--tpm`` to add Trusted Platform Module (``tpm``).
+- `#543 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/543>`_: ``compute vm mk from-clone``: option ``--tpm`` to add Trusted Platform Module (``tpm``).
+- `#543 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/543>`_: ``compute vm mk from-spec``: option ``--tpm`` to add Trusted Platform Module (``tpm``).
+- `#543 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/543>`_: ``compute vm mk from-image``: option ``--tpm`` to add Trusted Platform Module (``tpm``).
+- `#543 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/543>`_: ``compute vm mk from-template``: option ``--tpm`` to add Trusted Platform Module (``tpm``).
+- `#543 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/543>`_: ``compute vm mk from-clib``: option ``--tpm`` to add Trusted Platform Module (``tpm``).
+- `#544 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/544>`_: ``compute vm set floppy mk``: create floppy devices.
+- `#544 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/544>`_: ``compute vm set floppy up``: update floppy devices.
+- `#544 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/544>`_: ``compute vm set floppy rm``: remove floppy devices.
+
 `v2022.7.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.7.0>`_ (2022-07-26)
 ----------------------------------------------------------------------------------------
 
