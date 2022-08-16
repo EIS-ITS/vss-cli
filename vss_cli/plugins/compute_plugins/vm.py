@@ -1092,7 +1092,7 @@ def compute_vm_set_cd_mk(ctx: Configuration, backing):
     '--backing',
     type=click.STRING,
     required=True,
-    help='Update CD/DVD backing device ' 'to given ISO path or Client device.',
+    help='Update CD/DVD backing device to given ISO path or Client device.',
     shell_complete=autocompletion.isos,
 )
 @pass_context
@@ -1759,25 +1759,109 @@ def compute_vm_set_firmware(ctx: Configuration, firmware):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set.command('floppy', short_help='Floppy backing')
-@click.argument('unit', type=click.INT, required=True)
+@compute_vm_set.group('floppy', short_help='Floppy device management')
+@pass_context
+def compute_vm_set_floppy(ctx: Configuration):
+    """Manage virtual Floppy devices.
+
+    Add, update and remove Floppy devices.
+    """
+    pass
+
+
+@compute_vm_set_floppy.command('mk', short_help='Create Floppy unit')
 @click.option(
-    '-i',
-    '--image',
+    '-b',
+    '--backing',
     type=click.STRING,
-    required=False,
-    default='client',
-    help='Update floppy backing device to given flp image path.',
+    required=True,
+    multiple=True,
+    help='Create backing device to Image path or Client device.',
     shell_complete=autocompletion.floppies,
 )
 @pass_context
-def compute_vm_set_floppy(ctx: Configuration, unit, image):
-    """Update virtual machine floppy backend to Image or client."""
-    img_ref = ctx.get_floppy_by_name_or_path(image)
-    _LOGGING.debug(f'Will mount {img_ref}')
-    image = img_ref[0].get('path')
+def compute_vm_set_floppy_mk(ctx: Configuration, backing):
+    """Create virtual machine Floppy unit with Image or client backing.
+
+    vss-cli compute vm set <name-or-vm_id> floppy mk --backing <name-or-path-or-id>
+
+    vss-cli compute vm set <name-or-vm_id> floppy mk --backing client
+    """
+    p_backing = []
+    for b in backing:
+        # get iso reference
+        img_ref = ctx.get_floppy_by_name_or_path(b)
+        _LOGGING.debug(f'Will create {img_ref}')
+        p_backing.append(str(img_ref[0]['id']))
     # generate payload
-    payload = dict(vm_id=ctx.moref, unit=unit, image=image)
+    payload = dict(vm_id=ctx.moref, backings=p_backing)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_floppy(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_floppy.command('rm', short_help='Remove Floppy device')
+@click.argument('unit', type=click.INT, required=True, nargs=-1)
+@click.option(
+    '-r', '--rm', is_flag=True, default=False, help='Confirm device removal'
+)
+@pass_context
+def compute_vm_set_floppy_rm(ctx: Configuration, unit, rm):
+    """Remove virtual machine floppy drivs.
+
+    vss-cli compute vm set <name-or-vm_id> floppy rm <unit> <unit> ...
+
+    """
+    payload = dict(vm_id=ctx.moref, units=list(unit))
+    # add common options
+    payload.update(ctx.payload_options)
+    # confirm
+    confirm = rm or click.confirm(
+        f'Are you sure you want to delete floppy unit {unit}?'
+    )
+    if confirm:
+        obj = ctx.delete_vm_floppies(**payload)
+    else:
+        raise click.ClickException('Cancelled by user.')
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_floppy.command('up', short_help='Update Floppy device')
+@click.argument('unit', type=click.INT, required=True)
+@click.option(
+    '-b',
+    '--backing',
+    type=click.STRING,
+    required=False,
+    default='client',
+    help='Update floppy backing device to given image path.',
+    shell_complete=autocompletion.floppies,
+)
+@pass_context
+def compute_vm_set_floppy_up(ctx: Configuration, unit, backing):
+    """Update virtual machine floppy backend to Image or client.
+
+    vss-cli compute vm set <name-or-vm_id> floppy up <unit> -b <name-or-path-or-id>
+
+    vss-cli compute vm set <name-or-vm_id> floppy up <unit> -b client
+    """
+    img_ref = ctx.get_floppy_by_name_or_path(backing)
+    _LOGGING.debug(f'Will mount {img_ref}')
+    backing = img_ref[0].get('path')
+    # generate payload
+    payload = dict(vm_id=ctx.moref, unit=unit, image=backing)
     # add common options
     payload.update(ctx.payload_options)
     # request
