@@ -1783,7 +1783,8 @@ def compute_vm_set_floppy(ctx: Configuration):
 def compute_vm_set_floppy_mk(ctx: Configuration, backing):
     """Create virtual machine Floppy unit with Image or client backing.
 
-    vss-cli compute vm set <name-or-vm_id> floppy mk --backing <name-or-path-or-id>
+    vss-cli compute vm set <name-or-vm_id> floppy mk
+    --backing <name-or-path-or-id>
 
     vss-cli compute vm set <name-or-vm_id> floppy mk --backing client
     """
@@ -1853,9 +1854,11 @@ def compute_vm_set_floppy_rm(ctx: Configuration, unit, rm):
 def compute_vm_set_floppy_up(ctx: Configuration, unit, backing):
     """Update virtual machine floppy backend to Image or client.
 
-    vss-cli compute vm set <name-or-vm_id> floppy up <unit> -b <name-or-path-or-id>
+    vss-cli compute vm set <name-or-vm_id> floppy
+    up <unit> -b <name-or-path-or-id>
 
-    vss-cli compute vm set <name-or-vm_id> floppy up <unit> -b client
+    vss-cli compute vm set <name-or-vm_id> floppy
+    up <unit> -b client
     """
     img_ref = ctx.get_floppy_by_name_or_path(backing)
     _LOGGING.debug(f'Will mount {img_ref}')
@@ -2595,14 +2598,27 @@ def compute_vm_set_snapshot(ctx: Configuration):
     '-m',
     '--memory/--no-memory',
     is_flag=True,
-    default=True,
+    default=False,
     required=False,
     show_default=True,
     help='Include/exclude memory in snapshot.',
 )
+@click.option(
+    '-c',
+    '--confirm',
+    is_flag=True,
+    default=False,
+    help='Confirm memory warning.',
+)
 @pass_context
 def compute_vm_set_snapshot_mk(
-    ctx: Configuration, description, timestamp, lifetime, consolidate, memory
+    ctx: Configuration,
+    description,
+    timestamp,
+    lifetime,
+    consolidate,
+    memory,
+    confirm,
 ):
     """Create virtual machine snapshot.
 
@@ -2613,6 +2629,27 @@ def compute_vm_set_snapshot_mk(
     is current time.
     """
     # create payload
+    if memory is False:
+        ctx.secho('No memory will be included in the snapshot.\n', bold=True)
+        confirm = confirm or click.confirm(
+            'Are you sure you want to exclude Memory from snapshot?'
+        )
+    if memory is True:
+        ctx.secho(
+            'A dump of the internal state of the '
+            'virtual machine\n'
+            'will be included in the snapshot.\n'
+        )
+        ctx.secho(
+            'Memory snapshots consume time and resources,\n'
+            'and thus take longer to create.\n',
+            bold=True,
+        )
+        confirm = confirm or click.confirm(
+            'Are you sure you want to include Memory from snapshot?'
+        )
+    if not confirm:
+        raise click.ClickException('Cancelled by user.')
     payload = dict(
         vm_id=ctx.moref,
         desc=description,
