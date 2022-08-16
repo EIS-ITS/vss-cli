@@ -3464,6 +3464,7 @@ def compute_vm_mk_spec(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3494,6 +3495,7 @@ def compute_vm_mk_shell(
     vss_service,
     instances,
     firmware,
+    tpm,
     retire_type,
     retire_warning,
     retire_value,
@@ -3507,6 +3509,7 @@ def compute_vm_mk_shell(
         built=built,
         power_on=power_on,
         template=template,
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -3606,6 +3609,7 @@ def compute_vm_mk_shell(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3636,6 +3640,7 @@ def compute_vm_mk_template(
     power_on,
     template,
     firmware,
+    tpm,
     instances,
     retire_type,
     retire_warning,
@@ -3653,6 +3658,7 @@ def compute_vm_mk_template(
         source_template=vm_id,
         power_on=power_on,
         template=template,
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -3750,6 +3756,7 @@ def compute_vm_mk_template(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.snapshot
 @c_so.retire_type
 @c_so.retire_warning
@@ -3782,6 +3789,7 @@ def compute_vm_mk_clone(
     vss_service,
     instances,
     firmware,
+    tpm,
     snapshot,
     retire_type,
     retire_warning,
@@ -3803,6 +3811,7 @@ def compute_vm_mk_clone(
         source=vm_id,
         power_on=power_on,
         template=template,
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -3907,6 +3916,7 @@ def compute_vm_mk_clone(
 @c_so.net_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3938,6 +3948,7 @@ def compute_vm_mk_image(
     network_config,
     vss_service,
     firmware,
+    tpm,
     retire_type,
     retire_warning,
     retire_value,
@@ -3954,6 +3965,7 @@ def compute_vm_mk_image(
         image=image_ref[0]['path'],
         power_on=power_on,
         template=template,
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -4058,6 +4070,7 @@ def compute_vm_mk_image(
 @c_so.idtoken_cfg_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
+@c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -4092,6 +4105,7 @@ def compute_vm_mk_clib(
     id_token,
     vss_service,
     firmware,
+    tpm,
     retire_type,
     retire_warning,
     retire_value,

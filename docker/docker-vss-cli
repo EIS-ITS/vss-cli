@@ -3,7 +3,7 @@
 #    \ \ / / __/ __|      VSS Command Line Interface                    #
 #     \ V /\__ \__ \          docker-vss-cli                            #
 #      \_/ |___/___/       Run the vss-cli on docker                    #
-#       CLI 2022.8.0-dev2       TAG=develop|latest|x.x.x                     #
+#       CLI 2022.8.0-dev3       TAG=develop|latest|x.x.x                     #
 #                                                                       #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 VSS_DOCKER_TAG=latest
