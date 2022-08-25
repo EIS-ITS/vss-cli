@@ -8,19 +8,28 @@ from vss_cli.config import Configuration
 from vss_cli.hcio import check_status as check_hcio
 from vss_cli.helper import format_output
 from vss_cli.sstatus import check_status as check_sstatus
+from vss_cli.vss import check_vpn_status
 
 _LOGGING = logging.getLogger(__name__)
 
 
 @click.group(
-    'status', invoke_without_command=True, short_help='Check API Status.'
+    'status',
+    invoke_without_command=True,
+    short_help='Check ITS Private Cloud Status.',
 )
 @pass_context
 def cli(ctx: Configuration):
-    """Check API from https://healthchecks.io."""
+    """Check API from many monitoring endpoints.
+
+    Including:
+    - https://healthchecks.io
+    - https://systemstatus.utoronto.ca
+    - VSS VPN internal endpoints
+    """
     ctx.set_defaults()
     with ctx.spinner(disable=ctx.debug):
-        objs = [check_hcio(), check_sstatus()]
+        objs = [check_sstatus(), check_hcio()] + check_vpn_status()
     if click.get_current_context().invoked_subcommand is None:
         columns = [('NAME', 'name'), ('STATUS', 'status'), ('ICON', 'icon')]
         columns = ctx.columns or columns
