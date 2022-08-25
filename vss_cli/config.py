@@ -459,6 +459,8 @@ class Configuration(VssManager):
                                     token=self.api_token
                                 )
                                 self.write_config_file(new_endpoint=endpoint)
+                                # check for motd
+                                self.check_motd()
                                 # check for updates
                                 if self.check_for_updates:
                                     self.check_available_updates()
@@ -476,6 +478,26 @@ class Configuration(VssManager):
             )
         except Exception as ex:
             raise VssCliError(str(ex))
+
+    def check_motd(self) -> None:
+        """Check available motd."""
+        try:
+            # TODO: implement get_session_motd in pyvss.
+            rv = self.request('/session/motd')
+            data = rv.get('data') if rv else None
+            if data:
+                em = EMOJI_UNICODE.get(":loudspeaker:")
+                self.secho(
+                    f'\n{em}'
+                    f' Message of the day: {data.get("motd")} '
+                    f'{em}.\n',
+                    file=sys.stderr,
+                    fg='red',
+                    nl=True,
+                    blink=True,
+                )
+        except Exception as ex:
+            _LOGGING.error(f'Could not check for MOTD: {ex}')
 
     def check_available_updates(self) -> None:
         """Check available update from PyPI."""
