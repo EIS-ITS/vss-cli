@@ -19,8 +19,8 @@ _LOGGING = logging.getLogger(__name__)
 @pass_context
 def cli(ctx: Configuration):
     """Manage your VSS storage account."""
-    with ctx.spinner(disable=ctx.debug):
-        ctx.load_config()
+    with ctx.spinner(disable=ctx.debug) as spinner_cls:
+        ctx.load_config(spinner_cls=spinner_cls)
 
 
 @cli.command('la', short_help='launch ui')

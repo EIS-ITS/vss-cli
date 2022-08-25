@@ -11,8 +11,8 @@ from vss_cli.helper import format_output
 @pass_context
 def cli(ctx: Configuration):
     """Manage access tokens."""
-    with ctx.spinner(disable=ctx.debug):
-        ctx.load_config()
+    with ctx.spinner(disable=ctx.debug) as spinner_cls:
+        ctx.load_config(spinner_cls=spinner_cls)
 
 
 @cli.command('ls', short_help='list user tokens')
