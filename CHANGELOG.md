@@ -1,5 +1,19 @@
 # Changelog 📝
 
+## [v2022.8.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.8.1) (2022-08-25)
+
+**Bug Fixes:**
+
+- [#547](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/547): ``message``: showing spinner when prompting for TOTP.
+- [#548](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/548): ``request``: showing spinner when prompting for TOTP.
+- [#549](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/549): ``stor``: showing spinner when prompting for TOTP.
+- [#550](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/550): ``service``: showing spinner when prompting for TOTP.
+
+**Improvements:**
+
+- [#546](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/546): ``core``: heck for message of the day.
+
+
 ## [v2022.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.8.0) (2022-08-16)
 
 **Improvements:**
