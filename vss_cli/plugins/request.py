@@ -9,8 +9,8 @@ from vss_cli.config import Configuration
 @pass_context
 def cli(ctx: Configuration):
     """Track request status and details."""
-    with ctx.spinner(disable=ctx.debug):
-        ctx.load_config()
+    with ctx.spinner(disable=ctx.debug) as spinner_cls:
+        ctx.load_config(spinner_cls=spinner_cls)
 
 
 from vss_cli.plugins.request_plugins import (  # isort:skip
