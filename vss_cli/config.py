@@ -1190,6 +1190,14 @@ class Configuration(VssManager):
             attrs=[('type', str), ('description', str)],
         )
 
+    def get_vm_storage_type_by_type_or_desc(self, name: Union[str, int]):
+        """Get VM supported storage types by name."""
+        return self._get_types_by_name(
+            name,
+            self.get_supported_storage_types,
+            attrs=[('type', str), ('description', str)],
+        )
+
     def get_vm_nic_type_by_name(self, name: Union[str, int]):
         """Get VM NIC type by name."""
         g_types = self.get_supported_nic_types(only_type=False)

@@ -1,6 +1,6 @@
 FROM hub.eis.utoronto.ca/vss/docker/python:3.9-alpine
 # Defining env vars
-ENV VSSCLI_VERSION="2022.8.1"
+ENV VSSCLI_VERSION="2022.9.0-dev0"
 ARG CI_BUILD_REF
 # Defininig tags
 LABEL maintainer="Jose Manuel Lopez <jm@eis.utoronto.ca>" \
