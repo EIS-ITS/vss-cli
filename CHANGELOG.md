@@ -1,5 +1,21 @@
 # Changelog 📝
 
+## [v2022.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.9.0) (2022-09-28)
+
+**Improvements:**
+
+- [#553](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/553): ``compute vm mk shell``: option ``--storage-type`` to set either ``ssd`` or ``hdd``, defaults to ``hdd``.
+- [#553](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/553): ``compute vm mk from-clone``: option ``--storage-type`` to set either ``ssd`` or ``hdd``, defaults to ``hdd``.
+- [#553](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/553): ``compute vm mk from-spec``: option ``--storage-type`` to set either ``ssd`` or ``hdd``, defaults to ``hdd``.
+- [#553](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/553): ``compute vm mk from-image``: option ``--storage-type`` to set either ``ssd`` or ``hdd``, defaults to ``hdd``.
+- [#553](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/553): ``compute vm mk from-template``: option ``--storage-type`` to set either ``ssd`` or ``hdd``, defaults to ``hdd``.
+- [#553](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/553): ``compute vm mk from-clib``: option ``--storage-type`` to set either ``ssd`` or ``hdd``, defaults to ``hdd``.
+- [#554](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/554): ``core``: upgrade ``pyvss`` from ``2022.8.1`` to ``2022.9.0``.
+- [#555](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/555): ``core``: upgrade ``pick`` from ``1.2.0`` to ``1.4.0``.
+- [#556](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/556): ``compute vm get spec``: to include `storage-type`.
+- [#557](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/557): ``compute vm mk from-file``: support for ``storage-type``.
+- [#558](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/558): ``docs``: updating deployment options.
+
 ## [v2022.8.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.8.1) (2022-08-25)
 
 **Bug Fixes:**

@@ -89,37 +89,42 @@ list of arguments and options required:
     Options:
       -s, --source TEXT               Source virtual machine or template MOREF or
                                       UUID.  [required]
-
       -d, --description TEXT          A brief description.  [required]
       -b, --client TEXT               Client department.
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
-
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
-
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
       -o, --os TEXT                   Guest operating system id.
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
+      --cores-per-socket INTEGER      Cores per socket.
       -f, --folder TEXT               Logical folder moref name or path.
+      --scsi TEXT                     SCSI Controller Spec <type>=<sharing>.
       -i, --disk TEXT                 Disk spec
                                       <capacity>=<backing_mode>=<backing_sharing>.
                                       optional: backing_mode, backing_sharing
-
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
       -t, --domain TEXT               Target fault domain name or moref.
       --notes TEXT                    Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
-
-      -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      -e, --extra-config TEXT         Extra configuration key=value format.
       --power-on                      Power on after successful deployment.
+      --template                      Mark the VM as template after deployment.
       --vss-service TEXT              VSS Service related to VM
       --instances INTEGER             Number of instances to deploy  [default: 1]
+      -w, --firmware TEXT             Firmware type.
+      --tpm                           Add Trusted Platform Module device.
+      --storage-type TEXT             Storage type.
+      --retire-type [timedelta|datetime]
+                                      Retirement request type.
+      --retire-warning INTEGER        Days before retirement date to notify
+      --retire-value TEXT             Value for given retirement type. i.e.
+                                      <hours>,<days>,<months>
       --help                          Show this message and exit.
-
 
 
 Network
@@ -260,6 +265,7 @@ and  to reconfigure the hostname and domain.
     --client EIS --folder APIDemo \
     --memory 2 --cpu 2 --disk 40 --disk 40 --net VSS \
     --custom-spec '{"hostname": "fe2", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}' \
+    --storage-type hdd \
     --description "Frontend 3" Frontend3
 
 .. note::

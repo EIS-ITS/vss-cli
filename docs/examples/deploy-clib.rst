@@ -189,6 +189,7 @@ and packages to be installed, execute the following command:
     --folder APIDemo --net VL-1584-VSS-PUBLIC \
     --extra-config disk.EnableUUID=TRUE \
     --user-data cloud-init.yaml \
+    --storage-type ssd \
     --power-on \
     vm-from-clib
 
