@@ -17,6 +17,7 @@ Changelog 📝
 - `#556 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/556>`_: ``compute vm get spec``: to include `storage-type`.
 - `#557 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/557>`_: ``compute vm mk from-file``: support for ``storage-type``.
 - `#558 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/558>`_: ``docs``: updating deployment options.
+- `#560 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/560>`_: ``ci``: remove nose since it may be unmaintained.
 
 `v2022.8.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.8.1>`_ (2022-08-25)
 ----------------------------------------------------------------------------------------
