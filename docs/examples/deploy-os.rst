@@ -160,34 +160,38 @@ command takes:
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
-
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
-
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
       -o, --os TEXT                   Guest operating system id.  [required]
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
+      --cores-per-socket INTEGER      Cores per socket.
       -f, --folder TEXT               Logical folder moref name or path.
                                       [required]
-
+      --scsi TEXT                     SCSI Controller Spec <type>=<sharing>.
       -i, --disk TEXT                 Disk spec
                                       <capacity>=<backing_mode>=<backing_sharing>.
                                       optional: backing_mode, backing_sharing
                                       [required]
-
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
                                       [required]
-
       -t, --domain TEXT               Target fault domain name or moref.
       --notes TEXT                    Custom notes.
       -s, --iso TEXT                  ISO image to be mounted after creation
-      -h, --high-io                   Use VMware Paravirtual SCSIController.
       -e, --extra-config TEXT         Extra configuration key=value format.
       --power-on                      Power on after successful deployment.
+      --template                      Mark the VM as template after deployment.
       --vss-service TEXT              VSS Service related to VM
       --instances INTEGER             Number of instances to deploy  [default: 1]
       -w, --firmware TEXT             Firmware type.
+      --storage-type TEXT             Storage type.
+      --tpm                           Add Trusted Platform Module device.
+      --retire-type [timedelta|datetime]
+                                      Retirement request type.
+      --retire-warning INTEGER        Days before retirement date to notify
+      --retire-value TEXT             Value for given retirement type. i.e.
+                                      <hours>,<days>,<months>
       --help                          Show this message and exit.
 
 
@@ -201,6 +205,7 @@ and a tag ``Project:CMS`` as follows:
     --os centos8 --memory 1 --cpu 1 --folder APIDemo \
     --disk 20 --disk 100=independent_persistent \
     --net PUBLIC --iso centos \
+    --storage-type ssd \
     --notes 'Project: CMS' --power-on \
     AppServer3
 

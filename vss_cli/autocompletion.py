@@ -571,6 +571,22 @@ def vm_firmware(
 
 
 @to_completion_item
+def vm_storage_type(
+    ctx: Configuration,
+    param: click.Option,
+    incomplete: str,
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM storage types."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_storage_types,
+        incomplete,
+        attrs=['type', 'description'],
+        f_kwargs={"only_type": False},
+    )
+
+
+@to_completion_item
 def vm_snapshots(
     ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Optional[Tuple[str, str]]]:

@@ -99,42 +99,47 @@ as follows:
     Options:
       -s, --source TEXT               Source Virtual Machine OVA/OVF id, name or
                                       path.  [required]
-
       -d, --description TEXT          A brief description.  [required]
       -b, --client TEXT               Client department.  [required]
       -a, --admin TEXT                Admin name, phone number and email separated
                                       by `:` i.e. "John
                                       Doe:416-123-1234:john.doe@utoronto.ca"
-
       -r, --inform TEXT               Informational contact emails in comma
                                       separated
-
       -u, --usage [Test|Prod|Dev|QA]  Vm usage.
       -o, --os TEXT                   Guest operating system id.  [required]
       -m, --memory INTEGER            Memory in GB.
       -c, --cpu INTEGER               Cpu count.
+      --cores-per-socket INTEGER      Cores per socket.
       -f, --folder TEXT               Logical folder moref name or path.
                                       [required]
-
+      --scsi TEXT                     SCSI Controller Spec <type>=<sharing>.
       -i, --disk TEXT                 Disk spec
                                       <capacity>=<backing_mode>=<backing_sharing>.
                                       optional: backing_mode, backing_sharing
                                       [required]
-
       -n, --net TEXT                  Network adapter <moref-or-name>=<nic-type>.
                                       [required]
-
       -t, --domain TEXT               Target fault domain name or moref.
       --notes TEXT                    Custom notes.
       -p, --custom-spec TEXT          Guest OS custom specification in JSON
                                       format.
-
-      -e, --extra-config TEXT         VMWare Guest Info Interface in JSON format.
+      -e, --extra-config TEXT         Extra configuration key=value format.
       --power-on                      Power on after successful deployment.
-      --user-data FILENAME            Cloud-init user_data YML file path to pre-
+      --template                      Mark the VM as template after deployment.
+      --user-data TEXT                Cloud-init user_data YAML file path to pre-
                                       configure guest os upon first boot.
-
+      --network-config TEXT           Cloud-init network-config YAML file path to
+                                      pre-configure guest os upon first boot.
       --vss-service TEXT              VSS Service related to VM
+      -w, --firmware TEXT             Firmware type.
+      --tpm                           Add Trusted Platform Module device.
+      --storage-type TEXT             Storage type.
+      --retire-type [timedelta|datetime]
+                                      Retirement request type.
+      --retire-warning INTEGER        Days before retirement date to notify
+      --retire-value TEXT             Value for given retirement type. i.e.
+                                      <hours>,<days>,<months>
       --help                          Show this message and exit.
 
 
@@ -260,6 +265,7 @@ The following command should work as well:
     vss-cli compute vm mk --wait from-image --power-on --source CentOS-7-x86_64-VMware.ovf \
     --client EIS --folder APIDemo \
     --memory 2 --cpu 2  --disk 40 --disk 40 --net PUBLIC  --os centos \
+    --storage-type ssd \
     --description "CentOS virtual machine from OVF" CENTOS-1
 
 

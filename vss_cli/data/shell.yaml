@@ -13,6 +13,7 @@ machine:
       backing_mode: persistent  # Optional Disk backing mode (Default: persistent).
       backing_sharing: sharingnone  # Optional Disk sharing mode (Default: sharingnone).
   iso: CentOS             # Optional: ISO name or path to mount upon creation.
+  storage-type: hdd        # Optional: Storage Type to use for this VM. ssd or hdd
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
 #  power_on: true         # Optional: Power on after successful deployment.

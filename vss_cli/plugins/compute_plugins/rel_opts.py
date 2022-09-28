@@ -309,6 +309,12 @@ firmware_nr_opt = click.option(
     shell_complete=autocompletion.vm_firmware,
     required=False,
 )
+storage_type_nr_opt = click.option(
+    '--storage-type',
+    help='Storage type.',
+    shell_complete=autocompletion.vm_storage_type,
+    required=False,
+)
 snapshot = click.option(
     '--snapshot',
     help='Snapshot to clone.',

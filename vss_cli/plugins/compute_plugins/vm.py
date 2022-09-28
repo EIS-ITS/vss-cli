@@ -3429,6 +3429,7 @@ def compute_vm_from_file(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3460,6 +3461,7 @@ def compute_vm_mk_spec(
     vss_service,
     instances,
     firmware,
+    storage_type,
     retire_type,
     retire_warning,
     retire_value,
@@ -3531,6 +3533,9 @@ def compute_vm_mk_spec(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    if storage_type:
+        _st_t = ctx.get_vm_storage_type_by_type_or_desc(storage_type)
+        payload['storage_type'] = _st_t[0]['type']
     # retirement
     if retire_value or retire_type or retire_warning:
         retire = process_retirement_new(
@@ -3585,6 +3590,7 @@ def compute_vm_mk_spec(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.storage_type_nr_opt
 @c_so.tpm_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -3617,6 +3623,7 @@ def compute_vm_mk_shell(
     instances,
     firmware,
     tpm,
+    storage_type,
     retire_type,
     retire_warning,
     retire_value,
@@ -3680,6 +3687,9 @@ def compute_vm_mk_shell(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    if storage_type:
+        _st_t = ctx.get_vm_storage_type_by_type_or_desc(storage_type)
+        payload['storage_type'] = _st_t[0]['type']
     # retirement
     if retire_value or retire_type or retire_warning:
         retire = process_retirement_new(
@@ -3731,6 +3741,7 @@ def compute_vm_mk_shell(
 @c_so.instances
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
+@c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3762,6 +3773,7 @@ def compute_vm_mk_template(
     template,
     firmware,
     tpm,
+    storage_type,
     instances,
     retire_type,
     retire_warning,
@@ -3828,6 +3840,9 @@ def compute_vm_mk_template(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    if storage_type:
+        _st_t = ctx.get_vm_storage_type_by_type_or_desc(storage_type)
+        payload['storage_type'] = _st_t[0]['type']
     # retirement
     if retire_value or retire_type or retire_warning:
         retire = process_retirement_new(
@@ -3878,6 +3893,7 @@ def compute_vm_mk_template(
 @c_so.instances
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
+@c_so.storage_type_nr_opt
 @c_so.snapshot
 @c_so.retire_type
 @c_so.retire_warning
@@ -3911,6 +3927,7 @@ def compute_vm_mk_clone(
     instances,
     firmware,
     tpm,
+    storage_type,
     snapshot,
     retire_type,
     retire_warning,
@@ -3981,6 +3998,9 @@ def compute_vm_mk_clone(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    if storage_type:
+        _st_t = ctx.get_vm_storage_type_by_type_or_desc(storage_type)
+        payload['storage_type'] = _st_t[0]['type']
     if snapshot:
         _snap = ctx.get_vm_snapshot_by_id_name_or_desc(vm_id, snapshot)
         payload['source_snap_id'] = _snap[0]['id']
@@ -4038,6 +4058,7 @@ def compute_vm_mk_clone(
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
+@c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -4070,6 +4091,7 @@ def compute_vm_mk_image(
     vss_service,
     firmware,
     tpm,
+    storage_type,
     retire_type,
     retire_warning,
     retire_value,
@@ -4144,6 +4166,9 @@ def compute_vm_mk_image(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    if storage_type:
+        _st_t = ctx.get_vm_storage_type_by_type_or_desc(storage_type)
+        payload['storage_type'] = _st_t[0]['type']
     # retirement
     if retire_value or retire_type or retire_warning:
         retire = process_retirement_new(
@@ -4192,6 +4217,7 @@ def compute_vm_mk_image(
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
+@c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -4227,6 +4253,7 @@ def compute_vm_mk_clib(
     vss_service,
     firmware,
     tpm,
+    storage_type,
     retire_type,
     retire_warning,
     retire_value,
@@ -4243,6 +4270,7 @@ def compute_vm_mk_clib(
         power_on=power_on,
         template=template,
         disks=disk or [],
+        tpm=tpm,
     )
     # Hardware
     if memory:
@@ -4308,6 +4336,9 @@ def compute_vm_mk_clib(
     if firmware:
         _firmw = ctx.get_vm_firmware_by_type_or_desc(firmware)
         payload['firmware'] = _firmw[0]['type']
+    if storage_type:
+        _st_t = ctx.get_vm_storage_type_by_type_or_desc(storage_type)
+        payload['storage_type'] = _st_t[0]['type']
     # retirement
     if retire_value or retire_type or retire_warning:
         retire = process_retirement_new(

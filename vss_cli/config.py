@@ -1190,6 +1190,14 @@ class Configuration(VssManager):
             attrs=[('type', str), ('description', str)],
         )
 
+    def get_vm_storage_type_by_type_or_desc(self, name: Union[str, int]):
+        """Get VM supported storage types by name."""
+        return self._get_types_by_name(
+            name,
+            self.get_supported_storage_types,
+            attrs=[('type', str), ('description', str)],
+        )
+
     def get_vm_nic_type_by_name(self, name: Union[str, int]):
         """Get VM NIC type by name."""
         g_types = self.get_supported_nic_types(only_type=False)
@@ -1224,6 +1232,7 @@ class Configuration(VssManager):
         template['machine']['memory'] = payload.get('memory')
         template['machine']['folder'] = machine_folder
         template['machine']['disks'] = payload.get('disks')
+        template['machine']['storage-type'] = payload.get('storage_type')
         template['networking']['interfaces'] = [
             {
                 'network': self.get_network(v['network'])['name'],
@@ -1257,8 +1266,17 @@ class Configuration(VssManager):
             machine_section = payload['machine']
             networking_section = payload['networking']
             metadata_section = payload['metadata']
-
             if built in ['contentlib', 'os_install']:
+                if machine_section.get('storage_type'):
+                    machine_section[
+                        'storage_type'
+                    ] = self.get_vm_storage_type_by_type_or_desc(
+                        machine_section['storage-type']
+                    )[
+                        0
+                    ][
+                        'type'
+                    ]
                 # other
                 machine_section['power_on'] = machine_section.get(
                     'power_on', False
