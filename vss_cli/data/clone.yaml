@@ -11,6 +11,7 @@ machine:
   folder:                 # Optional: Folder name, path or ID (Default: source vm folder)
   disks:
     - 40                  # Optional: Disk capacity in GB (Default: source vm disk capacity)
+  storage_type: hdd       # Optional: Storage Type to use for this VM. ssd or hdd
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
 #  power_on: true         # Optional: Power on after successful deployment.

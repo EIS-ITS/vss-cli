@@ -1232,6 +1232,7 @@ class Configuration(VssManager):
         template['machine']['memory'] = payload.get('memory')
         template['machine']['folder'] = machine_folder
         template['machine']['disks'] = payload.get('disks')
+        template['machine']['storage_type'] = payload.get('storage_type')
         template['networking']['interfaces'] = [
             {
                 'network': self.get_network(v['network'])['name'],
