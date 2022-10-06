@@ -393,6 +393,15 @@ def compute_vm_get_domain(ctx: Configuration):
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@compute_vm_get.command('storage-type', short_help='Storage Type')
+@pass_context
+def compute_vm_get_storage_type(ctx: Configuration):
+    """Virtual machine storage type."""
+    obj = ctx.get_vm_storage_type(ctx.moref)
+    columns = ctx.columns or [('storage_type', 'storage_type')]
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
 @compute_vm_get.command('event', short_help='Events')
 @click.option('-w', '--window', type=int, default=1, help='Time window')
 @pass_context
@@ -1716,6 +1725,21 @@ def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
     payload.update(ctx.payload_options)
     # request
     obj = ctx.update_vm_domain(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command('storage-type', short_help='Storage type management')
+@c_sa.storage_type_arg
+@pass_context
+def compute_vm_set_storage_type(ctx: Configuration, storage_type):
+    """Migrate a virtual machine to a new storage type cluster."""
+    payload = dict(vm_id=ctx.moref, storage_type=storage_type)
+    obj = ctx.update_vm_storage_type(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

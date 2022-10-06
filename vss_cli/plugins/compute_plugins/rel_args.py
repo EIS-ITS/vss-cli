@@ -18,3 +18,9 @@ firmware_arg = click.argument(
     required=True,
     callback=callbacks.process_firmware,
 )
+storage_type_arg = click.argument(
+    'storage_type',
+    shell_complete=autocompletion.vm_storage_type,
+    required=True,
+    callback=callbacks.process_storage_type,
+)
