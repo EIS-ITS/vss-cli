@@ -22,6 +22,7 @@ A virtual machine qualifies to be exported if:
      currently needed and then add the required amount of
      storage space at a later time. (Source: `VMware`_).
 
+
 This tutorial walks you through the process of exporting a
 given virtual machine.
 
@@ -29,7 +30,7 @@ Validate virtual machine
 ------------------------
 
 First, we need to double check if the ``committedGB`` size is lower
-than **200GB** by executing the command
+than **300GB** by executing the command
 ``vss-cli compute vm get <name-or-vm-id>``
 and looking for the attribute ``Committed (GB)`` as follows:
 
