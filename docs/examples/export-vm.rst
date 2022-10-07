@@ -9,13 +9,13 @@ in `VSKEY-STOR`_.
 
 A virtual machine qualifies to be exported if:
 
-* Committed storage (not provisioned) is less than 200G.
+* Committed storage (not provisioned) is less than 300G.
 * Power state is Off.
 * No iso backing on CD/DVD unit
 
 .. note::
 
-     In our environment, we use thin provisioning to help avoid
+     We use thin provisioning on the ITS Private Cloud to help avoid
      over-allocating storage space and save storage.
 
      Thin provisioning uses just as much storage capacity as
