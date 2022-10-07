@@ -1,5 +1,18 @@
 # Changelog 📝
 
+## [v2022.10.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.10.0) (2022-10-07)
+
+**Improvements:**
+
+- [#563](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/563) : ``compute vm set storage-type``: set to either ``ssd`` or ``hdd`` (approval required).
+- [#564](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/564) : ``compute vm get storage-type``: current virtual machine storage type.
+- [#565](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/565): ``core``: upgrade ``pyvss`` from ``2022.9.0`` to ``2022.10.0``.
+
+**Bug Fixes:**
+
+- [#562](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/562): ``docs``: vm export example outdated.
+- [#566](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/566):``compute vm get ``: missing ``committed_gb`` attribute.
+
 ## [v2022.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.9.0) (2022-09-28)
 
 **Improvements:**
@@ -16,7 +29,7 @@
 - [#557](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/557): ``compute vm mk from-file``: support for ``storage-type``.
 - [#558](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/558): ``docs``: updating deployment options.
 - [#560](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/560): ``ci``: remove nose since it may be unmaintained.
-- 
+
 ## [v2022.8.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.8.1) (2022-08-25)
 
 **Bug Fixes:**

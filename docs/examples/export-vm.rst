@@ -9,18 +9,19 @@ in `VSKEY-STOR`_.
 
 A virtual machine qualifies to be exported if:
 
-* Committed storage (not provisioned) is less than 200G.
+* Committed storage (not provisioned) is less than 300G.
 * Power state is Off.
 * No iso backing on CD/DVD unit
 
 .. note::
 
-     In our environment, we use thin provisioning to help avoid
+     We use thin provisioning on the ITS Private Cloud to help avoid
      over-allocating storage space and save storage.
 
      Thin provisioning uses just as much storage capacity as
      currently needed and then add the required amount of
      storage space at a later time. (Source: `VMware`_).
+
 
 This tutorial walks you through the process of exporting a
 given virtual machine.
@@ -28,41 +29,24 @@ given virtual machine.
 Validate virtual machine
 ------------------------
 
-First, we need to double check if the ``committedGB`` size is lower
-than **200GB** by executing the command
-``vss-cli compute vm get <name-or-vm-id>``
-and looking for the attribute ``Committed (GB)`` as follows:
+First, we need to double check if the ``committed_gb`` size is lower
+than **300GB**. This can be done by executing the command
+``vss-cli compute vm ls`` but modifying the output columns with the
+``--columns`` option as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm get <name-or-vm-id>
+    vss-cli --columns "moref,name,folder.path,provisioned_gb,committed_gb,power_state" compute vm ls -f moref=vm-10342
 
-    ...
-    Provisioned (GB)    : 16.0
-    Committed (GB)      : 7.67
-    ...
+    moref      name                folder.path                 provisioned_gb    committed_gb  power_state
+    ---------  ------------------  ------------------------  ----------------  --------------  -------------
+    vm-123456  2210P-FrontEnd-1u0  Public > Customer 123456                60           19.67  poweredOn
 
 
 In this particular case, we can proceed since the committed space is
-lower than **200GB**.
+lower than **300GB**.
 
-The last item to verify is the virtual machine power state which has
-to be powered off. To verify that, execute ``vss-cli compute vm get <name-or-vm-id> state``
-
-
-.. code-block:: bash
-
-    vss-cli compute vm get <name-or-vm-id> state
-
-    create_date         : 2020-04-24 Fri 16:20:05
-    power_state         : poweredOff
-    boot_time           : None
-    connection_state    : connected
-    domain_name         : FDx
-    domain_moref        : domain-c631
-
-
-If the virtual machine power state is ``poweredOn`` power it off by
+If the virtual machine ``power_state`` is ``poweredOn``, shut it down by
 sending a ``shutdown`` signal through the OS via VMware Tools or a
 hard power ``off`` as follows:
 

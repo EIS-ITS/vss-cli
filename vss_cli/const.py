@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2022.9.0"
+__version__ = "2022.10.0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -301,6 +301,7 @@ COLUMNS_VM_INFO = [
     ("cpu", "hardware.cpu.cpu_count"),
     ("memory_gb", "hardware.memory.memory_gb"),
     ("provisioned_gb", "storage.provisioned_gb"),
+    ("committed_gb", "storage.committed_gb"),
     ("snapshot", "snapshot.exist"),
     ("disks", "hardware.devices.disks[*].unit"),
     ("nics", "hardware.devices.nics[*].unit"),
