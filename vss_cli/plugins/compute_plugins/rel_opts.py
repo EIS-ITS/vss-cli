@@ -5,7 +5,7 @@ import vss_cli.autocompletion as autocompletion
 from vss_cli.plugins.compute_plugins import callbacks
 from vss_cli.validators import (
     retirement_value, validate_admin, validate_inform,
-    validate_json_file_or_type, validate_json_type)
+    validate_json_file_or_type)
 
 source_opt = click.option(
     '--source',
@@ -202,10 +202,10 @@ notes_opt = click.option(
 custom_spec_opt = click.option(
     '--custom-spec',
     '-p',
-    help='Guest OS custom specification in JSON format.',
+    help='Guest OS custom specification in YAML or JSON format.',
     type=click.STRING,
     required=False,
-    callback=validate_json_type,
+    callback=validate_json_file_or_type,
 )
 day0_cfg_opt = click.option(
     '--day-zero',
