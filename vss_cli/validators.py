@@ -60,11 +60,11 @@ def validate_json_file_or_type(ctx, param, value):
     yaml_load = getattr(ctx, 'yaml_load', yaml().load)
     try:
         if value is not None:
-            if hasattr(ctx, 'yaml_load'):
-                val = yaml_load(value)
+            val = yaml_load(value)
     except ValueError as ex:
         _LOGGING.debug(f'Not string: {ex}')
         val = None
+
     try:
         if value is not None:
             p = Path(value)
