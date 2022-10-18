@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2022.10.1-dev2"
+__version__ = "2022.10.1-dev3"
 
 
 DEFAULT_TIMEOUT = 30
@@ -493,3 +493,13 @@ COLUMNS_STOR_SHARE = [('url',)]
 COLUMNS_SSH_KEY_MIN = [*COLUMNS_MIN, ("type",), ("comment",)]
 COLUMNS_SSH_KEY = [*COLUMNS_SSH_KEY_MIN, ("fingerprint",), ("value",)]
 COLUMNS_VMRC = [("enabled",), ("options",)]
+COLUMNS_OVF = [
+    ("Name",),
+    ("ProductVersion", "Version"),
+    ("Networks", "Networks[*].name"),
+    ("Files", "Files[*].href"),
+    ("DeploymentOptionParams", "DeploymentOptionParams[*].id"),
+    ("PropertyParams", "PropertyParams[*].key"),
+]
+COLUMNS_OVF_PP = [("key",), ("type",), ("description",), ("default",)]
+COLUMNS_OVF_DP = [("id",), ("description",), ("label",)]
