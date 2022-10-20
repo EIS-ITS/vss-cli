@@ -18,7 +18,9 @@ machine:
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
 #  power_on: true         # Optional: Power on after successful deployment.
-#  template: false        # Optiaonla: Mark resulting vm as template.
+#  template: false        # Optional: Mark resulting vm as template.
+#  tpm: true              # Optional: Enable vTrusted Platform Module Device.
+#  vbs: true              # Optional: Enable Virtualization Based Security.
 networking:
   interfaces:
     - network: VSS-PUBLIC # Required: Network name or network ID.

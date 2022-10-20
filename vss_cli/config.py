@@ -1281,6 +1281,8 @@ class Configuration(VssManager):
                 machine_section['power_on'] = machine_section.get(
                     'power_on', False
                 )
+                machine_section['tpm'] = machine_section.get('tpm', False)
+                machine_section['vbs'] = machine_section.get('vbs', False)
                 spec_payload.update(machine_section)
                 spec_payload['disks'] = (
                     [
