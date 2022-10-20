@@ -3616,6 +3616,7 @@ def compute_vm_mk_spec(
 @c_so.firmware_nr_opt
 @c_so.storage_type_nr_opt
 @c_so.tpm_enable_opt
+@c_so.vbs_enable_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -3647,6 +3648,7 @@ def compute_vm_mk_shell(
     instances,
     firmware,
     tpm,
+    vbs,
     storage_type,
     retire_type,
     retire_warning,
@@ -3662,6 +3664,7 @@ def compute_vm_mk_shell(
         power_on=power_on,
         template=template,
         tpm=tpm,
+        vbs=vbs,
     )
     # Hardware
     if memory:
@@ -3765,6 +3768,7 @@ def compute_vm_mk_shell(
 @c_so.instances
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
+@c_so.vbs_enable_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -3797,6 +3801,7 @@ def compute_vm_mk_template(
     template,
     firmware,
     tpm,
+    vbs,
     storage_type,
     instances,
     retire_type,
@@ -3816,6 +3821,7 @@ def compute_vm_mk_template(
         power_on=power_on,
         template=template,
         tpm=tpm,
+        vbs=vbs,
     )
     # Hardware
     if memory:
@@ -3917,6 +3923,7 @@ def compute_vm_mk_template(
 @c_so.instances
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
+@c_so.vbs_enable_opt
 @c_so.storage_type_nr_opt
 @c_so.snapshot
 @c_so.retire_type
@@ -3951,6 +3958,7 @@ def compute_vm_mk_clone(
     instances,
     firmware,
     tpm,
+    vbs,
     storage_type,
     snapshot,
     retire_type,
@@ -3974,6 +3982,7 @@ def compute_vm_mk_clone(
         power_on=power_on,
         template=template,
         tpm=tpm,
+        vbs=vbs,
     )
     # Hardware
     if memory:
@@ -4082,6 +4091,7 @@ def compute_vm_mk_clone(
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
+@c_so.vbs_enable_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -4115,6 +4125,7 @@ def compute_vm_mk_image(
     vss_service,
     firmware,
     tpm,
+    vbs,
     storage_type,
     retire_type,
     retire_warning,
@@ -4133,6 +4144,7 @@ def compute_vm_mk_image(
         power_on=power_on,
         template=template,
         tpm=tpm,
+        vbs=vbs,
     )
     # Hardware
     if memory:
@@ -4241,6 +4253,7 @@ def compute_vm_mk_image(
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
+@c_so.vbs_enable_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -4277,6 +4290,7 @@ def compute_vm_mk_clib(
     vss_service,
     firmware,
     tpm,
+    vbs,
     storage_type,
     retire_type,
     retire_warning,
@@ -4295,6 +4309,7 @@ def compute_vm_mk_clib(
         template=template,
         disks=disk or [],
         tpm=tpm,
+        vbs=vbs,
     )
     # Hardware
     if memory:

@@ -246,6 +246,12 @@ tpm_enable_opt = click.option(
     is_flag=True,
     required=False,
 )
+vbs_enable_opt = click.option(
+    '--vbs',
+    help='Enable virtualization based security.',
+    is_flag=True,
+    required=False,
+)
 power_on_opt = click.option(
     '--power-on',
     help='Power on after successful deployment.',
