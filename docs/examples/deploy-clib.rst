@@ -59,7 +59,8 @@ created and mounted by the VSS API.
       enabled: true
       ntp_client: ntp
       servers:
-        - 128.100.100.228
+        - 128.100.56.135
+        - 128.100.100.128
 
     # Add users to the system.
     # Users are added after groups are added.
@@ -107,8 +108,8 @@ created and mounted by the VSS API.
       content: |
         #!/bin/bash
 
-        INSTANCE_ID=`vmtoolsd --cmd "info-get guestinfo.ut.vss.instance.id"`
-        INSTANCE_NAME=`vmtoolsd --cmd "info-get guestinfo.ut.vss.instance.name"`
+        INSTANCE_ID=`vmware-rpctool "info-get guestinfo.ut.vss.instance.id"`
+        INSTANCE_NAME=`vmware-rpctool "info-get guestinfo.ut.vss.instance.name"`
         printf "\n"
         printf "  University of Toronto ITS Private Cloud Instance\n"
         printf "\n"
