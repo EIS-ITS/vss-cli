@@ -369,6 +369,7 @@ def load_string_or_file(ctx, param, value) -> str:
     """Load string or file."""
     if value:
         if len(value) < 260:
+            # check if str is file
             fp = Path(value)
             if fp.is_file():
                 _LOGGING.debug(f'File detected: {fp}')
@@ -377,6 +378,9 @@ def load_string_or_file(ctx, param, value) -> str:
                     return txt
                 except FileNotFoundError:
                     raise BadArgumentUsage(f'{param} must a valid file path.')
+            else:
+                _LOGGING.debug('String detected.')
+                return str(value)
         else:
             _LOGGING.debug('String detected.')
             return str(value)
