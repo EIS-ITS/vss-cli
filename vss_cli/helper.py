@@ -5,11 +5,13 @@ from http.client import HTTPConnection
 import io
 import json
 import logging
+from pathlib import Path
 import re
 import shlex
 import shutil
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union, cast
 
+from click import BadArgumentUsage
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
 from pygments.lexers import JsonLexer, YamlLexer
@@ -361,3 +363,24 @@ def process_filters(ctx, param, value: List[str]) -> List[str]:
         _LOGGING.debug(f'exception while parsing filters: {ex}', exc_info=True)
     _LOGGING.debug(f'processed filters {processed_filters}')
     return processed_filters
+
+
+def load_string_or_file(ctx, param, value) -> str:
+    """Load string or file."""
+    if value:
+        if len(value) < 260:
+            # check if str is file
+            fp = Path(value)
+            if fp.is_file():
+                _LOGGING.debug(f'File detected: {fp}')
+                try:
+                    txt = fp.read_text()
+                    return txt
+                except FileNotFoundError:
+                    raise BadArgumentUsage(f'{param} must a valid file path.')
+            else:
+                _LOGGING.debug('String detected.')
+                return str(value)
+        else:
+            _LOGGING.debug('String detected.')
+            return str(value)

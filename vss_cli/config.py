@@ -1281,6 +1281,8 @@ class Configuration(VssManager):
                 machine_section['power_on'] = machine_section.get(
                     'power_on', False
                 )
+                machine_section['tpm'] = machine_section.get('tpm', False)
+                machine_section['vbs'] = machine_section.get('vbs', False)
                 spec_payload.update(machine_section)
                 spec_payload['disks'] = (
                     [
@@ -1415,6 +1417,139 @@ class Configuration(VssManager):
             return spec_payload
         except KeyError as ex:
             raise click.BadParameter(f'Invalid CLI specification: {ex}')
+
+    @staticmethod
+    def parse_ova_or_ovf(file_path: Union[Path, str]) -> Dict:
+        """Parse ova or ovf."""
+        file = Path(file_path)
+        ovf_str = ''
+        if file.suffix.lower() == '.ovf':
+            ovf_str = file.read_text()
+        elif file.suffix.lower() in ['.ova', '.zip', '.tar']:
+            import tarfile
+
+            tar = tarfile.open(str(file))
+            ovf_member = list(
+                filter(lambda x: '.ovf' in x.name.lower(), tar.getmembers())
+            )
+            if ovf_member:
+                f = tar.extractfile(ovf_member[0])
+                ovf_str = f.read()
+                tar.close()
+        else:
+            raise VssCliError('Invalid OVA/OVF format.')
+        # proceed to parsing
+        import xmltodict
+
+        xpars = xmltodict.parse(ovf_str)
+        data = json.dumps(xpars)
+        data_dict = json.loads(data)
+        _LOGGING.debug(f'Parsed OVF and found keys: {data_dict.keys()}')
+        if 'Envelope' not in data_dict and 'ovf:Envelope' not in data_dict:
+            raise VssCliError('Invalid OVF format: missing ovf:Envelope')
+        ovf_dict = data_dict.get('Envelope') or data_dict.get('ovf:Envelope')
+        output = {}
+        for key, value in ovf_dict.items():
+            # ovf:References
+            if key in ['References', 'ovf:References']:
+                files_ref = value.get('File') or value.get('ovf:File', [])
+                if isinstance(files_ref, dict):
+                    files_ref = [files_ref]
+                files = [
+                    {
+                        'href': x['@ovf:href'],
+                        'id': x['@ovf:id'],
+                        'size': x['@ovf:size'],
+                    }
+                    for x in files_ref
+                ]
+                output['Files'] = files
+            # ovf:DiskSection
+            elif key in ['DiskSection', 'ovf:DiskSection']:
+                disks_ref = value.get('Disk') or value.get('ovf:Disk', [])
+                _LOGGING.debug(
+                    f'Found Disks: {disks_ref}: type: {type(disks_ref)}'
+                )
+                if isinstance(disks_ref, dict):
+                    disks_ref = [disks_ref]
+                disks = [
+                    {
+                        'capacity': x['@ovf:capacity'],
+                        'capacityAllocationUnits': x[
+                            '@ovf:capacityAllocationUnits'
+                        ],
+                        'diskId': x['@ovf:diskId'],
+                        'fileRef': x['@ovf:fileRef'],
+                    }
+                    for x in disks_ref
+                ]
+                output['Disks'] = disks
+            # ovf:NetworkSection
+            elif key in ['NetworkSection', 'ovf:NetworkSection']:
+                nets = value.get('Network') or value.get('ovf:Network', [])
+                _LOGGING.debug(f'Found Networks: {nets}: type: {type(nets)}')
+                if isinstance(nets, dict):
+                    nets = [nets]
+                networks = [
+                    {
+                        'name': x['@ovf:name'],
+                        'description': x.get('Description')
+                        or x.get('ovf:Description'),
+                    }
+                    for x in nets
+                ]
+                output['Networks'] = networks
+            # ovf:DeploymentOptionSection
+            elif key in [
+                'DeploymentOptionSection',
+                'ovf:DeploymentOptionSection',
+            ]:
+                raw_dparams = value.get('Configuration') or value.get(
+                    'ovf:Configuration', []
+                )
+                dparams = [
+                    {
+                        'id': x['@ovf:id'],
+                        'description': x.get('Description')
+                        or x.get('ovf:Description'),
+                        'label': x.get('Label') or x.get('ovf:Label'),
+                    }
+                    for x in raw_dparams
+                ]
+                output['DeploymentOptionParams'] = dparams
+            # ovf:VirtualSystem
+            elif key in ['VirtualSystem', 'ovf:VirtualSystem']:
+                output['Name'] = value.get('ovf:Name') or value.get('Name')
+                if 'ovf:ProductSection' in value or 'ProductSection' in value:
+                    prod_sect = value.get('ProductSection') or value.get(
+                        'ovf:ProductSection'
+                    )
+                    output['Product'] = prod_sect.get(
+                        'Product'
+                    ) or prod_sect.get('ovf:FullVersion')
+                    output['Version'] = prod_sect.get(
+                        'Version'
+                    ) or prod_sect.get('ovf:Version')
+                    if 'Property' in prod_sect or 'ovf:Property' in prod_sect:
+                        pparams = []
+                        properties = prod_sect.get(
+                            'Property'
+                        ) or prod_sect.get('ovf:Property', [])
+                        for prop in properties:
+                            if (
+                                prop.get('@ovf:userConfigurable', None)
+                                == 'true'
+                            ):
+                                prop = {
+                                    'key': prop['@ovf:key'],
+                                    'type': prop['@ovf:type'],
+                                    'description': prop.get('Description')
+                                    or prop.get('ovf:Description'),
+                                    'default': prop.get('@ovf:value'),
+                                }
+                                pparams.append(prop)
+                        output['PropertyParams'] = pparams
+        return output
 
     def yaml(self) -> YAML:
         """Create default yaml parser."""

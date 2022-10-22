@@ -9,6 +9,7 @@ please `open an issue <https://gitlab-ee.eis.utoronto.ca/vss/vsscli/issues/new>`
    :glob:
 
    deploy-os
+   deploy-photon-os
    deploy-clone
    deploy-template
    deploy-image

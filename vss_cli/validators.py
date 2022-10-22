@@ -54,18 +54,22 @@ def flexible_email_args(ctx, param, value):
 
 def validate_json_file_or_type(ctx, param, value):
     """Validate json file or type."""
+    from vss_cli.yaml import yaml
+
     val = None
+    yaml_load = getattr(ctx, 'yaml_load', yaml().load)
     try:
         if value is not None:
-            val = ctx.yaml_load(value)
+            val = yaml_load(value)
     except ValueError as ex:
         _LOGGING.debug(f'Not string: {ex}')
         val = None
+
     try:
         if value is not None:
             p = Path(value)
             with p.open(encoding="UTF-8") as source:
-                val = ctx.yaml_load(source.read())
+                val = yaml_load(source.read())
     except FileNotFoundError as ex:
         _LOGGING.debug(f'Not file: {ex}')
         val = None

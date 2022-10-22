@@ -1,10 +1,12 @@
 """Misc plugin for VSS CLI (vss-cli)."""
 import logging
+from pathlib import Path
 
 import click
 
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from vss_cli.helper import load_string_or_file
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -15,8 +17,15 @@ def cli(ctx):
     """Execute Miscellaneous utilities."""
 
 
-@cli.command('hash-string', short_help='Hashes string using SHA-512')
-@click.argument('string_to_hash', type=click.STRING, required=False)
+@cli.command(
+    'hash-string', short_help='Hashes string or file contents using SHA-512'
+)
+@click.argument(
+    'string_to_hash',
+    type=click.STRING,
+    required=False,
+    callback=load_string_or_file,
+)
 @pass_context
 def misc_hash_string(ctx: Configuration, string_to_hash):
     """Hash string using SHA-512.
@@ -32,8 +41,15 @@ def misc_hash_string(ctx: Configuration, string_to_hash):
     ctx.echo(hash_string(string_to_hash))
 
 
-@cli.command('gz-b64e', short_help='Compresses and encodes a given string')
-@click.argument('string_gz_encode', type=click.STRING, required=True)
+@cli.command(
+    'gz-b64e', short_help='Compresses and encodes a given string or file'
+)
+@click.argument(
+    'string_gz_encode',
+    type=click.STRING,
+    required=True,
+    callback=load_string_or_file,
+)
 @pass_context
 def misc_encode_gz(ctx: Configuration, string_gz_encode):
     """Compress (gz) and encode in base64 string."""
@@ -42,8 +58,15 @@ def misc_encode_gz(ctx: Configuration, string_gz_encode):
     ctx.echo(compress_encode_string(string_gz_encode))
 
 
-@cli.command('b64d-gz', short_help='Decompress and decodes a given string')
-@click.argument('string_gz_encoded', type=click.STRING, required=True)
+@cli.command(
+    'b64d-gz', short_help='Decompress and decodes a given string or file'
+)
+@click.argument(
+    'string_gz_encoded',
+    type=click.STRING,
+    required=True,
+    callback=load_string_or_file,
+)
 @pass_context
 def misc_decodes_ugz(ctx: Configuration, string_gz_encoded):
     """Decompress (gz) and decode string."""
