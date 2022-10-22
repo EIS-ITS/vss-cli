@@ -1,11 +1,38 @@
 # Changelog 📝
 
+## [v2022.10.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.10.1) (2022-10-22)
+
+**New Features:**
+
+- [#571](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/571):  ``ovf get``: to inspect and generate ``additional-params`` spec file from OVA or OVF.
+
+**Improvements:**
+
+- [#568](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/568): ``compute vm mk shell``:  option ``--custom-spec`` load from ``yaml``/``json`` file or input.
+- [#568](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/568): ``compute vm mk from-clone``: option ``--custom-spec`` load from ``yaml``/``json`` file or input.
+- [#568](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/568): ``compute vm mk from-spec``: option ``--custom-spec`` load from ``yaml``/``json`` file or input.
+- [#568](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/568): ``compute vm mk from-image``: option ``--custom-spec`` load from ``yaml``/``json`` file or input.
+- [#568](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/568): ``compute vm mk from-clib``: option ``--custom-spec`` load from ``yaml``/``json`` file or input.
+- [#570](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/570): ``️compute vm mk from-file``: support ``extra-config`` attribute in the machine section.
+- [#572](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/572): ``compute vm mk shell``:  option ``--vbs`` to enable Virtualization Based Security.
+- [#572](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/572): ``compute vm mk from-clone``: option ``--vbs`` to enable Virtualization Based Security.
+- [#572](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/572): ``compute vm mk from-spec``: option ``--vbs`` to enable Virtualization Based Security.
+- [#572](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/572): ``compute vm mk from-image``: option ``--vbs`` to enable Virtualization Based Security.
+- [#572](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/572): ``compute vm mk from-clib``:  option ``--vbs`` to enable Virtualization Based Security.
+- [#573](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/573): ``compute vm mk from-file``: support ``vbs`` and ``tpm`` attribute in the machine section.
+- [#574](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/574): ``misc b64d-gz``: process from input or file reference.
+- [#574](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/574): ``misc gz-b64e``: process from input or file reference.
+- [#574](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/574): ``hash-string``: process from input or file reference.
+- [#575](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/575): ``docs``: example to deploy Photon OS from clib.
+- [#576](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/576): ``docs``: update clib deployment user data.
+
+
 ## [v2022.10.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.10.0) (2022-10-07)
 
 **Improvements:**
 
-- [#563](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/563) : ``compute vm set storage-type``: set to either ``ssd`` or ``hdd`` (approval required).
-- [#564](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/564) : ``compute vm get storage-type``: current virtual machine storage type.
+- [#563](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/563): ``compute vm set storage-type``: set to either ``ssd`` or ``hdd`` (approval required).
+- [#564](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/564): ``compute vm get storage-type``: current virtual machine storage type.
 - [#565](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/565): ``core``: upgrade ``pyvss`` from ``2022.9.0`` to ``2022.10.0``.
 
 **Bug Fixes:**
