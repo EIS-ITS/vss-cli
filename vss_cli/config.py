@@ -26,6 +26,7 @@ from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
     bytes_to_str, debug_requests_on, format_output, get_hostname_from_url)
+from vss_cli.plugins.compute_plugins.callbacks import process_options
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import (
@@ -1318,6 +1319,10 @@ class Configuration(VssManager):
                 spec_payload['folder'] = self.get_folder_by_name_or_moref_path(
                     machine_section['folder']
                 )[0]['moref']
+                # extra-config
+                spec_payload['extra_config'] = process_options(
+                    self, 'extra-config', machine_section['extra-config']
+                )
                 # networking
                 spec_payload['networks'] = [
                     {

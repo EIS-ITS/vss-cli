@@ -25,6 +25,9 @@ networking:
   interfaces:
     - network: VSS-PUBLIC # Required: Network name or network ID.
       type: vmxnet3       # Required: Defaults to vmxnet3
+# VM extra configuration (Uncomment to enable)
+# extra-config:
+#  - disk.EnableUUID="TRUE"
 # OVF additional parameters (Uncomment to enable)
 # PropertyParams and DeploymentOptionParams.
 # additional_parameters: additional_params.yaml

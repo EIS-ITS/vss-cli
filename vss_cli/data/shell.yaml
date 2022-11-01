@@ -20,6 +20,9 @@ machine:
 #  template: false        # Optional: Mark resulting vm as template.
 #  tpm: true              # Optional: Enable vTrusted Platform Module Device.
 #  vbs: true              # Optional: Enable Virtualization Based Security.
+# VM extra configuration (Uncomment to enable)
+# extra-config:
+#  - disk.EnableUUID="TRUE"
 networking:
   interfaces:
     - network: VSS-PUBLIC # Required: Network name or network ID.
