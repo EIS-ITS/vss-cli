@@ -1403,11 +1403,19 @@ class Configuration(VssManager):
                         'config': _d0[0],
                         'config-encoding': _d0[1],
                     }
+                    if 'config-name' in day_zero:
+                        day_zero_payload['config-file-name'] = day_zero[
+                            'config-name'
+                        ]
                     if 'id-token' in day_zero:
                         _i0 = process_day_zero(
                             self, 'id-token', day_zero['id-token']
                         )
                         _i0_d = {'idtoken': _i0[0], 'idtoken-encoding': _i0[1]}
+                        if 'id-token-name' in day_zero:
+                            _i0_d['idtoken-file-name'] = day_zero[
+                                'id-token-name'
+                            ]
                         day_zero_payload.update(_i0_d)
                     spec_payload['day_zero'] = day_zero_payload
             if built == 'os_install':

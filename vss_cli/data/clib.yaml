@@ -32,6 +32,8 @@ networking:
 #day-zero:
 #  config: configuration.txt
 #  id-token: id-token.txt
+#  config-name:           # Optional: To define the file name of the configuration. Defaults to day0-config
+#  id-token-name:         # Optional: To define the file name of the id token configuration. Defaults to idtoken
 # Cloud init post-deployment config (Uncomment to enable)
 # cloud_init:
 #  user_data: 'user_data.yaml'
