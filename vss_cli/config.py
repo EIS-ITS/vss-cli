@@ -1323,6 +1323,16 @@ class Configuration(VssManager):
                 spec_payload['extra_config'] = process_options(
                     self, 'extra-config', machine_section['extra-config']
                 )
+                # firmware
+                spec_payload[
+                    'firmware'
+                ] = self.get_vm_firmware_by_type_or_desc(
+                    machine_section['firmware']
+                )[
+                    0
+                ][
+                    'type'
+                ]
                 # networking
                 spec_payload['networks'] = [
                     {

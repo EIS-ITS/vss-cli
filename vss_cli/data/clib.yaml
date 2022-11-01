@@ -8,6 +8,7 @@ machine:
   os: ubuntu64Guest       # Required: Guest Operating System name or Id.
   folder: Name-or-Id      # Required: Folder name, path or ID.
   storage-type: hdd       # Optional: Storage Type to use for this VM. ssd or hdd
+# firmware: bios           # Optional: Firmware to use: Either bios or efi (Default: bios).
 #  cpu: 1                  # Optional: CPU count (Default: 1).
 #  memory: 1               # Optional: Memory in GB (Default: 1GB).
 # Disks (Uncomment to enable)
