@@ -21,6 +21,8 @@ Package documentation is now available at [docs][docs].
 > Windows users, follow the installation instructions [Installing Python on Windows][Installing Python on Windows] and 
   add ``%USERPROFILE%\AppData\Roaming\Python\Python37\Scripts`` to ``PATH``  environment variable prior running [pip][pip].
 
+### PIP
+
 The fastest way to install VSS CLI is to use [pip][pip]:
 
 ```bash
@@ -31,7 +33,7 @@ If you are planning to interact with `vskey-stor` execute the following command
 ```bash
 pip install vss-cli[stor]
 ```
-The command will install ``webdavclient3`` package from PyPI and Linux operating systems require ``libxml2``.
+The command will install ``minio`` package from PyPI.
 
 > Windows users, please install ``windows-curses`` and ``vss-cli`` as follows: 
  ``pip install --user vss-cli windows-curses``.
@@ -43,7 +45,18 @@ you can run:
 pip install --upgrade vss-cli
 ```
 
-This will install VSS CLI as well as all dependencies. You can also just [download the tarball][download the tarball].
+### Homebrew
+
+Use [Homebrew][Homebrew] to install the ``vss-cli`` on macOS:
+
+```bash
+brew tap vss/vss-cli https://gitlab-ee.eis.utoronto.ca/vss/vss-cli
+brew install vss/vss-cli
+```
+Using Homebrew will automatically setup autocompletion based on your current shell.
+### From Source
+
+You can also just [download the tarball][download the tarball].
 Once you have the `vss-cli` directory structure on your workstation, you can just run:
 
 ```bash
@@ -104,10 +117,11 @@ export VSS_TOKEN=JWT_TOKEN
 For detailed information about the ``vss-cli`` configuration, please refer to the 
 [official documentation site][official documentation site].
 
-## JSON Parameter Input 
+## JSON/YAML Parameter Input 
 
-VSS CLI options vary from simple string, boolean or numeric values to
-JSON data structures as input parameters on the command line.
+VSS CLI options vary from simple string, boolean, numeric values,
+JSON data structures and file in both JSON and YAML 
+as input parameters on the command line.
 
 For example, consider the following command to deploy a new virtual
 machine from a given template and provide a guest operating system
@@ -115,10 +129,40 @@ specification to reconfigure hostname, domain, dns, ip, subnet
 and gateway:
 
 ```bash
-vss compute vm mk from-template --source c5916abb-def3-4d4d-8abe-2240b0a6c265 \
+vss compute vm mk from-template --source VM-Template \
       --description 'New virtual machine' \
       --custom-spec '{"hostname": "fe1", "domain": "eis.utoronto.ca", "interfaces": [{"dhcp": true}]}'
 ```
+
+However, if a file is provided instead with a JSON or YAML structure, 
+the CLI will take it as valid such as ``new-vm-custom-spec.json`` or
+``new-vm-custom-spec.yaml`` shown below:
+
+```json
+{
+  "hostname": "fe1",
+  "domain": "eis.utoronto.ca",
+  "interfaces": [
+    {
+      "dhcp": true
+    }
+  ]
+}
+```
+or
+```yaml
+hostname: fe1
+domain: eis.utoronto.ca
+interfaces:
+  - dhcp: true
+```
+
+```bash
+vss compute vm mk from-template --source VM-Template \
+      --description 'New virtual machine' \
+      --custom-spec new-vm-custom-spec.json
+```
+
 
 ## Auto-completion
 
@@ -144,7 +188,7 @@ source <(vss-cli completion bash)
 
 For `zsh`:
 ```bash
-    source <(vss-cli completion zsh)
+source <(vss-cli completion zsh)
 ```
 
 For `fish`
@@ -153,8 +197,8 @@ For `fish`
 _VSS_CLI_COMPLETE=fish_source vss-cli > ~/.config/fish/completions/vss-cli-complete.fish
 ```
 
-If you do it from your `.bashrc` or `.zshrc` it is recommend to use the form below 
-as that does not trigger a run of vss-cli itself.
+If you do it from your `.bashrc` or `.zshrc` it is recommended to use the following method 
+since avoids triggering a run of vss-cli itself.
 
 For `bash`:
 
@@ -210,7 +254,6 @@ If it turns out that you may have found a bug, please [open a new issue][open a 
 
 ```bash
 vss-cli --help
-
 Usage: vss-cli [OPTIONS] COMMAND [ARGS]...
 
   Command line interface for the ITS Private Cloud.
@@ -221,6 +264,7 @@ Options:
   -t, --token TEXT                The Bearer token for the VSS API.
   -u, --username TEXT             The API username for VSS API.
   -p, --password TEXT             The API password for VSS API.
+  --totp TEXT                     Timed One Time Password.
   --timeout INTEGER               Timeout for network operations.
   -l, --loglevel LVL              Either CRITICAL, ERROR, WARNING, INFO or
                                   DEBUG
@@ -239,10 +283,9 @@ Options:
                                   (default: print headers)
   -s, --sort-by TEXT              Sort table by the jsonpath expression.
                                   Example: updated_on
-  -w, --webdav-server TEXT        The Webdav server.
+  -w, --s3-server TEXT            The Webdav server.
   --version                       Show the version and exit.
   --help                          Show this message and exit.
-
 
 Commands:
   account     Manage your VSS account
@@ -253,17 +296,17 @@ Commands:
   key         Manage your SSH Public Keys.
   message     Manage VSS Messages.
   misc        Miscellaneous utilities.
+  ovf         OVF Tool
   plugins     External plugins.
   raw         Make a raw call to the API
   request     Manage various requests
   service     ITS Service catalog.
   shell       REPL interactive shell.
-  status      Check API Status.
+  status      Check ITS Private Cloud Status.
   stor        Manage your VSS storage account.
   token       Manage access tokens
   upgrade     Upgrade VSS CLI and dependencies.
-
-
+ 
 ```
 
 ## Versioning
@@ -302,3 +345,4 @@ Refer to the [Changelog][Changelog] for details.
 [python-tabulate]: https://pypi.org/project/tabulate/
 [ITS Private Cloud RESTful API]: https://vss-wiki.eis.utoronto.ca/display/API
 [Pull Request #76]: https://github.com/click-contrib/click-repl/pull/76
+[Homebrew]: https://brew.sh/
