@@ -135,6 +135,7 @@ release-dist-develop:
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /Version release/
+      - $CI_COMMIT_MESSAGE =~ /Homebrew formula/
   tags:
    - python-3
 
@@ -152,6 +153,7 @@ release-dist-develop-local:
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /Version release/
+      - $CI_COMMIT_MESSAGE =~ /Homebrew formula/
   tags:
    - python-3
 

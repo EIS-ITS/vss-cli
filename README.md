@@ -51,9 +51,10 @@ Use [Homebrew][Homebrew] to install the ``vss-cli`` on macOS:
 
 ```bash
 brew tap vss/vss-cli https://gitlab-ee.eis.utoronto.ca/vss/vss-cli
-brew install vss/vss-cli
+brew install vss-cli
 ```
 Using Homebrew will automatically setup autocompletion based on your current shell.
+
 ### From Source
 
 You can also just [download the tarball][download the tarball].
