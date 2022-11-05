@@ -44,7 +44,7 @@ Use `Homebrew`_ to install the ``vss-cli`` on macOS:
 .. code-block:: bash
 
     brew tap vss/vss-cli https://gitlab-ee.eis.utoronto.ca/vss/vss-cli
-    brew install vss/vss-cli
+    brew install vss-cli
 
 You can also just `download the tarball`_. Once you have the ``vss-cli``
 directory structure on your workstation, you can just run:
