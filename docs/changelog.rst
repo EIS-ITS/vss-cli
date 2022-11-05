@@ -1,6 +1,16 @@
 Changelog 📝
 ============
+`v2022.11.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.11.0>`_ (2022-11-04)
+------------------------------------------------------------------------------------------
+**Improvements:**
 
+- `#570 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/570>`_: ``compute vm mk from-file``: support ``extra-config`` attribute.
+- `#579 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/579>`_: ``compute vm mk from-clib``: support ``config-file-name`` and ``idtoken-name`` attributes in ``day-zero`` section.
+- `#580 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/580>`_: ``compute vm mk from-file``: support ``config-file-name`` and ``idtoken-name`` attributes in ``day-zero`` section.
+- `#581 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/581>`_: ``compute vm mk from-file``: support ``firmware`` attributes in ``machine`` section.
+- `#582 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/582>`_: ``cd``: Homebrew formula for the vss-cli.
+- `#583 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/583>`_: ``core``: upgrade ``pyjwt`` from ``2.4.0`` to ``2.6.0``.
+- `#584 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/584>`_: ``core``: upgrade ``tabulate`` from ``0.8.10`` to ``0.9.0``.
 
 `v2022.10.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.10.1>`_ (2022-10-22)
 ------------------------------------------------------------------------------------------
