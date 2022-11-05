@@ -8,6 +8,7 @@ machine:
   os: ubuntu64Guest       # Required: Guest Operating System name or Id.
   folder: Name-or-Id      # Required: Folder name, path or ID.
   storage-type: hdd       # Optional: Storage Type to use for this VM. ssd or hdd
+  firmware: bios           # Optional: Firmware to use: Either bios or efi (Default: bios).
 #  cpu: 1                  # Optional: CPU count (Default: 1).
 #  memory: 1               # Optional: Memory in GB (Default: 1GB).
 # Disks (Uncomment to enable)
@@ -25,6 +26,9 @@ networking:
   interfaces:
     - network: VSS-PUBLIC # Required: Network name or network ID.
       type: vmxnet3       # Required: Defaults to vmxnet3
+# VM extra configuration (Uncomment to enable)
+# extra-config:
+#  - disk.EnableUUID="TRUE"
 # OVF additional parameters (Uncomment to enable)
 # PropertyParams and DeploymentOptionParams.
 # additional_parameters: additional_params.yaml
@@ -32,6 +36,8 @@ networking:
 #day-zero:
 #  config: configuration.txt
 #  id-token: id-token.txt
+#  config-name:           # Optional: To define the file name of the configuration. Defaults to day0-config
+#  id-token-name:         # Optional: To define the file name of the id token configuration. Defaults to idtoken
 # Cloud init post-deployment config (Uncomment to enable)
 # cloud_init:
 #  user_data: 'user_data.yaml'

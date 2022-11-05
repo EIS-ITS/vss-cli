@@ -215,12 +215,26 @@ day0_cfg_opt = click.option(
     callback=callbacks.process_day_zero,
     required=False,
 )
+day0_cfg_fname_opt = click.option(
+    '--day-zero-name',
+    help='Day0 config file name stored in the seed iso. '
+    'Default to day0-config',
+    type=click.STRING,
+    required=False,
+)
 idtoken_cfg_opt = click.option(
     '--id-token',
     '-d0i',
     help='Day0 Identity Token to register with the Smart Licensing server.',
     type=click.STRING,
     callback=callbacks.process_day_zero,
+    required=False,
+)
+idtoken_cfg_fname_opt = click.option(
+    '--id-token-name',
+    help='Day0 Identity Token config file name stored in the seed iso. '
+    'Defaults to idtoken',
+    type=click.STRING,
     required=False,
 )
 additional_parameters_opt = click.option(

@@ -4249,7 +4249,9 @@ def compute_vm_mk_image(
 @c_so.user_data_opt
 @c_so.net_cfg_opt
 @c_so.day0_cfg_opt
+@c_so.day0_cfg_fname_opt
 @c_so.idtoken_cfg_opt
+@c_so.idtoken_cfg_fname_opt
 @c_so.vss_service_opt
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
@@ -4286,7 +4288,9 @@ def compute_vm_mk_clib(
     user_data,
     network_config,
     day_zero,
+    day_zero_name,
     id_token,
+    id_token_name,
     vss_service,
     firmware,
     tpm,
@@ -4367,9 +4371,13 @@ def compute_vm_mk_clib(
     if day_zero:
         # day0 configuration
         d0_payload = {'config': day_zero[0], 'config-encoding': day_zero[1]}
+        if day_zero_name:
+            d0_payload['config-file-name'] = day_zero_name
         if id_token is not None:
             d0_payload['idtoken'] = id_token[0]
             d0_payload['idtoken-encoding'] = id_token[1]
+            if id_token_name:
+                d0_payload['idtoken-file-name'] = id_token_name
         _LOGGING.debug(f'Day0 payload {d0_payload}')
         payload['day_zero'] = d0_payload
     if firmware:

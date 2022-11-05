@@ -1259,6 +1259,7 @@ class Configuration(VssManager):
             from vss_cli.plugins.compute_plugins.callbacks import (
                 process_user_data,
                 process_day_zero,
+                process_options,
             )
 
             spec_payload = dict()
@@ -1318,6 +1319,22 @@ class Configuration(VssManager):
                 spec_payload['folder'] = self.get_folder_by_name_or_moref_path(
                     machine_section['folder']
                 )[0]['moref']
+                # extra-config section
+                if payload.get('extra-config') is not None:
+                    spec_payload['extra_config'] = process_options(
+                        self, 'extra-config', payload.get('extra-config')
+                    )
+                # firmware
+                if payload.get('firmware') is not None:
+                    spec_payload[
+                        'firmware'
+                    ] = self.get_vm_firmware_by_type_or_desc(
+                        machine_section['firmware']
+                    )[
+                        0
+                    ][
+                        'type'
+                    ]
                 # networking
                 spec_payload['networks'] = [
                     {
@@ -1403,11 +1420,19 @@ class Configuration(VssManager):
                         'config': _d0[0],
                         'config-encoding': _d0[1],
                     }
+                    if 'config-name' in day_zero:
+                        day_zero_payload['config-file-name'] = day_zero[
+                            'config-name'
+                        ]
                     if 'id-token' in day_zero:
                         _i0 = process_day_zero(
                             self, 'id-token', day_zero['id-token']
                         )
                         _i0_d = {'idtoken': _i0[0], 'idtoken-encoding': _i0[1]}
+                        if 'id-token-name' in day_zero:
+                            _i0_d['idtoken-file-name'] = day_zero[
+                                'id-token-name'
+                            ]
                         day_zero_payload.update(_i0_d)
                     spec_payload['day_zero'] = day_zero_payload
             if built == 'os_install':

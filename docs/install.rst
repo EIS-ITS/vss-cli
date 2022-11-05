@@ -39,6 +39,13 @@ The command will install ``minio`` package from PyPI.
     Linux operating systems require ``python3-dev`` and ``python3-setuptools``.
 
 
+Use `Homebrew`_ to install the ``vss-cli`` on macOS:
+
+.. code-block:: bash
+
+    brew tap vss/vss-cli https://gitlab-ee.eis.utoronto.ca/vss/vss-cli
+    brew install vss/vss-cli
+
 You can also just `download the tarball`_. Once you have the ``vss-cli``
 directory structure on your workstation, you can just run:
 
@@ -54,3 +61,4 @@ directory structure on your workstation, you can just run:
 .. _`PyPI`: https://pypi.python.org/pypi/vss-cli
 .. _`download the tarball`: https://pypi.org/project/vss-cli/#files
 .. _`Test PyPI`: https://test.pypi.org
+.. _`Homebrew`: https://brew.sh/
