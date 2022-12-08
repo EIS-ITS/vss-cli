@@ -61,6 +61,7 @@ def validate_json_file_or_type(ctx, param, value):
     try:
         if value is not None:
             val = yaml_load(value)
+            return val
     except ValueError as ex:
         _LOGGING.debug(f'Not string: {ex}')
         val = None
@@ -70,6 +71,7 @@ def validate_json_file_or_type(ctx, param, value):
             p = Path(value)
             with p.open(encoding="UTF-8") as source:
                 val = yaml_load(source.read())
+                return val
     except FileNotFoundError as ex:
         _LOGGING.debug(f'Not file: {ex}')
         val = None
