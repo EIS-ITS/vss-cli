@@ -126,6 +126,7 @@ config
 # Other virtualization methods
 venv
 .vagrant
+.venv/*
 
 # Temporary files
 **/__pycache__
