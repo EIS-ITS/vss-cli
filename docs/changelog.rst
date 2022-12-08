@@ -1,5 +1,27 @@
 Changelog 📝
 ============
+
+`v2022.12.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.12.0>`_ (2022-12-08)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#586 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/586>`_: ``core``: upgrade ``minio`` from 7.1.5 to 7.1.12.
+- `#587 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/587>`_: ``core``: upgrade ``Pygments`` from 2.11.2 to 2.13.0.
+- `#588 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/588>`_: ``core``: upgrade ``pick`` from 2.0.2 to 2.2.0.
+- `#589 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/589>`_: ``core``: upgrade ``dateparser`` from 1.1.1 to 1.1.4.
+- `#590 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/590>`_: ``core``: ``setup`` and requirements decoupling.
+- `#591 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/591>`_: ``core``:  ``gitignore`` and ``dockerignore`` improvements
+
+**Bug Fixes:**
+
+- `#592 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/592>`_: ``compute vm mk shell``:  option ``--custom-spec`` error when using inline value.
+- `#592 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/592>`_: ``compute vm mk from-clone``: option ``--custom-spec`` error when using inline value.
+- `#592 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/592>`_: ``compute vm mk from-spec``: option ``--custom-spec`` error when using inline value.
+- `#592 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/592>`_: ``compute vm mk from-image``: option ``--custom-spec`` error when using inline value.
+- `#592 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/592>`_: ``compute vm mk from-clib``: option ``--custom-spec`` error when using inline value.
+
+
 `v2022.11.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.11.0>`_ (2022-11-04)
 ------------------------------------------------------------------------------------------
 **Improvements:**

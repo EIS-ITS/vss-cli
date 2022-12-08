@@ -46,6 +46,9 @@ __VERSION__ = find_version("vss_cli", "const.py")  # type: ignore
 
 REQUIRED_PYTHON_VER = (3, 7, 5)
 REQUIRES = load_requirements()
+REQUIRES_STOR = load_requirements('requirements.stor.txt')
+REQUIRES_TEST = load_requirements('requirements.test.txt')
+REQUIRES_DEV = load_requirements('requirements.dev.txt')
 # REQUIRES = [req for req in INSTALL_REQUIRES if req and not re.match(r'[^:]+://', req)]
 
 PACKAGES = find_packages(exclude=['tests', 'tests.*'])
@@ -74,21 +77,12 @@ PROJECT_URLS = {
     'Documentation': f'{PROJECT_DOCS}/',
     'Source': f'{PROJECT_URL}',
 }
-STOR_REQUIRE = ['minio==7.1.5']
+STOR_REQUIRE = REQUIRES_STOR
 TESTS_REQUIRE = [
-    'flake8==4.0.1',
-    'nose==1.3.7',
-    'coverage==6.0.2',
-    'pytz==2021.3',
-    'wheel==0.37.0',  # Otherwise setup.py bdist_wheel does not work
+    *REQUIRES_TEST,  # Otherwise setup.py bdist_wheel does not work
     *STOR_REQUIRE,
 ]
-DEV_REQUIRE = [
-    *TESTS_REQUIRE,
-    *STOR_REQUIRE,
-    'sphinx-rtd-theme==1.0.0',
-    'Sphinx==4.2.0',
-]
+DEV_REQUIRE = [*TESTS_REQUIRE, *STOR_REQUIRE, *REQUIRES_DEV]
 
 # Allow you to run
 # pip install .[test]
