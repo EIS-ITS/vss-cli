@@ -58,13 +58,6 @@ def validate_json_file_or_type(ctx, param, value):
 
     val = None
     yaml_load = getattr(ctx, 'yaml_load', yaml().load)
-    try:
-        if value is not None:
-            val = yaml_load(value)
-            return val
-    except ValueError as ex:
-        _LOGGING.debug(f'Not string: {ex}')
-        val = None
 
     try:
         if value is not None:
@@ -72,8 +65,17 @@ def validate_json_file_or_type(ctx, param, value):
             with p.open(encoding="UTF-8") as source:
                 val = yaml_load(source.read())
                 return val
-    except FileNotFoundError as ex:
+    except (FileNotFoundError, OSError) as ex:
         _LOGGING.debug(f'Not file: {ex}')
+        val = None
+
+    # any string will be loaded properly
+    try:
+        if value is not None:
+            val = yaml_load(value)
+            return val
+    except ValueError as ex:
+        _LOGGING.debug(f'Not string: {ex}')
         val = None
 
     if value and val is None:
