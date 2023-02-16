@@ -1,8 +1,23 @@
 # Changelog 📝
 
+## [v2023.2.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.2.0) (2023-02-16)
+
+**Improvements:**
+
+- [#597](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/597): ``compute vm set vss-preference``: ``--action`` ``add``/``del`` to manage vss preferences.
+- [#597](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/597): ``compute vm get vss-preference``: get vss preferences.
+- [#599](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/599): ``core``: upgrade ``minio`` from 7.1.12 to 7.1.13.
+- [#596](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/596): ``core``: upgrade ``pyvss`` from ``2022.9.0`` to ``2022.10.0``.
+
+**Bug Fixes:**
+
+- [#595](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/595): ``compute vm mk from-file``: ``additional_params`` incorrectly parsed name and file
+- [#598](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/598): ``compute vm mk from-file``: ``shell``/``clib`` template bad spec in disks.
+
 ## [v2022.12.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.12.0) (2022-12-08)
 
 **Improvements:**
+
 - [#586](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/586): ``core``: upgrade ``minio`` from 7.1.5 to 7.1.12.
 - [#587](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/587): ``core``: upgrade ``Pygments`` from 2.11.2 to 2.13.0.
 - [#588](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/588): ``core``: upgrade ``pick`` from 2.0.2 to 2.2.0.

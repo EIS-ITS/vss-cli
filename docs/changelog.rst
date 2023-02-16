@@ -1,6 +1,22 @@
 Changelog 📝
 ============
 
+`v2023.2.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.2.0>`_ (2023-02-16)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#597 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/597>`_: ``compute vm set vss-preference``: ``--action`` ``add``/``del`` to manage vss preferences.
+- `#597 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/597>`_: ``compute vm get vss-preference``: get vss preferences.
+- `#599 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/599>`_: ``core``: upgrade ``minio`` from 7.1.12 to 7.1.13.
+- `#596 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/596>`_: ``core``: upgrade ``pyvss`` from ``2022.9.0`` to ``2022.10.0``.
+
+**Bug Fixes:**
+
+- `#595 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/595>`_: ``compute vm mk from-file``: ``additional_params`` incorrectly parsed name and file
+- `#598 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/598>`_: ``compute vm mk from-file``: ``shell``/``clib`` template bad spec in disks.
+
+
 `v2022.12.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.12.0>`_ (2022-12-08)
 ------------------------------------------------------------------------------------------
 

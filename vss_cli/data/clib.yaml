@@ -13,7 +13,7 @@ machine:
 #  memory: 1               # Optional: Memory in GB (Default: 1GB).
 # Disks (Uncomment to enable)
 #  disks:
-#    - capacity: 40                  # Disk capacity in GB (Default: 40GB).
+#    - capacity_gb: 40                  # Disk capacity in GB (Default: 40GB).
 #      backing_mode: persistent      # Optional Disk backing mode (Default: persistent).
 #      backing_sharing: sharingnone  # Optional Disk sharing mode (Default: sharingnone).
 # Additional (Uncomment to enable)
