@@ -836,6 +836,15 @@ def compute_vm_get_vmrc_copy_paste(ctx: Configuration, options):
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@compute_vm_get.command('vss-preference', short_help='Get VSS Preference set')
+@pass_context
+def compute_vm_get_vss_preference(ctx: Configuration):
+    """Get VSS Preferences set."""
+    obj = ctx.get_vm_vss_preferences(ctx.moref)
+    columns = ctx.columns or const.COLUMNS_VSS_PREFS
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
 @compute_vm_get.command('vss-option', short_help='Get VSS Option status')
 @pass_context
 def compute_vm_get_vss_option(ctx: Configuration):
@@ -2976,6 +2985,41 @@ def compute_vm_set_vmrc_copy_paste(ctx: Configuration, on):
         obj = ctx.enable_vm_vmrc_copy_paste(**payload)
     else:
         obj = ctx.disable_vm_vmrc_copy_paste(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command('vss-preference', short_help='Manage VSS preferences')
+@click.argument(
+    'vss-pref',
+    type=click.STRING,
+    shell_complete=autocompletion.vss_preferences,
+    required=True,
+)
+@click.option(
+    '--action',
+    type=click.Choice(['add', 'del']),
+    help='Action to perform.',
+    default='add',
+)
+@pass_context
+def compute_vm_set_vss_preference(ctx: Configuration, vss_pref, action):
+    """Manage VSS preferences."""
+    # create payload
+    payload = dict(vm_id=ctx.moref, preference=vss_pref)
+    # add common options
+    payload.update(ctx.payload_options)
+    lookup = {
+        'add': ctx.set_vm_vss_preference,
+        'del': ctx.delete_vm_vss_preference,
+    }
+    # request
+    f = lookup[action]
+    obj = f(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.1.0-dev1"
+__version__ = "2023.2.0-dev0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -503,3 +503,4 @@ COLUMNS_OVF = [
 ]
 COLUMNS_OVF_PP = [("key",), ("type",), ("description",), ("default",)]
 COLUMNS_OVF_DP = [("id",), ("description",), ("label",)]
+COLUMNS_VSS_PREFS = [("preferences", "[*]")]

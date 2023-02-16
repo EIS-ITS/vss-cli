@@ -543,6 +543,20 @@ def vss_options(
 
 
 @to_completion_item
+def vss_preferences(
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VSS Preferences."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_vss_prefs,
+        incomplete,
+        attrs=['option', 'description'],
+        f_kwargs={"only_option": False},
+    )
+
+
+@to_completion_item
 def groups(
     ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:
