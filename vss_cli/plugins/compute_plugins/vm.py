@@ -12,6 +12,7 @@ from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from vss_cli.data_types import VmApiSpec, VmCliSpec
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
@@ -3371,7 +3372,7 @@ def compute_vm_mk(ctx: Configuration, user_meta: str, dry_run: bool):
     '-t',
     '--spec-template',
     required=False,
-    type=click.Choice(['shell', 'clib']),
+    type=click.Choice(['shell', 'clib', 'template', 'clone']),
     help='Specification template to load and edit.',
 )
 @click.option(
@@ -3420,7 +3421,9 @@ def compute_vm_from_file(
                 'Please choose a template to load '
                 '(press SPACE to mark, ENTER to continue): '
             )
-            spec_template, index = pick(['shell', 'clib'], message)
+            spec_template, index = pick(
+                ['shell', 'clib', 'template', 'clone'], message
+            )
         file_spec = os.path.join(
             const.DEFAULT_DATA_PATH, f'{spec_template}.yaml'
         )
@@ -3458,6 +3461,18 @@ def compute_vm_from_file(
             payload=payload, built='contentlib'
         )
         obj = ctx.deploy_vm_from_clib_item(**spec_payload)
+    elif payload['built'] in ['template']:
+        cli_spec = VmCliSpec.from_dict(payload)
+        _LOGGING.debug(f'CliSpec={cli_spec}')
+        spec_payload = VmApiSpec.from_cli_spec(cli_spec, session=ctx).to_dict()
+        _LOGGING.debug(f'Spec={spec_payload}')
+        obj = ctx.deploy_vm_from_template(**spec_payload)
+    elif payload['built'] in ['clone']:
+        cli_spec = VmCliSpec.from_dict(payload)
+        _LOGGING.debug(f'CliSpec={cli_spec}')
+        spec_payload = VmApiSpec.from_cli_spec(cli_spec, session=ctx).to_dict()
+        _LOGGING.debug(f'Spec={spec_payload}')
+        obj = ctx.create_vm_from_clone(**spec_payload)
     else:
         raise click.UsageError('Not yet implemented.')
     # request
