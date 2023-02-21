@@ -8,7 +8,7 @@ import re
 from typing import Dict, List, Optional, Tuple, Union
 
 from click import BadArgumentUsage, BadParameter
-from dataclasses_json import config, dataclass_json
+from dataclasses_json import config as dc_config, dataclass_json
 from ruamel.yaml import YAML
 from ruamel.yaml.scanner import ScannerError
 from validators import (
@@ -180,13 +180,13 @@ class VmDisk:
 
     capacity_gb: int
     backing_mode: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     backing_sharing: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     scsi: Optional[int] = field(
-        default=0, metadata=config(exclude=lambda x: x is None)
+        default=0, metadata=dc_config(exclude=lambda x: x is None)
     )
 
 
@@ -196,8 +196,12 @@ class VmScsi:
     """Vm SCSI."""
 
     bus: int
-    sharing: str
-    type: str
+    sharing: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    type: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
 
 
 @dataclass_json
@@ -207,21 +211,31 @@ class VmMachine:
 
     name: str
     folder: Optional[str] = None
-    source: Optional[str] = None
+    os: Optional[str] = None
+    source: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    domain: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    iso: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    power_on: Optional[bool] = field(default_factory=lambda: False)
+    template: Optional[bool] = field(default_factory=lambda: False)
+    tpm: Optional[bool] = field(default_factory=lambda: False)
+    vbs: Optional[bool] = field(default_factory=lambda: False)
     disks: List[VmDisk] = field(default_factory=lambda: VmDisk(capacity_gb=40))
     cpu: Optional[int] = field(default_factory=lambda: 1)
-    os: Optional[str] = None
-    domain: Optional[str] = None
-    power_on: Optional[bool] = False
-    template: Optional[bool] = False
-    tpm: Optional[bool] = False
-    vbs: Optional[bool] = False
     memory_gb: Optional[int] = field(default_factory=lambda: 1)
     firmware: Optional[str] = field(default_factory=lambda: 'bios')
     storage_type: Optional[str] = field(default_factory=lambda: 'hdd')
     version: Optional[str] = field(default_factory=lambda: 'vmx-19')
     source_snapshot: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    item: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
 
@@ -231,12 +245,13 @@ class VmNetwork:
     """Vm network."""
 
     network: str
-    network_id: Optional[str] = None
+    network_id: Optional[str] = field(
+        default=None,
+        metadata=dc_config(
+            exclude=lambda x: x is None,
+        ),
+    )
     type: Optional[str] = field(default_factory=lambda x: 'vmxnet3')
-
-    def to_dict(self):
-        """Convert to dict."""
-        return {'type': self.type, 'network': self.network_id}
 
 
 @dataclass_json
@@ -274,24 +289,110 @@ class VmMeta:
 
 @dataclass_json
 @dataclass
+class VmAdditionalParams:
+    """Vm add params."""
+
+    additional_parameters: Union[Path]
+
+
+@dataclass_json
+@dataclass
+class VmDayZero:
+    """Vm Day Zero."""
+
+    config_file: Path = field(
+        default=None,
+        metadata=dc_config(
+            exclude=lambda x: x is None, field_name="config-file"
+        ),
+    )
+    config: Optional[str] = field(default=None)
+    config_name: Optional[str] = field(
+        default='day0-config',
+        metadata=dc_config(
+            exclude=lambda x: x is None, field_name="config-name"
+        ),
+    )
+
+    id_token_file: Optional[Path] = field(
+        default=None, metadata=dc_config(exclude=lambda x: True)
+    )
+    id_token_name: Optional[str] = field(
+        default=None,
+        metadata=dc_config(
+            exclude=lambda x: x is None, field_name="id-token-name"
+        ),
+    )
+    config_encoding: Optional[str] = field(
+        default=None,
+        metadata=dc_config(
+            exclude=lambda x: x is None, field_name="config-encoding"
+        ),
+    )
+    idtoken: Optional[str] = field(
+        default=None,
+        metadata=dc_config(exclude=lambda x: x is None, field_name="idtoken"),
+    )
+    idtoken_encoding: Optional[str] = field(
+        default=None,
+        metadata=dc_config(
+            exclude=lambda x: x is None, field_name="idtoken-encoding"
+        ),
+    )
+    idtoken_name: Optional[str] = field(
+        default=None,
+        metadata=dc_config(
+            exclude=lambda x: x is None, field_name="id-token-name"
+        ),
+    )
+
+    @staticmethod
+    def _load_file(path: Path, attr: str) -> Tuple[str, str]:
+        """Load file."""
+        from pyvss.helper import compress_encode_string
+
+        try:
+            fp = Path(path)
+            txt = fp.read_text()
+            return (
+                compress_encode_string(txt),
+                'gzip+base64',
+            )
+        except FileNotFoundError as ex:
+            raise BadArgumentUsage(f'{attr} must a valid file path: {ex}')
+
+    def __post_init__(self):
+        """Run post initializing."""
+        self.config, self.config_encoding = self._load_file(
+            self.config_file, 'config_file'
+        )
+
+        if self.id_token_file is not None:
+            self.idtoken, self.idtoken_encoding = self._load_file(
+                self.id_token, 'id_token_file'
+            )
+
+
+@dataclass_json
+@dataclass
 class VmCloudInit:
     """Vm Cloud init."""
 
     user_data: Union[Path]
     userdata: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     userdata_encoding: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     network_data: Optional[Path] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     networkconfig: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     networkconfig_encoding: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
     @staticmethod
@@ -332,13 +433,13 @@ class VmCustomSpecIface:
 
     dhcp: Optional[bool] = False
     ip: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     gateway: Optional[List[IPv4Address]] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     mask: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
     def __post_init__(self):
@@ -363,10 +464,10 @@ class VmCustomSpec:
     domain: Domain
     interfaces: List[VmCustomSpecIface]
     dns: Optional[List[IP]] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     time_zone: Optional[Union[str, int]] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
 
@@ -379,14 +480,24 @@ class VmCliSpec:
     machine: VmMachine
     networking: VmNetworking
     metadata: VmMeta
+    iso: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
     custom_spec: Optional[VmCustomSpec] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     cloud_init: Optional[VmCloudInit] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     extra_config: Optional[Union[List[str], List[Dict]]] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    day_zero: Optional[VmDayZero] = field(
+        default=None,
+        metadata=dc_config(exclude=lambda x: x is None, field_name="day-zero"),
+    )
+    additional_parameters: Optional[Union[Path, Dict]] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
     @staticmethod
@@ -397,10 +508,42 @@ class VmCliSpec:
         _options = to_tuples(','.join(value))
         return [{opt[0]: opt[1]} for opt in _options]
 
+    @staticmethod
+    def _process_json_file_or_type(value: Union[str, Path], attr: str):
+        """Process json file or type."""
+        val = None
+        try:
+            if value is not None:
+                p = Path(value)
+                with p.open(encoding="UTF-8") as source:
+                    val = YAML().load(source.read())
+                    return val
+        except (FileNotFoundError, OSError) as ex:
+            _LOGGING.debug(f'Not file: {ex}')
+            val = None
+
+        # any string will be loaded properly
+        try:
+            if value is not None:
+                val = YAML().load(value)
+                return val
+        except ValueError as ex:
+            _LOGGING.debug(f'Not string: {ex}')
+            val = None
+
+        if value and val is None:
+            raise BadParameter(
+                f'{attr} should be a file or JSON parameter input.'
+            )
+
     def __post_init__(self):
         """Process and rewrite."""
         if self.extra_config is not None:
             self.extra_config = self._process_extra_config(self.extra_config)
+        if self.additional_parameters:
+            self.additional_parameters = self._process_json_file_or_type(
+                self.additional_parameters, 'additional_parameters'
+            )
 
 
 @dataclass_json
@@ -411,10 +554,10 @@ class UserData:
     userdata: str
     userdata_encoding: str
     networkconfig: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     networkconfig_encoding: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
 
@@ -424,12 +567,12 @@ class VmApiSpec:
     """Vm api spec."""
 
     built_from: str
+
     usage: str
     client: str
     cpu: int
     description: str
     disks: List[VmDisk]
-    domain: Optional[str]
     firmware: str
     folder: str
     inform: List[str]
@@ -442,44 +585,63 @@ class VmApiSpec:
     tpm: Optional[bool] = False
     vbs: Optional[bool] = False
     power_on: Optional[bool] = False
+    template: Optional[bool] = False
+    built: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    domain: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    iso: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
     scsi: Optional[List[VmScsi]] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     vss_options: Optional[List[str]] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     vss_service: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     custom_spec: Optional[VmCustomSpec] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     extra_config: Optional[List[str]] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     user_data: Optional[UserData] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     admin_email: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     admin_name: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     admin_phone: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     notes: Optional[List[Dict]] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     source: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     source_template: Optional[str] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     source_snap_id: Optional[int] = field(
-        default=None, metadata=config(exclude=lambda x: x is None)
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    day_zero: Optional[VmDayZero] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    item_id: Optional[str] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    additional_parameters: Optional[Dict] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
     @classmethod
@@ -489,6 +651,11 @@ class VmApiSpec:
         name = cli_spec.machine.name
         # machine
         if cli_spec.built in ['clib', 'clone', 'image', 'template']:
+            if cli_spec.built in ['clib']:
+                item_id = session.get_clib_deployable_item_by_name_or_id_path(
+                    cli_spec.machine.item
+                )[0]['id']
+                data['item_id'] = item_id
             if cli_spec.built in ['clone', 'template']:
                 source_id = session.get_vm_by_id_or_name(
                     cli_spec.machine.source
@@ -522,10 +689,18 @@ class VmApiSpec:
                     ][
                         'id'
                     ]
-
+        if cli_spec.built in ['os_install']:
+            data['iso'] = session.get_iso_by_name_or_path(
+                cli_spec.machine.iso
+            )[0]['path']
+            data['built'] = cli_spec.built
         if cli_spec.machine.folder:
             data['folder'] = session.get_folder_by_name_or_moref_path(
                 cli_spec.machine.folder
+            )[0]['moref']
+        if cli_spec.machine.domain:
+            data['domain'] = session.get_domain_by_name_or_moref(
+                cli_spec.machine.domain
             )[0]['moref']
         if cli_spec.networking:
             networks = []
@@ -534,14 +709,11 @@ class VmApiSpec:
                     iface.network_id or iface.network
                 )[0]['moref']
                 networks.append({'network': net_id, 'type': iface.type})
-            data['networks'] = []
-
+            data['networks'] = networks
         if cli_spec.machine.disks:
             data['disks'] = [disk.to_dict() for disk in cli_spec.machine.disks]
         if cli_spec.custom_spec:
-            data['custom_spec'] = VmCustomSpec.from_dict(
-                cli_spec.custom_spec.to_dict()
-            )
+            data['custom_spec'] = cli_spec.custom_spec
         if cli_spec.machine.memory_gb:
             data['memory'] = cli_spec.machine.memory_gb
         data['name'] = cli_spec.machine.name or name
@@ -561,28 +733,29 @@ class VmApiSpec:
             data['storage_type'] = session.get_vm_storage_type_by_type_or_desc(
                 cli_spec.machine.storage_type
             )[0]['type']
-        if cli_spec.machine.domain:
-            data['domain'] = cli_spec.machine.domain
         if cli_spec.machine.tpm:
-            data['cls'] = cli_spec.machine.tpm
+            data['tpm'] = cli_spec.machine.tpm
         if cli_spec.machine.vbs:
             data['vbs'] = cli_spec.machine.vbs
         if cli_spec.machine.power_on:
             data['power_on'] = cli_spec.machine.power_on
+        if cli_spec.machine.template:
+            data['template'] = cli_spec.machine.template
         # metadata
         if cli_spec.metadata.usage:
             data['usage'] = cli_spec.metadata.usage
         if cli_spec.metadata.client:
             data['client'] = cli_spec.metadata.client
         data['description'] = cli_spec.metadata.description
-        if cli_spec.metadata.admin.name:
-            data['admin_name'] = cli_spec.metadata.admin.name
-        if cli_spec.metadata.admin.email:
-            data['admin_email'] = validate_email(
-                None, 'admin_email', cli_spec.metadata.admin.email
-            )
-        if cli_spec.metadata.admin.phone:
-            data['admin_phone'] = cli_spec.metadata.admin.phone
+        if cli_spec.metadata.admin:
+            if cli_spec.metadata.admin.name:
+                data['admin_name'] = cli_spec.metadata.admin.name
+            if cli_spec.metadata.admin.email:
+                data['admin_email'] = validate_email(
+                    None, 'admin_email', cli_spec.metadata.admin.email
+                )
+            if cli_spec.metadata.admin.phone:
+                data['admin_phone'] = cli_spec.metadata.admin.phone
         if cli_spec.metadata.inform:
             data['inform'] = [
                 validate_email(None, 'inform', i)
@@ -595,11 +768,13 @@ class VmApiSpec:
         if cli_spec.metadata.vss_options:
             data['vss_options'] = cli_spec.metadata.vss_options
         if cli_spec.cloud_init:
-            data['user_data'] = UserData.from_dict(
-                cli_spec.cloud_init.to_dict()
-            )
+            data['user_data'] = cli_spec.cloud_init.to_dict()
+        if cli_spec.day_zero:
+            data['day_zero'] = cli_spec.day_zero.to_dict()
         if cli_spec.extra_config:
             data['extra_config'] = cli_spec.extra_config
         if cli_spec.metadata.notes:
             data['notes'] = cli_spec.metadata.notes
+        if cli_spec.additional_parameters:
+            data['additional_parameters'] = cli_spec.additional_parameters
         return cls.from_dict(data)

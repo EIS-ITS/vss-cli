@@ -3451,33 +3451,22 @@ def compute_vm_from_file(
     # add common options
     spec_payload = dict()
     spec_payload.update(ctx.payload_options)
+    cli_spec = VmCliSpec.from_dict(payload)
+    _LOGGING.debug(f'CliSpec={cli_spec}')
+    spec_payload = VmApiSpec.from_cli_spec(cli_spec, session=ctx).to_dict()
+    _LOGGING.debug(f'Spec={spec_payload}')
     if payload['built'] == 'os_install':
-        spec_payload = ctx.get_api_spec_from_cli_spec(
-            payload=payload, built='os_install'
-        )
         obj = ctx.create_vm(**spec_payload)
     elif payload['built'] == 'clib':
-        spec_payload = ctx.get_api_spec_from_cli_spec(
-            payload=payload, built='contentlib'
-        )
         obj = ctx.deploy_vm_from_clib_item(**spec_payload)
     elif payload['built'] in ['template']:
-        cli_spec = VmCliSpec.from_dict(payload)
-        _LOGGING.debug(f'CliSpec={cli_spec}')
-        spec_payload = VmApiSpec.from_cli_spec(cli_spec, session=ctx).to_dict()
-        _LOGGING.debug(f'Spec={spec_payload}')
         obj = ctx.deploy_vm_from_template(**spec_payload)
     elif payload['built'] in ['clone']:
-        cli_spec = VmCliSpec.from_dict(payload)
-        _LOGGING.debug(f'CliSpec={cli_spec}')
-        spec_payload = VmApiSpec.from_cli_spec(cli_spec, session=ctx).to_dict()
-        _LOGGING.debug(f'Spec={spec_payload}')
         obj = ctx.create_vm_from_clone(**spec_payload)
     else:
         raise click.UsageError('Not yet implemented.')
     # request
     ctx.dry_run = ctx.tmp
-
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
