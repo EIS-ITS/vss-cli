@@ -139,7 +139,7 @@ def compute_vm_get_boot(
 ):
     """Virtual machine boot settings.
 
-    Including boot delay and whether or not
+    Including boot delay and whether
     to boot and enter directly to BIOS.
     """
     columns = ctx.columns or const.COLUMNS_VM_BOOT
@@ -998,6 +998,46 @@ def compute_vm_set_alarm(ctx: Configuration, action, alarm_moref):
         obj = ctx.ack_vm_alarm(**payload)
     else:
         obj = ctx.clear_vm_alarm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command(
+    'secure-boot', short_help='Enable or disable Secure Boot'
+)
+@click.option(
+    '--on/--off',
+    is_flag=True,
+    help='Enable/Disable secure boot',
+    required=True,
+)
+@pass_context
+def compute_vm_set_secure_boot(ctx: Configuration, on):
+    """Update virtual machine boot configuration to enable secure boot.
+
+    vss-cli compute vm set <name-or-vm_id> secure-boot --on
+    vss-cli compute vm set <name-or-vm_id> secure-boot --off
+    """
+    payload = dict(vm_id=ctx.moref, value=on)
+    # add common options
+    payload.update(ctx.payload_options)
+    # pre-check
+    if on:
+        rv = ctx.get_vm_firmware(vm_id=ctx.moref)
+        if rv['firmware'] != 'efi':
+            confirm = click.confirm(
+                f"Virtual Machine firmware is {rv['firmware']}. "
+                "EFI secure boot could be enabled only on EFI firmware. "
+                "Continue?"
+            )
+            if not confirm:
+                raise click.ClickException('Cancelled by user.')
+    # continue with the update
+    obj = ctx.update_vm_secure_boot(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
