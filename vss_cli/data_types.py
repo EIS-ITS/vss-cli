@@ -228,7 +228,7 @@ class VmMachine:
     disks: List[VmDisk] = field(default_factory=lambda: VmDisk(capacity_gb=40))
     cpu: Optional[int] = field(default_factory=lambda: 1)
     memory_gb: Optional[int] = field(default_factory=lambda: 1)
-    firmware: Optional[str] = field(default_factory=lambda: 'bios')
+    firmware: Optional[str] = field(default_factory=lambda: 'efi')
     storage_type: Optional[str] = field(default_factory=lambda: 'hdd')
     version: Optional[str] = field(default_factory=lambda: 'vmx-19')
     source_snapshot: Optional[str] = field(
