@@ -1,5 +1,19 @@
 # Changelog 📝
 
+## [v2023.2.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.2.1) (2023-02-24)
+
+**Improvements:**
+
+- [#602](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/602): ``compute vm mk from-file``: support ``clone`` and ``template`` build process.
+- [#603](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/603): ``compute vm mk from-file``: ``clib`` and ``shell`` standardization.
+- [#604](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/604): ``compute vm mk from-file``: default firmware set to ``efi``.
+- [#605](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/605): ``compute vm set secure-boot``: enable ``--on`` or disable ``--off`` secure boot.
+- [#606](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/606): ``core``: upgrade ``pyvss`` from ``2023.2.0`` to ``2023.2.1``.
+
+**Bug Fixes:**
+
+- [#607](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/607): ``compute vm set storage-type``: missing ``payload_options`` for scheduling.
+
 ## [v2023.2.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.2.0) (2023-02-16)
 
 **Improvements:**
@@ -7,7 +21,7 @@
 - [#597](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/597): ``compute vm set vss-preference``: ``--action`` ``add``/``del`` to manage vss preferences.
 - [#597](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/597): ``compute vm get vss-preference``: get vss preferences.
 - [#599](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/599): ``core``: upgrade ``minio`` from 7.1.12 to 7.1.13.
-- [#596](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/596): ``core``: upgrade ``pyvss`` from ``2022.9.0`` to ``2022.10.0``.
+- [#596](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/596): ``core``: upgrade ``pyvss`` from ``2022.10.0`` to ``2023.2.0``.
 
 **Bug Fixes:**
 
