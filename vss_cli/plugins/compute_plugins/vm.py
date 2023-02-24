@@ -1789,7 +1789,10 @@ def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
 def compute_vm_set_storage_type(ctx: Configuration, storage_type):
     """Migrate a virtual machine to a new storage type cluster."""
     payload = dict(vm_id=ctx.moref, storage_type=storage_type)
+    # add common options
+    payload.update(ctx.payload_options)
     obj = ctx.update_vm_storage_type(**payload)
+    # request
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
