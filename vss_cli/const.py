@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.2.0"
+__version__ = "2023.2.1"
 
 
 DEFAULT_TIMEOUT = 30
@@ -368,6 +368,7 @@ COLUMNS_VM_BOOT = [
     ("enter_bios_setup",),
     ("boot_retry_delay_ms",),
     ("boot_delay_ms",),
+    ("secure_boot",),
 ]
 COLUMNS_VM_CD_MIN = [("label",), ("backing",), ("connected",)]
 COLUMNS_VM_CD = [

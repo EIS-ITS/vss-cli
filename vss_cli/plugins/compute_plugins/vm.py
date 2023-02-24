@@ -12,6 +12,7 @@ from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from vss_cli.data_types import VmApiSpec, VmCliSpec
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
@@ -138,7 +139,7 @@ def compute_vm_get_boot(
 ):
     """Virtual machine boot settings.
 
-    Including boot delay and whether or not
+    Including boot delay and whether
     to boot and enter directly to BIOS.
     """
     columns = ctx.columns or const.COLUMNS_VM_BOOT
@@ -1006,6 +1007,46 @@ def compute_vm_set_alarm(ctx: Configuration, action, alarm_moref):
 
 
 @compute_vm_set.command(
+    'secure-boot', short_help='Enable or disable Secure Boot'
+)
+@click.option(
+    '--on/--off',
+    is_flag=True,
+    help='Enable/Disable secure boot',
+    required=True,
+)
+@pass_context
+def compute_vm_set_secure_boot(ctx: Configuration, on):
+    """Update virtual machine boot configuration to enable secure boot.
+
+    vss-cli compute vm set <name-or-vm_id> secure-boot --on
+    vss-cli compute vm set <name-or-vm_id> secure-boot --off
+    """
+    payload = dict(vm_id=ctx.moref, value=on)
+    # add common options
+    payload.update(ctx.payload_options)
+    # pre-check
+    if on:
+        rv = ctx.get_vm_firmware(vm_id=ctx.moref)
+        if rv['firmware'] != 'efi':
+            confirm = click.confirm(
+                f"Virtual Machine firmware is {rv['firmware']}. "
+                "EFI secure boot could be enabled only on EFI firmware. "
+                "Continue?"
+            )
+            if not confirm:
+                raise click.ClickException('Cancelled by user.')
+    # continue with the update
+    obj = ctx.update_vm_secure_boot(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command(
     'boot-bios', short_help='Enable or disable Boot to BIOS'
 )
 @click.option(
@@ -1748,7 +1789,10 @@ def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
 def compute_vm_set_storage_type(ctx: Configuration, storage_type):
     """Migrate a virtual machine to a new storage type cluster."""
     payload = dict(vm_id=ctx.moref, storage_type=storage_type)
+    # add common options
+    payload.update(ctx.payload_options)
     obj = ctx.update_vm_storage_type(**payload)
+    # request
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
@@ -3371,7 +3415,7 @@ def compute_vm_mk(ctx: Configuration, user_meta: str, dry_run: bool):
     '-t',
     '--spec-template',
     required=False,
-    type=click.Choice(['shell', 'clib']),
+    type=click.Choice(['shell', 'clib', 'template', 'clone']),
     help='Specification template to load and edit.',
 )
 @click.option(
@@ -3420,7 +3464,9 @@ def compute_vm_from_file(
                 'Please choose a template to load '
                 '(press SPACE to mark, ENTER to continue): '
             )
-            spec_template, index = pick(['shell', 'clib'], message)
+            spec_template, index = pick(
+                ['shell', 'clib', 'template', 'clone'], message
+            )
         file_spec = os.path.join(
             const.DEFAULT_DATA_PATH, f'{spec_template}.yaml'
         )
@@ -3448,21 +3494,22 @@ def compute_vm_from_file(
     # add common options
     spec_payload = dict()
     spec_payload.update(ctx.payload_options)
+    cli_spec = VmCliSpec.from_dict(payload)
+    _LOGGING.debug(f'CliSpec={cli_spec}')
+    spec_payload = VmApiSpec.from_cli_spec(cli_spec, session=ctx).to_dict()
+    _LOGGING.debug(f'Spec={spec_payload}')
     if payload['built'] == 'os_install':
-        spec_payload = ctx.get_api_spec_from_cli_spec(
-            payload=payload, built='os_install'
-        )
         obj = ctx.create_vm(**spec_payload)
     elif payload['built'] == 'clib':
-        spec_payload = ctx.get_api_spec_from_cli_spec(
-            payload=payload, built='contentlib'
-        )
         obj = ctx.deploy_vm_from_clib_item(**spec_payload)
+    elif payload['built'] in ['template']:
+        obj = ctx.deploy_vm_from_template(**spec_payload)
+    elif payload['built'] in ['clone']:
+        obj = ctx.create_vm_from_clone(**spec_payload)
     else:
         raise click.UsageError('Not yet implemented.')
     # request
     ctx.dry_run = ctx.tmp
-
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

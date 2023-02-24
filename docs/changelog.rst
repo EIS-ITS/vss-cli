@@ -1,6 +1,22 @@
 Changelog 📝
 ============
 
+`v2023.2.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.2.1>`_ (2023-02-24)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#602 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/602>`_: ``compute vm mk from-file``: support ``clone`` and ``template`` build process.
+- `#603 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/603>`_: ``compute vm mk from-file``: ``clib`` and ``shell`` standardization.
+- `#604 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/604>`_: ``compute vm mk from-file``: default firmware set to ``efi``.
+- `#605 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/605>`_: ``compute vm set secure-boot``: enable ``--on`` or disable ``--off`` secure boot.
+- `#606 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/606>`_: ``core``: upgrade ``pyvss`` from ``2023.2.0`` to ``2023.2.1``.
+
+**Bug Fixes:**
+
+- `#607 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/607>`_: ``compute vm set storage-type``: missing ``payload_options`` for scheduling.
+
+
 `v2023.2.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.2.0>`_ (2023-02-16)
 ------------------------------------------------------------------------------------------
 
