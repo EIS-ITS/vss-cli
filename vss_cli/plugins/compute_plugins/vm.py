@@ -1646,9 +1646,19 @@ def compute_vm_set_disk_mk(ctx: Configuration, disk):
     required=False,
     help='Update disk capacity notes.',
 )
+@click.option(
+    '-c', '--confirm', is_flag=True, default=False, help='Confirm disk update'
+)
 @pass_context
 def compute_vm_set_disk_up(
-    ctx: Configuration, unit, capacity, scsi, backing_mode, sharing, notes
+    ctx: Configuration,
+    unit,
+    capacity,
+    scsi,
+    backing_mode,
+    sharing,
+    notes,
+    confirm,
 ):
     """Update virtual machine disk capacity.
 
@@ -1662,20 +1672,67 @@ def compute_vm_set_disk_up(
     vss-cli compute vm set <name-or-vm_id> disk up --sharing=<mode> <unit>
     """
     payload = dict(vm_id=ctx.moref, unit=unit)
+    # get existing disk
+    rv = ctx.get_vm_disk(vm_id=ctx.moref, disk=unit)
+    if rv:
+        disk = rv[0]
+    else:
+        raise click.BadArgumentUsage(f'Disk {unit} could not be found')
     # add common options
     payload.update(ctx.payload_options)
     if capacity:
         payload['value_gb'] = capacity
+        old_capacity = disk["capacity_gib"]
         # request
+        msg = f'{disk["label"]} {old_capacity}GiB -> {capacity}GiB'
+        if capacity < old_capacity:
+            raise click.BadParameter(
+                f'Reducing disk size is not supported: {msg}.'
+            )
+        confirm = confirm or click.confirm(
+            f'Are you sure you want to update {msg}?'
+        )
+        if not confirm:
+            raise click.ClickException('Cancelled by user.')
         obj = ctx.update_vm_disk_capacity(**payload)
     elif scsi is not None:
         payload['bus_number'] = scsi
+        controller = disk['controller']
+        msg = (
+            f'{disk["label"]} on {controller["label"]} '
+            f'-> SCSI Controller {scsi}'
+        )
+        confirm = confirm or click.confirm(
+            f'Are you sure you want to update {msg}?'
+        )
+        if not confirm:
+            raise click.ClickException('Cancelled by user.')
         obj = ctx.update_vm_disk_scsi(**payload)
     elif backing_mode is not None:
         payload['mode'] = backing_mode
+        backing = ctx.get_vm_disk_backing(ctx.moref, unit)
+        msg = (
+            f'{disk["label"]} backing mode {backing["disk_mode"]} '
+            f'-> {backing_mode}'
+        )
+        confirm = confirm or click.confirm(
+            f'Are you sure you want to update {msg}?'
+        )
+        if not confirm:
+            raise click.ClickException('Cancelled by user.')
         obj = ctx.update_vm_disk_backing_mode(**payload)
     elif sharing is not None:
         payload['sharing'] = sharing
+        backing = ctx.get_vm_disk_backing(ctx.moref, unit)
+        msg = (
+            f'{disk["label"]} backing sharing {backing["sharing"]} '
+            f'-> {sharing}'
+        )
+        confirm = confirm or click.confirm(
+            f'Are you sure you want to update {msg}?'
+        )
+        if not confirm:
+            raise click.ClickException('Cancelled by user.')
         obj = ctx.update_vm_disk_backing_sharing(**payload)
     elif notes is not None:
         payload['notes'] = notes
