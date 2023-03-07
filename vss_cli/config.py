@@ -1314,7 +1314,7 @@ class Configuration(VssManager):
                             '@ovf:capacityAllocationUnits'
                         ],
                         'diskId': x['@ovf:diskId'],
-                        'fileRef': x['@ovf:fileRef'],
+                        'fileRef': x.get('@ovf:fileRef'),
                     }
                     for x in disks_ref
                 ]
