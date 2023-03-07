@@ -1284,6 +1284,15 @@ class Configuration(VssManager):
             raise VssCliError('Invalid OVF format: missing ovf:Envelope')
         ovf_dict = data_dict.get('Envelope') or data_dict.get('ovf:Envelope')
         output = {}
+        # process first Strings or ovf:Strings for reference
+        ovf_strings = {}
+        has_strings = ovf_dict.get('Strings') or ovf_dict.get('ovf:Strings')
+        if has_strings:
+            msgs = has_strings.get('Msg', [])
+            for msg in msgs:
+                _key = msg.get('@ovf:msgid')
+                _val = msg.get('#text')
+                ovf_strings[_key] = _val
         for key, value in ovf_dict.items():
             # ovf:References
             if key in ['References', 'ovf:References']:
@@ -1342,15 +1351,28 @@ class Configuration(VssManager):
                 raw_dparams = value.get('Configuration') or value.get(
                     'ovf:Configuration', []
                 )
-                dparams = [
-                    {
+                dparams = []
+                for x in raw_dparams:
+                    _desc = x.get('Description') or x.get('ovf:Description')
+                    _label = x.get('Label') or x.get('ovf:Label')
+                    description = _desc
+                    if isinstance(_desc, dict):
+                        if '@ovf:msgid' in _desc or 'msgid' in _desc:
+                            description = ovf_strings.get(
+                                _desc.get('@ovf:msgid') or _desc.get('msgid')
+                            )
+                    if isinstance(_label, dict):
+                        if '@ovf:msgid' in _desc or 'msgid' in _label:
+                            label = ovf_strings.get(
+                                _label.get('@ovf:msgid') or _label.get('msgid')
+                            )
+                    obj = {
                         'id': x['@ovf:id'],
-                        'description': x.get('Description')
-                        or x.get('ovf:Description'),
-                        'label': x.get('Label') or x.get('ovf:Label'),
+                        'description': description,
+                        'label': label,
                     }
-                    for x in raw_dparams
-                ]
+                    dparams.append(obj)
+
                 output['DeploymentOptionParams'] = dparams
             # ovf:VirtualSystem
             elif key in ['VirtualSystem', 'ovf:VirtualSystem']:
