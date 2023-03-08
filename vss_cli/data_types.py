@@ -656,6 +656,7 @@ class VmApiSpec:
                     cli_spec.machine.item
                 )[0]['id']
                 data['item_id'] = item_id
+                data['built_from'] = 'contentlib'
             if cli_spec.built in ['clone', 'template']:
                 source_id = session.get_vm_by_id_or_name(
                     cli_spec.machine.source
