@@ -1,5 +1,19 @@
 # Changelog 📝
 
+## [v2023.3.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.3.0) (2023-03-14)
+
+**Improvements:**
+
+- [#610](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/610): ``compute vm set disk up``: `--confirm` flag to prompt for confirmation.
+- [#612](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/612): ``ovf get``: support for ``Strings/ovf:Strings`` reference.
+- [#614](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/614): ``raw``: restrict calls only to ``utoronto.ca|edu`` domains
+
+**Bug Fixes:**
+
+- [#611](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/611): ``ovf get``: error when ``@ovf:fileRef`` is missing.
+- [#613](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/613): ``compute vm mk from-file``: ``clib`` error when deploying.
+
+
 ## [v2023.2.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.2.1) (2023-02-24)
 
 **Improvements:**
