@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec shell VM v2023.3.0-dev3             #
+#     VSS-CLI Spec shell VM v2023.3.0-dev4             #
 ####################################################
 built: os_install         # Required: Do not remove.
 machine:

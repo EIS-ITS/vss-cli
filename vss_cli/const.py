@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.3.0-dev3"
+__version__ = "2023.3.0-dev4"
 
 
 DEFAULT_TIMEOUT = 30
@@ -15,6 +15,7 @@ DEFAULT_S3_SERVER = "https://vskey-stor.eis.utoronto.ca"
 _LEGACY_CONFIG = ("~", ".vss-cli", "config.json")
 _DEFAULT_CONFIG = ("~", ".vss-cli", "config.yaml")
 _DEFAULT_HISTORY = ("~", ".vss-cli", "history")
+RAW_ALLOWED_DOMAINS_REGEX = r'https?:\/\/.*\.?utoronto\.(ca|edu):?\d*\/?.*'
 
 COLUMNS_WIDTH_DEFAULT = -1
 COLUMNS_WIDTH_STR = "\u2026"
