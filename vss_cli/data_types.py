@@ -227,7 +227,7 @@ class VmMachine:
     vbs: Optional[bool] = field(default_factory=lambda: False)
     disks: List[VmDisk] = field(default_factory=lambda: VmDisk(capacity_gb=40))
     cpu: Optional[int] = field(default_factory=lambda: 1)
-    memory_gb: Optional[int] = field(default_factory=lambda: 1)
+    memory: Optional[int] = field(default_factory=lambda: 1)
     firmware: Optional[str] = field(default_factory=lambda: 'efi')
     storage_type: Optional[str] = field(default_factory=lambda: 'hdd')
     version: Optional[str] = field(default_factory=lambda: 'vmx-19')
@@ -576,7 +576,7 @@ class VmApiSpec:
     firmware: str
     folder: str
     inform: List[str]
-    memory: int
+    memory_gb: int
     name: str
     networks: List[VmNetwork]
     os: str
@@ -715,8 +715,8 @@ class VmApiSpec:
             data['disks'] = [disk.to_dict() for disk in cli_spec.machine.disks]
         if cli_spec.custom_spec:
             data['custom_spec'] = cli_spec.custom_spec
-        if cli_spec.machine.memory_gb:
-            data['memory'] = cli_spec.machine.memory_gb
+        if cli_spec.machine.memory:
+            data['memory_gb'] = cli_spec.machine.memory
         data['name'] = cli_spec.machine.name or name
         if cli_spec.machine.cpu:
             data['cpu'] = cli_spec.machine.cpu
