@@ -485,7 +485,7 @@ class Configuration(VssManager):
             # TODO: implement get_session_motd in pyvss.
             rv = self.request('/session/motd')
             data = rv.get('data') if rv else None
-            if data:
+            if data and data.get("motd"):
                 em = EMOJI_UNICODE.get(":loudspeaker:")
                 self.secho(
                     f'\n{em}'
