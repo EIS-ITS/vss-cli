@@ -475,6 +475,10 @@ class VmCustomSpec:
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
+    def __post_init__(self):
+        """Run post init."""
+        self.hostname = self.hostname.lower()
+
 
 @dataclass_json
 @dataclass
