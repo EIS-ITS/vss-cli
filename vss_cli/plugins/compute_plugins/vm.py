@@ -2,6 +2,7 @@
 import datetime
 import logging
 import os
+from pathlib import Path
 from typing import Optional
 
 import click
@@ -3483,9 +3484,8 @@ def compute_vm_mk(ctx: Configuration, user_meta: str, dry_run: bool):
     help='Edit before submitting request',
 )
 @click.option(
-    '--save',
-    '-s',
-    default=False,
+    '--save/--no-save',
+    default=True,
     is_flag=True,
     help='Save file after editing.',
 )
@@ -3524,8 +3524,8 @@ def compute_vm_from_file(
             spec_template, index = pick(
                 ['shell', 'clib', 'template', 'clone'], message
             )
-        file_spec = os.path.join(
-            const.DEFAULT_DATA_PATH, f'{spec_template}.yaml'
+        file_spec = Path(const.DEFAULT_DATA_PATH).joinpath(
+            f'{spec_template}.yaml'
         )
         # proceed to load file
         with open(file_spec) as data_file:
@@ -3538,9 +3538,19 @@ def compute_vm_from_file(
         # load object
         if new_raw and save:
             new_obj = ctx.yaml_load(new_raw)
-            file_name = f'from-file-{int(time.time())}.yaml'
+            machine_name = new_obj['machine']['name'].lower()
+            file_name = f'vsscli-spec-{machine_name}.yaml'
+            file_path = Path(file_name)
             _LOGGING.debug(f'Saving spec to {file_name}')
-            with open(file_name, 'w') as fp:
+            if file_path.exists():
+                _file_path = file_path
+                file_path = Path(
+                    f'{_file_path.stem}_{int(time.time())}{_file_path.suffix}'
+                )
+                _LOGGING.warning(
+                    f'{_file_path} exists. Will save to {file_path}'
+                )
+            with file_path.open('w') as fp:
                 ctx.yaml_dump_stream(new_obj, stream=fp)
             raw = new_raw
         else:
