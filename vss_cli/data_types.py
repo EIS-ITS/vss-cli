@@ -227,9 +227,14 @@ class VmMachine:
     vbs: Optional[bool] = field(default_factory=lambda: False)
     disks: List[VmDisk] = field(default_factory=lambda: VmDisk(capacity_gb=40))
     cpu: Optional[int] = field(default_factory=lambda: 1)
-    memory_gb: Optional[int] = field(default_factory=lambda: 1)
+    memory: Optional[int] = field(default_factory=lambda: 1)
     firmware: Optional[str] = field(default_factory=lambda: 'efi')
-    storage_type: Optional[str] = field(default_factory=lambda: 'hdd')
+    storage_type: Optional[str] = field(
+        default='hdd',
+        metadata=dc_config(
+            exclude=lambda x: x is None, field_name="storage-type"
+        ),
+    )
     version: Optional[str] = field(default_factory=lambda: 'vmx-19')
     source_snapshot: Optional[str] = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
@@ -470,6 +475,10 @@ class VmCustomSpec:
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
+    def __post_init__(self):
+        """Run post init."""
+        self.hostname = self.hostname.lower()
+
 
 @dataclass_json
 @dataclass
@@ -576,12 +585,14 @@ class VmApiSpec:
     firmware: str
     folder: str
     inform: List[str]
-    memory: int
+    memory_gb: int
     name: str
     networks: List[VmNetwork]
     os: str
     version: str
-    storage_type: Optional[str] = 'hdd'
+    storage_type: Optional[str] = field(
+        default='hdd', metadata=dc_config(exclude=lambda x: x is None)
+    )
     tpm: Optional[bool] = False
     vbs: Optional[bool] = False
     power_on: Optional[bool] = False
@@ -715,8 +726,8 @@ class VmApiSpec:
             data['disks'] = [disk.to_dict() for disk in cli_spec.machine.disks]
         if cli_spec.custom_spec:
             data['custom_spec'] = cli_spec.custom_spec
-        if cli_spec.machine.memory_gb:
-            data['memory'] = cli_spec.machine.memory_gb
+        if cli_spec.machine.memory:
+            data['memory_gb'] = cli_spec.machine.memory
         data['name'] = cli_spec.machine.name or name
         if cli_spec.machine.cpu:
             data['cpu'] = cli_spec.machine.cpu
