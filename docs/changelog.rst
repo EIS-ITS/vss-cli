@@ -1,6 +1,21 @@
 Changelog 📝
 ============
 
+`v2023.3.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.3.1>`_ (2023-03-29)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#620 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/620>`_: ``compute vm mk from-file``: post process ``hostname`` in custom spec.
+- `#621 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/621>`_: ``compute vm mk from-file``: ``--save``/``--no-save`` to file improvements.
+- `#623 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/623>`_: ``cd``: Homebrew formula for `v2023.3.1`.
+
+**Bug Fixes:**
+
+- `#617 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/617>`_: ``compute vm mk from-file``:  ignores ``memory`` in configuration spec.
+- `#618 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/618>`_: ``core``: shows empty message of the day.
+- `#619 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/619>`_: ``compute vm mk from-file``: ignores ``storage-type`` in configuration spec.
+
 `v2023.3.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.3.0>`_ (2023-03-14)
 ------------------------------------------------------------------------------------------
 
