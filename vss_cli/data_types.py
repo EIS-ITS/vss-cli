@@ -229,7 +229,12 @@ class VmMachine:
     cpu: Optional[int] = field(default_factory=lambda: 1)
     memory: Optional[int] = field(default_factory=lambda: 1)
     firmware: Optional[str] = field(default_factory=lambda: 'efi')
-    storage_type: Optional[str] = field(default_factory=lambda: 'hdd')
+    storage_type: Optional[str] = field(
+        default='hdd',
+        metadata=dc_config(
+            exclude=lambda x: x is None, field_name="storage-type"
+        ),
+    )
     version: Optional[str] = field(default_factory=lambda: 'vmx-19')
     source_snapshot: Optional[str] = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
@@ -581,7 +586,9 @@ class VmApiSpec:
     networks: List[VmNetwork]
     os: str
     version: str
-    storage_type: Optional[str] = 'hdd'
+    storage_type: Optional[str] = field(
+        default='hdd', metadata=dc_config(exclude=lambda x: x is None)
+    )
     tpm: Optional[bool] = False
     vbs: Optional[bool] = False
     power_on: Optional[bool] = False
