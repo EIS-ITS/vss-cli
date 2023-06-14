@@ -1,5 +1,16 @@
 # Changelog 📝
 
+## [v2023.6.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.6.0) (2023-06-14)
+
+**Improvements:**
+
+- [#624](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/624): ``ci``: update pre-commit ``flake8`` endpoint.
+- [#626](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/626): ``ci``: rename Gitlab CI variable ``CI_BUILD_REF_NAME`` -> ``CI_COMMIT_REF_NAME``.
+
+**Bug Fixes:**
+
+- [#625](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/625): ``docs``: search not working. Missing jquery.
+
 ## [v2023.3.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.3.1) (2023-03-29)
 
 **Improvements:**
