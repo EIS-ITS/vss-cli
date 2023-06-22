@@ -4558,3 +4558,48 @@ def compute_vm_mk_clib(
     # wait for request
     if ctx.wait_for_requests:
         ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command('ubuntu-pro', short_help='Enable Ubuntu Pro')
+@click.argument(
+    'action',
+    type=click.Choice(['attach', 'detach']),
+    required=True,
+)
+@pass_context
+def compute_vm_set_ubuntu_pro(ctx: Configuration, action):
+    """Enable Ubuntu Pro.
+
+    vss-cli compute vm set <name-or-vm_id> attach|detach
+
+    Retrieving activation token requires VMware Tools Running.
+    """
+    # lookup dict for state
+    lookup = {
+        'attach': ctx.enable_vss_ubuntu_pro,
+        'detach': ctx.disable_vss_ubuntu_pro,
+    }
+    # create payload
+    payload = dict(vm_id=ctx.moref)
+    # add common options
+    payload.update(ctx.payload_options)
+    # validate VMware tools if action is attach
+    if action in ['attach']:
+        vmt = ctx.get_vm_tools(ctx.moref)
+        if not vmt:
+            _LOGGING.warning(
+                f'VMware Tools status could not be checked on {ctx.moref} '
+            )
+        if vmt.get('runningStatus') in ["guestToolsRunning"]:
+            _LOGGING.warning(
+                f'VMware Tools must be running '
+                f'on {ctx.moref} to activate Ubuntu Pro'
+            )
+    # call lookup ref
+    obj = lookup[action](**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
