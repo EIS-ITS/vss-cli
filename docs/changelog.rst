@@ -1,6 +1,17 @@
 Changelog 📝
 ============
 
+`v2023.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.6.0>`_ (2023-06-14)
+------------------------------------------------------------------------------------------
+**Improvements:**
+
+- `#624 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/624>`_: ``ci``: update pre-commit ``flake8`` endpoint.
+- `#626 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/626>`_: ``ci``: rename Gitlab CI variable ``CI_BUILD_REF_NAME`` -> ``CI_COMMIT_REF_NAME``.
+
+**Bug Fixes:**
+
+- `#625 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/625>`_: ``docs``: search not working. Missing ``jquery``.
+
 `v2023.3.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.3.1>`_ (2023-03-29)
 ------------------------------------------------------------------------------------------
 
@@ -128,9 +139,9 @@ Changelog 📝
 
 **Improvements:**
 
-- `#563<https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/563>`_: ``compute vm set storage-type``: set to either ``ssd`` or ``hdd`` (approval required).
-- `#564<https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/564>`_: ``compute vm get storage-type``: current virtual machine storage type.
-- `#565<https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/565>`_: ``core``: upgrade ``pyvss`` from ``2022.9.0`` to ``2022.10.0``.
+- `#563 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/563>`_: ``compute vm set storage-type``: set to either ``ssd`` or ``hdd`` (approval required).
+- `#564 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/564>`_: ``compute vm get storage-type``: current virtual machine storage type.
+- `#565 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/565>`_: ``core``: upgrade ``pyvss`` from ``2022.9.0`` to ``2022.10.0``.
 
 `v2022.9.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2022.9.0>`_ (2022-09-28)
 ----------------------------------------------------------------------------------------
