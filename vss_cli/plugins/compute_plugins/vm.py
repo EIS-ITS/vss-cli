@@ -1811,7 +1811,7 @@ def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
 @click.option('-o', '--on', is_flag=True, help='Power of after migrating')
 @pass_context
 def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
-    """Migrate a virtual machine to another fault domain.
+    """Migrate a virtual machine to another domain.
 
     In order to proceed with the virtual machine relocation,
     in some cases the VM is required to be in a powered off state.

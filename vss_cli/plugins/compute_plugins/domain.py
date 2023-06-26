@@ -19,13 +19,13 @@ _LOGGING = logging.getLogger(__name__)
 def cli(ctx: Configuration):
     """Domain command.
 
-    A fault domain consists of one or more ESXI hosts and
+    A domain consists of one or more ESXI hosts and
     Datastore Clusters grouped together according to their
     physical location in the datacenter.
     """
 
 
-@cli.command('ls', short_help='list fault domains')
+@cli.command('ls', short_help='list domains')
 @so.filter_opt
 @so.all_opt
 @so.page_opt
@@ -33,7 +33,7 @@ def cli(ctx: Configuration):
 @so.count_opt
 @pass_context
 def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
-    """List available fault domains."""
+    """List available domains."""
     columns = ctx.columns or const.COLUMNS_MOREF
     params = dict(expand=1, sort='name,asc')
     if all(filter_by):
@@ -61,7 +61,7 @@ def domain_ls(ctx: Configuration, filter_by, show_all, sort, page, count):
 )
 @pass_context
 def domain_get(ctx: Configuration, name_or_moref):
-    """Get fault domain information."""
+    """Get domain information."""
     _domain = ctx.get_domain_by_name_or_moref(name_or_moref)
     ctx.moref = _domain[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
@@ -77,7 +77,7 @@ def domain_get(ctx: Configuration, name_or_moref):
 )
 @pass_context
 def domain_get_vms(ctx: Configuration, page):
-    """Get VMs in given fault domain."""
+    """Get VMs in given domain."""
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.get_vms_by_domain(ctx.moref)
     if not obj:
