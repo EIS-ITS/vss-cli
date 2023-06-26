@@ -1,6 +1,18 @@
 Changelog 📝
 ============
 
+
+`v2023.6.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.6.1>`_ (2023-06-26)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#629 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/629>`_: ``compute vm set ubuntu-pro``: attach/detach commands
+- `#630 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/630>`_: ``core``: upgrade ``pyvss`` from ``2023.2.1`` to ``2023.6.0``.
+- `#631 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/631>`_: ``core``: check motd via ``pyvss``.
+- `#632 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/632>`_: ``domain``: update help.
+
+
 `v2023.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.6.0>`_ (2023-06-14)
 ------------------------------------------------------------------------------------------
 **Improvements:**
