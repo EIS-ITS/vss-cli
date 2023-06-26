@@ -482,9 +482,7 @@ class Configuration(VssManager):
     def check_motd(self) -> None:
         """Check available motd."""
         try:
-            # TODO: implement get_session_motd in pyvss.
-            rv = self.request('/session/motd')
-            data = rv.get('data') if rv else None
+            data = self.get_session_motd()
             if data and data.get("motd"):
                 em = EMOJI_UNICODE.get(":loudspeaker:")
                 self.secho(
