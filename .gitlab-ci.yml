@@ -360,6 +360,7 @@ build-docs-tag:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
     - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
     - python setup.py install build_sphinx
+    - export CONFLUENCE_DRYRUN=1
     - mkdir -p ./public
     - mkdir -p ./man
     - cp -r docs/_build/man docs/_build/html/
@@ -370,6 +371,18 @@ build-docs-tag:
     paths:
      - public
      - man
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
+  tags:
+    - python-3
+
+release-docs-tag-confluence:
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  stage: release
+  script:
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust python3-dev musl-dev make
+    - pip install '.[dev]'
+    - export CONFLUENCE_PUBLISH=1 && cd docs && make confluence
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/
   tags:
