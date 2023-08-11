@@ -37,7 +37,7 @@ build-dist:
   only:
     - develop
     - branches
-    - master
+    - main
     - tags
   tags:
    - python-3
@@ -57,7 +57,7 @@ build-docker-local:
   only:
     - develop
     - branches
-    - master
+    - main
     - tags
   tags:
     - docker
@@ -73,7 +73,7 @@ build-docker-hub:
     - docker push $DOCKER_HUB_IMAGE_TEST
   only:
     - develop
-    - master
+    - main
     - tags
   tags:
     - docker
@@ -230,7 +230,7 @@ release-docker-hub-develop:
     - dind
 
 # Master
-test-code-master:
+test-code-main:
   image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: test
   script:
@@ -243,14 +243,14 @@ test-code-master:
   tags:
     - python-3
   only:
-    - master
+    - main
     - tags
   artifacts:
     expire_in: 1 week
     paths:
       - coverage/
 
-build-docs-master:
+build-docs-main:
   image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
@@ -269,11 +269,11 @@ build-docs-master:
      - public
      - man
   only:
-    - master
+    - main
   tags:
     - python-3
 
-release-docker-local-master:
+release-docker-local-main:
   stage: release
   before_script:
     - docker info
@@ -285,12 +285,12 @@ release-docker-local-master:
   dependencies:
     - build-docker-local
   only:
-    - master
+    - main
   tags:
     - docker
     - dind
 
-release-docker-hub-master:
+release-docker-hub-main:
   stage: release
   before_script:
     - docker info
@@ -302,7 +302,7 @@ release-docker-hub-master:
   dependencies:
     - build-docker-hub
   only:
-    - master
+    - main
   tags:
     - docker
     - dind

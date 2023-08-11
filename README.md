@@ -1,13 +1,13 @@
 # ITS Private Cloud Command Line Interface ``vss-cli``
 
-[![CI][build-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
-[![Coverage][coverage-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/master)
+[![CI][build-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/main)
+[![Coverage][coverage-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/main)
 [![PyPI][pypi-img]](https://pypi.python.org/pypi/vss-cli)
 [![PyPI version][pyver-img]](https://pypi.python.org/pypi/vss-cli)
 
 
 The ITS Private Cloud Command-Line Interface ``vss-cli`` simplifies the interaction with the 
-[ITS Private Cloud RESTful API][ITS Private Cloud RESTful API] to manage your virtual machines and other services.
+[ITS Private Cloud API][ITS Private Cloud API] to manage your virtual machines and other services.
 <br>
 <br>
 [![asciicast](https://asciinema.org/a/RpP8lQBxjW75SaYtubHqerEp7.svg)](https://asciinema.org/a/JB2CT3GmfdFFUXEDxBV3xI0i0)
@@ -31,7 +31,7 @@ pip install vss-cli
 If you are planning to interact with `vskey-stor` execute the following command
 
 ```bash
-pip install vss-cli[stor]
+pip install 'vss-cli[stor]'
 ```
 The command will install ``minio`` package from PyPI.
 
@@ -78,7 +78,7 @@ docker container. Just download or move the file and update the environment vari
 give execution permission and move it to your ``$PATH``:
 
 ```bash
-curl https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/raw/master/docker/docker-vss-cli > vss-cli
+curl https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/raw/main/docker/docker-vss-cli > vss-cli
 chmod +x vss-cli
 ``` 
 
@@ -337,8 +337,8 @@ Refer to the [Changelog][Changelog] for details.
 [Python Releases for Windows]: https://www.python.org/downloads/windows/
 [pip]: http://www.pip-installer.org/en/latest/
 [open a new issue]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/new
-[build-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/pipeline.svg
-[coverage-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/master/coverage.svg
+[build-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/main/pipeline.svg
+[coverage-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/main/coverage.svg
 [pypi-img]: https://img.shields.io/pypi/v/vss-cli.svg
 [pyver-img]: https://img.shields.io/pypi/pyversions/vss-cli.svg
 [docker-pulls-img]:  https://img.shields.io/docker/pulls/uofteis/vss-cli.svg
