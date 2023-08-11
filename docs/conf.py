@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.abspath('.'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.intersphinx', 'sphinxcontrib.jquery',  'sphinxcontrib.confluencebuilder',]
+extensions = ['sphinx.ext.intersphinx', 'sphinxcontrib.jquery']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -160,6 +160,7 @@ texinfo_documents = [
 
 html_favicon = '_static/favicon.ico'
 if os.getenv('CONFLUENCE_PUBLISH', False):
+    extensions.append('sphinxcontrib.confluencebuilder')
     # Confluence Builder
     confluence_publish = True
     confluence_space_key = os.getenv('CONFLUENCE_SPACE_KEY')
