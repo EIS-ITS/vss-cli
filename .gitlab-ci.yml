@@ -104,7 +104,7 @@ build-docs-develop:
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme setuptools git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
     - python setup.py install build_sphinx
     - mkdir -p ./public
     - mkdir -p ./man
@@ -255,7 +255,7 @@ build-docs-main:
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme setuptools
     - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
     - python setup.py install build_sphinx
     - mkdir -p ./public
@@ -358,7 +358,7 @@ build-docs-tag:
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme setuptools
     - python setup.py install build_sphinx
     - export CONFLUENCE_DRYRUN=1
     - mkdir -p ./public

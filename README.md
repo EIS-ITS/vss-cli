@@ -1,7 +1,5 @@
 # ITS Private Cloud Command Line Interface ``vss-cli``
 
-[![CI][build-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/main)
-[![Coverage][coverage-img]](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/commits/main)
 [![PyPI][pypi-img]](https://pypi.python.org/pypi/vss-cli)
 [![PyPI version][pyver-img]](https://pypi.python.org/pypi/vss-cli)
 
@@ -50,7 +48,7 @@ pip install --upgrade vss-cli
 Use [Homebrew][Homebrew] to install the ``vss-cli`` on macOS:
 
 ```bash
-brew tap vss/vss-cli https://gitlab-ee.eis.utoronto.ca/vss/vss-cli
+brew tap vss/vss-cli https://github.com/EIS-ITS/vss-cli
 brew install vss-cli
 ```
 Using Homebrew will automatically setup autocompletion based on your current shell.
@@ -78,9 +76,14 @@ docker container. Just download or move the file and update the environment vari
 give execution permission and move it to your ``$PATH``:
 
 ```bash
+# U of T
 curl https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/raw/main/docker/docker-vss-cli > vss-cli
 chmod +x vss-cli
-``` 
+
+# Public
+curl https://raw.githubusercontent.com/EIS-ITS/vss-cli/main/docker/docker-vss-cli > vss-cli
+chmod +x vss-cli
+```
 
 ## CLI Releases
 
@@ -338,7 +341,6 @@ Refer to the [Changelog][Changelog] for details.
 [pip]: http://www.pip-installer.org/en/latest/
 [open a new issue]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/new
 [build-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/main/pipeline.svg
-[coverage-img]: https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/badges/main/coverage.svg
 [pypi-img]: https://img.shields.io/pypi/v/vss-cli.svg
 [pyver-img]: https://img.shields.io/pypi/pyversions/vss-cli.svg
 [docker-pulls-img]:  https://img.shields.io/docker/pulls/uofteis/vss-cli.svg
