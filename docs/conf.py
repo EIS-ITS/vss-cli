@@ -170,4 +170,4 @@ if os.getenv('CONFLUENCE_PUBLISH', False):
     confluence_server_user = os.getenv('CONFLUENCE_USER')
     # confluence_parent_page = ''
     confluence_global_labels = ['vss-cli',]
-    confluence_publish_dryrun = os.getenv('CONFLUENCE_DRYRUN', False)
+    confluence_publish_dryrun = bool(os.getenv('CONFLUENCE_DRYRUN', False))
