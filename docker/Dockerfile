@@ -19,8 +19,8 @@ RUN apk add --no-cache --virtual build-dependencies \
 RUN pip3 install --upgrade pip && \
     pip3 install --no-cache-dir --no-use-pep517 -e .[dev]
 # add man pages
-RUN python3 setup.py build_sphinx && \
-    cp docs/_build/man/* /usr/share/man/man1
+RUN python3 setup.py install && sphinx-build -b man docs docs/_build/man && \
+    cp docs/_build/man/_static/* /usr/share/man/man1
 # define volumes
 VOLUME ["/data"]
 # define entrypoint
