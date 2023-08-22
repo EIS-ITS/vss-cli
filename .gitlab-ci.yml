@@ -362,7 +362,7 @@ build-docs-tag:
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
     - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme setuptools
-    - python setup.py install
+    - pip install '.[dev]'
     - sphinx-build -b html docs docs/_build/html
     - sphinx-build -b man docs docs/_build/man
     - export CONFLUENCE_DRYRUN=1 && sphinx-build -b confluence docs docs/_build/confluence -E -a
