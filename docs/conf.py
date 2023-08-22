@@ -159,3 +159,15 @@ texinfo_documents = [
 ]
 
 html_favicon = '_static/favicon.ico'
+if os.getenv('CONFLUENCE_PUBLISH', False):
+    extensions.append('sphinxcontrib.confluencebuilder')
+    # Confluence Builder
+    confluence_publish = True
+    confluence_space_key = os.getenv('CONFLUENCE_SPACE_KEY')
+    # (for Confluence Cloud)
+    confluence_server_pass = os.getenv('CONFLUENCE_TOKEN')
+    confluence_server_url = os.getenv('CONFLUENCE_URL')
+    confluence_server_user = os.getenv('CONFLUENCE_USER')
+    # confluence_parent_page = ''
+    confluence_global_labels = ['vss-cli',]
+    confluence_publish_dryrun = bool(os.getenv('CONFLUENCE_DRYRUN', False))

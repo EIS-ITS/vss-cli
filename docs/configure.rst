@@ -321,7 +321,7 @@ supported by the ``vss-cli``:
 | ``-e``/``--endpoint``     | Cloud API endpoint URL endpoint name defined  |
 |                           | in configuration file.                        |
 +---------------------------+-----------------------------------------------+
-| ``-w``/``--s3-server``    | S3 server for user file transfer.         |
+| ``-w``/``--s3-server``    | S3 server for user file transfer.             |
 +---------------------------+-----------------------------------------------+
 | ``--timeout``             | HTTP timeout value.                           |
 +---------------------------+-----------------------------------------------+

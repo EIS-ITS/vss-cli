@@ -66,15 +66,15 @@ interactions with the project.
 
 1. Fetch changes from upstream
     
-        git fetch vss master
+        git fetch vss main
 
 2. Rebase local repository:
 
-        git rebase vss/master
+        git rebase vss/main
 
 3. Commit changes to your fork
 
-        git push origin master
+        git push origin main
 
 
 [PEP8]: https://pep8.org/

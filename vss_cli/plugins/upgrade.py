@@ -28,7 +28,7 @@ _LOGGING = logging.getLogger(__name__)
 )
 @pass_context
 def cli(ctx: Configuration, upstream, git_branch):
-    """Upgrade existing install of VSS CLI to the latest version.
+    """Upgrade existing installation of VSS CLI to the latest version.
 
     For example, to upgrade to the stable version:
 
@@ -58,7 +58,7 @@ def cli(ctx: Configuration, upstream, git_branch):
             if not git_branch:
                 raise click.BadOptionUsage(
                     'branch',
-                    'Missing --branch/-b option. ' 'Try master or develop.',
+                    'Missing --branch/-b option. Try main or develop.',
                 )
     except ValueError as ex:
         _LOGGING.error(f'Invalid upstream {upstream}: {ex}')

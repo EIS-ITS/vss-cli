@@ -1,6 +1,6 @@
 FROM hub.eis.utoronto.ca/vss/docker/python:3.9-alpine
 # Defining env vars
-ENV VSSCLI_VERSION="2023.6.1"
+ENV VSSCLI_VERSION="2023.8.0"
 ARG CI_BUILD_REF
 # Defininig tags
 LABEL maintainer="Jose Manuel Lopez <jm@eis.utoronto.ca>" \
@@ -19,8 +19,8 @@ RUN apk add --no-cache --virtual build-dependencies \
 RUN pip3 install --upgrade pip && \
     pip3 install --no-cache-dir --no-use-pep517 -e .[dev]
 # add man pages
-RUN python3 setup.py build_sphinx && \
-    cp docs/_build/man/* /usr/share/man/man1
+RUN python3 setup.py install && sphinx-build -b man docs docs/_build/man && \
+    cp docs/_build/man/_static/* /usr/share/man/man1
 # define volumes
 VOLUME ["/data"]
 # define entrypoint

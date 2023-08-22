@@ -25,7 +25,12 @@ if required, give execution permission and move the file to your ``$PATH``:
 
 .. code-block:: bash
 
+    # U of T
     curl https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/raw/master/docker/docker-vss-cli > vss-cli
+    chmod +x vss-cli
+
+    # Public
+    curl https://raw.githubusercontent.com/EIS-ITS/vss-cli/main/docker/docker-vss-cli > vss-cli
     chmod +x vss-cli
 
 The following example shows how to pass environment variables for

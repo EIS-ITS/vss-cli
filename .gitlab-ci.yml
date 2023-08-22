@@ -37,7 +37,7 @@ build-dist:
   only:
     - develop
     - branches
-    - master
+    - main
     - tags
   tags:
    - python-3
@@ -57,7 +57,7 @@ build-docker-local:
   only:
     - develop
     - branches
-    - master
+    - main
     - tags
   tags:
     - docker
@@ -73,7 +73,7 @@ build-docker-hub:
     - docker push $DOCKER_HUB_IMAGE_TEST
   only:
     - develop
-    - master
+    - main
     - tags
   tags:
     - docker
@@ -104,10 +104,12 @@ build-docs-develop:
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
-    - python setup.py install build_sphinx
-    - mkdir -p ./public
-    - mkdir -p ./man
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme setuptools git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - pip install '.[dev]'
+    - sphinx-build -b html docs docs/_build/html
+    - sphinx-build -b man docs docs/_build/man
+    - export CONFLUENCE_DRYRUN=1 && sphinx-build -b confluence docs docs/_build/confluence -E -a
+    - mkdir -p ./public && mkdir -p ./man && mkdir -p ./confluence
     - cp -r docs/_build/man docs/_build/html/
     - cp -r docs/_build/html/* ./public
     - cp -r docs/_build/man/* ./man
@@ -230,7 +232,7 @@ release-docker-hub-develop:
     - dind
 
 # Master
-test-code-master:
+test-code-main:
   image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: test
   script:
@@ -243,23 +245,24 @@ test-code-master:
   tags:
     - python-3
   only:
-    - master
+    - main
     - tags
   artifacts:
     expire_in: 1 week
     paths:
       - coverage/
 
-build-docs-master:
+build-docs-main:
   image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
-    - pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@master
-    - python setup.py install build_sphinx
-    - mkdir -p ./public
-    - mkdir -p ./man
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme setuptools git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
+    - pip install '.[dev]'
+    - sphinx-build -b html docs docs/_build/html
+    - sphinx-build -b man docs docs/_build/man
+    - export CONFLUENCE_DRYRUN=1 && sphinx-build -b confluence docs docs/_build/confluence -E -a
+    - mkdir -p ./public && mkdir -p ./man && mkdir -p ./confluence
     - cp -r docs/_build/man docs/_build/html/
     - cp -r docs/_build/html/* ./public
     - cp -r docs/_build/man/* ./man
@@ -269,11 +272,11 @@ build-docs-master:
      - public
      - man
   only:
-    - master
+    - main
   tags:
     - python-3
 
-release-docker-local-master:
+release-docker-local-main:
   stage: release
   before_script:
     - docker info
@@ -285,12 +288,12 @@ release-docker-local-master:
   dependencies:
     - build-docker-local
   only:
-    - master
+    - main
   tags:
     - docker
     - dind
 
-release-docker-hub-master:
+release-docker-hub-main:
   stage: release
   before_script:
     - docker info
@@ -302,7 +305,7 @@ release-docker-hub-master:
   dependencies:
     - build-docker-hub
   only:
-    - master
+    - main
   tags:
     - docker
     - dind
@@ -358,18 +361,34 @@ build-docs-tag:
   stage: build
   script:
     - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme
-    - python setup.py install build_sphinx
-    - mkdir -p ./public
-    - mkdir -p ./man
+    - pip install pep8 nose coverage pytz sphinx sphinx-rtd-theme setuptools
+    - python setup.py install
+    - sphinx-build -b html docs docs/_build/html
+    - sphinx-build -b man docs docs/_build/man
+    - export CONFLUENCE_DRYRUN=1 && sphinx-build -b confluence docs docs/_build/confluence -E -a
+    - mkdir -p ./public && mkdir -p ./man && mkdir -p ./confluence
     - cp -r docs/_build/man docs/_build/html/
     - cp -r docs/_build/html/* ./public
     - cp -r docs/_build/man/* ./man
+    - cp -r docs/_build/confluence/* ./confluence
   artifacts:
     expire_in: 1 week
     paths:
      - public
      - man
+     - confluence
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
+  tags:
+    - python-3
+
+release-docs-tag-confluence:
+  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
+  stage: release
+  script:
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc rust python3-dev musl-dev make
+    - pip install '.[dev]'
+    - export CONFLUENCE_DRYRUN= && sphinx-build -b confluence docs docs/_build/confluence -E -a
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/
   tags:
