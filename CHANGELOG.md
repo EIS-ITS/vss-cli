@@ -1,5 +1,20 @@
 # Changelog 📝
 
+## [v2023.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.8.0) (2023-08-22)
+
+**Improvements:**
+
+- [#635](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/635): ``docs``: publish docs to confluence cloud (VSS Public Documentation).
+- [#636](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/636): ``ci``: rename branch master to main.
+- [#637](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/637): ``docs``: update public mirror on github.com.
+- [#638](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/638): ``core``: upgrade ``Pygments`` from ``2.13.0`` to ``>2.13.0``.
+- [#639](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/639): ``docker``:  image move to sphinx-build
+- [#640](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/640): ``core``: upgrade ``click`` from ``8.1.3`` to ``8.1.7``.
+
+**Bug Fixes:**
+
+- [#641](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/641): ``docs``: configuration.rst table not well formatted.
+
 ## [v2023.6.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.6.1) (2023-06-26)
 
 **Improvements:**
