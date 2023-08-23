@@ -1,11 +1,11 @@
 ####################################################
-#     VSS-CLI Spec from Clone 2023.8.0             #
+#     VSS-CLI Spec from Clone 2023.8.1-dev0             #
 ####################################################
 built: clone              # Required: Do not remove.
 machine:
   source: SourceVM        # Required: Can be a vm name or a vm id.
   name: &name Vm-Name     # Required: Target virtual machine name
-  disks:
+  disks:                  # Optional: Disks (Default: source vm disk layout)
     - capacity_gb: 40     # Optional: Disk capacity in GB (Default: source vm disk capacity)
 # Additional (Uncomment to enable)
 #  source_snapshot:       # Optional: Snapshot name, id or description source to clone from
@@ -21,8 +21,8 @@ machine:
 #  tpm: true              # Optional: Enable vTrusted Platform Module Device.
 #  vbs: true              # Optional: Enable Virtualization Based Security.
 # Networking
-networking:
-  interfaces:
+networking:               # Optional: Networking (Default: source vm interfaces layout)
+  interfaces:             # Optional: Interfaces (Default: source vm interfaces layout)
     - network: CGN        # Optional: Network name or network ID (default: source vm network)
       type: vmxnet3       # Optional: Defaults to vmxnet3
 # Customization Specification
