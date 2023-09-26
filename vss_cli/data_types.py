@@ -590,6 +590,7 @@ class VmApiSpec:
     folder: str
     inform: List[str]
     memory_gb: int
+    memoryGB: Optional[int]
     name: str
     networks: List[VmNetwork]
     os: str
@@ -731,6 +732,9 @@ class VmApiSpec:
         if cli_spec.custom_spec:
             data['custom_spec'] = cli_spec.custom_spec
         if cli_spec.machine.memory:
+            # TODO: move from camel case `memoryGB` to `memory_gb`.
+            #       change must be performed in pyvss first.
+            data['memoryGB'] = cli_spec.machine.memory
             data['memory_gb'] = cli_spec.machine.memory
         data['name'] = cli_spec.machine.name or name
         if cli_spec.machine.cpu:
