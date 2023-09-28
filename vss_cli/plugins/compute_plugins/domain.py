@@ -65,7 +65,7 @@ def domain_get(ctx: Configuration, name_or_moref):
     _domain = ctx.get_domain_by_name_or_moref(name_or_moref)
     ctx.moref = _domain[0]['moref']
     if click.get_current_context().invoked_subcommand is None:
-        columns = ctx.columns or const.COLUMNS_MOREF
+        columns = ctx.columns or const.COLUMNS_DOMAIN_MIN
         with ctx.spinner(disable=ctx.debug):
             obj = ctx.get_domain(ctx.moref)
         ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
