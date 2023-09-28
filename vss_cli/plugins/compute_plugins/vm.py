@@ -769,6 +769,15 @@ def compute_vm_get_template(ctx: Configuration):
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
 
+@compute_vm_get.command('gpu', short_help='GPU configuration')
+@pass_context
+def compute_vm_get_gpu(ctx: Configuration):
+    """Virtual machine gpu configuration."""
+    columns = ctx.columns or const.COLUMNS_VM_GPU
+    objs = ctx.get_vm_gpu(ctx.moref)
+    ctx.echo(format_output(ctx, objs, columns=columns, single=True))
+
+
 @compute_vm_get.command('tpm', short_help='vTPM configuration')
 @pass_context
 def compute_vm_get_tpm(ctx: Configuration):
