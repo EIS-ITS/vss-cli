@@ -225,7 +225,12 @@ class VmMachine:
     template: Optional[bool] = field(default_factory=lambda: False)
     tpm: Optional[bool] = field(default_factory=lambda: False)
     vbs: Optional[bool] = field(default_factory=lambda: False)
-    disks: List[VmDisk] = field(default_factory=lambda: VmDisk(capacity_gb=40))
+    disks: Optional[List[VmDisk]] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
+    scsi: Optional[List[VmScsi]] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
     cpu: Optional[int] = field(default_factory=lambda: 1)
     memory: Optional[int] = field(default_factory=lambda: 1)
     firmware: Optional[str] = field(default_factory=lambda: 'efi')
@@ -487,8 +492,10 @@ class VmCliSpec:
 
     built: str
     machine: VmMachine
-    networking: VmNetworking
     metadata: VmMeta
+    networking: Optional[VmNetworking] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
     iso: Optional[str] = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
@@ -586,6 +593,7 @@ class VmApiSpec:
     folder: str
     inform: List[str]
     memory_gb: int
+    memoryGB: Optional[int]
     name: str
     networks: List[VmNetwork]
     os: str
@@ -724,9 +732,14 @@ class VmApiSpec:
             data['networks'] = networks
         if cli_spec.machine.disks:
             data['disks'] = [disk.to_dict() for disk in cli_spec.machine.disks]
+        if cli_spec.machine.scsi:
+            data['scsi'] = [scsi.to_dict() for scsi in cli_spec.machine.scsi]
         if cli_spec.custom_spec:
             data['custom_spec'] = cli_spec.custom_spec
         if cli_spec.machine.memory:
+            # TODO: move from camel case `memoryGB` to `memory_gb`.
+            #       change must be performed in pyvss first.
+            data['memoryGB'] = cli_spec.machine.memory
             data['memory_gb'] = cli_spec.machine.memory
         data['name'] = cli_spec.machine.name or name
         if cli_spec.machine.cpu:

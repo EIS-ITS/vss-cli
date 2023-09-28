@@ -50,7 +50,7 @@ the **ITS Private Cloud**.
 
 .. code-block:: bash
 
-    vss-cli compute vm set <vm-name-or-vm-id> controller scsi mk -s paravirtual
+    vss-cli compute vm set <vm-name-or-vm-id> controller scsi mk --scsi paravirtual
 
 4. Verify that a new SCSI controller has been created.
 

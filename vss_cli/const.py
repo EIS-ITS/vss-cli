@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.8.0"
+__version__ = "2023.9.0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -109,6 +109,7 @@ COLUMNS_MFA_MIN = [("message",), ("type",)]
 COLUMNS_VM_MIN = [("moref",), ("name",)]
 COLUMNS_VIM_REQUEST = [("vm_moref",), ("vm_name",)]
 COLUMNS_MOREF = [("moref",), ("name",)]
+COLUMNS_DOMAIN_MIN = [*COLUMNS_MOREF, ("gpu_profiles", "gpu_profiles[*]")]
 COLUMNS_FOLDER_MIN = [*COLUMNS_MOREF, ("path",), ("parent.name",)]
 COLUMNS_FOLDER = [*COLUMNS_FOLDER_MIN, ("parent.moref",), ("has_children",)]
 COLUMNS_FIRMWARE = [("firmware",)]
@@ -427,6 +428,8 @@ COLUMNS_VM_STATE = [
 ]
 COLUMNS_VM_TOOLS = [("version",), ("version_status",), ("running_status",)]
 COLUMNS_VM_TPM = [('label',), ('summary',), ('key',)]
+COLUMNS_VM_GPU = [('label',), ('summary',), ('key',)]
+COLUMNS_VM_RESTORE_POINTS = [('id',), ('timestamp',)]
 COLUMNS_VM_VBS = [('vbs_enabled',), ('firmware',), ('tpm', 'tpm[*].label')]
 COLUMNS_VM_HW = [
     ("value",),
