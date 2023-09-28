@@ -775,7 +775,7 @@ def compute_vm_get_gpu(ctx: Configuration):
     """Virtual machine gpu configuration."""
     columns = ctx.columns or const.COLUMNS_VM_GPU
     objs = ctx.get_vm_gpu(ctx.moref)
-    ctx.echo(format_output(ctx, objs, columns=columns, single=True))
+    ctx.echo(format_output(ctx, objs, columns=columns))
 
 
 @compute_vm_get.group('restore-point', short_help='Restore Points')

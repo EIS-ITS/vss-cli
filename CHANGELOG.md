@@ -1,5 +1,24 @@
 # Changelog 📝
 
+## [v2023.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.9.0) (2023-09-29)
+
+**Improvements:**
+
+- [#644](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/644): ``compute vm mk from-file``: clone set source networking and ``machine.disks`` if not specified.
+- [#647](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/647): ``core``: upgrade ``minio`` from ``7.1.13`` to ``7.1.17``.
+- [#648](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/648): ``core``: upgrade ``dateparser`` from ``1.1.4`` to ``1.1.8``.
+- [#649](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/649): ``compute domain get``: show ``gpu_profiles``.
+- [#650](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/650): ``core``: upgrade ``pyvss`` from ``2023.6.0`` to ``2023.9.0``.
+- [#652](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/652): ``compute vm set client-note``: allow deletion with ``--action del``.
+- [#653](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/653): ``compute vm get gpu``: get gpu devices.
+- [#654](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/654): ``compute vm get restore-point``: get restore points.
+
+**Bug Fixes:**
+
+- [#645](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/645): ``docs``: example pvscsi incorrect option.
+- [#646](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/646): ``compute vm mk from-file``: ignores ``machine.memory`` in vss-cli configuration spec (``shell``).
+- [#651](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/651): ``compute vm mk from-file``: ignores ``machine.scsi`` vss-cli configuration spec (``shell``).
+
 ## [v2023.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.8.0) (2023-08-22)
 
 **Improvements:**
