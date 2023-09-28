@@ -1203,30 +1203,44 @@ def compute_vm_set_client(ctx: Configuration, client):
 
 
 @compute_vm_set.command('client-note', short_help='Client note (Metadata)')
-@click.argument('notes', required=True)
+@click.argument('notes', required=False)
+@click.option(
+    '--action',
+    type=click.Choice(['up', 'del']),
+    help='Action to perform.',
+    default='add',
+)
 @click.option(
     '--replace',
     '-r',
     is_flag=True,
     required=False,
-    help="Whether to replace existing value.",
+    help="Whether to replace existing value. Only works with up.",
 )
 @pass_context
-def compute_vm_set_client_note(ctx: Configuration, notes, replace):
+def compute_vm_set_client_note(ctx: Configuration, notes, replace, action):
     """Set or update virtual machine client notes in metadata.
 
-    vss-cli compute vm set <name-or-vm_id> client-note 'New note'
+    vss-cli compute vm set <name-or-vm_id> client-note --up 'New note'
     """
-    if not replace:
-        _old_notes = ctx.get_vm_notes(ctx.moref)
-        old_notes = _old_notes.get('value') or ""
-        notes = f"{old_notes}\n{notes}"
-    # generate payload
-    payload = dict(vm_id=ctx.moref, notes=notes)
-    # add common options
-    payload.update(ctx.payload_options)
     # request
-    obj = ctx.update_vm_notes(**payload)
+    if action == 'del':
+        # TODO: implement ctx.del_vm_notes from pyvss.
+        objs = ctx.request(f'/vm/{ctx.moref}/note/client', method=ctx.DELETE)
+        if objs:
+            obj = objs.get('data')
+    else:
+        if not notes:
+            raise click.BadArgumentUsage('Missing notes argument')
+        if not replace:
+            _old_notes = ctx.get_vm_notes(ctx.moref)
+            old_notes = _old_notes.get('value') or ""
+            notes = f"{old_notes}\n{notes}"
+        # generate payload
+        payload = dict(vm_id=ctx.moref, notes=notes)
+        # add common options
+        payload.update(ctx.payload_options)
+        obj = ctx.update_vm_notes(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
