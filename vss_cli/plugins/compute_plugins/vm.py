@@ -778,6 +778,55 @@ def compute_vm_get_gpu(ctx: Configuration):
     ctx.echo(format_output(ctx, objs, columns=columns, single=True))
 
 
+@compute_vm_get.group('restore-point', short_help='Restore Points')
+@pass_context
+def compute_vm_get_rp(ctx: Configuration):
+    """Virtual machine restore points configuration."""
+
+
+@compute_vm_get_rp.command(
+    'ls', short_help='list virtual machine restore points'
+)
+@so.filter_opt
+@so.all_opt
+@so.page_opt
+@so.sort_opt
+@so.count_opt
+@pass_context
+def compute_vm_get_rp_ls(
+    ctx: Configuration,
+    filter_by,
+    show_all: bool,
+    sort,
+    page,
+    count,
+):
+    """List virtual machine restore points."""
+    params = dict(expand=1, sort='name,asc')
+    if all(filter_by):
+        params['filter'] = ';'.join(filter_by)
+    if all(sort):
+        params['sort'] = ';'.join(sort)
+    with ctx.spinner(disable=ctx.debug):
+        objs = (
+            ctx._get_objects(
+                f'/vm/{ctx.moref}/rp',
+                show_all=show_all,
+                per_page=count,
+                **params,
+            )
+            or []
+        )
+    columns = ctx.columns or const.COLUMNS_VM_RESTORE_POINTS
+    # format output
+    output = format_output(ctx, objs, columns=columns)
+    # page
+    if page:
+        click.echo_via_pager(output)
+    else:
+        ctx.echo(output)
+
+
 @compute_vm_get.command('tpm', short_help='vTPM configuration')
 @pass_context
 def compute_vm_get_tpm(ctx: Configuration):
