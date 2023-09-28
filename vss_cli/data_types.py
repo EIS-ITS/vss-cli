@@ -228,6 +228,9 @@ class VmMachine:
     disks: Optional[List[VmDisk]] = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
+    scsi: Optional[List[VmScsi]] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
     cpu: Optional[int] = field(default_factory=lambda: 1)
     memory: Optional[int] = field(default_factory=lambda: 1)
     firmware: Optional[str] = field(default_factory=lambda: 'efi')
@@ -729,6 +732,8 @@ class VmApiSpec:
             data['networks'] = networks
         if cli_spec.machine.disks:
             data['disks'] = [disk.to_dict() for disk in cli_spec.machine.disks]
+        if cli_spec.machine.scsi:
+            data['scsi'] = [scsi.to_dict() for scsi in cli_spec.machine.scsi]
         if cli_spec.custom_spec:
             data['custom_spec'] = cli_spec.custom_spec
         if cli_spec.machine.memory:
