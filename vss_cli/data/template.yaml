@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from Template v2023.10.0-dev0         #
+#     VSS-CLI Spec from Template v2023.10.0-dev1         #
 ####################################################
 built: template           # Required: Do not remove.
 machine:
@@ -45,7 +45,7 @@ metadata:                 # Optional: Description of virtual machine
     nginx and database server for a very important service.
   usage: Test             # Optional: Usage between Prod | Dev | QA | Test (default: source vm usage)
   client: Department      # Optional: Client department (default: source vm client)
-  inform:                 # Optional: list of email addresses. (default: source vm inform)
+  inform:                 # Required: list of email addresses. (default: source vm inform)
     - email@utoronto.ca
   admin:                  # Optional: VM Administrator (Default: source vm admin)
     name:                 # (Admin) Required: VM Administrator full name

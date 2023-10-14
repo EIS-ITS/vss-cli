@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec shell VM v2023.10.0-dev0             #
+#     VSS-CLI Spec shell VM v2023.10.0-dev1             #
 ####################################################
 built: os_install         # Required: Do not remove.
 machine:
@@ -35,7 +35,7 @@ metadata:
   description: >
     nginx and database server for a very important service.
   usage: Test             # Optional: Usage between Prod | Dev | QA | Test (default: Test)
-  inform:                 # Optional: list of additional contact email addresses (default: user account)
+  inform:                 # Required: list of additional contact email addresses
     - email@utoronto.ca
 #  admin:                  # Optional: VM Administrator (Default: user submitting request)
 #    name:                 # (Admin) Required: VM Administrator full name
