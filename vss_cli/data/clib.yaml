@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from CLib 2023.9.0             #
+#     VSS-CLI Spec from CLib 2023.10.0-dev0             #
 ####################################################
 built: clib               # Required: Do not remove.
 machine:

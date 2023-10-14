@@ -1379,17 +1379,33 @@ class Configuration(VssManager):
                     prod_sect = value.get('ProductSection') or value.get(
                         'ovf:ProductSection'
                     )
-                    output['Product'] = prod_sect.get(
-                        'Product'
-                    ) or prod_sect.get('ovf:FullVersion')
-                    output['Version'] = prod_sect.get(
-                        'Version'
-                    ) or prod_sect.get('ovf:Version')
-                    if 'Property' in prod_sect or 'ovf:Property' in prod_sect:
+                    prod_props = []
+                    if isinstance(prod_sect, list):
+                        for item in prod_sect:
+                            if 'Product' in item:
+                                output['Product'] = item.get('Product')
+                            if 'Vendor' in item:
+                                output['Vendor'] = item.get('Vendor')
+                            if 'Property' in item:
+                                prod_props.extend(item.get('Property', []))
+                    elif isinstance(prod_sect, dict):
+                        output['Product'] = prod_sect.get(
+                            'Product'
+                        ) or prod_sect.get('ovf:FullVersion')
+                        output['Version'] = prod_sect.get(
+                            'Version'
+                        ) or prod_sect.get('ovf:Version')
+                    if (
+                        'Property' in prod_sect
+                        or 'ovf:Property' in prod_sect
+                        or prod_props
+                    ):
                         pparams = []
-                        properties = prod_sect.get(
-                            'Property'
-                        ) or prod_sect.get('ovf:Property', [])
+                        properties = (
+                            prod_props
+                            or prod_sect.get('Property')
+                            or prod_sect.get('ovf:Property', [])
+                        )
                         for prop in properties:
                             if (
                                 prop.get('@ovf:userConfigurable', None)
@@ -1399,7 +1415,9 @@ class Configuration(VssManager):
                                     'key': prop['@ovf:key'],
                                     'type': prop['@ovf:type'],
                                     'description': prop.get('Description')
-                                    or prop.get('ovf:Description'),
+                                    or prop.get('ovf:Description')
+                                    or prop.get('Label')
+                                    or prop.get('ovf:Label'),
                                     'default': prop.get('@ovf:value'),
                                 }
                                 pparams.append(prop)
