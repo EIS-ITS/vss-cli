@@ -949,6 +949,23 @@ class Configuration(VssManager):
             )
         return objs
 
+    def get_vm_restore_points_by_id_or_timestamp(
+        self, vm_id: str, id_or_timestamp: str
+    ) -> List[Dict]:
+        """Get vm restore points by id or timestamp."""
+        rps = self.get_vm_restore_points(vm_id)
+        attributes = [('id', int), ('timestamp', str)]
+        objs = self._filter_objects_by_attrs(id_or_timestamp, rps, attributes)
+        if not objs:
+            raise click.BadParameter(f'{id_or_timestamp} could not be found')
+        d_count = len(objs)
+        if d_count > 1:
+            return self.pick(
+                objs,
+                options=[f"{i['id']} ({i['timestamp']})" for i in objs],
+            )
+        return objs
+
     def get_domain_by_name_or_moref(self, name_or_moref: str) -> List[Dict]:
         """Get domain by name or mo reference."""
         g_domains = self.get_domains()

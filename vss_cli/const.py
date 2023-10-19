@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.10.0-dev1"
+__version__ = "2023.10.0-dev2"
 
 
 DEFAULT_TIMEOUT = 30
@@ -101,7 +101,19 @@ DEFAULT_VM_DEL_MSG = (
     "Are you sure you want to delete "
     "the above VM?"
 )
-
+DEFAULT_VM_RESTORE_MSG = (
+    "Moref:\t\t{vm[moref]}\n"
+    "UUID:\t\t{vm[uuid]}\n"
+    "Name:\t\t{vm[name]}\n"
+    "Folder:\t\t{vm[folder][path]}\n"
+    "Host Name:\t{vm[hostname]} "
+    "({vm[guest_full_name]})\n"
+    "IP Address:\t{vm[ip_address]}\n"
+    "MAC Address:\t{vm[mac_address]}\n"
+    "Create Date:\t{vm[create_date]}\n\n"
+    "Are you sure you want to restore "
+    "the above VM to timestamp {rp[timestamp]}?"
+)
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
 COLUMNS_DEFAULT = [("all", "*")]

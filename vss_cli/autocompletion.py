@@ -654,3 +654,24 @@ def vm_retirement_requests(
         except IndexError:
             return []
     return []
+
+
+@to_completion_item
+def vm_restore_points(
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM restore points."""
+    _init_ctx(ctx)
+    args = ctx.params
+    if 'vm_id' in args:
+        try:
+            vm_id = args['vm_id']
+            return _autocomplete(
+                ctx.client.get_vm_restore_points,
+                incomplete,
+                attrs=['id', 'timestamp'],
+                f_kwargs={'moref': vm_id, 'show_all': True, 'per_page': 120},
+            )
+        except KeyError:
+            return []
+    return []
