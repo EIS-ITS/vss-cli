@@ -635,6 +635,19 @@ def retirement_requests(
     )
 
 
+def restore_requests(
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM restore requests."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_restore_requests,
+        incomplete,
+        attrs=['id', 'vm_moref', 'vm_name', 'timestamp'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
+
+
 @to_completion_item
 def vm_retirement_requests(
     ctx: Configuration, param: click.Option, incomplete: str

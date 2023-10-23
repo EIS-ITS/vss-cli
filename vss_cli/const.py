@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.10.0-dev3"
+__version__ = "2023.10.0-dev4"
 
 
 DEFAULT_TIMEOUT = 30
@@ -180,6 +180,13 @@ COLUMNS_REQUEST_MULT_SUBMITTED = [
     ("status", "request.status[*]"),
     ("task_id", "request.task_id[*]"),
     ("message",),
+]
+COLUMNS_REQUEST_RESTORE = [
+    *COLUMNS_REQUEST,
+    *COLUMNS_VIM_REQUEST,
+    ("timestamp",),
+    ("result_vm_name",),
+    ("result_vm_moref",),
 ]
 COLUMNS_REQUEST_RETIRE = [
     *COLUMNS_REQUEST,

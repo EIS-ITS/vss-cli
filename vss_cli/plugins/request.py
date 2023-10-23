@@ -22,4 +22,5 @@ from vss_cli.plugins.request_plugins import (  # isort:skip
     new,
     snapshot,
     vmdk,
+    restore,
 )  # pylint: disable=unused-import
