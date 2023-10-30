@@ -635,6 +635,19 @@ def retirement_requests(
     )
 
 
+def restore_requests(
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM restore requests."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_restore_requests,
+        incomplete,
+        attrs=['id', 'vm_moref', 'vm_name', 'timestamp'],
+        f_kwargs={"sort": "created_on,desc", "per_page": 500},
+    )
+
+
 @to_completion_item
 def vm_retirement_requests(
     ctx: Configuration, param: click.Option, incomplete: str
@@ -652,5 +665,26 @@ def vm_retirement_requests(
                 f_kwargs={'vm_id': vm_id},
             )
         except IndexError:
+            return []
+    return []
+
+
+@to_completion_item
+def vm_restore_points(
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM restore points."""
+    _init_ctx(ctx)
+    args = ctx.params
+    if 'vm_id' in args:
+        try:
+            vm_id = args['vm_id']
+            return _autocomplete(
+                ctx.client.get_vm_restore_points,
+                incomplete,
+                attrs=['id', 'timestamp'],
+                f_kwargs={'moref': vm_id, 'show_all': True, 'per_page': 120},
+            )
+        except KeyError:
             return []
     return []

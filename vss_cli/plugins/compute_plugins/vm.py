@@ -3419,6 +3419,68 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
         ctx.wait_for_request_to(obj)
 
 
+@compute_vm.command(
+    'res',
+    help='Restore virtual machine from available restore points.',
+)
+@click.option(
+    '-t',
+    '--timestamp',
+    required=True,
+    help='Restore point timestamp or id.',
+    shell_complete=autocompletion.vm_restore_points,
+)
+@click.option(
+    '--reason', type=click.STRING, required=False, help='Restore reason.'
+)
+@click.argument(
+    'vm_id',
+    type=click.STRING,
+    required=True,
+    shell_complete=autocompletion.virtual_machines,
+)
+@pass_context
+def compute_vm_restore(
+    ctx: Configuration, vm_id: str, timestamp: str, reason: str = None
+):
+    """Restore virtual machine from restore point."""
+    _LOGGING.debug(f'Attempting to restore {vm_id}')
+    _vm = ctx.get_vm_by_id_or_name(vm_id)
+    # get moref from reference
+    moref = _vm[0]['moref']
+    # get id from reference
+    _rp = ctx.get_vm_restore_points_by_id_or_timestamp(moref, timestamp)
+    rp_timestamp = _rp[0]['timestamp']
+    #
+    _LOGGING.debug(f'Attempting to restore: {moref} -> {rp_timestamp}')
+    if _vm and _rp:
+        c_str = const.DEFAULT_VM_RESTORE_MSG.format(vm=_vm[0], rp=_rp[0])
+        confirmation = click.confirm(c_str)
+        restore_reason = reason or click.prompt(
+            'Please provide a restore reason',
+        )
+        if not restore_reason:
+            raise click.BadArgumentUsage('Reason for restore is required.')
+        reason_payload = {'restore_reason': restore_reason}
+        if not confirmation:
+            _LOGGING.warning('No requests have been submitted.')
+            raise click.ClickException('Cancelled by user.')
+        # add user meta.
+        ctx.user_meta = reason_payload
+        # set payload options
+        ctx.payload_options['user_meta'] = ctx.user_meta
+        payload = dict(moref=moref, timestamp=rp_timestamp)
+        payload.update(ctx.payload_options)
+        _LOGGING.debug(f'Using payload: {payload}')
+        obj = ctx.restore_vm(**payload)
+        # submit request
+        columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+        ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+        # wait for request
+        if ctx.wait_for_requests:
+            ctx.wait_for_request_to(obj)
+
+
 @compute_vm.group(
     'rm', help='Delete given virtual machines', invoke_without_command=True
 )

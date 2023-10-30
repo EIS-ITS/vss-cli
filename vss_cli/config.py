@@ -949,6 +949,23 @@ class Configuration(VssManager):
             )
         return objs
 
+    def get_vm_restore_points_by_id_or_timestamp(
+        self, vm_id: str, id_or_timestamp: str
+    ) -> List[Dict]:
+        """Get vm restore points by id or timestamp."""
+        rps = self.get_vm_restore_points(vm_id)
+        attributes = [('id', int), ('timestamp', str)]
+        objs = self._filter_objects_by_attrs(id_or_timestamp, rps, attributes)
+        if not objs:
+            raise click.BadParameter(f'{id_or_timestamp} could not be found')
+        d_count = len(objs)
+        if d_count > 1:
+            return self.pick(
+                objs,
+                options=[f"{i['id']} ({i['timestamp']})" for i in objs],
+            )
+        return objs
+
     def get_domain_by_name_or_moref(self, name_or_moref: str) -> List[Dict]:
         """Get domain by name or mo reference."""
         g_domains = self.get_domains()
@@ -1379,17 +1396,33 @@ class Configuration(VssManager):
                     prod_sect = value.get('ProductSection') or value.get(
                         'ovf:ProductSection'
                     )
-                    output['Product'] = prod_sect.get(
-                        'Product'
-                    ) or prod_sect.get('ovf:FullVersion')
-                    output['Version'] = prod_sect.get(
-                        'Version'
-                    ) or prod_sect.get('ovf:Version')
-                    if 'Property' in prod_sect or 'ovf:Property' in prod_sect:
+                    prod_props = []
+                    if isinstance(prod_sect, list):
+                        for item in prod_sect:
+                            if 'Product' in item:
+                                output['Product'] = item.get('Product')
+                            if 'Vendor' in item:
+                                output['Vendor'] = item.get('Vendor')
+                            if 'Property' in item:
+                                prod_props.extend(item.get('Property', []))
+                    elif isinstance(prod_sect, dict):
+                        output['Product'] = prod_sect.get(
+                            'Product'
+                        ) or prod_sect.get('ovf:FullVersion')
+                        output['Version'] = prod_sect.get(
+                            'Version'
+                        ) or prod_sect.get('ovf:Version')
+                    if (
+                        'Property' in prod_sect
+                        or 'ovf:Property' in prod_sect
+                        or prod_props
+                    ):
                         pparams = []
-                        properties = prod_sect.get(
-                            'Property'
-                        ) or prod_sect.get('ovf:Property', [])
+                        properties = (
+                            prod_props
+                            or prod_sect.get('Property')
+                            or prod_sect.get('ovf:Property', [])
+                        )
                         for prop in properties:
                             if (
                                 prop.get('@ovf:userConfigurable', None)
@@ -1399,7 +1432,9 @@ class Configuration(VssManager):
                                     'key': prop['@ovf:key'],
                                     'type': prop['@ovf:type'],
                                     'description': prop.get('Description')
-                                    or prop.get('ovf:Description'),
+                                    or prop.get('ovf:Description')
+                                    or prop.get('Label')
+                                    or prop.get('ovf:Label'),
                                     'default': prop.get('@ovf:value'),
                                 }
                                 pparams.append(prop)
