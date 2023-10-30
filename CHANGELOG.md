@@ -1,5 +1,19 @@
 # Changelog 📝
 
+## [v2023.10.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.10.0) (2023-10-30)
+
+**Improvements:**
+
+- [#657](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/657): ``ovf get`` support for in Product section ``PropertyParams``.
+- [#659](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/659): ``compute vm res`` to restore from available restore points.
+- [#660](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/660): ``core``: upgrade ``pyvss`` from ``2023.9.0`` to ``2023.10.0``.
+- [#661](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/661): ``request restore``: command to browse restore requests.
+
+
+**Bug Fixes:**
+
+- [#658](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/658): ``compute vm mk from-file`` spec ``metadata.inform`` help required.
+
 ## [v2023.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.9.0) (2023-09-29)
 
 **Improvements:**
