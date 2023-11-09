@@ -243,6 +243,32 @@ as ``JSON`` payload as follows:
 .. Note::
     The task will first transfer the original VMDK, validate, inflate and convert the file to the right vSphere format.
 
+Copy
+------
+Similar to importing a  ``VMDK``, copying virtual disks across virtual machines allows the flexibility
+to duplicate a disk from one VM to another with a simple command.
+
+- Source: 2311P-VM-A
+- Target: 2311P-VM-B
+
+1. Get source VM disk to copy from the ``file_name`` attribute as follows:
+
+.. code-block:: bash
+
+    vss-cli -o yaml compute vm get 2311P-VM-A disk
+
+2. Submit an import request with the ``vss-cli compute vm set vm-2551 disk cp`` command:
+
+.. code-block:: bash
+
+     vss-cli compute vm set 2311P-VM-B disk cp --disk '{"capacity_gb": 100, "backing_vmdk": "[XXXX-NN] vm-name/vm-name_1.vmdk"}'
+
+3. A confirmation prompt will show with the target VM information, if you would like to skip this step, add the ``--confirm``
+option to the ``cp`` command.
+
+.. Note::
+     ``VMDK`` Copy tasks might take a while based on the source VM size and how much resources are available.
+
 
 Remove
 ------
