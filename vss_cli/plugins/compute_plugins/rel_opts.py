@@ -181,7 +181,7 @@ disks_nr_opt = click.option(
 disk_opt = click.option(
     '--disk',
     '-i',
-    help='Disk spec <capacity>=<backing_mode>=<backing_sharing>. '
+    help='Disk spec <capacity>=<backing_mode>=<backing_sharing>=<backing_vmdk>. '  # NOQA:
     'optional: backing_mode, backing_sharing',
     type=click.STRING,
     multiple=True,

@@ -146,17 +146,18 @@ def process_disk_opt(ctx: Configuration, param, value):
                     )
                     _backing_mode = _backing_mode[0]['type']
                     disk['backing_mode'] = _backing_mode
+                else:
+                    disk['backing_mode'] = _backing_mode
                 if _dev.get('backing_sharing'):
                     _sharing_mode = ctx.client.get_vm_disk_backing_sharing_by_name(  # NOQA:
                         _dev.get('backing_sharing')
                     )
                     _sharing_mode = _sharing_mode[0]['type']
                     disk['backing_sharing'] = _sharing_mode
+                else:
+                    disk['backing_sharing'] = _sharing_mode
                 if _dev.get('backing_vmdk'):
-                    _backing_vmdk = ctx.client.get_vmdk_by_name_path_or_id(
-                        _dev.get('backing_vmdk')
-                    )
-                    disk['backing_vmdk'] = _backing_vmdk[0]['path']
+                    disk['backing_vmdk'] = _dev.get('backing_vmdk')
                 if _dev.get('scsi') is not None:
                     try:
                         _scsi_crllr = int(_dev.get('scsi'))
@@ -180,11 +181,7 @@ def process_disk_opt(ctx: Configuration, param, value):
                         _sharing_mode = _sharing_mode[0]['type']
                         disk['backing_sharing'] = _sharing_mode
                     if len(_spec) > 1:
-                        _backing_vmdk = ctx.client.get_vmdk_by_name_path_or_id(
-                            _spec[1]
-                        )
-                        _backing_vmdk = _backing_vmdk[0]['path']
-                        disk['backing_vmdk'] = _backing_vmdk
+                        disk['backing_vmdk'] = _spec[1]
             devices.append(disk)
         return devices
 
