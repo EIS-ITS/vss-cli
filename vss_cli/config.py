@@ -9,7 +9,15 @@ import platform
 import sys
 from time import sleep
 from typing import (  # noqa: F401
-    Any, Callable, Dict, List, Optional, Tuple, Union, cast)
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 import click
 from click_spinner import Spinner, spinner
@@ -25,12 +33,20 @@ import vss_cli.const as const
 from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
-    bytes_to_str, debug_requests_on, format_output, get_hostname_from_url)
+    bytes_to_str,
+    debug_requests_on,
+    format_output,
+    get_hostname_from_url,
+)
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import (
-    validate_email, validate_json_file_or_type, validate_phone_number,
-    validate_uuid, validate_vm_moref)
+    validate_email,
+    validate_json_file_or_type,
+    validate_phone_number,
+    validate_uuid,
+    validate_vm_moref,
+)
 import vss_cli.yaml as yaml
 
 _LOGGING = logging.getLogger(__name__)
@@ -826,11 +842,18 @@ class Configuration(VssManager):
             attr_type = attr[1]
             try:
                 if attr_type in [str]:
-                    f = filter(
-                        lambda i: attr_type(value).lower()
-                        in i[attr_name].lower(),
-                        objects,
-                    )
+                    if attr_name in ['moref', 'uuid']:
+                        f = filter(
+                            lambda i: attr_type(value).lower()
+                            == i[attr_name].lower(),
+                            objects,
+                        )
+                    else:
+                        f = filter(
+                            lambda i: attr_type(value).lower()
+                            in i[attr_name].lower(),
+                            objects,
+                        )
                 elif attr_type in [int]:
                     f = filter(
                         lambda i: attr_type(value) == i[attr_name], objects
