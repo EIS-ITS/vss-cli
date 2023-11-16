@@ -1657,6 +1657,50 @@ def compute_vm_set_disk(ctx: Configuration):
     pass
 
 
+@compute_vm_set_disk.command('cp', short_help='Copy disk(s)')
+@c_so.disk_opt
+@click.option(
+    '-c', '--confirm', is_flag=True, default=False, help='Confirm disk copy'
+)
+@pass_context
+def compute_vm_set_disk_cp(ctx: Configuration, disk, confirm):
+    """Copy given disk from another VM and add it to the current VM.
+
+    vss-cli compute vm set <name-or-vm_id> disk cp
+    -i "<capacity>=<backing_mode>=<backing_sharing>=<backing_file>"
+
+    """
+    payload = dict(vm_id=ctx.moref, disks=disk)
+    # look for backing_file as required
+    rv = list(filter(lambda x: 'backing_vmdk' in x, disk))
+    if not rv:
+        raise click.BadParameter('Missing backing_vmdk')
+    strs = [
+        (
+            f'{d["backing_vmdk"]} - {d["capacity_gb"]} '
+            f'({d["backing_mode"]}:{d["backing_sharing"]})'
+        )
+        for d in disk
+    ]
+    msg = '\n'.join(strs)
+    _vm = ctx.get_vm_by_id_or_name(ctx.moref)
+    if _vm:
+        c_str = const.DEFAULT_VM_DISK_CP_MSG.format(vm=_vm[0], msg=msg)
+        confirm = confirm or click.confirm(c_str)
+        if not confirm:
+            raise click.ClickException('Cancelled by user.')
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.create_vm_disk(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
 @compute_vm_set_disk.command('mk', short_help='Create disk(s)')
 @c_so.disk_opt
 @pass_context
