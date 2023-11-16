@@ -2,8 +2,8 @@ class VssCli < Formula
 
   desc "ITS Private Cloud Command Line Interface vss-cli"
   homepage "https://eis.utoronto.ca/~vss/vss-cli"
-  url "https://files.pythonhosted.org/packages/c8/d9/b9b6c2dd53249da58ce45c21f9acc6360b6028c1082e7b8f37c819be38c5/vss_cli-2023.10.0-py2.py3-none-any.whl"
-  sha256 "c789424966ef81e2604ed1f042af73d21f2f8bfb684e2dbf999253759bc76259"
+  url "https://files.pythonhosted.org/packages/ca/92/e0b88b2d3e936c6c6abcdbe1b75ebf5dfe1230708befe93ff149c589880b/vss_cli-2023.11.0-py2.py3-none-any.whl"
+  sha256 "de35420ed96e0741b7ec2382d84dd4155f156d401ca6edf9d12e8aee7adf27f6"
   license "MIT"
 
   depends_on "python@3.10"
