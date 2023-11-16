@@ -1,5 +1,15 @@
 # Changelog 📝
 
+## [v2023.11.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.11.0) (2023-11-16)
+
+**Improvements:**
+
+- [#664](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/664): ``compute vm set disk cp``: to copy virtual disks across VMs.
+- [#665](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/665): ``core``: ``setuptools`` version ``68.2.2``.
+- [#666](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/666): ``core``: ``filter_bojects_by_attrs`` match a set of named attributes.
+- [#667](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/667): ``ci``: ``pre-commit`` hook updates.
+- [#666](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/666): ``core``: upgrade ``pyvss`` from ``2023.10.0`` to ``2023.11.0``.
+
 ## [v2023.10.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.10.0) (2023-10-30)
 
 **Improvements:**
