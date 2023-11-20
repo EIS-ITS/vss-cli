@@ -9,15 +9,17 @@ import click
 from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
 
-from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
+from vss_cli import const
+from vss_cli import rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.data_types import VmApiSpec, VmCliSpec
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
-from vss_cli.plugins.compute_plugins import rel_args as c_sa, rel_opts as c_so
+from vss_cli.plugins.compute_plugins import rel_args as c_sa
+from vss_cli.plugins.compute_plugins import rel_opts as c_so
 from vss_cli.plugins.compute_plugins.helper import process_retirement_new
 from vss_cli.validators import (
     flexible_email_args, retirement_value, validate_email, validate_json_type,
@@ -2397,6 +2399,30 @@ def compute_vm_set_memory(ctx: Configuration):
     pass
 
 
+@compute_vm_set_memory.command(
+    'reservation', short_help='Update memory reservation in GB'
+)
+@click.argument('memory_gb', type=click.INT, required=True)
+@pass_context
+def compute_vm_set_memory_reservation(ctx: Configuration, memory_gb):
+    """Update virtual machine memory reservation in GB.
+
+    vss-cli compute vm set <name-or-vm_id> memory reservation <memory_gb>
+    """
+    # create payload
+    payload = dict(size=memory_gb, vm_id=ctx.moref)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.set_vm_memory_reservation(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
 @compute_vm_set_memory.command('size', short_help='Update memory size in GB')
 @click.argument('memory_gb', type=click.INT, required=True)
 @pass_context
@@ -3688,6 +3714,7 @@ def compute_vm_from_file(
 
     """
     import time
+
     from pick import pick
 
     if file_spec:

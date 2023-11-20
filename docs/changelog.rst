@@ -1,6 +1,13 @@
 Changelog 📝
 ============
 
+`v2023.11.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.11.1>`_ (2023-11-20)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#671 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/671>`_: ``compute vm set memory reservation``: set memory reservation.
+
 `v2023.11.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.11.0>`_ (2023-11-16)
 ------------------------------------------------------------------------------------------
 

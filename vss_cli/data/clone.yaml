@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from Clone 2023.11.0             #
+#     VSS-CLI Spec from Clone 2023.11.1             #
 ####################################################
 built: clone              # Required: Do not remove.
 machine:
