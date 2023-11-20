@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.11.0"
+__version__ = "2023.11.1-dev0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -359,6 +359,7 @@ COLUMNS_VM_OS = [
 COLUMNS_VM_HAGROUP = [*COLUMNS_VM_MIN, ("VALID", "valid")]
 COLUMNS_VM_MEMORY = [
     ("memory_gb",),
+    ("memory_gb_reserved", "reservation.memory_gb_reserved"),
     ("hot_add.enabled",),
     ("hot_add.limit_gb",),
     ("ballooned_memory_mb", "quick_stats.ballooned_memory_mb"),
