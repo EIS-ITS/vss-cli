@@ -322,6 +322,14 @@ vss_options_opt = click.option(
     shell_complete=autocompletion.vss_options,
     required=False,
 )
+gpu_profile_opt = click.option(
+    '--profile',
+    '-p',
+    type=click.STRING,
+    help='GPU Profile',
+    shell_complete=autocompletion.vm_gpu_profiles,
+    required=True,
+)
 firmware_nr_opt = click.option(
     '--firmware',
     '-w',
