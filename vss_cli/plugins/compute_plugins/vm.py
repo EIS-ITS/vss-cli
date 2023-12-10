@@ -1605,14 +1605,14 @@ def compute_vm_set_vbs(ctx: Configuration, state):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set.group('gpu', short_help='GPU management')
+@compute_vm_set.group('gpu', short_help='vGPU management')
 @pass_context
 def compute_vm_set_gpu(ctx: Configuration):
-    """Manage virtual GPU."""
+    """Manage virtual Graphics Processing Unit."""
     pass
 
 
-@compute_vm_set_gpu.command('mk', short_help='Create vTPM')
+@compute_vm_set_gpu.command('mk', short_help='Create vGPU')
 @c_so.gpu_profile_opt
 @pass_context
 def compute_vm_set_gpu_mk(ctx: Configuration, profile):
@@ -1631,7 +1631,7 @@ def compute_vm_set_gpu_mk(ctx: Configuration, profile):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set_gpu.command('up', short_help='Update GPU')
+@compute_vm_set_gpu.command('up', short_help='Update vGPU')
 @c_so.gpu_profile_opt
 @pass_context
 def compute_vm_set_gpu_up(ctx: Configuration, profile):
@@ -1650,7 +1650,7 @@ def compute_vm_set_gpu_up(ctx: Configuration, profile):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set_gpu.command('rm', short_help='Delete GPU')
+@compute_vm_set_gpu.command('rm', short_help='Delete vGPU')
 @pass_context
 def compute_vm_set_gpu_rm(ctx: Configuration):
     """Delete VM GPU."""
