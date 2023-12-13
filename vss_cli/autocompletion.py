@@ -571,6 +571,20 @@ def groups(
 
 
 @to_completion_item
+def vm_gpu_profiles(
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM gpu profiles."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_supported_gpu_types,
+        incomplete,
+        attrs=['type', 'description'],
+        f_kwargs={"only_type": False},
+    )
+
+
+@to_completion_item
 def vm_firmware(
     ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:

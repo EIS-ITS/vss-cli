@@ -1,27 +1,19 @@
 """Configuration for VSS CLI (vss-cli)."""
-from base64 import b64decode, b64encode
 import functools
 import json
 import logging
 import os
-from pathlib import Path
 import platform
 import sys
+from base64 import b64decode, b64encode
+from pathlib import Path
 from time import sleep
 from typing import (  # noqa: F401
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Union,
-    cast,
-)
+    Any, Callable, Dict, List, Optional, Tuple, Union, cast)
 
 import click
-from click_spinner import Spinner, spinner
 import jwt
+from click_spinner import Spinner, spinner
 from pick import pick
 from pyvss.const import __version__ as pyvss_version
 from pyvss.enums import RequestStatus
@@ -30,24 +22,16 @@ from pyvss.manager import VssManager
 from ruamel.yaml import YAML
 
 import vss_cli.const as const
+import vss_cli.yaml as yaml
 from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
-    bytes_to_str,
-    debug_requests_on,
-    format_output,
-    get_hostname_from_url,
-)
+    bytes_to_str, debug_requests_on, format_output, get_hostname_from_url)
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import (
-    validate_email,
-    validate_json_file_or_type,
-    validate_phone_number,
-    validate_uuid,
-    validate_vm_moref,
-)
-import vss_cli.yaml as yaml
+    validate_email, validate_json_file_or_type, validate_phone_number,
+    validate_uuid, validate_vm_moref)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -436,7 +420,11 @@ class Configuration(VssManager):
                             _LOGGING.warning(
                                 f'Falling back to {default_endpoint}'
                             )
-                            (ep, usr, pwd,) = self.load_profile(  # NOQA: E501
+                            (
+                                ep,
+                                usr,
+                                pwd,
+                            ) = self.load_profile(  # NOQA: E501
                                 endpoint=const.DEFAULT_ENDPOINT_NAME
                             )
                         # set config_path data
@@ -520,7 +508,7 @@ class Configuration(VssManager):
             cmd_bin = sys.executable
             # create command with the right exec
             pip_cmd = f'{cmd_bin} -m pip list --outdated'.split(None)
-            from subprocess import Popen, PIPE
+            from subprocess import PIPE, Popen
 
             p = Popen(pip_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
@@ -1225,6 +1213,14 @@ class Configuration(VssManager):
         return self._get_types_by_name(
             name,
             self.get_supported_firmware_types,
+            attrs=[('type', str), ('description', str)],
+        )
+
+    def get_vm_gpu_profiles_by_name_or_desc(self, name: Union[str, int]):
+        """Get VM gpu by name or desc."""
+        return self._get_types_by_name(
+            name,
+            self.get_supported_gpu_types,
             attrs=[('type', str), ('description', str)],
         )
 

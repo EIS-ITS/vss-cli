@@ -43,4 +43,7 @@ def cli(ctx: Configuration, method, uri, json):
     # make request
     with ctx.spinner(disable=ctx.debug):
         obj = ctx.request(**req)
-    ctx.echo(format_output(ctx, obj))
+    # allow interact with csv
+    if 'data' in obj:
+        obj = obj['data']
+    ctx.echo(format_output(ctx, obj, columns=ctx.columns))

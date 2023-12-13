@@ -1605,6 +1605,68 @@ def compute_vm_set_vbs(ctx: Configuration, state):
         ctx.wait_for_request_to(obj)
 
 
+@compute_vm_set.group('gpu', short_help='vGPU management')
+@pass_context
+def compute_vm_set_gpu(ctx: Configuration):
+    """Manage virtual Graphics Processing Unit."""
+    pass
+
+
+@compute_vm_set_gpu.command('mk', short_help='Create vGPU')
+@c_so.gpu_profile_opt
+@pass_context
+def compute_vm_set_gpu_mk(ctx: Configuration, profile):
+    """Create GPU based on given profile."""
+    _profile = ctx.get_vm_gpu_profiles_by_name_or_desc(profile)[0]['type']
+    payload = dict(vm_id=ctx.moref, profile=_profile)
+    # add common options
+    payload.update(ctx.payload_options)
+    # submit task
+    obj = ctx.create_vm_gpu(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_gpu.command('up', short_help='Update vGPU')
+@c_so.gpu_profile_opt
+@pass_context
+def compute_vm_set_gpu_up(ctx: Configuration, profile):
+    """Update vm gpu profile."""
+    _profile = ctx.get_vm_gpu_profiles_by_name_or_desc(profile)[0]['type']
+    payload = dict(vm_id=ctx.moref, profile=_profile)
+    # add common options
+    payload.update(ctx.payload_options)
+    # submit task
+    obj = ctx.update_vm_gpu(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set_gpu.command('rm', short_help='Delete vGPU')
+@pass_context
+def compute_vm_set_gpu_rm(ctx: Configuration):
+    """Delete VM GPU."""
+    payload = dict(vm_id=ctx.moref)
+    # add common options
+    payload.update(ctx.payload_options)
+    # submit task
+    obj = ctx.delete_vm_gpu(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
 @compute_vm_set.group('tpm', short_help='TPM management')
 @pass_context
 def compute_vm_set_tpm(ctx: Configuration):
