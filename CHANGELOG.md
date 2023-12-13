@@ -1,5 +1,15 @@
 # Changelog 📝
 
+## [v2023.12.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.12.0) (2023-12-13)
+
+**Improvements:**
+
+- [#676](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/676): ``core``: upgrade ``pyvss`` from ``2023.11.0`` to ``2023.12.0``.
+- [#675](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/675): ``compute vm set gpu mk``: add vGPU to virtual machine.
+- [#675](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/675): ``compute vm set gpu rm``: remove vGPU from virtual machine.
+- [#675](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/675): ``compute vm set gpu update``: update vGPU profile.
+- [#674](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/674): ``raw``: support ``--table-format`` and ``--output``.
+
 ## [v2023.11.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.11.1) (2023-11-20)
 
 **Improvements:**
