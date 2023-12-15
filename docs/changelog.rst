@@ -1,17 +1,25 @@
 Changelog 📝
 ============
 
+`v2023.12.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.12.1>`_ (2023-12-15)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#681 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/681>`_: ``compute vm res``: add confirmation message.
+- `#682 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/682>`_ : ``core``: Homebrew formula for ``vss-cli`` v2023.12.1.
+
 `v2023.12.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.12.0>`_ (2023-12-13)
 ------------------------------------------------------------------------------------------
 
 **Improvements:**
 
+- `#678 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/678>`_ : ``core``: Homebrew formula for ``vss-cli`` v2023.12.0.
 - `#676 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/676>`_: ``core``: upgrade ``pyvss`` from ``2023.11.0`` to ``2023.12.0``.
 - `#675 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/675>`_: ``compute vm set gpu mk``: add vGPU to virtual machine.
 - `#675 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/675>`_: ``compute vm set gpu rm``: remove vGPU from virtual machine.
 - `#675 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/675>`_: ``compute vm set gpu update``: update vGPU profile.
 - `#674 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/674>`_: ``raw``: support ``--table-format`` and ``--output``.
-
 
 `v2023.11.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.11.1>`_ (2023-11-20)
 ------------------------------------------------------------------------------------------
