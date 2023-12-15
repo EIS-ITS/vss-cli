@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.12.0"
+__version__ = "2023.12.1-dev0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -117,9 +117,19 @@ DEFAULT_VM_RESTORE_MSG = (
     "({vm[guest_full_name]})\n"
     "IP Address:\t{vm[ip_address]}\n"
     "MAC Address:\t{vm[mac_address]}\n"
-    "Create Date:\t{vm[create_date]}\n\n"
+    "Create Date:\t{vm[create_date]}\n"
+    "Storage (GB):\t{vm[provisioned_gb]}\n"
+    "Storage Type:\t{vm[storage_type]}\n\n"
     "Are you sure you want to restore "
     "the above VM to timestamp {rp[timestamp]}?"
+)
+VM_RESTORE_PRICE_GB = {'ssd': 0.60, 'hdd': 0.3}
+CONFIRM_VM_RESTORE_MSG = (
+    '\nYou are requesting a service that is immediately '
+    'billable at ${ssd} per GB for SSD \n'
+    'and ${hdd} per GB for HDD, which will appear in your next bill.\n\n'
+    'This VM is {provisioned_gb:.2f}GB and Restoring will cost '
+    '${total_gb:.2f}.\n\nDo you agree?'
 )
 COLUMNS_TWO_FMT = "{0:<20}: {1:<20}"
 
