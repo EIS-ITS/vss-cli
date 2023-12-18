@@ -1,5 +1,12 @@
 # Changelog 📝
 
+## [v2023.12.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.12.1) (2023-12-15)
+
+**Improvements:**
+
+- [#681](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/681): ``compute vm res``: add confirmation message.
+- [#682](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/682): ``core``: Homebrew formula for ``vss-cli`` v2023.12.1.
+
 ## [v2023.12.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.12.0) (2023-12-13)
 
 **Improvements:**

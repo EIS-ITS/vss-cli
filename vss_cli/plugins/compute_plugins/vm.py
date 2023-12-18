@@ -20,7 +20,8 @@ from vss_cli.helper import format_output, raw_format_output, to_tuples
 from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_args as c_sa
 from vss_cli.plugins.compute_plugins import rel_opts as c_so
-from vss_cli.plugins.compute_plugins.helper import process_retirement_new
+from vss_cli.plugins.compute_plugins.helper import (
+    get_restore_user_confirmation, process_retirement_new)
 from vss_cli.validators import (
     flexible_email_args, retirement_value, validate_email, validate_json_type,
     validate_phone_number)
@@ -3586,15 +3587,12 @@ def compute_vm_restore(
     #
     _LOGGING.debug(f'Attempting to restore: {moref} -> {rp_timestamp}')
     if _vm and _rp:
-        c_str = const.DEFAULT_VM_RESTORE_MSG.format(vm=_vm[0], rp=_rp[0])
-        confirmation = click.confirm(c_str)
-        restore_reason = reason or click.prompt(
-            'Please provide a restore reason',
-        )
-        if not restore_reason:
-            raise click.BadArgumentUsage('Reason for restore is required.')
-        reason_payload = {'restore_reason': restore_reason}
-        if not confirmation:
+        (
+            confirmation,
+            confirmation_2,
+            reason_payload,
+        ) = get_restore_user_confirmation(ctx, _vm, _rp, reason)
+        if not (confirmation and confirmation_2):
             _LOGGING.warning('No requests have been submitted.')
             raise click.ClickException('Cancelled by user.')
         # add user meta.
