@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2024.5.0-dev0"
+__version__ = "2024.5.0-dev2"
 
 
 DEFAULT_TIMEOUT = 30
@@ -474,7 +474,7 @@ COLUMNS_VM_HW = [
     ("upgrade_policy", "upgrade_policy.upgrade_policy"),
 ]
 COLUMNS_VM_CONSOLIDATION = [("require_disk_consolidation",)]
-COLUMNS_VM_CONTROLLERS = [('scsi.count',)]
+COLUMNS_VM_CONTROLLERS = [('scsi.count',), ('usb.count',), ('usb-xhci.count',)]
 COLUMNS_EXTRA_CONFIG = [("options", "[*]")]
 COLUMNS_VSS_OPTIONS = [("options", "[*]")]
 COLUMNS_GROUP = [
