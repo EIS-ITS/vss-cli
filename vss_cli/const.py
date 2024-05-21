@@ -5,7 +5,7 @@ import pkg_resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.12.1"
+__version__ = "2024.5.0-dev0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -366,7 +366,7 @@ COLUMNS_VM_OS = [
     ("guest.guest_id",),
     ("guest.guest_family",),
 ]
-COLUMNS_VM_HAGROUP = [*COLUMNS_VM_MIN, ("VALID", "valid")]
+COLUMNS_VM_HAGROUP = [*COLUMNS_VM_MIN, ("domain.name",), ("group", "group[*]")]
 COLUMNS_VM_MEMORY = [
     ("memory_gb",),
     ("memory_gb_reserved", "reservation.memory_gb_reserved"),
