@@ -50,7 +50,7 @@ build-docker-local:
   stage: build
   before_script:
     - docker info
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker build -f docker/Dockerfile --pull --build-arg CI_BUILD_REF=$CI_BUILD_REF -t $DOCKER_IMAGE_TEST .
     - docker push $DOCKER_IMAGE_TEST
@@ -200,7 +200,7 @@ release-docker-local-develop:
   stage: release
   before_script:
     - docker info
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker pull $DOCKER_IMAGE_TEST
     - docker tag $DOCKER_IMAGE_TEST $DOCKER_IMAGE_DEVELOP
@@ -280,7 +280,7 @@ release-docker-local-main:
   stage: release
   before_script:
     - docker info
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker pull $DOCKER_IMAGE_TEST
     - docker tag $DOCKER_IMAGE_TEST $DOCKER_IMAGE_LATEST
