@@ -1,4 +1,4 @@
-pyvss==2023.12.0
+pyvss==2024.5.0
 click==8.1.7
 click-log==0.4.0
 click-plugins==1.1.1
