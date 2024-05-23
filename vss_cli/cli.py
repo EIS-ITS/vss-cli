@@ -6,13 +6,13 @@ import sys
 from typing import List, Optional, Union, cast
 
 import click
-from click.core import Command, Context, Group
 import click_log
+from click.core import Command, Context, Group
 from pyvss.const import __version__ as pyvss_version
 
 import vss_cli.autocompletion as autocompletion
-from vss_cli.config import Configuration
 import vss_cli.const as const
+from vss_cli.config import Configuration
 from vss_cli.helper import to_tuples
 
 click_log.basic_config()
@@ -144,7 +144,7 @@ def _default_token() -> Optional[str]:
     '--totp',
     default=_default_token,
     help='Timed One Time Password.',
-    envvar='VSS_API_USER_OTP',
+    envvar='VSS_USER_OTP',
 )
 @click.option(
     '--timeout',
