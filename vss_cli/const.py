@@ -1,7 +1,6 @@
 """Constants used by VSS CLI (vss-cli)."""
 import os
-
-import pkg_resources
+from importlib import resources
 
 PACKAGE_NAME = "vss_cli"
 
@@ -23,8 +22,8 @@ COLUMNS_WIDTH_STR = "\u2026"
 LEGACY_CONFIG = os.path.expanduser(os.path.join(*_LEGACY_CONFIG))
 DEFAULT_CONFIG = os.path.expanduser(os.path.join(*_DEFAULT_CONFIG))
 DEFAULT_HISTORY = os.path.expanduser(os.path.join(*_DEFAULT_HISTORY))
-DEFAULT_DATA_PATH = pkg_resources.resource_filename(PACKAGE_NAME, "data")
-DEFAULT_CONFIG_TMPL = os.path.join(DEFAULT_DATA_PATH, "config.yaml")
+DEFAULT_DATA_PATH = resources.files(PACKAGE_NAME) / "data"
+DEFAULT_CONFIG_TMPL = DEFAULT_DATA_PATH.joinpath("config.yaml")
 DEFAULT_CHECK_UPDATES = True
 DEFAULT_CHECK_MESSAGES = True
 DEFAULT_TOTP = False
