@@ -1,6 +1,27 @@
 Changelog 📝
 ============
 
+`v2024.5.24 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.5.24>`_ (2024-05-24)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#684 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/684>`_:  ``compute vm get controller``: add ``usb`` and ``usb-xhci`` counts.
+- `#685 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/685>`_: ``ci``: moving pipeline to use ``CI_REGISTRY_USER`` and ``CI_REGISTRY_PASSWORD``.
+- `#686 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/686>`_: ``core``: upgrade ``sphinxcontrib-confluencebuilder`` to ``7.2.7``.
+- `#687 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/687>`_: ``core``: upgrade ``minio`` to ``2.5.2``.
+- `#688 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/688>`_: ``core``: upgrade ``pyvss`` to ``v2024.5.0``.
+- `#689 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/689>`_: ``compute vm get controller usb``: get existing ``usb`` controllers.
+- `#689 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/689>`_: ``compute vm get controller usb-xhci``: get existing ``usb-xhci`` controllers.
+- `#690 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/690>`_: ``core``: implement ``importlib-resources`` and ``importlib-metadata`` to replace ``pkg_resources``.
+- `#693 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/693>`_: ``core``: Homebrew formula for ``vss-cli`` version ``2024.5.0``.
+
+**Bug Fixes:**
+
+- `#683 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/683>`_: ``ovf get``: error when label is missing.
+- `#691 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/691>`_: ``core``: ``--totp`` option env variable should be ``VSS_USER_OTP``.
+
+
 `v2023.12.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2023.12.1>`_ (2023-12-15)
 ------------------------------------------------------------------------------------------
 

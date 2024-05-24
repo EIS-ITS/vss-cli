@@ -1389,6 +1389,7 @@ class Configuration(VssManager):
                 for x in raw_dparams:
                     _desc = x.get('Description') or x.get('ovf:Description')
                     _label = x.get('Label') or x.get('ovf:Label')
+                    label = ''
                     description = _desc
                     if isinstance(_desc, dict):
                         if '@ovf:msgid' in _desc or 'msgid' in _desc:

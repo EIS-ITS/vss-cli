@@ -1,11 +1,10 @@
 """Constants used by VSS CLI (vss-cli)."""
 import os
-
-import pkg_resources
+from importlib import resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2023.12.1"
+__version__ = "2024.5.0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -23,8 +22,8 @@ COLUMNS_WIDTH_STR = "\u2026"
 LEGACY_CONFIG = os.path.expanduser(os.path.join(*_LEGACY_CONFIG))
 DEFAULT_CONFIG = os.path.expanduser(os.path.join(*_DEFAULT_CONFIG))
 DEFAULT_HISTORY = os.path.expanduser(os.path.join(*_DEFAULT_HISTORY))
-DEFAULT_DATA_PATH = pkg_resources.resource_filename(PACKAGE_NAME, "data")
-DEFAULT_CONFIG_TMPL = os.path.join(DEFAULT_DATA_PATH, "config.yaml")
+DEFAULT_DATA_PATH = resources.files(PACKAGE_NAME) / "data"
+DEFAULT_CONFIG_TMPL = DEFAULT_DATA_PATH.joinpath("config.yaml")
 DEFAULT_CHECK_UPDATES = True
 DEFAULT_CHECK_MESSAGES = True
 DEFAULT_TOTP = False
@@ -366,7 +365,7 @@ COLUMNS_VM_OS = [
     ("guest.guest_id",),
     ("guest.guest_family",),
 ]
-COLUMNS_VM_HAGROUP = [*COLUMNS_VM_MIN, ("VALID", "valid")]
+COLUMNS_VM_HAGROUP = [*COLUMNS_VM_MIN, ("domain.name",), ("group", "group[*]")]
 COLUMNS_VM_MEMORY = [
     ("memory_gb",),
     ("memory_gb_reserved", "reservation.memory_gb_reserved"),
@@ -474,7 +473,8 @@ COLUMNS_VM_HW = [
     ("upgrade_policy", "upgrade_policy.upgrade_policy"),
 ]
 COLUMNS_VM_CONSOLIDATION = [("require_disk_consolidation",)]
-COLUMNS_VM_CONTROLLERS = [('scsi.count',)]
+COLUMNS_VM_CONTROLLERS = [('scsi.count',), ('usb.count',), ('usb-xhci.count',)]
+COLUMNS_VM_USB_CONTROLLERS = [('bus_number',), ('type',), ('label',)]
 COLUMNS_EXTRA_CONFIG = [("options", "[*]")]
 COLUMNS_VSS_OPTIONS = [("options", "[*]")]
 COLUMNS_GROUP = [

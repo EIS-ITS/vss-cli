@@ -7,7 +7,7 @@ from typing import Optional
 
 import click
 from click_plugins import with_plugins
-from pkg_resources import iter_entry_points
+from importlib_metadata import entry_points
 
 import vss_cli.autocompletion as autocompletion
 from vss_cli import const
@@ -29,7 +29,7 @@ from vss_cli.validators import (
 _LOGGING = logging.getLogger(__name__)
 
 
-@with_plugins(iter_entry_points('vss_cli.contrib.compute.vm'))
+@with_plugins(entry_points(group='vss_cli.contrib.compute.vm'))
 @cli.group('vm', short_help='Manage virtual machines')
 @pass_context
 def compute_vm(ctx: Configuration):
@@ -293,6 +293,24 @@ def compute_vm_get_controllers(ctx: Configuration):
         obj = obj or {}
         columns = ctx.columns or const.COLUMNS_VM_CONTROLLERS
         ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
+@compute_vm_get_controllers.command('usb', short_help='USB adapters')
+@pass_context
+def compute_vm_get_usb(ctx: Configuration):
+    """Virtual machine controller USB adapters."""
+    objs = ctx.get_vm_usb_devices(ctx.moref) or []
+    columns = ctx.columns or const.COLUMNS_VM_USB_CONTROLLERS
+    ctx.echo(format_output(ctx, objs, columns=columns))
+
+
+@compute_vm_get_controllers.command('usb-xhci', short_help='USB-XHCI adapters')
+@pass_context
+def compute_vm_get_usb_xhci(ctx: Configuration):
+    """Virtual machine controller USB adapters."""
+    objs = ctx.get_vm_usb_xhci_devices(ctx.moref) or []
+    columns = ctx.columns or const.COLUMNS_VM_USB_CONTROLLERS
+    ctx.echo(format_output(ctx, objs, columns=columns))
 
 
 @compute_vm_get_controllers.command('scsi', short_help='SCSI adapters')
