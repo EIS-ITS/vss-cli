@@ -7,7 +7,7 @@ from typing import Optional
 
 import click
 from click_plugins import with_plugins
-from pkg_resources import iter_entry_points
+from importlib_metadata import entry_points
 
 import vss_cli.autocompletion as autocompletion
 from vss_cli import const
@@ -29,7 +29,7 @@ from vss_cli.validators import (
 _LOGGING = logging.getLogger(__name__)
 
 
-@with_plugins(iter_entry_points('vss_cli.contrib.compute.vm'))
+@with_plugins(entry_points(group='vss_cli.contrib.compute.vm'))
 @cli.group('vm', short_help='Manage virtual machines')
 @pass_context
 def compute_vm(ctx: Configuration):

@@ -19,3 +19,4 @@ pyjwt==2.6.0
 xmltodict==0.13.0
 setuptools==68.2.2
 importlib-resources==6.4.0
+importlib-metadata==7.1.0
