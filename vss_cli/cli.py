@@ -237,6 +237,14 @@ def _default_token() -> Optional[str]:
     show_default=True,
     envvar='VSS_S3_SERVER',
 )
+@click.option(
+    '--vpn-server',
+    '-vpn',
+    help='The VPN server.',
+    default=None,
+    show_default=True,
+    envvar='VSS_VPN_SERVER',
+)
 @click.version_option(
     version=f'{const.__version__} ('
     f'pyvss/{pyvss_version} '
@@ -264,6 +272,7 @@ def cli(
     sort_by: Optional[str],
     wait: Optional[bool],
     s3_server: Optional[str],
+    vpn_server: Optional[str],
 ):
     """Command line interface for the ITS Private Cloud."""
     ctx.verbose = verbose
@@ -284,5 +293,6 @@ def cli(
     ctx.sort_by = sort_by  # type: ignore
     ctx.wait_for_requests = wait
     ctx.s3_server = s3_server
+    ctx.vpn_server = vpn_server
 
     _LOGGER.debug(f"Using settings: {ctx}")

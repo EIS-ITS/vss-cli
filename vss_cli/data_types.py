@@ -1,18 +1,20 @@
 """Data types definitions."""
+import logging
+import re
 from dataclasses import dataclass, field
 from ipaddress import (
     AddressValueError, IPv4Address, IPv4Network, NetmaskValueError)
-import logging
 from pathlib import Path
-import re
 from typing import Dict, List, Optional, Tuple, Union
 
 from click import BadArgumentUsage, BadParameter
-from dataclasses_json import config as dc_config, dataclass_json
+from dataclasses_json import config as dc_config
+from dataclasses_json import dataclass_json
 from ruamel.yaml import YAML
 from ruamel.yaml.scanner import ScannerError
-from validators import (
-    domain as is_domain, email as is_email_address, url as is_url)
+from validators import domain as is_domain
+from validators import email as is_email_address
+from validators import url as is_url
 
 import vss_cli.const as const
 from vss_cli.exceptions import ValidationError
@@ -41,6 +43,7 @@ class ConfigFileGeneral:
     check_for_messages: bool = const.DEFAULT_CHECK_MESSAGES
     default_endpoint_name: str = const.DEFAULT_ENDPOINT_NAME
     s3_server: str = const.DEFAULT_S3_SERVER
+    vpn_server: str = const.DEFAULT_VPN_SERVER
     debug: bool = const.DEFAULT_DEBUG
     output: str = const.DEFAULT_RAW_OUTPUT
     table_format: str = const.DEFAULT_TABLE_FORMAT

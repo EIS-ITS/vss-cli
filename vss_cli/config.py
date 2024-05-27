@@ -55,6 +55,8 @@ class Configuration(VssManager):
         self.history = const.DEFAULT_HISTORY  # type: str
         self.s3_server = None  # type: Optional[str]
         self._s3_server = const.DEFAULT_S3_SERVER  # type: str
+        self.vpn_server = None  # type: Optional[str]
+        self._vpn_server = const.DEFAULT_VPN_SERVER
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.totp = None  # type: Optional[str]
@@ -194,6 +196,7 @@ class Configuration(VssManager):
             "wait": self.wait,
             "dry_run": self.dry_run,
             "s3_server": self.s3_server,
+            "vpn_server": self.vpn_server,
         }
 
         return f"<Configuration({view})"
@@ -889,6 +892,25 @@ class Configuration(VssManager):
             f'vskey_stor_s3_gui={self.vskey_stor_s3_gui}'
         )
         return self.vskey_stor
+
+    def enable_vss_vpn(self, **kwargs):
+        """Enable VPN."""
+        self.init_vss_vpn(self.vpn_server)
+        _LOGGING.debug(f'{self.totp=} {self.username=} -> {self.vpn_server=}')
+        rv = super().enable_vss_vpn(
+            user=self.username, password=self.password, otp=self.totp
+        )
+        return rv
+
+    def disable_vss_vpn(self, **kwargs):
+        """Disable VPN."""
+        self.init_vss_vpn(self.vpn_server)
+        _LOGGING.debug(f'{self.username=} -> {self.vpn_server=}')
+        rv = super().disable_vss_vpn(
+            user=self.username,
+            password=self.password,
+        )
+        return rv
 
     def get_vm_by_id_or_name(self, vm_id: str, silent=False) -> Optional[List]:
         """Get virtual machine by identifier or name."""
