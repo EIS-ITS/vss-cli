@@ -79,13 +79,13 @@ def gateway_off(ctx: Configuration):
 @pass_context
 def stor_launch(ctx: Configuration, ui_type):
     """Launch web ui."""
-    cfg = ctx.get_vss_vpn_cfg()
+    cfg = ctx.init_vss_vpn(ctx.vpn_server)
     lookup = {
-        'ui': cfg['endpoint'],
-        'otp-svc': cfg['otp_svc'],
-        'otp-enable': cfg['otp_enable'],
-        'otp-disable': cfg['otp_disable'],
-        'otp-monitor': cfg['otp_monitor'],
+        'ui': ctx.vss_vpn_endpoint,
+        'otp-svc': ctx.vss_vpn_otp_svc_endpoint,
+        'otp-enable': ctx.vss_vpn_otp_enable_endpoint,
+        'otp-disable': ctx.vss_vpn_otp_disable_endpoint,
+        'otp-monitor': ctx.vss_vpn_otp_monitor_endpoint,
     }
     url = lookup[ui_type]
     click.echo(f'Launching {EMOJI_UNICODE[":globe_showing_Americas:"]}: {url}')
