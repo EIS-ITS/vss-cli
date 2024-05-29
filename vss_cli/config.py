@@ -590,31 +590,49 @@ class Configuration(VssManager):
                 self.username, self.password, self.totp
             )
         except VssError as ex:
-            if (
-                500 > ex.http_code > 399
-                and 'InvalidParameterValue: otp' in ex.message
-            ):
-                # try MFA Auth
-                try:
-                    _LOGGING.debug('Requesting a new timed one-time password')
-                    _ = self.request_totp(self.username, self.password)
-                except Exception as exc:
-                    _LOGGING.warning(f'Requesting totp: {exc}')
-                    pass
-                if spinner_cls is not None:
-                    spinner_cls.stop()
-                self.totp = click.prompt(
-                    'MFA enabled. Provide Timed One-Time Password'
-                )
-                if spinner_cls is not None:
-                    spinner_cls.start()
-                try:
-                    token = token or self.get_token(
-                        self.username, self.password, self.totp
+            if 500 > ex.http_code > 399:
+                if 'InvalidParameterValue: otp' in ex.message:
+                    # try MFA Auth
+                    try:
+                        _LOGGING.debug(
+                            'Requesting a new timed one-time password'
+                        )
+                        _ = self.request_totp(self.username, self.password)
+                    except Exception as exc:
+                        _LOGGING.warning(f'Requesting totp: {exc}')
+                        pass
+                    if spinner_cls is not None:
+                        spinner_cls.stop()
+                    self.totp = click.prompt(
+                        'MFA enabled. Provide Timed One-Time Password'
                     )
-                except Exception as exc:
-                    _LOGGING.warning(f'Could not generate new token: {exc}')
-                    raise exc
+                    if spinner_cls is not None:
+                        spinner_cls.start()
+                    try:
+                        token = token or self.get_token(
+                            self.username, self.password, self.totp
+                        )
+                    except Exception as exc:
+                        _LOGGING.warning(
+                            f'Could not generate new token: {exc}'
+                        )
+                        raise exc
+                elif 'TotpEnforcement: Must enable TOTP' in ex.message:
+                    if spinner_cls is not None:
+                        spinner_cls.stop()
+                    self.secho('Run ', file=sys.stderr, fg='green', nl=False)
+                    self.secho(
+                        'vss-cli account --no-load set mfa mk',
+                        file=sys.stderr,
+                        fg='red',
+                        nl=False,
+                    )
+                    self.secho(' to enable MFA.', file=sys.stderr, fg='green')
+                    if spinner_cls is not None:
+                        spinner_cls.start()
+                    raise ex
+                else:
+                    raise ex
             else:
                 raise ex
         return token
