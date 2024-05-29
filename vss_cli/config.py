@@ -620,9 +620,12 @@ class Configuration(VssManager):
                 elif 'TotpEnforcement: Must enable TOTP' in ex.message:
                     if spinner_cls is not None:
                         spinner_cls.stop()
+                    _LOGGING.error(ex)
+                    self.echo('')
                     self.secho('Run ', file=sys.stderr, fg='green', nl=False)
                     self.secho(
-                        'vss-cli account --no-load set mfa mk',
+                        'vss-cli account --no-load set mfa mk '
+                        '{EMAIL|AUTHENTICATOR|SMS}',
                         file=sys.stderr,
                         fg='red',
                         nl=False,
@@ -630,7 +633,7 @@ class Configuration(VssManager):
                     self.secho(' to enable MFA.', file=sys.stderr, fg='green')
                     if spinner_cls is not None:
                         spinner_cls.start()
-                    raise ex
+                    sys.exit(1)
                 else:
                     raise ex
             else:
