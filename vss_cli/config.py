@@ -923,6 +923,27 @@ class Configuration(VssManager):
         )
         return rv
 
+    def get_vss_vpn_status(self, **kwargs) -> Dict:
+        """Get status of VPN."""
+        self.init_vss_vpn(self.vpn_server)
+        _LOGGING.debug(f'{self.username=} -> {self.vpn_server=}')
+        rv = super().get_vss_vpn_status(
+            user=self.username,
+            password=self.password,
+        )
+        return rv
+
+    def monitor_vss_vpn(self, **kwargs):
+        """Monitor VPN."""
+        self.init_vss_vpn(self.vpn_server)
+        _LOGGING.debug(f'{self.username=} -> {self.vpn_server=}')
+        rv = super().monitor_vss_vpn(
+            user=self.username,
+            password=self.password,
+            stamp=kwargs.get('stamp'),
+        )
+        return rv
+
     def disable_vss_vpn(self, **kwargs):
         """Disable VPN."""
         self.init_vss_vpn(self.vpn_server)
