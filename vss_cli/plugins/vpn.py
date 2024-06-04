@@ -45,7 +45,7 @@ def gateway_on(ctx: Configuration, otp):
     if status:
         if not status.get('usages'):
             _LOGGING.error(
-                f'VPN GW {ctx.vpn_server} has MFA disabled.'
+                f'VPN GW {ctx.vpn_server} has MFA disabled. '
                 f'Enable VPN GW MFA via {ctx.vss_vpn_otp_svc_endpoint}'
             )
             sys.exit(1)
@@ -59,7 +59,7 @@ def gateway_on(ctx: Configuration, otp):
             rv = ctx.enable_vss_vpn()
             _LOGGING.debug(f'{rv}')
             spinner_cls.stop()
-            _LOGGING.warning(rv['log'])
+            # _LOGGING.warning(rv['log'])
             click.echo(
                 f'Successfully enabled. '
                 f'Ready to connect to {ctx.vpn_server} {ej_rkt}'
