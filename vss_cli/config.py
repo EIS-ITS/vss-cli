@@ -55,6 +55,8 @@ class Configuration(VssManager):
         self.history = const.DEFAULT_HISTORY  # type: str
         self.s3_server = None  # type: Optional[str]
         self._s3_server = const.DEFAULT_S3_SERVER  # type: str
+        self.vpn_server = None  # type: Optional[str]
+        self._vpn_server = const.DEFAULT_VPN_SERVER
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.totp = None  # type: Optional[str]
@@ -194,6 +196,7 @@ class Configuration(VssManager):
             "wait": self.wait,
             "dry_run": self.dry_run,
             "s3_server": self.s3_server,
+            "vpn_server": self.vpn_server,
         }
 
         return f"<Configuration({view})"
@@ -587,31 +590,52 @@ class Configuration(VssManager):
                 self.username, self.password, self.totp
             )
         except VssError as ex:
-            if (
-                500 > ex.http_code > 399
-                and 'InvalidParameterValue: otp' in ex.message
-            ):
-                # try MFA Auth
-                try:
-                    _LOGGING.debug('Requesting a new timed one-time password')
-                    _ = self.request_totp(self.username, self.password)
-                except Exception as exc:
-                    _LOGGING.warning(f'Requesting totp: {exc}')
-                    pass
-                if spinner_cls is not None:
-                    spinner_cls.stop()
-                self.totp = click.prompt(
-                    'MFA enabled. Provide Timed One-Time Password'
-                )
-                if spinner_cls is not None:
-                    spinner_cls.start()
-                try:
-                    token = token or self.get_token(
-                        self.username, self.password, self.totp
+            if 500 > ex.http_code > 399:
+                if 'InvalidParameterValue: otp' in ex.message:
+                    # try MFA Auth
+                    try:
+                        _LOGGING.debug(
+                            'Requesting a new timed one-time password'
+                        )
+                        _ = self.request_totp(self.username, self.password)
+                    except Exception as exc:
+                        _LOGGING.warning(f'Requesting totp: {exc}')
+                        pass
+                    if spinner_cls is not None:
+                        spinner_cls.stop()
+                    self.totp = click.prompt(
+                        'MFA enabled. Provide Timed One-Time Password'
                     )
-                except Exception as exc:
-                    _LOGGING.warning(f'Could not generate new token: {exc}')
-                    raise exc
+                    if spinner_cls is not None:
+                        spinner_cls.start()
+                    try:
+                        token = token or self.get_token(
+                            self.username, self.password, self.totp
+                        )
+                    except Exception as exc:
+                        _LOGGING.warning(
+                            f'Could not generate new token: {exc}'
+                        )
+                        raise exc
+                elif 'TotpEnforcement: Must enable TOTP' in ex.message:
+                    if spinner_cls is not None:
+                        spinner_cls.stop()
+                    _LOGGING.error(ex)
+                    self.echo('')
+                    self.secho('Run ', file=sys.stderr, fg='green', nl=False)
+                    self.secho(
+                        'vss-cli account --no-load set mfa mk '
+                        '{EMAIL|AUTHENTICATOR|SMS}',
+                        file=sys.stderr,
+                        fg='red',
+                        nl=False,
+                    )
+                    self.secho(' to enable MFA.', file=sys.stderr, fg='green')
+                    if spinner_cls is not None:
+                        spinner_cls.start()
+                    sys.exit(1)
+                else:
+                    raise ex
             else:
                 raise ex
         return token
@@ -889,6 +913,46 @@ class Configuration(VssManager):
             f'vskey_stor_s3_gui={self.vskey_stor_s3_gui}'
         )
         return self.vskey_stor
+
+    def enable_vss_vpn(self, **kwargs):
+        """Enable VPN."""
+        self.init_vss_vpn(self.vpn_server)
+        _LOGGING.debug(f'{self.totp=} {self.username=} -> {self.vpn_server=}')
+        rv = super().enable_vss_vpn(
+            user=self.username, password=self.password, otp=self.totp
+        )
+        return rv
+
+    def get_vss_vpn_status(self, **kwargs) -> Dict:
+        """Get status of VPN."""
+        self.init_vss_vpn(self.vpn_server)
+        _LOGGING.debug(f'{self.username=} -> {self.vpn_server=}')
+        rv = super().get_vss_vpn_status(
+            user=self.username,
+            password=self.password,
+        )
+        return rv
+
+    def monitor_vss_vpn(self, **kwargs):
+        """Monitor VPN."""
+        self.init_vss_vpn(self.vpn_server)
+        _LOGGING.debug(f'{self.username=} -> {self.vpn_server=}')
+        rv = super().monitor_vss_vpn(
+            user=self.username,
+            password=self.password,
+            stamp=kwargs.get('stamp'),
+        )
+        return rv
+
+    def disable_vss_vpn(self, **kwargs):
+        """Disable VPN."""
+        self.init_vss_vpn(self.vpn_server)
+        _LOGGING.debug(f'{self.username=} -> {self.vpn_server=}')
+        rv = super().disable_vss_vpn(
+            user=self.username,
+            password=self.password,
+        )
+        return rv
 
     def get_vm_by_id_or_name(self, vm_id: str, silent=False) -> Optional[List]:
         """Get virtual machine by identifier or name."""

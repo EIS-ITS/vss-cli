@@ -24,4 +24,4 @@
 - Library to [use](https://link-to-docs.org/lib)
 
 
-/label ~"feature" ~"st:todo"
+/label ~"type::feature" ~"status::todo"
