@@ -11,6 +11,7 @@ Changelog 📝
 - `#696 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/696>`_: ``core``: upgrade ``pyvss`` to ``v2024.6.0``.
 - `#697 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/697>`_: ``core``: Homebrew formula for ``vss-cli`` version ``2024.6.0``.
 - `#699 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/699>`_: ``ci``: update gitlab templates.
+- `#700 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/700>`_: ``ci``: replace ``CI_BUILD_TAG`` with ``CI_COMMIT_TAG``.
 
 `v2024.5.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.5.0>`_ (2024-05-24)
 ------------------------------------------------------------------------------------------
