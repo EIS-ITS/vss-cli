@@ -20,4 +20,4 @@
 - Library to [use](https://link-to-docs.org/lib)
 
 
-/label ~"improvement" ~"st:todo"
+/label ~"type::improvement" ~"status::todo"

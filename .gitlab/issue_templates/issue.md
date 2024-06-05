@@ -40,4 +40,4 @@ Please, run the command with the `--debug` option ``vss-cli --debug``:
 # paste output here
 ```
 
-/label "st:triage" ~"st:todo" "support"
+/label "status::triage" ~"status::todo" "support"

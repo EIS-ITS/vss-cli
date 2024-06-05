@@ -26,4 +26,4 @@ Version release vX.XX 🎉
 - [ ] Update ``docs/changelog.rst``
 
 
-/label ~"st:todo" ~"task"
+/label ~"status::todo" ~"type::task"
