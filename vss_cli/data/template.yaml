@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from Template 2024.6.0-dev6        #
+#     VSS-CLI Spec from Template 2024.6.0        #
 ####################################################
 built: template           # Required: Do not remove.
 machine:

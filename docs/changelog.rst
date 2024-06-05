@@ -1,7 +1,18 @@
 Changelog 📝
 ============
 
-`v2024.5.24 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.5.24>`_ (2024-05-24)
+`v2024.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.5.24>`_ (2024-06-05)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#694 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/694>`_: ``vpn``: commands to handle new VSS VPN MFA implementation.
+- `#695 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/695>`_: ``core``: handle mandatory multi-factor authentication.
+- `#696 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/696>`_: ``core``: upgrade ``pyvss`` to ``v2024.6.0``.
+- `#697 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/697>`_: ``core``: Homebrew formula for ``vss-cli`` version ``2024.6.0``.
+- `#699 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/699>`_: ``ci``: update gitlab templates.
+
+`v2024.5.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.5.0>`_ (2024-05-24)
 ------------------------------------------------------------------------------------------
 
 **Improvements:**
