@@ -38,7 +38,7 @@ Use ``vss-cli stor ul <file_path>`` to upload OVF and disk files to
    vss-cli stor ul ~/Downloads/CentOS-7-x86_64-VMware.ovf
    vss-cli stor ul ~/Downloads/disk-0.vmdk
 
-Verify files were uploaded successfully with ``vss-cli stor ls ``:
+Verify files were uploaded successfully with ``vss-cli stor ls`` :
 
 .. code-block:: bash
 

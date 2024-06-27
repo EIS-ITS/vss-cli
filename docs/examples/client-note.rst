@@ -122,12 +122,13 @@ Update Client Notes
 -------------------
 
 In order to update or replace existing client notes, use
-``vss-cli compute vm set <uuid> client-note <new-note>``
-to append or use the flag ``--replace`` to overwrite all notes.
+``vss-cli compute vm set <uuid> client-note --action up <new-note>``
+to append use the flag ``--replace`` to overwrite all notes.
 
 .. code-block:: bash
 
-    vss-cli compute vm set Frontend1 client-note "Billing Code: 1234"
+    vss-cli compute vm set Frontend1 client-note --action up \
+    "Billing Code: 1234"
 
 And query to validate any change:
 
@@ -140,11 +141,13 @@ And query to validate any change:
                           Billing Code: 1234
 
 If you wanted just to replace existing contents, add the
-``--replace/-r`` option to the command as follows:
+``--replace/-r`` and ``--action [up|del]`` option to the command
+as follows:
 
 .. code-block:: bash
 
-    vss-cli compute vm set Frontend1 client-note --replace "Billing Code: 1234"
+    vss-cli compute vm set Frontend1 client-note --action up \
+    --replace "Billing Code: 1234"
 
 And query to validate any change:
 
@@ -153,3 +156,12 @@ And query to validate any change:
     vss-cli compute vm get Front_end_1 client-note
 
     Value               : Billing Code: 1234
+
+Delete Client Notes
+-------------------
+
+To delete a client note simply run:
+
+.. code-block:: bash
+
+    vss-cli compute vm set Frontend1 client-note --action del
