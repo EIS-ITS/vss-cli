@@ -5,6 +5,7 @@ import logging
 import os
 import platform
 import sys
+import time
 from base64 import b64decode, b64encode
 from pathlib import Path
 from time import sleep
@@ -13,6 +14,7 @@ from typing import (  # noqa: F401
 
 import click
 import jwt
+import requests
 from click_spinner import Spinner, spinner
 from pick import pick
 from pyvss.const import __version__ as pyvss_version
@@ -57,6 +59,12 @@ class Configuration(VssManager):
         self._s3_server = const.DEFAULT_S3_SERVER  # type: str
         self.vpn_server = None  # type: Optional[str]
         self._vpn_server = const.DEFAULT_VPN_SERVER
+        self.gpt_token = None  # type: Optional[str]
+        self._gpt_token = const.DEFAULT_GPT_TOKEN
+        self.gpt_server = None  # type: Optional[str]
+        self._gpt_server = const.DEFAULT_GPT_SERVER
+        self.gpt_persona = None  # type: Optional[int]
+        self._gpt_persona = const.DEFAULT_GPT_PERSONA
         self.username = None  # type: Optional[str]
         self.password = None  # type: Optional[str]
         self.totp = None  # type: Optional[str]
@@ -197,6 +205,7 @@ class Configuration(VssManager):
             "dry_run": self.dry_run,
             "s3_server": self.s3_server,
             "vpn_server": self.vpn_server,
+            "gpt_server": self.gpt_server,
         }
 
         return f"<Configuration({view})"
@@ -1689,3 +1698,85 @@ class Configuration(VssManager):
             self.echo(f'{request_message_str}')
             return False
         return True
+
+    @staticmethod
+    def smooth_print(text: str, delay=0.001):
+        """Print text with smooth line breaks."""
+        for char in text:
+            print(char, end='', flush=True)
+            time.sleep(delay)
+
+    @staticmethod
+    def get_new_chat_id(
+        chat_endpoint: str,
+        persona_id: int,
+        description: str,
+        headers: Dict[str, str],
+    ) -> Optional[int]:
+        """Get the new chat id."""
+        payload = {"persona_id": persona_id, "description": description}
+        with requests.post(
+            chat_endpoint, headers=headers, json=payload
+        ) as response:
+            rv = response.json()
+            chat_id = rv['chat_session_id']
+            return chat_id
+
+    def ask_assistant(
+        self, message: str, spinner_cls: Optional[Spinner] = None
+    ):
+        """Ask assistant."""
+        headers = {
+            'Authorization': self.gpt_token,
+            'connection': 'keep-alive',
+            'Content-Type': 'application/json',
+        }
+        retrieval_options = {
+            "run_search": "auto",
+            "real_time": True,
+            "limit": 1,
+            "filters": {
+                "source_type": None,
+                "document_set": None,
+                "time_cutoff": None,
+                "tags": [],
+            },
+        }
+        top_documents = []
+        chat_id = self.get_new_chat_id(
+            chat_endpoint=f'{self.gpt_server}/api/chat/create-chat-session',
+            persona_id=self.gpt_persona or self._gpt_persona,
+            description=message[:20],
+            headers=headers,
+        )
+        # chat payload
+        payload = {
+            'prompt_id': self._gpt_persona,
+            "message": message,
+            "file_descriptors": [],
+            "chat_session_id": chat_id,
+            "retrieval_options": retrieval_options,
+        }
+        with requests.post(
+            f'{self.gpt_server}/api/chat/send-message',
+            json=payload,
+            stream=True,
+            headers=headers,
+        ) as response:
+            if spinner_cls is not None:
+                spinner_cls.stop()
+            for line in response.iter_lines():
+                if line:
+                    data = json.loads(line)
+                    if 'top_documents' in data:
+                        top_documents = data['top_documents']
+                    answer_piece = data.get('answer_piece')
+                    if answer_piece is not None:
+                        self.smooth_print(answer_piece)
+                    if answer_piece == "":
+                        break
+        for doc in top_documents:
+            self.echo(
+                f'\n\nDocument ID: {doc["document_id"]}\n'
+                f'Semantic ID: {doc["semantic_identifier"]}'
+            )

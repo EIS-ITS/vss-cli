@@ -44,6 +44,9 @@ class ConfigFileGeneral:
     default_endpoint_name: str = const.DEFAULT_ENDPOINT_NAME
     s3_server: str = const.DEFAULT_S3_SERVER
     vpn_server: str = const.DEFAULT_VPN_SERVER
+    gpt_server: str = const.DEFAULT_GPT_SERVER
+    gpt_persona: int = const.DEFAULT_GPT_PERSONA
+    gpt_token: str = const.DEFAULT_GPT_TOKEN
     debug: bool = const.DEFAULT_DEBUG
     output: str = const.DEFAULT_RAW_OUTPUT
     table_format: str = const.DEFAULT_TABLE_FORMAT
