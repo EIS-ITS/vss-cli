@@ -1,20 +1,20 @@
 """Helpers used by VSS CLI (vss-cli)."""
 import contextlib
 import csv
-from http.client import HTTPConnection
 import io
 import json
 import logging
-from pathlib import Path
 import re
 import shlex
 import shutil
+from http.client import HTTPConnection
+from pathlib import Path
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union, cast
 
 from click import BadArgumentUsage
-from pygments import highlight
-from pygments.formatters import TerminalFormatter
-from pygments.lexers import JsonLexer, YamlLexer
+from rich.console import Console
+from rich.json import JSON
+from rich.syntax import Syntax
 from ruamel.yaml import YAML
 from tabulate import tabulate
 
@@ -88,11 +88,11 @@ def raw_format_output(
     if output == 'json':
         try:
             if highlighted:
-                return highlight(
-                    json.dumps(data, indent=2, sort_keys=False),
-                    JsonLexer(),
-                    TerminalFormatter(),
-                )
+                console = Console()
+                json_data = json.dumps(data, indent=2, sort_keys=False)
+                with console.capture() as capture:
+                    console.print(JSON(json_data))
+                return capture.get()
             else:
                 return json.dumps(data, indent=2, sort_keys=False)
         except ValueError:
@@ -105,11 +105,14 @@ def raw_format_output(
     elif output == 'yaml':
         try:
             if highlighted:
-                return highlight(
-                    cast(str, yaml.dump_yaml(yamlparser, data)),
-                    YamlLexer(),
-                    TerminalFormatter(),
+                console = Console()
+                yaml_data = cast(str, yaml.dump_yaml(yamlparser, data))
+                syntax = Syntax(
+                    yaml_data, "yaml", theme='ansi_dark', line_numbers=False
                 )
+                with console.capture() as capture:
+                    console.print(syntax)
+                return capture.get()
             else:
                 return cast(str, yaml.dump_yaml(yamlparser, data))
         except ValueError:
