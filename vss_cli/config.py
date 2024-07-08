@@ -1707,6 +1707,16 @@ class Configuration(VssManager):
             time.sleep(delay)
 
     @staticmethod
+    def clear_console():
+        """Clear console."""
+        # For Windows
+        if os.name == 'nt':
+            os.system('cls')
+        # For macOS and Linux
+        else:
+            os.system('clear')
+
+    @staticmethod
     def get_new_chat_id(
         chat_endpoint: str,
         persona_id: int,
@@ -1718,9 +1728,7 @@ class Configuration(VssManager):
         with requests.post(
             chat_endpoint, headers=headers, json=payload
         ) as response:
-            if response.status_code in [
-                401, 403, 500, 502, 503, 504
-            ]:
+            if response.status_code in [401, 403, 500, 502, 503, 504]:
                 raise VssCliError(
                     'Invalid response from the API. '
                     'Have you provided VSS_GPT_TOKEN?'
@@ -1764,6 +1772,7 @@ class Configuration(VssManager):
             "chat_session_id": chat_id,
             "retrieval_options": retrieval_options,
         }
+        answer_text = ''
         with requests.post(
             f'{self.gpt_server}/api/chat/send-message',
             json=payload,
@@ -1779,11 +1788,26 @@ class Configuration(VssManager):
                         top_documents = data['top_documents']
                     answer_piece = data.get('answer_piece')
                     if answer_piece is not None:
+                        answer_text = answer_text + answer_piece
                         self.smooth_print(answer_piece)
                     if answer_piece == "":
                         break
+        docs = []
+        n = 1
         for doc in top_documents:
-            self.echo(
-                f'\n\nDocument ID: {doc["document_id"]}\n'
-                f'Semantic ID: {doc["semantic_identifier"]}'
+            docs.append(
+                f'[{n}] [{doc["semantic_identifier"]}]({doc["document_id"]})'
             )
+            n += 1
+        # make docs
+        docs_text = '\n'.join(docs)
+        answer_text = answer_text + '\n\n' + docs_text
+        # clear console for formatting
+        self.clear_console()
+
+        from rich.console import Console
+        from rich.markdown import Markdown
+
+        console = Console()
+        markdown = Markdown(answer_text)
+        console.print(markdown)
