@@ -33,7 +33,9 @@ def cli(ctx: Configuration, no_load: bool, message: str):
         if not message:
             spinner_cls.stop()
             ctx.secho(we_message)
-            message = click.prompt("How may I assist you?", type=str)
+            message = click.prompt(
+                "How may I assist you?", type=str, prompt_suffix=" "
+            )
             ctx.echo("")
             spinner_cls.start()
         ctx.ask_assistant(spinner_cls=spinner_cls, message=message)

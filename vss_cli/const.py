@@ -4,7 +4,7 @@ from importlib import resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2024.6.1-dev1"
+__version__ = "2024.6.1-dev2"
 
 
 DEFAULT_TIMEOUT = 30

@@ -1718,6 +1718,13 @@ class Configuration(VssManager):
         with requests.post(
             chat_endpoint, headers=headers, json=payload
         ) as response:
+            if response.status_code in [
+                401, 403, 500, 502, 503, 504
+            ]:
+                raise VssCliError(
+                    'Invalid response from the API. '
+                    'Have you provided VSS_GPT_TOKEN?'
+                )
             rv = response.json()
             chat_id = rv['chat_session_id']
             return chat_id
