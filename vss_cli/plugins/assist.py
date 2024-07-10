@@ -1,5 +1,6 @@
 """AI assistant."""
 import logging
+import random
 
 import click
 
@@ -9,11 +10,27 @@ from vss_cli.utils.emoji import EMOJI_UNICODE
 
 _LOGGING = logging.getLogger(__name__)
 
-ej_robot = EMOJI_UNICODE.get(':robot_face:')
+ej_ai = EMOJI_UNICODE.get(':robot_face:')
+ej_rk = EMOJI_UNICODE.get(':rocket:')
 
-we_message = f"""Hello, I’m UTORcloudy {ej_robot}, the ITS
-Private Cloud virtual agent.I can help with account, virtual
-machine management, billing questions and more. 🚀"""
+we_msg = f"""Hi, I’m UTORcloudy {ej_ai}, the ITS Private Cloud virtual agent.
+I can help with account, virtual machine management, billing questions
+and more. {ej_rk}
+"""
+
+suggestions = [
+    "How to deploy an Ubuntu virtual machine?",
+    "How do I get started?",
+    "What are the VSS Guidelines?",
+    "How can I reset my password?",
+    "How to enable Ubuntu Pro on your VM?",
+    "How to activate Windows Server in the ITS Private Cloud?",
+    "Do you provide public IP addresses?",
+    "How Can I change CPU, Memory,Network, HDD specs after a VM is created?",
+    "How to request an SSL certificate?",
+    "What additional services are included in my ITS Private Cloud bill?",
+    "What factors determine the cost of my ITS Private Cloud usage?",
+]
 
 
 @click.command('assist', short_help='VSS AI Assistant')
@@ -28,13 +45,20 @@ machine management, billing questions and more. 🚀"""
 def cli(ctx: Configuration, no_load: bool, message: str):
     """Manage your VSS account."""
     with ctx.spinner(disable=ctx.debug) as spinner_cls:
-        if not no_load:
+        if no_load:
+            ctx.set_defaults()
+        else:
             ctx.load_config(spinner_cls=spinner_cls)
         if not message:
             spinner_cls.stop()
-            ctx.secho(we_message)
+            ctx.secho(we_msg)
+            default = random.choice(suggestions)
             message = click.prompt(
-                "How may I assist you?", type=str, prompt_suffix=" "
+                "How may I assist you?",
+                type=str,
+                prompt_suffix=" ",
+                show_default=True,
+                default=f"i.e. {default}",
             )
             ctx.echo("")
             spinner_cls.start()
