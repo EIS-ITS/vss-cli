@@ -1,7 +1,7 @@
 .. _Development:
 
-Development
-===========
+Contribute to the ``vss-cli``
+=============================
 
 First time setup
 ----------------

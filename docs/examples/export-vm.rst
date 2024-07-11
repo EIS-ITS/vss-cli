@@ -157,7 +157,7 @@ as follows:
     Download complete to ~/Downloads/disk-1.nvram ✅
 
 Alternatively, you could just launch the web UI via the ``la`` command and browse the
-``ut-vss` bucket to download the files via your web browser:
+``ut-vss`` bucket to download the files via your web browser:
 
 .. code-block:: bash
 

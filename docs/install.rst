@@ -1,7 +1,7 @@
 .. _Installation:
 
-Installation
-============
+Install the ``vss-cli``
+=======================
 
 .. note::
 

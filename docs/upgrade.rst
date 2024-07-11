@@ -1,7 +1,7 @@
 .. _Upgrade:
 
-Upgrade
-=======
+Upgrade the ``vss-cli``
+=======================
 
 If you have the VSS CLI installed and want to upgrade to the latest version
 from `PyPI`_ you can run:

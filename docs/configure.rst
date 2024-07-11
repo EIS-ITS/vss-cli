@@ -1,7 +1,7 @@
 .. _Configuration:
 
-Configuration
-=============
+Configure the ``vss-cli``
+=========================
 
 Before using VSS CLI, you need setup your VSS credentials.
 You can do this in a couple of ways:

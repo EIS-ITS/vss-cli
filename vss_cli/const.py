@@ -4,7 +4,7 @@ from importlib import resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2024.6.0"
+__version__ = "2024.7.0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -12,6 +12,9 @@ DEFAULT_ENDPOINT = "https://cloud-api.eis.utoronto.ca"
 DEFAULT_ENDPOINT_NAME = "cloud-api"
 DEFAULT_S3_SERVER = "https://vskey-stor.eis.utoronto.ca"
 DEFAULT_VPN_SERVER = "https://vskey-vn.eis.utoronto.ca"
+DEFAULT_GPT_SERVER = "https://gpt.eis.utoronto.ca"
+DEFAULT_GPT_PERSONA = 2
+DEFAULT_GPT_TOKEN = ''
 _LEGACY_CONFIG = ("~", ".vss-cli", "config.json")
 _DEFAULT_CONFIG = ("~", ".vss-cli", "config.yaml")
 _DEFAULT_HISTORY = ("~", ".vss-cli", "history")
@@ -43,6 +46,9 @@ DEFAULT_SETTINGS = {
     "output": DEFAULT_OUTPUT,
     "s3_server": DEFAULT_S3_SERVER,
     "vpn_server": DEFAULT_VPN_SERVER,
+    "gpt_server": DEFAULT_GPT_SERVER,
+    "gpt_persona": DEFAULT_GPT_PERSONA,
+    "gpt_token": DEFAULT_GPT_TOKEN,
     "table_format": DEFAULT_TABLE_FORMAT,
     "check_for_messages": DEFAULT_CHECK_MESSAGES,
     "check_for_updates": DEFAULT_CHECK_UPDATES,
@@ -62,6 +68,9 @@ GENERAL_SETTINGS = {
     "output": str,
     "s3_server": str,
     "vpn_server": str,
+    "gpt_server": str,
+    "gpt_persona": str,
+    "gpt_token": str,
     "table_format": str,
     "timeout": int,
     "columns_width": int,

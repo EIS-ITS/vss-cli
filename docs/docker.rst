@@ -1,7 +1,7 @@
 .. _Docker:
 
-Docker
-======
+Run the ``vss-cli`` in Docker
+===============================
 
 Docker image based on the official Python distro on
 `Alpine Linux <https://hub.docker.com/_/alpine/>`_,

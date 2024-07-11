@@ -245,6 +245,27 @@ def _default_token() -> Optional[str]:
     show_default=True,
     envvar='VSS_VPN_SERVER',
 )
+@click.option(
+    '--gpt-server',
+    help='The GPT server for the VSS Assistant.',
+    default=None,
+    show_default=True,
+    envvar='VSS_GPT_SERVER',
+)
+@click.option(
+    '--gpt-token',
+    help='The GPT token for the VSS Assistant.',
+    default=None,
+    show_default=True,
+    envvar='VSS_GPT_TOKEN',
+)
+@click.option(
+    '--gpt-persona',
+    help='The GPT Persona for the VSS Assistant.',
+    default=None,
+    show_default=True,
+    envvar='VSS_GPT_PERSONA',
+)
 @click.version_option(
     version=f'{const.__version__} ('
     f'pyvss/{pyvss_version} '
@@ -273,6 +294,9 @@ def cli(
     wait: Optional[bool],
     s3_server: Optional[str],
     vpn_server: Optional[str],
+    gpt_token: Optional[str],
+    gpt_server: Optional[str],
+    gpt_persona: Optional[int],
 ):
     """Command line interface for the ITS Private Cloud."""
     ctx.verbose = verbose
@@ -294,5 +318,8 @@ def cli(
     ctx.wait_for_requests = wait
     ctx.s3_server = s3_server
     ctx.vpn_server = vpn_server
+    ctx.gpt_token = gpt_token
+    ctx.gpt_server = gpt_server
+    ctx.gpt_persona = gpt_persona
 
     _LOGGER.debug(f"Using settings: {ctx}")
