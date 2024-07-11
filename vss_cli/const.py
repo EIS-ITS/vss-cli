@@ -4,7 +4,7 @@ from importlib import resources
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2024.7.0-dev0"
+__version__ = "2024.7.0-dev1"
 
 
 DEFAULT_TIMEOUT = 30
@@ -69,6 +69,8 @@ GENERAL_SETTINGS = {
     "s3_server": str,
     "vpn_server": str,
     "gpt_server": str,
+    "gpt_persona": str,
+    "gpt_token": str,
     "table_format": str,
     "timeout": int,
     "columns_width": int,

@@ -13,7 +13,7 @@ _LOGGING = logging.getLogger(__name__)
 ej_ai = EMOJI_UNICODE.get(':robot_face:')
 ej_rk = EMOJI_UNICODE.get(':rocket:')
 
-we_msg = f"""Hi, I’m UTORcloudy {ej_ai}, the ITS Private Cloud virtual agent.
+we_msg = f"""Hi, I’m UTORcloudy {ej_ai}, , the ITS Private Cloud virtual agent.
 I can help with account, virtual machine management, billing questions
 and more. {ej_rk}
 """
@@ -22,7 +22,7 @@ suggestions = [
     "How to deploy an Ubuntu virtual machine?",
     "How do I get started?",
     "What are the VSS Guidelines?",
-    "How can I reset my password?",
+    "How can I reset my account password?",
     "How to enable Ubuntu Pro on your VM?",
     "How to activate Windows Server in the ITS Private Cloud?",
     "Do you provide public IP addresses?",
@@ -30,6 +30,7 @@ suggestions = [
     "How to request an SSL certificate?",
     "What additional services are included in my ITS Private Cloud bill?",
     "What factors determine the cost of my ITS Private Cloud usage?",
+    'How can I install sentinelOne on my VM?',
 ]
 
 
@@ -49,6 +50,10 @@ def cli(ctx: Configuration, no_load: bool, message: str):
             ctx.set_defaults()
         else:
             ctx.load_config(spinner_cls=spinner_cls)
+            _LOGGING.debug(
+                f'GPT settings: {ctx.gpt_persona=}, '
+                f'{ctx.gpt_token=}, {ctx.gpt_server}'
+            )
         if not message:
             spinner_cls.stop()
             ctx.secho(we_msg)

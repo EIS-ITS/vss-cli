@@ -206,6 +206,8 @@ class Configuration(VssManager):
             "s3_server": self.s3_server,
             "vpn_server": self.vpn_server,
             "gpt_server": self.gpt_server,
+            "gpt_persona": self.gpt_persona,
+            "gpt_token": 'yes' if self.gpt_token is not None else 'no',
         }
 
         return f"<Configuration({view})"
@@ -1749,7 +1751,7 @@ class Configuration(VssManager):
         retrieval_options = {
             "run_search": "auto",
             "real_time": True,
-            "limit": 1,
+            "limit": 2,
             "filters": {
                 "source_type": None,
                 "document_set": None,
