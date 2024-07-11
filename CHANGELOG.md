@@ -1,6 +1,22 @@
 # Changelog 📝
 
-## [v2024.6.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.5.24) (2024-06-05)
+## [v2024.7.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.7.0) (2024-07-12)
+
+**New Features:**
+
+- [#702](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/702): ``assist``: command to provide access to the ITS Private cloud AI assistant
+
+**Improvements:**
+
+- [#703](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/703): ``core``:  replace ``pygments`` with ``rich`` to increase console printing functionality.
+- [#704](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/704): ``docs``:  title improvements for answer engine optimization.
+- [#705](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/705): ``plugins``:  implement ``importlib-resources`` and ``importlib-metadata`` to replace ``pkg_resources``.
+
+**Bug Fixes:**
+
+- [#701](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/701): ``docs``: client note doc outdated.
+
+## [v2024.6.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.6.0) (2024-06-05)
 
 **Improvements:**
 
