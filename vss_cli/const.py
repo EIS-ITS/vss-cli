@@ -1,10 +1,14 @@
 """Constants used by VSS CLI (vss-cli)."""
 import os
-from importlib import resources
+
+try:
+    import importlib_resources as ilr
+except ImportError:
+    import importlib.resources as ilr
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2024.7.0"
+__version__ = "2024.7.1-dev0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -26,7 +30,8 @@ COLUMNS_WIDTH_STR = "\u2026"
 LEGACY_CONFIG = os.path.expanduser(os.path.join(*_LEGACY_CONFIG))
 DEFAULT_CONFIG = os.path.expanduser(os.path.join(*_DEFAULT_CONFIG))
 DEFAULT_HISTORY = os.path.expanduser(os.path.join(*_DEFAULT_HISTORY))
-DEFAULT_DATA_PATH = resources.files(PACKAGE_NAME) / "data"
+
+DEFAULT_DATA_PATH = ilr.files(PACKAGE_NAME) / "data"
 DEFAULT_CONFIG_TMPL = DEFAULT_DATA_PATH.joinpath("config.yaml")
 DEFAULT_CHECK_UPDATES = True
 DEFAULT_CHECK_MESSAGES = True
