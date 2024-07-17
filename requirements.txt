@@ -20,3 +20,4 @@ xmltodict==0.13.0
 setuptools==68.2.2
 importlib-resources==6.4.0;python_version<'3.9'
 importlib-metadata==7.1.0;python_version<'3.9'
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
