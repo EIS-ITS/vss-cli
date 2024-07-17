@@ -1,6 +1,20 @@
 Changelog 📝
 ============
 
+
+`v2024.7.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.7.1>`_ (2024-07-17)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#709 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/709>`_: ``assist``: minor improvements.
+
+**Bug Fixes:**
+
+- `#708 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/708>`_: ``core``: error with `importlib.resources`.
+
+
+
 `v2024.7.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.7.0>`_ (2024-07-12)
 ------------------------------------------------------------------------------------------
 
