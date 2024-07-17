@@ -1,19 +1,19 @@
 Changelog 📝
 ============
 
-
-`v2024.7.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.7.1>`_ (2024-07-17)
+`v2024.7.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.7.2>`_ (2024-07-17)
 ------------------------------------------------------------------------------------------
 
 **Improvements:**
 
 - `#709 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/709>`_: ``assist``: minor improvements.
+- `#713 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/713>`_: Homebrew update formula to python 3.11.
+- `#714 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/714>`_: ``core``: minimum ``python`` version 3.8.5.
 
 **Bug Fixes:**
 
 - `#708 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/708>`_: ``core``: error with `importlib.resources`.
-
-
+- `#712 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/712>`_: ``importlib-resources`` and ``importlib-metadata`` version requirements
 
 `v2024.7.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.7.0>`_ (2024-07-12)
 ------------------------------------------------------------------------------------------
