@@ -1,13 +1,17 @@
 """Compute plugin for VSS CLI (vss-cli)."""
 import click
 from click_plugins import with_plugins
-from importlib_metadata import entry_points
+
+try:
+    import importlib_metadata as ilm
+except ImportError:
+    import importlib.metadata as ilm
 
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 
 
-@with_plugins(entry_points(group='vss_cli.contrib.compute'))
+@with_plugins(ilm.entry_points(group='vss_cli.contrib.compute'))
 @click.group('compute', short_help='Manage VMs, networks, folders, etc.')
 @pass_context
 def cli(ctx: Configuration):

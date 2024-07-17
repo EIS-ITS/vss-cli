@@ -6,7 +6,7 @@ class VssCli < Formula
   sha256 "69d2f3e37af6fd26c95a350254ecdb4e62835ffa44399262dc7b77d7e28fceca"
   license "MIT"
 
-  depends_on "python@3.10"
+  depends_on "python@3.11"
   depends_on "pipx" => :build
   depends_on "rust" => :build
 
