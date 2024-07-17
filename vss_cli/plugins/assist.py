@@ -13,7 +13,7 @@ _LOGGING = logging.getLogger(__name__)
 ej_ai = EMOJI_UNICODE.get(':robot_face:')
 ej_rk = EMOJI_UNICODE.get(':rocket:')
 
-we_msg = f"""Hi, I’m UTORcloudy {ej_ai}, , the ITS Private Cloud virtual agent.
+we_msg = f"""Hi, I’m UTORcloudy {ej_ai}, the ITS Private Cloud virtual agent.
 I can help with account, virtual machine management, billing questions
 and more. {ej_rk}
 """
@@ -63,7 +63,7 @@ def cli(ctx: Configuration, no_load: bool, message: str):
                 type=str,
                 prompt_suffix=" ",
                 show_default=True,
-                default=f"i.e. {default}",
+                default=f"{default}",
             )
             ctx.echo("")
             spinner_cls.start()
