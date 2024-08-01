@@ -14,7 +14,7 @@ class VssCli < Formula
     # ENV.deparallelize  # if your formula fails when building in parallel
     ENV["PIPX_HOME"] = prefix
     ENV["PIPX_BIN_DIR"] = bin
-    ENV["PIPX_DEFAULT_PYTHON"] = Formula["python@3.10"].opt_bin/"python3.10"
+    ENV["PIPX_DEFAULT_PYTHON"] = Formula["python@3.11"].opt_bin/"python@3.11"
 
     system "pipx install ./*.whl"
 
