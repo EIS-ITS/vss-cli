@@ -162,6 +162,7 @@ html_favicon = '_static/favicon.ico'
 if os.getenv('CONFLUENCE_PUBLISH', False):
     extensions.append('sphinxcontrib.confluencebuilder')
     # Confluence Builder
+    confluence_editor = os.getenv('CONFLUENCE_EDITOR', 'v2')
     confluence_publish = True
     confluence_space_key = os.getenv('CONFLUENCE_SPACE_KEY')
     # (for Confluence Cloud)
