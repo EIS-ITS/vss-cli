@@ -1768,7 +1768,10 @@ class Configuration(VssManager):
         )
         # chat payload
         payload = {
-            'prompt_id': self._gpt_persona,
+            "prompt_id": self._gpt_persona,
+            "parent_message_id": None,
+            "full_doc": False,
+            "search_doc_ids": [],
             "message": message,
             "file_descriptors": [],
             "chat_session_id": chat_id,
