@@ -1291,7 +1291,7 @@ def compute_vm_set_client(ctx: Configuration, client):
     '--action',
     type=click.Choice(['up', 'del']),
     help='Action to perform.',
-    default='add',
+    default='up',
 )
 @click.option(
     '--replace',
@@ -1304,7 +1304,8 @@ def compute_vm_set_client(ctx: Configuration, client):
 def compute_vm_set_client_note(ctx: Configuration, notes, replace, action):
     """Set or update virtual machine client notes in metadata.
 
-    vss-cli compute vm set <name-or-vm_id> client-note --up 'New note'
+    vss-cli compute vm set <name-or-vm_id> client-note \
+    --action up|del 'New note'
     """
     # request
     if action == 'del':
