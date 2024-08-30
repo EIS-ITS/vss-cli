@@ -1,6 +1,15 @@
 Changelog 📝
 ============
 
+`v2024.8.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.8.0>`_ (2024-08-29)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#717 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/717>`_: ``assist``: additional attributes in payload required.
+- `#718 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/718>`_: ``docs``: libs upgrade sphinxcontrib-confluencebuilder 2.7.1.
+- `#719 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/719>`_: ``core``: upgrade minio from 7.2.7 to 7.2.8.
+
 `v2024.7.2 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.7.2>`_ (2024-07-17)
 ------------------------------------------------------------------------------------------
 
