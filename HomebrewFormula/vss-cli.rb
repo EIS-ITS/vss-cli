@@ -1,4 +1,5 @@
 class VssCli < Formula
+  include Language::Python::Virtualenv
 
   desc "ITS Private Cloud Command Line Interface vss-cli"
   homepage "https://eis.utoronto.ca/~vss/vss-cli"
@@ -11,10 +12,9 @@ class VssCli < Formula
   depends_on "rust" => :build
 
   def install
-    # ENV.deparallelize  # if your formula fails when building in parallel
     ENV["PIPX_HOME"] = prefix
     ENV["PIPX_BIN_DIR"] = bin
-    ENV["PIPX_DEFAULT_PYTHON"] = Formula["python@3.11"].opt_bin/"python@3.11"
+    ENV["PIPX_DEFAULT_PYTHON"] = Formula["python@3.11"].opt_bin/"python3.11"
 
     system "pipx install ./*.whl"
 
