@@ -1,12 +1,20 @@
 # Changelog 📝
 
+[v2024.8.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.8.1) (2024-08-30)
+
+**Improvements:**
+
+- [#722](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/722): ``compute vm set client-note``: improvements to set ``--action`` default to ``up``.
+- [#723](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/723): ``core``: upgrade ``dateparser`` from 1.1.8 to 1.2.0.
+- [#724](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/724): ``core``: upgrade ``validators`` from 0.2.0 to 0.33.0.
+
 [v2024.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.8.0) (2024-08-29)
 
 **Improvements:**
 
 - [#717](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/717): ``assist``: additional attributes in payload required.
-- [#718](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/718): ``docs``: libs upgrade sphinxcontrib-confluencebuilder 2.7.1.
-- [#719](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/719): ``core``: upgrade minio from 7.2.7 to 7.2.8.
+- [#718](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/718): ``docs``: libs upgrade ``sphinxcontrib-confluencebuilder`` 2.7.1.
+- [#719](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/719): ``core``: upgrade ``minio`` from 7.2.7 to 7.2.8.
 
 ## [v2024.7.2](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.7.2) (2024-07-17)
 
