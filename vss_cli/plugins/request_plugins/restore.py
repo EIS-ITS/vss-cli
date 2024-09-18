@@ -3,7 +3,8 @@ import logging
 
 import click
 
-from vss_cli import autocompletion, const, rel_opts as so
+from vss_cli import autocompletion, const
+from vss_cli import rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -43,7 +44,7 @@ def request_mgmt_res_ls(
     """
     columns = ctx.columns or const.COLUMNS_REQUEST_RESTORE
     _LOGGING.debug(f'Columns {columns}')
-    params = dict(expand=1, sort='created_on,desc')
+    params = dict(expand=1, sort='created_on,desc', groups=1)
     if all(filter_by):
         params['filter'] = ';'.join(filter_by)
     if all(sort):

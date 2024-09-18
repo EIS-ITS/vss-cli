@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec shell VM 2024.8.1             #
+#     VSS-CLI Spec shell VM 2024.9.0-dev0             #
 ####################################################
 built: os_install         # Required: Do not remove.
 machine:
