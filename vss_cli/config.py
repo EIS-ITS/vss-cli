@@ -1740,7 +1740,10 @@ class Configuration(VssManager):
             return chat_id
 
     def ask_assistant(
-        self, message: str, spinner_cls: Optional[Spinner] = None
+        self,
+        message: str,
+        spinner_cls: Optional[Spinner] = None,
+        final_message: str = None,
     ):
         """Ask assistant."""
         headers = {
@@ -1816,3 +1819,5 @@ class Configuration(VssManager):
         console = Console()
         markdown = Markdown(answer_text)
         console.print(markdown)
+        console.print()
+        console.print(Markdown(f'**Note: {final_message}**'))
