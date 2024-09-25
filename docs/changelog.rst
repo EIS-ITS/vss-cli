@@ -1,6 +1,23 @@
 Changelog 📝
 ============
 
+`v2024.9.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.9.0>`_ (2024-09-25)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request change ls``: show group requests.
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request export ls``: show group requests.
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request folder ls``: show group requests.
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request image ls``: show group requests.
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request new ls``: show group requests.
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request restore ls``: show group requests.
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request retire ls``: show group requests.
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request snapshot ls``: show group requests.
+- `#727 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727>`_: ``request vmdk ls``: show group requests.
+- `#728 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/728>`_: ``assist``: add note about always checking for references.
+
+
 `v2024.8.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.8.1>`_ (2024-08-30)
 ------------------------------------------------------------------------------------------
 
@@ -26,7 +43,7 @@ Changelog 📝
 **Improvements:**
 
 - `#709 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/709>`_: ``assist``: minor improvements.
-- `#713 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/713>`_: Homebrew update formula to python 3.11.
+- `#713 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/713>`_: ``Homebrew``: update formula to python 3.11.
 - `#714 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/714>`_: ``core``: minimum ``python`` version 3.8.5.
 
 **Bug Fixes:**
