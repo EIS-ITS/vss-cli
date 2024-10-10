@@ -1754,7 +1754,7 @@ class Configuration(VssManager):
         retrieval_options = {
             "run_search": "auto",
             "real_time": True,
-            "limit": 2,
+            "limit": 5,
             "filters": {
                 "source_type": None,
                 "document_set": None,
@@ -1773,6 +1773,8 @@ class Configuration(VssManager):
         payload = {
             "prompt_id": self._gpt_persona,
             "parent_message_id": None,
+            "regenerate": False,
+            "alternate_assistant_id": 2,
             "full_doc": False,
             "search_doc_ids": [],
             "message": message,
