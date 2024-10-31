@@ -1343,6 +1343,7 @@ class Configuration(VssManager):
         template['machine']['disks'] = payload.get('disks')
         template['machine']['scsi'] = payload.get('scsi')
         template['machine']['storage-type'] = payload.get('storage_type')
+        template['machine']['iso'] = payload.get('iso')
         template['networking']['interfaces'] = [
             {
                 'network': self.get_network(v['network'])['name'],
