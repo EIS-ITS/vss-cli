@@ -1,6 +1,16 @@
 Changelog 📝
 ============
 
+`v2024.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.10.0>`_ (2024-10-31)
+------------------------------------------------------------------------------------------
+**Improvements:**
+
+- `#731 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/731>`_: ``assist``: increase retrieval results to 5.
+- `#732 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/732>`_: ``docs``: add ``cli`` specification documentation
+- `#733 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/733>`_: ``compute vm get spec``: add ``scsi`` controller reference to spec
+- `#734 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/734>`_: ``compute vm get spec``: add ``iso`` if mounted.
+- `#734 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/734>`_: ``compute vm get spec-api``: add ``iso`` if mounted.
+
 `v2024.9.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.9.0>`_ (2024-09-25)
 ------------------------------------------------------------------------------------------
 
