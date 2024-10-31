@@ -25,9 +25,14 @@ The following is the YAML definition of valid VM Shell CLI specification:
       iso: Ubuntu              # Optional: ISO name or path to mount upon creation.
       firmware: efi            # Optional: Firmware to use: Either bios or efi and secure boot (Default: efi).
       disks:
-        - capacity_gb: 40               # Disk capacity in GB (Default: 40GB).
-          backing_mode: persistent      # Optional Disk backing mode (Default: persistent).
+        - capacity_gb: 40              # Disk capacity in GB (Default: 40GB).
+          backing_mode: persistent  # Optional Disk backing mode (Default: persistent).
           backing_sharing: sharingnone  # Optional Disk sharing mode (Default: sharingnone).
+          scsi: 0                       # Optional Disk SCSI controller (Default: 0).
+      scsi:
+        -  bus: 0                       # SCSI controller bus number (Default: 0).
+           type: paravirtual            # Required: Disk type (Recommended: paravirtual).
+           sharing: nosharing           # Optional Disk sharing mode (Default: nosharing).
     # Additional (Uncomment to enable)
       domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
       power_on: true         # Optional: Power on after successful deployment.

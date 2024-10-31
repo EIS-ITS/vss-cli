@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from CLib 2024.10.0-dev1             #
+#     VSS-CLI Spec from CLib 2024.10.0-dev2             #
 ####################################################
 built: clib               # Required: Do not remove.
 machine:
@@ -14,8 +14,13 @@ machine:
 # Disks (Uncomment to enable)
   disks:
     - capacity_gb: 40                  # Disk capacity in GB (Default: 40GB).
+      scsi: 0                          # Optional Disk SCSI controller (Default: 0).
 #      backing_mode: persistent      # Optional Disk backing mode (Default: persistent).
 #      backing_sharing: sharingnone  # Optional Disk sharing mode (Default: sharingnone).
+  scsi:
+   -  bus: 0
+      type: paravirtual             # Required: Disk type (Recommended: paravirtual).
+#      sharing: nosharing           # Optional Disk sharing mode (Default: nosharing).
 # Additional (Uncomment to enable)
 #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
 #  power_on: true         # Optional: Power on after successful deployment.

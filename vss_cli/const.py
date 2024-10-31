@@ -8,7 +8,7 @@ except ImportError:
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2024.10.0-dev1"
+__version__ = "2024.10.0-dev2"
 
 
 DEFAULT_TIMEOUT = 30
