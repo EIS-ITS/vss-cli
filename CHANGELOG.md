@@ -1,6 +1,16 @@
 # Changelog 📝
 
-[v2024.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.9.0) (2024-09-25)
+## [v2024.10.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.10.0) (2024-10-31)
+
+**Improvements:**
+
+- [#731](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/731): ``assist``: increase retrieval results to 5.
+- [#732](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/732): ``docs``: add ``cli`` specification documentation
+- [#733](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/733): ``compute vm get spec``: add ``scsi`` controller reference to spec
+- [#734](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/734): ``compute vm get spec``: add ``iso`` if mounted.
+- [#734](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/734): ``compute vm get spec-api``: add ``iso`` if mounted.
+
+## [v2024.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.9.0) (2024-09-25)
 
 **Improvements:**
 
@@ -15,7 +25,7 @@
 - [#727](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/727): ``request vmdk ls``: show group requests.
 - [#728](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/728): ``assist``: add note about always checking for references.
 
-[v2024.8.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.8.1) (2024-08-30)
+## [v2024.8.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.8.1) (2024-08-30)
 
 **Improvements:**
 
@@ -23,7 +33,7 @@
 - [#723](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/723): ``core``: upgrade ``dateparser`` from 1.1.8 to 1.2.0.
 - [#724](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/724): ``core``: upgrade ``validators`` from 0.2.0 to 0.33.0.
 
-[v2024.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.8.0) (2024-08-29)
+## [v2024.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.8.0) (2024-08-29)
 
 **Improvements:**
 

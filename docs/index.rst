@@ -27,6 +27,7 @@ virtual machines and other services.
    development
    docker
    examples/index
+   specification/index
 
 .. toctree::
    :maxdepth: 1

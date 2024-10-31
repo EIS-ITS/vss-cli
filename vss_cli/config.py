@@ -1341,7 +1341,9 @@ class Configuration(VssManager):
         template['machine']['memory'] = payload.get('memory')
         template['machine']['folder'] = machine_folder
         template['machine']['disks'] = payload.get('disks')
+        template['machine']['scsi'] = payload.get('scsi')
         template['machine']['storage-type'] = payload.get('storage_type')
+        template['machine']['iso'] = payload.get('iso')
         template['networking']['interfaces'] = [
             {
                 'network': self.get_network(v['network'])['name'],
@@ -1754,7 +1756,7 @@ class Configuration(VssManager):
         retrieval_options = {
             "run_search": "auto",
             "real_time": True,
-            "limit": 2,
+            "limit": 5,
             "filters": {
                 "source_type": None,
                 "document_set": None,
@@ -1773,6 +1775,8 @@ class Configuration(VssManager):
         payload = {
             "prompt_id": self._gpt_persona,
             "parent_message_id": None,
+            "regenerate": False,
+            "alternate_assistant_id": 2,
             "full_doc": False,
             "search_doc_ids": [],
             "message": message,
