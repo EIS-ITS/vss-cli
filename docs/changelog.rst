@@ -1,6 +1,22 @@
 Changelog 📝
 ============
 
+`v2025.2.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.2.0>`_ (2025-02-13)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#737 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/737>`_: ``docs``: pvscsi example update.
+- `#738 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/738>`_: ``core``: upgrade ``clikc`` from 8.1.7 to 8.1.8.
+- `#739 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/739>`_: ``core``: upgrade ``sphinxcontrib-confluencebuilder`` to 2.10.1.
+- `#740 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/740>`_: ``core``: upgrade ``minio`` from 7.2.8 to 7.2.15.
+- `#741 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/741>`_: ``homebrew``: formula improvements: add stor to installation.
+- `#742 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/742>`_: ``core``: upgrade ``jsonpath-ng`` to v1.7.0.
+- `#743 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/743>`_: ``core``: upgrade ``dateparser`` from 1.2.0 to 1.2.1.
+- `#744 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/744>`_: ``core``: upgrade ``rich`` to 13.9.4.
+- `#745 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/745>`_: ``core``: upgrade ``validators`` to 0.34.0.
+- `#746 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/746>`_: ``core``: upgrade ``setuptools`` to 75.8.0.
+
 `v2024.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2024.10.0>`_ (2024-10-31)
 ------------------------------------------------------------------------------------------
 **Improvements:**
