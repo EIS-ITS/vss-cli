@@ -16,7 +16,7 @@ class VssCli < Formula
     ENV["PIPX_BIN_DIR"] = bin
     ENV["PIPX_DEFAULT_PYTHON"] = Formula["python@3.11"].opt_bin/"python3.11"
 
-    whl_file = "vss_cli-2024.10.0-py2.py3-none-any.whl"
+    whl_file = "vss_cli-2025.2.0-py2.py3-none-any.whl"
     system "pipx", "install", "#{whl_file}[stor]"
 
     (bash_completion/"vss_cli").write `#{bin}/vss-cli completion bash`
