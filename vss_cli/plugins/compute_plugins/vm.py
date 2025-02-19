@@ -4914,9 +4914,13 @@ def compute_vm_set_ubuntu_pro(ctx: Configuration, action):
     is_flag=True,
     help='Shut down or power off before encryption.',
 )
-@click.option('-o', '--power-on', is_flag=True, help='Power of after encrypting.')
+@click.option(
+    '-o', '--power-on', is_flag=True, help='Power of after encrypting.'
+)
 @pass_context
-def compute_vm_set_encryption(ctx: "Configuration", action: str, force: bool, power_on: bool):
+def compute_vm_set_encryption(
+    ctx: "Configuration", action: str, force: bool, power_on: bool
+):
     """Encrypt a virtual machine.
 
     vss-cli compute vm set <name-or-vm_id> encryption on
@@ -4925,8 +4929,9 @@ def compute_vm_set_encryption(ctx: "Configuration", action: str, force: bool, po
     protecting sensitive information.
     """
     if not ctx.is_powered_off_vm(ctx.moref) and not force:
-        raise VssCliError('Cannot perform operation in '
-                          'current power state: poweredOn')
+        raise VssCliError(
+            'Cannot perform operation in current power state: poweredOn'
+        )
     if action == 'on':
         obj = ctx.encrypt_vm(ctx.moref, force=force, power_on=power_on)
     elif action == 'off':
