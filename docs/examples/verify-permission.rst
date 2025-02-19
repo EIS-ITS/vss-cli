@@ -1,28 +1,21 @@
 .. _VerifyPermission:
 
-Verify object permissions
-=========================
+Verify object permissions with the vss-cli
+==========================================
 
-In the ITS Private Cloud we have implemented the best of VMware vCenter
-authorization management along with our internal directory for authentication
-and authorization. This configuration allows us to manage permissions on
-objects such as virtual machines, networks, domains and folders with a good
-level of granularity and efficiency.
+In the ITS Private Cloud, we've implemented VMware vCenter authorization management
+and our internal directory for authentication and authorization. This setup allows
+for fine-grained permission management on objects like virtual machines, networks,
+domains, and folders.
 
-The latest version of the ITS Private Cloud RESTful API provides an interface
-to list permissions o a given object, thus end users can verify who has access
-to what in their environment. Permissions are set to groups (preferably), but
-there are cases a specific user needs access temporarily to a given object. The
-problem arises when the **temporarily** becomes **permanent** - to solve this,
-we have exposed a resource in the RESTful API and implemented in the VSS
-Command Line interface to list **permissions** on networks, folders and virtual
-machines and if a group is permitted, list the group members to verify everyone
-in the group is allowed to access the object. If you believe a user is not
-supposed to be allowed, please contact us ASAP at vss(at)eis.utoronto.ca.
+The latest ITS Private Cloud API version enables end-users to verify who has access to what in
+their environment. Permissions are set to groups, but we've also exposed a resource
+to list permissions on networks, folders, and virtual machines. This includes
+listing group members to ensure everyone in the group has access.
 
-This document will guide you through the process of listing permissions on
-folder objects, but you also can apply this method on networks and virtual
-machines.
+To list permissions on folder objects (also applicable to networks and virtual machines),
+follow the steps outlined in this document. If you suspect a user has unauthorized access,
+contact us at vss(at)eis.utoronto.ca as soon as possible.
 
 Object
 ------

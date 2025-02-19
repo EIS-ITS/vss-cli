@@ -1,8 +1,7 @@
 .. _MFA:
 
-
-Multi Factor Authentication with Time-based One-Time Password (TOTP)
-====================================================================
+Multi Factor Authentication with Time-based One-Time Password (TOTP) with the vss-cli
+=====================================================================================
 
 Two-factor authentication is an additional layer of security designed to
 prevent unauthorized access to your account and protect access to the

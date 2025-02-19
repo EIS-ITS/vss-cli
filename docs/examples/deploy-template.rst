@@ -1,7 +1,7 @@
 .. _DeployTemplate:
 
-Deploy and reconfigure Instance from Template
-=============================================
+Deploy and reconfigure Instance from Template with the vss-cli
+==============================================================
 
 This tutorial details how to deploy a virtual machine from a virtual machine
 template in the ITS Private Cloud and reconfigure the operating system

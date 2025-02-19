@@ -1,7 +1,7 @@
 .. _DeployImage:
 
-Deploy Instance from Image
-==========================
+Deploy Instance from Image with the vss-cli
+===========================================
 
 Having a virtual machine for testing purposes on your workstation is
 very common nowadays. Once the virtual machine is ready to be imported to

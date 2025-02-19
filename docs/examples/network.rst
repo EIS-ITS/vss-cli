@@ -1,7 +1,8 @@
 .. _Network:
 
-Manage Networks and Interface Cards
-===================================
+Manage Networks and Interface Cards with the vss-cli
+=====================================================
+
 Virtual networks are mapped to Virtual Distributed Port Groups
 in order to simplify and scale the network layer. If you already
 have access to one or many virtual networks in our environment you certainly

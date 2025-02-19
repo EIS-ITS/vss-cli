@@ -1,7 +1,7 @@
 .. _DeployClone:
 
-Deploy and reconfigure Instance from Clone
-==========================================
+Deploy and reconfigure Instance from Clone with the vss-cli
+===========================================================
 
 This tutorial details how to deploy a virtual machine from either a running
 or a powered off virtual machine in the ITS Private Cloud and reconfigure the

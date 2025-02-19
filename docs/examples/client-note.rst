@@ -1,7 +1,7 @@
 .. _ClientNote:
 
-Manage virtual machine client notes
-===================================
+Manage virtual machine client notes with the vss-cli
+=====================================================
 
 The VSS CLI allows "client custom notes" to be added to the virtual
 machine annotation field with a maximum of 500 characters long. Client

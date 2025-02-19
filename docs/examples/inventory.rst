@@ -1,7 +1,7 @@
 .. _Inventory:
 
-Virtual Machine Inventory Report
-================================
+Virtual Machine Inventory Report with the vss-cli
+=================================================
 
 Inventory reports are useful to provide an offline overview of your virtual machines.
 When you submit an inventory report request, a CSV or JSON file will be generated with

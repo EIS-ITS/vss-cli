@@ -1,7 +1,7 @@
 .. _Folder:
 
-Manage Logical Folders
-======================
+Manage Logical Folders with the vss-cli
+=======================================
 
 Logical Folders are containers for storing and organizing inventory objects,
 in this case virtual machines. Just like networks, a Folder has a

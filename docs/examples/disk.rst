@@ -1,7 +1,7 @@
 .. _Disk:
 
-Manage Virtual Disks
-====================
+Manage Virtual Disks with the vss-cli
+=====================================
 
 Virtual machine disks are listed by
 ``vss-cli compute vm get <name-or-vm-id> disk <unit>``
