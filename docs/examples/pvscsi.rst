@@ -1,7 +1,7 @@
 .. _PVSCSI:
 
-VMware Paravirtual SCSI Controller
-==================================
+Manage VMware Paravirtual SCSI Controller with the vss-cli
+==========================================================
 
 According to VMware, there are two main reasons to deploy a virtual machine
 with the Paravirtual SCSI controller:

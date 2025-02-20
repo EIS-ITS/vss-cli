@@ -1,7 +1,7 @@
 .. _DeployClib:
 
-Deploy Instance from Content Library
-====================================
+Deploy Instance from Content Library with the vss-cli
+======================================================
 
 Content libraries (CLibs) are container objects for VM and vApp (OVF)
 templates and other types of files, such as ISO images, text files,

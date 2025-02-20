@@ -1,7 +1,7 @@
 .. _Snapshot:
 
-Manage virtual machine snapshots
-================================
+Manage virtual machine snapshots with the vss-cli
+=================================================
 
 This tutorial details how to create, revert and manually delete a
 virtual machine snapshot. Before proceeding, a brief talk about

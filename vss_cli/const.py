@@ -8,7 +8,7 @@ except ImportError:
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2025.2.0"
+__version__ = "2025.2.1"
 
 
 DEFAULT_TIMEOUT = 30
@@ -482,6 +482,11 @@ COLUMNS_VM_STATE = [
 COLUMNS_VM_TOOLS = [("version",), ("version_status",), ("running_status",)]
 COLUMNS_VM_TPM = [('label',), ('summary',), ('key',)]
 COLUMNS_VM_GPU = [('label',), ('summary',), ('key',)]
+COLUMNS_VM_ENCRYPTION = [
+    ('is_encrypted',),
+    ('migrate_encryption_mode',),
+    ('ft_encryption_mode',),
+]
 COLUMNS_VM_RESTORE_POINTS = [('id',), ('timestamp',)]
 COLUMNS_VM_VBS = [('vbs_enabled',), ('firmware',), ('tpm', 'tpm[*].label')]
 COLUMNS_VM_HW = [

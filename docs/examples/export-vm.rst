@@ -1,7 +1,8 @@
 .. _ExportVM:
 
-Export virtual machines
-=======================
+Export virtual machines with the vss-cli
+========================================
+
 The export virtual machine feature automates the Export
 process generating an `Open Virtualization format (OVF)`_ and
 then transferring the resulting files to your personal account space

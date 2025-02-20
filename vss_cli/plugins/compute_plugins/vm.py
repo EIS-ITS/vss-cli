@@ -803,6 +803,15 @@ def compute_vm_get_gpu(ctx: Configuration):
     ctx.echo(format_output(ctx, objs, columns=columns))
 
 
+@compute_vm_get.command('encryption', short_help='Encryption configuration')
+@pass_context
+def compute_vm_get_encryption(ctx: Configuration):
+    """Virtual machine encryption configuration."""
+    columns = ctx.columns or const.COLUMNS_VM_ENCRYPTION
+    obj = ctx.get_vm_encrypt(ctx.moref)
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+
+
 @compute_vm_get.group('restore-point', short_help='Restore Points')
 @pass_context
 def compute_vm_get_rp(ctx: Configuration):
@@ -4858,7 +4867,7 @@ def compute_vm_mk_clib(
 def compute_vm_set_ubuntu_pro(ctx: Configuration, action):
     """Enable Ubuntu Pro.
 
-    vss-cli compute vm set <name-or-vm_id> attach|detach
+    vss-cli compute vm set <name-or-vm_id> ubuntu-pro attach|detach
 
     Retrieving activation token requires VMware Tools Running.
     """
@@ -4885,6 +4894,54 @@ def compute_vm_set_ubuntu_pro(ctx: Configuration, action):
             )
     # call lookup ref
     obj = lookup[action](**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
+
+
+@compute_vm_set.command(
+    'encryption', short_help='Encrypt or decrypt a virtual machine'
+)
+@click.argument(
+    'action',
+    type=click.Choice(['on', 'off']),
+    required=True,
+)
+@click.option(
+    '-f',
+    '--force',
+    is_flag=True,
+    help='Power off before encryption.',
+)
+@click.option(
+    '-o', '--power-on', is_flag=True, help='Power of after encrypting.'
+)
+@pass_context
+def compute_vm_set_encryption(
+    ctx: "Configuration", action: str, force: bool, power_on: bool
+):
+    """Manage virtual machine encryption.
+
+    vss-cli compute vm set <name-or-vm_id> encryption on|off
+
+    Encrypt or decrypt the data stored on a virtual machine's virtual disks,
+    protecting sensitive information.
+    """
+    if not ctx.is_powered_off_vm(ctx.moref) and not force:
+        raise VssCliError(
+            'Cannot perform operation in current power state: poweredOn'
+        )
+    lookup = {'on': ctx.encrypt_vm, 'off': ctx.decrypt_vm}
+    try:
+        payload = {'vm_id': ctx.moref, 'force': force, 'power_on': power_on}
+        ref = lookup[action]
+    except KeyError:
+        raise VssCliError('Invalid action')
+    # submit
+    obj = ref(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))

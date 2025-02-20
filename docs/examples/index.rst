@@ -14,7 +14,7 @@ please `open an issue <https://gitlab-ee.eis.utoronto.ca/vss/vsscli/issues/new>`
    deploy-template
    deploy-image
    deploy-clib
-   images
+   images/index
    inventory
    snapshot
    folder

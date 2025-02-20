@@ -1,7 +1,7 @@
 .. _DeployOS:
 
-Deploying a Development Environment
-===================================
+Deploying a Development Environment with the vss-cli
+====================================================
 
 This tutorial details how to deploy a development environment in the ITS Private Cloud using
 the VSS CLI. It assumes you already have set up a VSS account with access to the REST API.

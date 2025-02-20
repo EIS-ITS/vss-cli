@@ -1,7 +1,7 @@
 .. _SchedulingChange:
 
-Scheduling Virtual Machine Changes
-==================================
+Scheduling Virtual Machine Changes with the vss-cli
+===================================================
 
 Scheduling changes provides flexibility to execute API actions at any
 given time. For instance, scheduling to automatically upgrade VMware

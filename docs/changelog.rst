@@ -1,6 +1,18 @@
 Changelog 📝
 ============
 
+`v2025.2.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.2.1>`_ (2025-02-21)
+------------------------------------------------------------------------------------------
+
+**Improvements:**
+
+- `#750 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/750>`_: ``docs``: improving examples titles.
+- `#751 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/751>`_: ``core``: upgrade ``pyvss`` to ``v2025.2.1``.
+- `#752 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/752>`_: ``compute vm get encryption``: add command to obtain current vm encryption status.
+- `#753 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/753>`_: ``compute vm set encryption``: add command to set vm encryption status.
+- `#754 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/754>`_: ``ci``: upgrade pip before installing setup tools.
+
+
 `v2025.2.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.2.0>`_ (2025-02-13)
 ------------------------------------------------------------------------------------------
 

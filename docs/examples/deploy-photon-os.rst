@@ -1,7 +1,7 @@
 .. _DeployPhotonOS:
 
-Deploy VMware Photon OS Instance
-================================
+Deploy VMware Photon OS Instance with the vss-cli
+=================================================
 
 Photon OS, is an open-source minimalist Linux operating system from VMware that
 is optimized for cloud computing platforms, VMware vSphere deployments, and applications
