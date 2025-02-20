@@ -4902,17 +4902,19 @@ def compute_vm_set_ubuntu_pro(ctx: Configuration, action):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set.command('encryption', short_help='Encrypt a virtual machine')
+@compute_vm_set.command(
+    'encryption', short_help='Encrypt or decrypt a virtual machine'
+)
 @click.argument(
     'action',
-    type=click.Choice(['on']),
+    type=click.Choice(['on', 'off']),
     required=True,
 )
 @click.option(
     '-f',
     '--force',
     is_flag=True,
-    help='Shut down or power off before encryption.',
+    help='Power off before encryption.',
 )
 @click.option(
     '-o', '--power-on', is_flag=True, help='Power of after encrypting.'
@@ -4921,23 +4923,25 @@ def compute_vm_set_ubuntu_pro(ctx: Configuration, action):
 def compute_vm_set_encryption(
     ctx: "Configuration", action: str, force: bool, power_on: bool
 ):
-    """Encrypt a virtual machine.
+    """Manage virtual machine encryption.
 
-    vss-cli compute vm set <name-or-vm_id> encryption on
+    vss-cli compute vm set <name-or-vm_id> encryption on|off
 
-    Encrypt the data stored on a virtual machine's virtual disks,
+    Encrypt or decrypt the data stored on a virtual machine's virtual disks,
     protecting sensitive information.
     """
     if not ctx.is_powered_off_vm(ctx.moref) and not force:
         raise VssCliError(
             'Cannot perform operation in current power state: poweredOn'
         )
-    if action == 'on':
-        obj = ctx.encrypt_vm(ctx.moref, force=force, power_on=power_on)
-    elif action == 'off':
-        raise NotImplementedError('Not implemented')
-    else:
+    lookup = {'on': ctx.encrypt_vm, 'off': ctx.decrypt_vm}
+    try:
+        payload = {'vm_id': ctx.moref, 'force': force, 'power_on': power_on}
+        ref = lookup[action]
+    except KeyError:
         raise VssCliError('Invalid action')
+    # submit
+    obj = ref(**payload)
     # print
     columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
