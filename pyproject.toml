@@ -35,7 +35,7 @@ dependencies = [
     "dateparser==1.2.1",
     "rich==13.9.4",
     "pick==2.2.0",
-    "dataclasses-json==0.5.7",
+    "dataclasses-json==0.6.7",
     "validators==0.34.0",
     "ruamel.yaml==0.17.21",
     "qrcode==7.3.1",
