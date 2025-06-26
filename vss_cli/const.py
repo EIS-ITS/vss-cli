@@ -8,7 +8,7 @@ except ImportError:
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2025.2.1"
+__version__ = "2025.6.0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -178,7 +178,14 @@ COLUMNS_VSS_SERVICE = [("id",), ("label",), ("name",), ("group.name",)]
 COLUMNS_IMAGE = [("id",), ("path",), ("name",)]
 COLUMNS_CLIB_ITEMS = [("id",), ("name",), ("library.name",), ('size',)]
 COLUMNS_OS = [("id",), ("guest_id",), ("full_name",), ("family",)]
-COLUMNS_REQUEST = [*COLUMNS_MIN, ("status",), ("user.username" "username",)]
+COLUMNS_REQUEST = [
+    *COLUMNS_MIN,
+    ("status",),
+    (
+        "user.username",
+        "username",
+    ),
+]
 COLUMNS_REQUEST_WAIT = [('warnings', 'warnings[*]'), ('errors', 'errors[*]')]
 COLUMNS_REQUEST_MAX = [
     ("errors", "message.errors[*]"),

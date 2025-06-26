@@ -35,6 +35,7 @@ def to_completion_item(func: Callable):
 
     def wrapper_tci(*args, **kwargs):
         results = func(*args, **kwargs)
+
         return [CompletionItem(item[0], help=f'{item[1]}') for item in results]
 
     return wrapper_tci
@@ -65,7 +66,6 @@ def _autocomplete(
             completions.append(r)
 
         completions.sort(key=lambda x: x[sort_index])
-
         return [c for c in completions if incomplete in c[complete_index]]
     return completions
 
@@ -223,9 +223,7 @@ def folders(
     return _autocomplete(
         ctx.client.get_folders,
         incomplete,
-        ['moref', 'path'],
-        sort_index=1,
-        complete_index=1,
+        ['path'],
         f_kwargs={
             "show_all": True,
             "sort": "path,desc",
@@ -244,7 +242,7 @@ def networks(
     return _autocomplete(
         ctx.client.get_networks,
         incomplete,
-        ['moref', 'label'],
+        ['name', 'label'],
         sort_index=1,
         complete_index=1,
         f_kwargs={"show_all": True, "sort": "label,desc", "per_page": 500},

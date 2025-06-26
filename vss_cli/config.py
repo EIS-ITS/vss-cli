@@ -89,6 +89,7 @@ class Configuration(VssManager):
         self.unit = None  # type: Optional[str, int]
         self.payload_options = {}  # type: Optional[Dict]
         self.tmp = None  # type: Optional[Any]
+        self.root_path = None  # type: Optional[bool]
 
     def set_dry_run(self, val: bool) -> None:
         """Set dry_run value."""

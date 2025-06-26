@@ -14,18 +14,32 @@ Install the ``vss-cli``
     and add ``%USERPROFILE%\AppData\Roaming\Python\Python37\Scripts`` to ``PATH``
     environment variable prior running `pip`_.
 
-The fastest way to install VSS CLI is to use `pip`_:
+The fastest way to install VSS CLI is to use `uv`_ package manager:
 
 .. code-block:: bash
 
-    pip install vss-cli
+   uv venv && source .venv/bin/activate && uv pip install "vss-cli[stor]"
+
+or using `uvx`:
+
+.. code-block:: bash
+
+    uvx vss-cli
 
 If you are planning to interact with ``vskey-stor`` execute the following
 command:
 
 .. code-block:: bash
 
-    pip install vss-cli[stor]
+    uv pip install "vss-cli[stor]"
+
+Or accessing the `ITS Private Cloud Model Context Protocol Server (MCP)`_
+using the ``vss-cli`` command line interface, you need to install
+the ``vss-cli[mcp]`` dependencies:
+
+.. code-block:: bash
+
+    uv pip install "vss-cli[mcp]"
 
 The command will install ``minio`` package from PyPI.
 
@@ -36,7 +50,7 @@ The command will install ``minio`` package from PyPI.
 
 .. note::
 
-    Linux operating systems require ``python3-dev`` and ``python3-setuptools``.
+    Recommended to use `uv`_ package manager for Linux users.
 
 
 Use `Homebrew`_ to install the ``vss-cli`` on macOS:
@@ -62,3 +76,5 @@ directory structure on your workstation, you can just run:
 .. _`download the tarball`: https://pypi.org/project/vss-cli/#files
 .. _`Test PyPI`: https://test.pypi.org
 .. _`Homebrew`: https://brew.sh/
+.. _`uv`: https://docs.astral.sh/uv/getting-started/installation/
+.. _`ITS Private Cloud Model Context Protocol Server (MCP)`: https://utor.cloud/mcp

@@ -762,25 +762,30 @@ def compute_vm_get_state(ctx: Configuration):
 
 
 @compute_vm_get.command('stats', short_help='Performance statistics')
-@click.argument('kind', type=click.Choice(['memory', 'io', 'cpu', 'net']))
+@click.argument(
+    'kind', type=click.Choice(['memory', 'datastore', 'cpu', 'net', 'disk'])
+)
+@click.option(
+    '-i', '--interval', type=int, default=15, help='Interval in minutes'
+)
 @pass_context
-def compute_vm_get_stats(ctx: Configuration, kind):
+def compute_vm_get_stats(ctx: Configuration, kind: str, interval: int):
     """Get virtual machine memory, io, cpu and network performance statistics.
 
-    Choose between: io, memory, cpu or net. For example:
+    Choose between: disk, memory, cpu or net. For example:
 
     vss-cli compute vm get <name-or-vm_id> stats memory
     """
-    lookup = {
-        'cpu': ctx.get_vm_performance_cpu,
-        'memory': ctx.get_vm_performance_memory,
-        'io': ctx.get_vm_performance_io,
-        'net': ctx.get_vm_performance_net,
-    }
-
     if not ctx.is_powered_on_vm(ctx.moref):
         raise VssCliError('Cannot perform operation in current power state')
-    obj = lookup[kind](ctx.moref)
+    # fetch performance stats
+    obj = ctx.request(
+        f'/vm/{ctx.moref}/performance', params={'interval': interval}
+    )
+    try:
+        obj = obj.get('data', {})[kind]
+    except KeyError:
+        raise VssCliError(f'Invalid kind: {kind}')
     columns = ctx.columns or [(i,) for i in obj.keys()]
     ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
 
