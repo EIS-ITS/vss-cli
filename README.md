@@ -21,26 +21,40 @@ Package documentation is now available at [docs][docs].
 
 ### PIP
 
-The fastest way to install VSS CLI is to use [pip][pip]:
+The fastest way to install VSS CLI is to use [uv][uv] package manager:
 
 ```bash
-pip install vss-cli
+uv venv && source .venv/bin/activate && uv pip install "vss-cli[stor]"
 ```
+
+Or using `uvx`:
+```bash
+uvx vss-cli
+```
+
 If you are planning to interact with `vskey-stor` execute the following command
 
 ```bash
-pip install 'vss-cli[stor]'
+uv pip install 'vss-cli[stor]'
 ```
+
+Or accessing the [ITS Private Cloud Model Context Protocol Server (MCP)][ITS Private Cloud Model Context Protocol Server (MCP)] 
+using the ``vss-cli`` command line interface, you need to install the ``vss-cli[mcp]`` package:
+
+```bash
+uv pip install 'vss-cli[mcp]'
+```
+
 The command will install ``minio`` package from PyPI.
 
 > Windows users, please install ``windows-curses`` and ``vss-cli`` as follows: 
- ``pip install --user vss-cli windows-curses``.
+ ``python -m pip install --user vss-cli windows-curses``.
         
 If you have the VSS CLI installed and want to upgrade to the latest version
 you can run:
 
 ```bash
-pip install --upgrade vss-cli
+uv pip install --upgrade vss-cli
 ```
 
 ### Homebrew
@@ -60,7 +74,7 @@ Once you have the `vss-cli` directory structure on your workstation, you can jus
 
 ```bash
 cd path_to_vss-cli
-python setup.py install
+python -m pip install .
 ```
 
 ## Docker
@@ -349,3 +363,5 @@ Refer to the [Changelog][Changelog] for details.
 [ITS Private Cloud RESTful API]: https://vss-wiki.eis.utoronto.ca/display/API
 [Pull Request #76]: https://github.com/click-contrib/click-repl/pull/76
 [Homebrew]: https://brew.sh/
+[uv]: https://docs.astral.sh/uv/getting-started/installation/
+[ITS Private Cloud Model Context Protocol Server (MCP)]: https//utor.cloud/mcp
