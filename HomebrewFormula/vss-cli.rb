@@ -3,8 +3,8 @@ class VssCli < Formula
 
   desc "ITS Private Cloud Command Line Interface vss-cli"
   homepage "https://eis.utoronto.ca/~vss/vss-cli"
-  url "https://files.pythonhosted.org/packages/7e/0f/b7107620d99ccf1033f381ba363f5f1b9080559c993177efe506a2b5e4bf/vss_cli-2025.2.1-py2.py3-none-any.whl"
-  sha256 "3e90a9c397fc0cabe60eb170b0a6deb91fbe86f26cb882a1007f92b0291f3549"
+  url "https://files.pythonhosted.org/packages/bd/43/2ae8cd20dda74ef9ef17f8c1ccb2646aa8119883288af1df27f0d4abbdd6/vss_cli-2025.6.0-py2.py3-none-any.whl"
+  sha256 "2d4379e5cc01a7645386e4466da763a26d1fd35ccda8546be84f7e5165e60a36"
   license "MIT"
 
   depends_on "python@3.11"
@@ -16,7 +16,7 @@ class VssCli < Formula
     ENV["PIPX_BIN_DIR"] = bin
     ENV["PIPX_DEFAULT_PYTHON"] = Formula["python@3.11"].opt_bin/"python3.11"
 
-    whl_file = "vss_cli-2025.2.1-py2.py3-none-any.whl"
+    whl_file = "vss_cli-2025.6.0-py2.py3-none-any.whl"
     system "pipx", "install", "#{whl_file}[stor,mcp]"
 
     (bash_completion/"vss_cli").write `#{bin}/vss-cli completion bash`
