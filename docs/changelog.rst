@@ -1,6 +1,26 @@
 Changelog 📝
 ============
 
+`v2025.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.6.0>`_ (2025-06-26)
+------------------------------------------------------------------------------------------
+**Improvements:**
+
+- `#759 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/759>`_: ``ci``: implement ``uv`` and ``pyproject.toml`` in favour of setup tools
+- `#760 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/760>`_: ``compute vm get metrics``: additional counters ``disk``.
+- `#761 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/761>`_: ``core``: Upgrade ``dataclasses-json`` to ``0.6.7``.
+- `#763 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/763>`_: ``docs``: docs/update install method.
+- `#764 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/764>`_: ``homebrew``: formula improvements: add mcp to install.
+
+**New Features:**
+
+- `#762 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/762>`_: ``mcp``: command to run and install to the Model Context Protocol Server.
+
+**Bug Fixes:**
+
+- `#757 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/757>`_: ``core``: autocompletion fix for networks and folders.
+- `#758 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/758>`_: ``request ls``: missing username attribute
+
+
 `v2025.2.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.2.1>`_ (2025-02-21)
 ------------------------------------------------------------------------------------------
 
