@@ -1,8 +1,19 @@
 Changelog 📝
 ============
 
+`v2025.6.1 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.6.1>`_ (2025-06-27)
+------------------------------------------------------------------------------------------
+
+**Bug Fixes:**
+
+- `#766 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/766>`_: ``docs``: confluence pipeline failed.
+- `#768 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/768>`_: ``compute vm mk from-file``: spec not properly parsed.
+- `#769 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/769>`_: ``homebrew``: missing dependency `vss-cli[mcp]`.
+- `#770 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/770>`_: ``compute vm set domain``: docstring typo.
+
 `v2025.6.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.6.0>`_ (2025-06-26)
 ------------------------------------------------------------------------------------------
+
 **Improvements:**
 
 - `#759 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/759>`_: ``ci``: implement ``uv`` and ``pyproject.toml`` in favour of setup tools
