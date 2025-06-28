@@ -2026,12 +2026,12 @@ def compute_vm_set_disk_rm(ctx: Configuration, unit, rm):
     is_flag=True,
     help='Shut down or power off before migration.',
 )
-@click.option('-o', '--on', is_flag=True, help='Power of after migrating')
+@click.option('-o', '--on', is_flag=True, help='Power on after migrating')
 @pass_context
 def compute_vm_set_domain(ctx: Configuration, name_or_moref, force, on):
     """Migrate a virtual machine to another domain.
 
-    In order to proceed with the virtual machine relocation,
+    To proceed with the virtual machine relocation,
     in some cases the VM is required to be in a powered off state.
 
     The `force` flag will send a shutdown signal anf if times out,
