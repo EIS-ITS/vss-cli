@@ -706,9 +706,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/97/fc/80e655c955137393c443842ffcc4feccab5b12fa7cb8de9ced90f90e6998/mcp-1.9.4-py3-none-any.whl", hash = "sha256:7fcf36b62936adb8e63f89346bccca1268eeca9bf6dfb562ee10b1dfbda9dac0", size = 130232, upload-time = "2025-06-12T08:20:28.551Z" },
 ]
 
+[package.optional-dependencies]
+cli = [
+    { name = "python-dotenv" },
+    { name = "typer" },
+]
+
 [[package]]
 name = "mcp-vss"
-version = "2025.6.1.dev4"
+version = "2025.6.1.dev5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -716,15 +722,15 @@ dependencies = [
     { name = "fastmcp" },
     { name = "httpx" },
     { name = "loguru" },
-    { name = "mcp" },
+    { name = "mcp", extra = ["cli"] },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-dateutil" },
     { name = "starlette" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/db/ac/2b3c6625a81b8f8f1ab4ccb919111e9fdf3676abdc4ca7ff932204a2f0ee/mcp_vss-2025.6.1.dev4.tar.gz", hash = "sha256:ecb33d7a833a5dd702f93e8c29bb53b05d0b1343b224abdcdf166f3d2b1747d2", size = 47058, upload-time = "2025-06-23T20:48:42.006Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/43/86/85cacda4bafd8f8b3074fc4e50c3e8479f0e9281d23008e1fcd8b963a69c/mcp_vss-2025.6.1.dev5.tar.gz", hash = "sha256:f3b63fd3e197741733eb1f8384024c6cecd40b89e8caa9b48415c31b897ed61c", size = 47115, upload-time = "2025-06-27T15:48:22.218Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/18/16/e2e13f8080d996efd810c123ec8999bfde7fe5316934b069bf07e5647414/mcp_vss-2025.6.1.dev4-py3-none-any.whl", hash = "sha256:25eb297a5c6596b34bc63586d73879826ab4bcbd3c65b813e409b8ca54fd3a34", size = 58170, upload-time = "2025-06-23T20:48:41.193Z" },
+    { url = "https://files.pythonhosted.org/packages/9b/bf/37a1924abf10919200e1fee13c95b495701da0999248dd8b2f781ff2eb74/mcp_vss-2025.6.1.dev5-py3-none-any.whl", hash = "sha256:5e4af5ace4375bd7f74d4567fbb31093c3985b891559a2df75f6e2767b91751d", size = 58178, upload-time = "2025-06-27T15:48:21.19Z" },
 ]
 
 [[package]]
@@ -1567,6 +1573,7 @@ dev = [
     { name = "wheel" },
 ]
 mcp = [
+    { name = "mcp", extra = ["cli"] },
     { name = "mcp-vss" },
 ]
 stor = [
@@ -1613,7 +1620,8 @@ requires-dist = [
     { name = "flake8", marker = "extra == 'test'", specifier = "==7.1.1" },
     { name = "jinja2", specifier = ">=2.10" },
     { name = "jsonpath-ng", specifier = "==1.7.0" },
-    { name = "mcp-vss", marker = "extra == 'mcp'", specifier = ">=2025.6.1.dev4" },
+    { name = "mcp", extras = ["cli"], marker = "extra == 'mcp'", specifier = ">=1.7.1" },
+    { name = "mcp-vss", marker = "extra == 'mcp'", specifier = ">=2025.6.1.dev5" },
     { name = "minio", marker = "extra == 'dev'", specifier = "==7.2.15" },
     { name = "minio", marker = "extra == 'stor'", specifier = "==7.2.15" },
     { name = "minio", marker = "extra == 'test'", specifier = "==7.2.15" },
