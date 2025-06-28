@@ -378,7 +378,7 @@ release-docs-tag-confluence:
   stage: release
   script:
     - uv sync --locked --all-extras
-    - export CONFLUENCE_DRYRUN= && /app/.venv/bin/sphinx-build -b confluence docs docs/_build/confluence -E -a
+    - export CONFLUENCE_DRYRUN= && sphinx-build -b confluence docs docs/_build/confluence -E -a
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/
   tags:

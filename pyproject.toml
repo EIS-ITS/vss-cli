@@ -68,7 +68,8 @@ dev = [
     "sphinxcontrib-confluencebuilder==2.10.1",
 ]
 mcp = [
-    "mcp-vss>=2025.6.1.dev4"
+    "mcp-vss>=2025.6.1.dev5",
+    "mcp[cli]>=1.7.1",
 ]
 
 [project.scripts]

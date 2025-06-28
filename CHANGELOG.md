@@ -1,5 +1,14 @@
 # Changelog 📝
 
+## [v2025.6.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.6.1) (2025-06-27)
+
+**Bug Fixes:**
+
+- [#766](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/766): ``docs``: confluence pipeline failed.
+- [#768](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/768): ``compute vm mk from-file``: spec not properly parsed
+- [#769](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/769): ``homebrew``: missing dependency mcp
+- [#770](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/770): ``compute vm set domain``: docstring 
+
 ## [v2025.6.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.6.0) (2025-06-26)
 
 **Improvements:**

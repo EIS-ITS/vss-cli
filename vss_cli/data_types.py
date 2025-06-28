@@ -1,11 +1,12 @@
 """Data types definitions."""
+import json
 import logging
 import re
 from dataclasses import dataclass, field
 from ipaddress import (
     AddressValueError, IPv4Address, IPv4Network, NetmaskValueError)
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from click import BadArgumentUsage, BadParameter
 from dataclasses_json import config as dc_config
@@ -632,7 +633,7 @@ class VmApiSpec:
     custom_spec: Optional[VmCustomSpec] = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    extra_config: Optional[List[str]] = field(
+    extra_config: Optional[List[Dict[str, Any]]] = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
     user_data: Optional[UserData] = field(
@@ -803,6 +804,9 @@ class VmApiSpec:
         if cli_spec.day_zero:
             data['day_zero'] = cli_spec.day_zero.to_dict()
         if cli_spec.extra_config:
+            _LOGGING.info(
+                f'{cli_spec.extra_config=}={type(cli_spec.extra_config)}'
+            )
             data['extra_config'] = cli_spec.extra_config
         if cli_spec.metadata.notes:
             data['notes'] = cli_spec.metadata.notes
