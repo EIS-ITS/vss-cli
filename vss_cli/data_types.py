@@ -804,7 +804,7 @@ class VmApiSpec:
         if cli_spec.day_zero:
             data['day_zero'] = cli_spec.day_zero.to_dict()
         if cli_spec.extra_config:
-            _LOGGING.info(
+            _LOGGING.debug(
                 f'{cli_spec.extra_config=}={type(cli_spec.extra_config)}'
             )
             data['extra_config'] = cli_spec.extra_config
