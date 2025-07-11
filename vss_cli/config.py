@@ -1751,7 +1751,7 @@ class Configuration(VssManager):
         """Ask assistant."""
         headers = {
             'Authorization': self.gpt_token,
-            'connection': 'keep-alive',
+            'Connection': 'keep-alive',
             'Content-Type': 'application/json',
         }
         retrieval_options = {
@@ -1763,6 +1763,7 @@ class Configuration(VssManager):
                 "document_set": None,
                 "time_cutoff": None,
                 "tags": [],
+                "user_file_ids": None,
             },
         }
         top_documents = []
@@ -1774,17 +1775,23 @@ class Configuration(VssManager):
         )
         # chat payload
         payload = {
+            "alternate_assistant_id": 2,
+            "chat_session_id": chat_id,
             "prompt_id": self._gpt_persona,
             "parent_message_id": None,
             "regenerate": False,
-            "alternate_assistant_id": 2,
             "full_doc": False,
+            "llm_override": {
+                "model_version": "gpt-4.1",
+                "model_provider": "Azure OpenAI - GPT 4.1",
+            },
             "search_doc_ids": [],
             "message": message,
             "file_descriptors": [],
-            "chat_session_id": chat_id,
             "retrieval_options": retrieval_options,
+            "use_agentic_search": False,
         }
+        _LOGGING.debug(f'User data payload {payload}')
         answer_text = ''
         with requests.post(
             f'{self.gpt_server}/api/chat/send-message',
@@ -1803,8 +1810,6 @@ class Configuration(VssManager):
                     if answer_piece is not None:
                         answer_text = answer_text + answer_piece
                         self.smooth_print(answer_piece)
-                    if answer_piece == "":
-                        break
         docs = []
         n = 1
         for doc in top_documents:
@@ -1817,7 +1822,6 @@ class Configuration(VssManager):
         answer_text = answer_text + '\n\n' + docs_text
         # clear console for formatting
         self.clear_console()
-
         from rich.console import Console
         from rich.markdown import Markdown
 
