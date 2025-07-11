@@ -966,41 +966,56 @@ class Configuration(VssManager):
         )
         return rv
 
-    def get_vm_by_id_or_name(self, vm_id: str, silent=False) -> Optional[List]:
-        """Get virtual machine by identifier or name."""
+    def get_vm_by_id_or_name(
+        self, vm_id: str, silent=False, instance_type: str = 'vm'
+    ) -> Optional[List[Dict[str, Any]]]:
+        """Get VM by ID or Name.
+
+        This new implementation uses instance_type to distinct between
+        vm and template to either one instead of looking for both.
+
+        :param vm_id: VM ID (moref, uuid) or Name
+        :param silent: Silent mode
+        :param instance_type: Instance type
+        :return: Single object or None
+        """
         is_moref = validate_vm_moref('', '', vm_id)
         is_uuid = validate_uuid('', '', vm_id)
-        _LOGGING.debug(f'is_moref={is_moref}, is_uuid={is_uuid}')
+        _LOGGING.debug(f'{is_moref=} {is_uuid=} {vm_id=} {instance_type=}')
+        # instance_type lookup dictionary
+        lookup = {'vm': self.get_vms, 'template': self.get_templates}
+        try:
+            lookup_f = lookup[instance_type]
+        except KeyError:
+            raise click.BadArgumentUsage(
+                f'instance_type {instance_type} not supported'
+            )
+        # If it's a moref or uuid, then we can use the filter
         if is_moref or is_uuid:
             if is_moref:
                 attr = 'moref'
             else:
                 attr = 'uuid'
             filters = f'{attr},eq,{vm_id}'
-            v = self.get_vms(filter=filters)
+            v = lookup_f(filter=filters)
+            _LOGGING.debug(f'Using {lookup_f=} {attr=} {filters=}')
             if not v:
-                # try template
-                v = self.get_templates(filter=filters)
-                if not v:
-                    if silent:
-                        return None
-                    else:
-                        raise click.BadArgumentUsage(
-                            f'vm id {vm_id} could not be found'
-                        )
+                if silent:
+                    return None
+                else:
+                    raise click.BadArgumentUsage(
+                        f'{instance_type} id {vm_id} could not be found'
+                    )
             return v
         else:
             _LOGGING.debug(f'not a moref or uuid {vm_id}')
             # If it's a value error, then the string
             # is not a valid hex code for a UUID.
             # get vm by name
-            g_vms = self.get_vms(per_page=3000)
+            g_vms = lookup_f(per_page=3000)
             vm_id = vm_id.lower()
             v = list(filter(lambda i: vm_id in i['name'].lower(), g_vms))
             if not v:
-                # try templates:
-                g_tmpls = self.get_templates(per_page=2500)
-                v = list(filter(lambda i: vm_id in i['name'].lower(), g_tmpls))
                 if not v:
                     raise click.BadParameter(f'{vm_id} could not be found')
             v_count = len(v)
