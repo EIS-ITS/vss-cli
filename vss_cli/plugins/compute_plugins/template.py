@@ -64,7 +64,8 @@ def compute_template_rm(
             _vm = ctx.get_vm_by_id_or_name(vm, instance_type='template')
             if not _vm:
                 _LOGGING.warning(
-                    f'Virtual machine Template {vm} could not be found. Skipping.'
+                    f'Virtual machine Template {vm} could '
+                    f'not be found. Skipping.'
                 )
                 skip = True
             _LOGGING.debug(f'Found {_vm}')
