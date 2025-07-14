@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from mcp.cli.claude import get_claude_config_path
+from vss_cli.exceptions import VssCliError
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -33,7 +33,14 @@ def update_claude_config(
             is not found, indicating Claude Desktop may not be installed
             or properly set up.
     """
-    config_dir = get_claude_config_path()
+    try:
+        from fastmcp.cli import claude
+    except ImportError:
+        raise VssCliError(
+            'mcp-vss dependency not found. '
+            'try running "pip install vss-cli[mcp]"'
+        )
+    config_dir = claude.get_claude_config_path()
     if not config_dir:
         raise RuntimeError(
             "Claude Desktop config directory not found. "

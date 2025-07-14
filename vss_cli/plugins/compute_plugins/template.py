@@ -4,7 +4,8 @@ from typing import List
 
 import click
 
-from vss_cli import autocompletion, const, rel_opts as so
+from vss_cli import autocompletion, const
+from vss_cli import rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -41,7 +42,10 @@ def compute_template(ctx):
 @so.max_del_opt
 @pass_context
 def compute_template_rm(
-    ctx: Configuration, vm_id: List[str], max_del: int, show_info: bool,
+    ctx: Configuration,
+    vm_id: List[str],
+    max_del: int,
+    show_info: bool,
 ):
     """Delete a list of virtual machine template ids.
 
@@ -57,15 +61,17 @@ def compute_template_rm(
     with ctx.spinner(disable=ctx.debug or show_info):
         for vm in vm_id:
             skip = False
-            _vm = ctx.get_vm_by_id_or_name(vm)
+            _vm = ctx.get_vm_by_id_or_name(vm, instance_type='template')
             if not _vm:
                 _LOGGING.warning(
-                    f'Virtual machine {vm} could not be found. Skipping.'
+                    f'Virtual machine Template {vm} could '
+                    f'not be found. Skipping.'
                 )
                 skip = True
             _LOGGING.debug(f'Found {_vm}')
             moref = _vm[0]['moref']
-            if _vm and show_info:
+            # No template can be powered on. This is a safety check.
+            if _vm and (show_info or _vm[0]['power_state'] == 'poweredOn'):
                 c_str = const.DEFAULT_VM_DEL_MSG.format(vm=_vm[0])
                 confirmation = click.confirm(c_str)
                 if not confirmation:

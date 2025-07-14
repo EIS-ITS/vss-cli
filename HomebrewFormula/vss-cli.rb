@@ -18,6 +18,7 @@ class VssCli < Formula
 
     whl_file = "vss_cli-2025.6.1-py2.py3-none-any.whl"
     system "pipx", "install", "#{whl_file}[mcp,stor]"
+    system "pipx", "inject", "vss-cli", "mcp-vss"
 
     (bash_completion/"vss_cli").write `#{bin}/vss-cli completion bash`
     (fish_completion/"vss_cli.fish").write `#{bin}/vss-cli completion fish`

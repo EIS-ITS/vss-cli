@@ -1,5 +1,18 @@
 # Changelog 📝
 
+## [v2025.7.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.7.0) (2025-07-14)
+
+**Bug Fixes:**
+
+- [#773](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/773): ``compute vm mk from-file``: logging too high.
+- [#774](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/774): ``mcp``: properly handle import error.
+- [#777](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/777): ``compute template rm``: removes running vms.
+
+**Improvements:**
+
+- [#775](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/775): ``homebrew``: formula for vss-cli add mcp-vss.
+- [#776](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/776): ``assist``: update retrieval format.
+
 ## [v2025.6.1](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.6.1) (2025-06-27)
 
 **Bug Fixes:**
