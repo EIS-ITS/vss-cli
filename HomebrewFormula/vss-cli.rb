@@ -3,8 +3,8 @@ class VssCli < Formula
 
   desc "ITS Private Cloud Command Line Interface vss-cli"
   homepage "https://eis.utoronto.ca/~vss/vss-cli"
-  url "https://files.pythonhosted.org/packages/df/83/f72373b1371317c5523fff72750b0b856a0a3236634a594169890ac04440/vss_cli-2025.6.1-py2.py3-none-any.whl"
-  sha256 "33667589bb06ee1e1714c664af857628d979db635d5f45c0ddefa7a7dbf3b9a3"
+  url "https://files.pythonhosted.org/packages/51/45/1a6d505e3c94eb8f5f548bb563e5234148ee7d4ce82913cea714a0b32b3a/vss_cli-2025.7.0-py2.py3-none-any.whl"
+  sha256 "21602d80c9558a2feff3eb799ef94b3cc4d8da864f3ddde66a3661e44e202670"
   license "MIT"
 
   depends_on "python@3.11"
@@ -16,7 +16,7 @@ class VssCli < Formula
     ENV["PIPX_BIN_DIR"] = bin
     ENV["PIPX_DEFAULT_PYTHON"] = Formula["python@3.11"].opt_bin/"python3.11"
 
-    whl_file = "vss_cli-2025.6.1-py2.py3-none-any.whl"
+    whl_file = File.basename(url)
     system "pipx", "install", "#{whl_file}[mcp,stor]"
     system "pipx", "inject", "vss-cli", "mcp-vss"
 
@@ -26,9 +26,8 @@ class VssCli < Formula
   end
 
   test do
-    # `test do` will create, run in and delete a temporary directory.
-    # The installed folder is not in the path, so use the entire path to any
-    # executables being tested: `system "#{bin}/program", "do", "something"`.
+    # Test basic functionality
     system "#{bin}/vss-cli", "--help"
+    system "#{bin}/vss-cli", "--version"
   end
 end
