@@ -16,7 +16,7 @@ class VssCli < Formula
     ENV["PIPX_BIN_DIR"] = bin
     ENV["PIPX_DEFAULT_PYTHON"] = Formula["python@3.11"].opt_bin/"python3.11"
 
-    whl_file = File.basename(url)
+    whl_file = File.basename(self.class.url)
     system "pipx", "install", "#{whl_file}[mcp,stor]"
     system "pipx", "inject", "vss-cli", "mcp-vss"
 
