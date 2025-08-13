@@ -1796,10 +1796,6 @@ class Configuration(VssManager):
             "parent_message_id": None,
             "regenerate": False,
             "full_doc": False,
-            "llm_override": {
-                "model_version": "gpt-4.1",
-                "model_provider": "Azure OpenAI - GPT 4.1",
-            },
             "search_doc_ids": [],
             "message": message,
             "file_descriptors": [],
