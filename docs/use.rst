@@ -169,12 +169,11 @@ should be specified as follows:
     --description 'New virtual machine' --disk 40 --disk 20 --disk 30 VM2
 
 Boolean is a binary flag that turns an option on or off, such is the case
-of a virtual machine marked as template by using the ``--on`` flag or template
-marked as virtual machine by not specifying the flag.
+of converting a virtual machine to a template or converting a template back to a virtual machine.
 
 .. code-block:: bash
 
-   vss-cli compute vm set TestVM3 template --on
+   vss-cli compute vm set TestVM3 template
 
 Integers
 
