@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from Template 2025.8.0-dev1        #
+#     VSS-CLI Spec from Template 2025.8.0        #
 ####################################################
 built: template           # Required: Do not remove.
 machine:
