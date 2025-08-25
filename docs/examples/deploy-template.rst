@@ -47,16 +47,16 @@ the ``moref`` of the virtual machine:
 
 Save the ``moref`` in ``MOREF`` environment variable.
 
-Then update the **template** state by running
-``vss-cli compute vm set <name-or-vm_id> template --on``:
+Then convert the VM to a **template** by running
+``vss-cli compute vm set <name-or-vm_id> template``:
 
 .. code-block:: bash
 
-    vss-cli --wait compute vm set $MOREF template --on
+    vss-cli --wait compute vm set $MOREF template
 
     # or
 
-    vss-cli --wait compute vm set Front template --on
+    vss-cli --wait compute vm set Front template
 
 Once the request has been processed, verify the **template** state:
 

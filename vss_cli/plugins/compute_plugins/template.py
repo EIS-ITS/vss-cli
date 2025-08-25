@@ -3,22 +3,112 @@ import logging
 from typing import List
 
 import click
+from click_plugins import with_plugins
 
 from vss_cli import autocompletion, const
 from vss_cli import rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
-from vss_cli.helper import format_output
+from vss_cli.helper import format_output, to_tuples
 from vss_cli.plugins.compute import cli
+
+try:
+    import importlib_metadata as ilm
+except ImportError:
+    import importlib.metadata as ilm
 
 _LOGGING = logging.getLogger(__name__)
 
 
-@cli.group('template', short_help='List virtual machine templates')
+@with_plugins(ilm.entry_points(group='vss_cli.contrib.compute.template'))
+@cli.group('template', short_help='Manage virtual machine templates')
 @pass_context
 def compute_template(ctx):
     """List virtual machine templates."""
     pass
+
+
+@compute_template.group(
+    'set',
+    short_help='Set virtual machine template attribute',
+    invoke_without_command=True,
+)
+@click.argument(
+    'tmpl_id_or_name',
+    type=click.STRING,
+    required=True,
+    shell_complete=autocompletion.virtual_machine_templates,
+)
+@click.option(
+    '-s',
+    '--schedule',
+    type=click.DateTime(formats=const.SUPPORTED_DATETIME_FORMATS),
+    required=False,
+    default=None,
+    help='Schedule change in a given point in time based'
+    ' on format YYYY-MM-DD HH:MM.',
+)
+@click.option(
+    '-u',
+    '--user-meta',
+    help='User metadata in key=value format. '
+    'These tags are stored in the request.',
+    required=False,
+    default=None,
+)
+@so.dry_run_opt
+@pass_context
+def compute_template_set(
+    ctx: Configuration,
+    tmpl_id_or_name: str,
+    schedule,
+    user_meta: str,
+    dry_run: bool,
+):
+    """Manage virtual machine resources.
+
+    Such as cpu, memory, disk, network backing, cd, etc.
+    """
+    # set up payload opts
+    ctx.user_meta = dict(to_tuples(user_meta))
+    ctx.schedule = schedule
+    # whether to wait for requests
+    # check for vm
+    _vm = ctx.get_vm_by_id_or_name(tmpl_id_or_name, instance_type='template')
+    ctx.moref = _vm[0]['moref']
+    # set additional props
+    if user_meta:
+        ctx.payload_options['user_meta'] = ctx.user_meta
+    if schedule:
+        ctx.payload_options['schedule'] = ctx.schedule.strftime(
+            const.DEFAULT_DATETIME_FMT
+        )
+    # set dry run and output to json
+    ctx.set_dry_run(dry_run)
+    if click.get_current_context().invoked_subcommand is None:
+        raise click.UsageError('Sub command is required')
+
+
+@compute_template_set.command('vm', short_help='Mark template as vm.')
+@pass_context
+def compute_vm_set_template(ctx: Configuration):
+    """Mark virtual machine template to virtual machine.
+
+    vss-cli compute template set <name-or-tmpl_id
+    > vm
+    """
+    # create payload
+    payload = dict(vm_id=ctx.moref, value=False)
+    # add common options
+    payload.update(ctx.payload_options)
+    # request
+    obj = ctx.mark_template_as_vm(**payload)
+    # print
+    columns = ctx.columns or const.COLUMNS_REQUEST_SUBMITTED
+    ctx.echo(format_output(ctx, [obj], columns=columns, single=True))
+    # wait for request
+    if ctx.wait_for_requests:
+        ctx.wait_for_request_to(obj)
 
 
 @compute_template.group(
@@ -37,7 +127,7 @@ def compute_template(ctx):
     type=click.STRING,
     required=True,
     nargs=-1,
-    shell_complete=autocompletion.virtual_machines,
+    shell_complete=autocompletion.virtual_machine_templates,
 )
 @so.max_del_opt
 @pass_context

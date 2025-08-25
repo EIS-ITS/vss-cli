@@ -143,6 +143,22 @@ def virtual_machines(
 
 
 @to_completion_item
+def virtual_machine_templates(
+    ctx: Configuration, param: click.Option, incomplete: str
+) -> List[Tuple[str, str]]:
+    """Autocomplete VM templates."""
+    _init_ctx(ctx)
+    return _autocomplete(
+        ctx.client.get_templates,
+        incomplete,
+        ['moref', 'name'],
+        complete_index=1,
+        sort_index=1,
+        f_kwargs={"show_all": True, "short": 1, "per_page": 2000},
+    )
+
+
+@to_completion_item
 def vm_controller_scsi_sharing(
     ctx: Configuration, param: click.Option, incomplete: str
 ) -> List[Tuple[str, str]]:

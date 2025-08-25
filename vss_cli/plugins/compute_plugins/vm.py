@@ -3174,23 +3174,15 @@ def compute_vm_set_state(ctx: Configuration, state, confirm):
         ctx.wait_for_request_to(obj)
 
 
-@compute_vm_set.command(
-    'template', short_help='Mark vm as template or vice versa.'
-)
-@click.option(
-    '--on/--off',
-    is_flag=True,
-    help='Marks vm as template or template as vm',
-    default=False,
-)
+@compute_vm_set.command('template', short_help='Mark vm as template.')
 @pass_context
-def compute_vm_set_template(ctx: Configuration, on):
+def compute_vm_set_template(ctx: Configuration):
     """Mark virtual machine as template or template to virtual machine.
 
-    vss-cli compute vm set <name-or-vm_id> template --on/--off
+    vss-cli compute vm set <name-or-vm_id> template
     """
     # create payload
-    payload = dict(vm_id=ctx.moref, value=on)
+    payload = dict(vm_id=ctx.moref, value=True)
     # add common options
     payload.update(ctx.payload_options)
     # request

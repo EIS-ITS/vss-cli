@@ -1,5 +1,17 @@
 # Changelog 📝
 
+## [2025.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.8.0) (2025-08-25)
+
+**Bug Fixes:**
+
+- [#780](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/780): ``assist``:  not returning a valid response due to hard-coded model.
+
+**Improvements:**
+
+- [#781](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/781): ``compute template set``:  to allow operations on templates.
+- [#782](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/782): ``compute vm set template``:  updates to only update vms.
+- [#783](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/783): ``homebrew``: version release.
+
 ## [v2025.7.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.7.0) (2025-07-14)
 
 **Bug Fixes:**
