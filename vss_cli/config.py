@@ -1801,6 +1801,7 @@ class Configuration(VssManager):
             "file_descriptors": [],
             "retrieval_options": retrieval_options,
             "use_agentic_search": False,
+            "skip_gen_ai_answer_generation": True,
         }
         _LOGGING.debug(f'User data payload {payload}')
         answer_text = ''
@@ -1812,21 +1813,103 @@ class Configuration(VssManager):
         ) as response:
             if spinner_cls is not None:
                 spinner_cls.stop()
+            reasoning_text = ''
+            message_content = ''
+            internal_search_queries = []
+            internal_search_docs = []
+            final_documents = []
+            citations = []
+
             for line in response.iter_lines():
+                _LOGGING.debug(f"{line=}")
                 if line:
                     data = json.loads(line)
-                    if 'top_documents' in data:
+
+                    # Handle initial message IDs
+                    if (
+                        'user_message_id' in data
+                        and 'reserved_assistant_message_id' in data
+                    ):
+                        _LOGGING.debug(
+                            f"Message IDs - User: {data['user_message_id']}, Assistant: {data['reserved_assistant_message_id']}"
+                        )
+                        continue
+
+                    # Handle indexed objects
+                    if 'ind' in data and 'obj' in data:
+                        obj = data['obj']
+                        obj_type = obj.get('type')
+
+                        # Handle reasoning streaming
+                        if obj_type == 'reasoning_start':
+                            _LOGGING.debug("Reasoning started")
+                        elif obj_type == 'reasoning_delta':
+                            reasoning_chunk = obj.get('reasoning', '')
+                            reasoning_text += reasoning_chunk
+                            # Optionally display reasoning to user
+                            # (you might want to hide this)
+                            self.smooth_print(reasoning_chunk)
+
+                        # Handle message content streaming
+                        elif obj_type == 'message_start':
+                            if 'final_documents' in obj:
+                                final_documents = obj['final_documents']
+                            _LOGGING.debug("Message started")
+                        elif obj_type == 'message_delta':
+                            content_chunk = obj.get('content', '')
+                            message_content += content_chunk
+                            answer_text += content_chunk
+                            self.smooth_print(content_chunk)
+
+                        # Handle internal search tool
+                        elif obj_type == 'internal_search_tool_start':
+                            _LOGGING.debug(
+                                f"Internal search started - Internet: "
+                                f"{obj.get('is_internet_search', False)}"
+                            )
+                        elif obj_type == 'internal_search_tool_delta':
+                            if 'queries' in obj and obj['queries']:
+                                internal_search_queries.extend(obj['queries'])
+                            if 'documents' in obj and obj['documents']:
+                                internal_search_docs.extend(obj['documents'])
+                                # Update top_documents for backward compatibility
+                                top_documents = obj['documents']
+
+                        # Handle citations
+                        elif obj_type == 'citation_start':
+                            _LOGGING.debug("Citations started")
+                        elif obj_type == 'citation_delta':
+                            if 'citations' in obj:
+                                citations.extend(obj['citations'])
+
+                        # Handle section end and stop
+                        elif obj_type == 'section_end':
+                            _LOGGING.debug(
+                                f"Section ended for index {data['ind']}"
+                            )
+                        elif obj_type == 'stop':
+                            _LOGGING.debug(
+                                f"Stream stopped for index {data['ind']}"
+                            )
+
+                    # Handle legacy format (backward compatibility)
+                    elif 'top_documents' in data:
                         top_documents = data['top_documents']
-                    answer_piece = data.get('answer_piece')
-                    if answer_piece is not None:
-                        answer_text = answer_text + answer_piece
-                        self.smooth_print(answer_piece)
+                    elif 'answer_piece' in data:
+                        answer_piece = data['answer_piece']
+                        if answer_piece is not None:
+                            answer_text = answer_text + answer_piece
+                            self.smooth_print(answer_piece)
+        # Use final_documents if available, otherwise fall back to top_documents
+        docs_to_display = final_documents if final_documents else top_documents
+
         docs = []
         n = 1
-        for doc in top_documents:
-            docs.append(
-                f'[{n}] [{doc["semantic_identifier"]}]({doc["document_id"]})'
-            )
+        for doc in docs_to_display:
+            # Handle both document_id and link fields
+            doc_url = doc.get("link") or doc.get("document_id", "")
+            doc_title = doc.get("semantic_identifier", "Unknown Document")
+            docs.append(f'[{n}] [{doc_title}]({doc_url})')
             n += 1
         # make docs
         docs_text = '\n'.join(docs)
