@@ -282,16 +282,81 @@ def enable_vss_vpn(self, **kwargs):
     )
 ```
 
-### GPT Assistant Integration
+### AI Assistant Integration (UTORcloudy)
+
+#### Dynamic Authentication
 ```python
-def ask_assistant(self, message, spinner_cls=None):
-    """Query GPT assistant for help."""
-    headers = {'Authorization': self.gpt_token}
-    payload = {
-        "message": message,
-        "persona_id": self.gpt_persona
+def _generate_assistant_api_key(self) -> str:
+    """Generate session-specific API key."""
+    ip_address = self._get_client_ip()
+    client_name = f'{self.user_agent}/{ip_address}'
+
+    # Request new API key for this session
+    auth_endpoint = f'{self.gpt_server}/api/generate-key'
+    payload = {'client_name': client_name}
+
+    response = requests.post(auth_endpoint, json=payload)
+    return response.json().get('api_key')
+```
+
+#### Session Management
+```python
+def ask_assistant(self, message, spinner_cls=None) -> Tuple[str, str]:
+    """Query AI assistant with session tracking."""
+    # Generate session-specific API key
+    api_key = self._generate_assistant_api_key()
+
+    headers = {
+        'api-key': api_key,
+        'Content-Type': 'application/json'
     }
-    # Stream response processing...
+
+    # Create chat session
+    chat_id = self.get_new_chat_id(
+        chat_endpoint=f'{self.gpt_server}/api/chat/create-chat-session',
+        persona_id=self.gpt_persona,
+        description=message[:20],
+        headers=headers
+    )
+
+    # Send message with streamlined payload
+    payload = {
+        "chat_session_id": chat_id,
+        "message": message,
+        "parent_message_id": None
+    }
+
+    # Stream response and capture assistant_message_id
+    assistant_message_id = None
+    with requests.post(f'{self.gpt_server}/api/chat/send-message',
+                       json=payload, stream=True, headers=headers) as response:
+        # Process streaming response...
+        # Capture assistant_message_id from response
+
+    return assistant_message_id, api_key  # For feedback tracking
+```
+
+#### Feedback System
+```python
+def provide_assistant_feedback(self, chat_message_id: str,
+                              api_key: str, is_positive: bool,
+                              feedback_text: Optional[str] = None) -> bool:
+    """Submit user feedback for assistant response."""
+    headers = {'api-key': api_key}
+
+    payload = {
+        "chat_message_id": chat_message_id,
+        "is_positive": is_positive,
+        "feedback_text": feedback_text or ("Helpful" if is_positive else "Not helpful"),
+        "predefined_feedback": None
+    }
+
+    response = requests.post(
+        f'{self.gpt_server}/api/chat/create-chat-feedback',
+        headers=headers,
+        json=payload
+    )
+    return response.status_code in [200, 201]
 ```
 
 ## API Testing Patterns

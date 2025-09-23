@@ -1,6 +1,7 @@
 """AI assistant."""
 import logging
 import random
+import sys
 
 import click
 
@@ -12,6 +13,10 @@ _LOGGING = logging.getLogger(__name__)
 
 ej_ai = EMOJI_UNICODE.get(':robot_face:')
 ej_rk = EMOJI_UNICODE.get(':rocket:')
+ej_thumbs_up = EMOJI_UNICODE.get(':thumbs_up:')
+ej_thumbs_down = EMOJI_UNICODE.get(':thumbs_down:')
+ej_checkmark = EMOJI_UNICODE.get(':white_heavy_check_mark:')
+ej_star = EMOJI_UNICODE.get(':star:')
 
 we_msg = f"""Hi, I’m UTORcloudy {ej_ai}, the ITS Private Cloud virtual agent.
 I can help with account, virtual machine management, billing questions
@@ -42,12 +47,15 @@ Always check sources and refer to actual policies for reliable information."""
 @click.option(
     '--no-load', is_flag=True, default=False, help='do not load config'
 )
+@click.option(
+    '--no-feedback', is_flag=True, default=False, help='skip feedback prompt'
+)
 @click.argument(
     "message",
     required=False,
 )
 @pass_context
-def cli(ctx: Configuration, no_load: bool, message: str):
+def cli(ctx: Configuration, no_load: bool, no_feedback: bool, message: str):
     """Manage your VSS account."""
     with ctx.spinner(disable=ctx.debug) as spinner_cls:
         if no_load:
@@ -71,6 +79,78 @@ def cli(ctx: Configuration, no_load: bool, message: str):
             )
             ctx.echo("")
             spinner_cls.start()
-        ctx.ask_assistant(
+        # ask assistant
+        assistant_message_id, api_key = ctx.ask_assistant(
             spinner_cls=spinner_cls, message=message, final_message=final_msg
         )
+        # Only ask for feedback if enabled and we have a valid message ID
+        if not no_feedback and assistant_message_id and api_key:
+            # Compact feedback prompt
+            # Single line feedback options
+            ctx.echo("")
+            ctx.secho("Rate this response: ", fg='cyan', nl=False, bold=True)
+            ctx.secho(f"{ej_thumbs_up} Helpful (y) ", fg='green', nl=False)
+            ctx.secho(
+                f"{ej_thumbs_down} Not helpful (n) ", fg='yellow', nl=False
+            )
+            ctx.secho("Skip (s)", fg='bright_black')
+
+            # Get user input with compact prompt
+            feedback_choice = click.prompt(
+                "",
+                type=click.Choice(['y', 'n', 's'], case_sensitive=False),
+                default='s',
+                show_choices=False,
+                show_default=False,
+                prompt_suffix="Choice: ",
+            )
+
+            # Process feedback based on choice
+            if feedback_choice.lower() == 'y':
+                success = ctx.provide_assistant_feedback(
+                    chat_message_id=assistant_message_id,
+                    is_positive=True,
+                    api_key=api_key,
+                )
+                if success:
+                    ctx.secho(
+                        f"{ej_checkmark} Thanks for your feedback!", fg='green'
+                    )
+                else:
+                    _LOGGING.debug("Failed to submit positive feedback")
+
+            elif feedback_choice.lower() == 'n':
+                # Compact negative feedback prompt
+                additional_feedback = click.prompt(
+                    "Details (optional)",
+                    default="",
+                    show_default=False,
+                    prompt_suffix=": ",
+                )
+
+                feedback_text = (
+                    additional_feedback
+                    if additional_feedback
+                    else "Not helpful"
+                )
+                success = ctx.provide_assistant_feedback(
+                    chat_message_id=assistant_message_id,
+                    is_positive=False,
+                    api_key=api_key,
+                    feedback_text=feedback_text,
+                )
+                if success:
+                    ctx.secho(
+                        f"{ej_checkmark} Thanks! We'll improve.", fg='cyan'
+                    )
+                else:
+                    _LOGGING.debug("Failed to submit negative feedback")
+
+            else:
+                ctx.secho("Skipped.", fg='bright_black')
+        else:
+            _LOGGING.debug(
+                f"Cannot provide feedback: "
+                f"assistant_message_id={assistant_message_id}, "
+                f"api_key={'present' if api_key else 'missing'}"
+            )

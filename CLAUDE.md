@@ -48,13 +48,21 @@ vss_cli/plugins/
 - **Credential management**: Username/password, tokens, MFA/TOTP
 - **File-based config**: YAML format in `~/.vss-cli/config.yaml`
 - **Environment variables**: `VSS_*` prefixed variables override config
+- **AI Assistant integration**: Dynamic API key generation and session management
 
 #### 2. API Integration (`pyvss` library)
 - **REST API client**: Inherits from `pyvss.manager.VssManager`
 - **Authentication**: JWT tokens with MFA support
 - **Request handling**: Automatic retry, pagination, filtering
+- **Assistant API**: Dedicated endpoints for UTORcloudy integration
 
-#### 3. Output Formatting
+#### 3. AI Assistant API Methods (`config.py`)
+- **`_get_client_ip()`**: Retrieves client IP for API key generation
+- **`_generate_assistant_api_key()`**: Creates session-specific API keys
+- **`ask_assistant()`**: Sends queries and returns (message_id, api_key) tuple
+- **`provide_assistant_feedback()`**: Submits user feedback on responses
+
+#### 4. Output Formatting
 - **Formats**: json, yaml, table, auto, ndjson
 - **Table customization**: Custom columns, sorting, filtering
 - **Column definitions**: Extensive predefined column sets in `const.py`
@@ -84,10 +92,37 @@ vss compute vm set disk              # Storage management
 - **vskey-stor**: MinIO-based object storage
 - **VPN access**: Integrated VPN management for secure access
 
-### AI Assistant
-- **UTORcloudy**: GPT-powered assistant for cloud operations
-- **Reasoning API**: Supports chain-of-thought responses
-- **Context-aware**: Understands ITS Private Cloud specifics
+### AI Assistant (UTORcloudy)
+- **GPT-powered assistant**: Context-aware cloud operations support
+- **Reasoning API**: Supports chain-of-thought responses for complex queries
+- **Dynamic authentication**: Session-based API key generation per interaction
+- **Bearer token auth**: Client identification using IP address and user agent
+- **Interactive feedback**: Compact UI with emoji indicators (👍/👎) and optional detailed feedback
+- **Session management**: Automatic chat session creation and message tracking
+
+#### Assistant Integration Features
+```bash
+# Basic assistant query
+vss assist "How do I deploy a Ubuntu VM with 4GB RAM?"
+
+# Skip feedback prompting
+vss assist "Show me pending requests" --no-feedback
+
+# Assistant provides contextual help for ITS Private Cloud operations
+vss assist "What's the difference between template deployment and clone?"
+```
+
+#### Authentication Flow
+1. **API Key Generation**: `POST /api/generate-key` with client IP and user agent
+2. **Session Creation**: `POST /api/chat/create-chat-session` with Bearer token
+3. **Message Sending**: `POST /api/chat/send-message` with streamlined payload
+4. **Feedback Collection**: `POST /api/chat/create-chat-feedback` for response quality
+
+#### Feedback System
+- **Quick feedback**: y (helpful), n (not helpful), s (skip)
+- **Detailed feedback**: Optional explanation for negative responses
+- **Minimal UI**: Compact design with emoji indicators
+- **Session tracking**: Links feedback to specific assistant responses
 
 ### MCP Support
 - **Claude integration**: Model Context Protocol server
@@ -188,6 +223,21 @@ vss compute vm ls \
   --output table
 ```
 
+### AI Assistant Operations
+```bash
+# Ask for cloud operations help
+vss assist "How do I create a VM with specific network settings?"
+
+# Get help with API syntax
+vss assist "Show me the syntax for filtering VMs by folder"
+
+# Skip feedback collection
+vss assist "What are the available VM templates?" --no-feedback
+
+# Complex reasoning queries
+vss assist "I need to set up a development environment with 3 VMs, load balancer, and shared storage. What's the best approach?"
+```
+
 ## 🔒 Security Considerations
 
 ### Credential Management
@@ -199,6 +249,12 @@ vss compute vm ls \
 - **JWT tokens**: Time-limited authentication tokens
 - **HTTPS only**: All API communication encrypted
 - **Permission model**: Role-based access control
+
+### AI Assistant Security
+- **Session-based keys**: Dynamic API key generation per assistant session
+- **Client identification**: IP address and user agent validation
+- **Bearer token auth**: Secure authentication for assistant API endpoints
+- **Feedback privacy**: Optional detailed feedback with user control
 
 ## 📁 Important Files
 
@@ -212,7 +268,7 @@ vss compute vm ls \
 - `vss_cli/plugins/compute.py` - Compute resource management entry
 - `vss_cli/plugins/compute_plugins/vm.py` - VM-specific operations
 - `vss_cli/plugins/request.py` - Request lifecycle management
-- `vss_cli/plugins/assist.py` - AI assistant integration
+- `vss_cli/plugins/assist.py` - AI assistant integration with enhanced feedback UI
 
 ### Configuration Templates
 - `vss_cli/data/config.yaml` - Default configuration template
