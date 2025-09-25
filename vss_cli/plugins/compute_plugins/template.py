@@ -94,8 +94,7 @@ def compute_template_set(
 def compute_vm_set_template(ctx: Configuration):
     """Mark virtual machine template to virtual machine.
 
-    vss-cli compute template set <name-or-tmpl_id
-    > vm
+    vss-cli compute template set <name-or-tmpl_id> vm
     """
     # create payload
     payload = dict(vm_id=ctx.moref, value=False)

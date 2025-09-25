@@ -1,6 +1,19 @@
 Changelog 📝
 ============
 
+`v2025.9.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.9.0>`_ (2025-09-25)
+------------------------------------------------------------------------------------------
+
+**Bug Fixes:**
+
+- `#788 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/788>`_: ``compute template set``: minor fix in help.
+
+**Improvements:**
+
+- `#785 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/785>`_: ``assist``: new thoughtful search.
+- `#786 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/786>`_: ``docs``: add docs for agents.
+- `#787 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/787>`_: ``assist``: use secure gateway.
+
 `v2025.8.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.8.0>`_ (2025-08-25)
 ------------------------------------------------------------------------------------------
 

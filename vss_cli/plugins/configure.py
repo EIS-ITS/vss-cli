@@ -2,8 +2,8 @@
 import json
 import logging
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any
 
 import click
@@ -211,7 +211,7 @@ COLUMNS_DETAILS = [
 @click.argument('value', type=click.STRING)
 @pass_context
 def set_cfg(ctx: Configuration, setting: str, value: Any):
-    """Set configuration attribute in the general section."""
+    """Set the configuration attribute in the general section."""
     ctx.load_config(validate=False)
     data_type = const.GENERAL_SETTINGS[setting]
     was = None
@@ -232,7 +232,8 @@ def set_cfg(ctx: Configuration, setting: str, value: Any):
     except ValueError:
         _LOGGING.warning(f'{setting} value must be {data_type}')
     ctx.secho(
-        f"Updating {setting} from {was} -> {to}.", file=sys.stderr,
+        f"Updating {setting} from {was} -> {to}.",
+        file=sys.stderr,
     )
     ctx.write_config_file(config_general=ctx.config_file.general)
     ctx.secho(

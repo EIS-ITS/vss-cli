@@ -6,6 +6,7 @@ import os
 import platform
 import sys
 import time
+import warnings
 from base64 import b64decode, b64encode
 from pathlib import Path
 from time import sleep
@@ -356,20 +357,41 @@ class Configuration(VssManager):
                     f'Loading configuration file: {self.config_path}'
                 )
                 if cfg_path.is_file():
-                    # load configuration file from json string into class
+                    # load the configuration file from json string into class
                     self.config_file = self.load_config_file(config=cfg_path)
                     # general area
                     if self.config_file.general:
                         _LOGGING.debug(
                             f'Loading general settings from {self.config_path}'
                         )
+                        # enforce new gpt server
+                        if (
+                            self.config_file.general.gpt_server
+                            != self._gpt_server
+                        ):
+                            # add a deprecation warning for
+                            # config_file.general.gpt_server
+                            _LOGGING.warning(
+                                f'Found legacy gpt_server. '
+                                f'Updating to: {self._gpt_server}.'
+                            )
+                            _LOGGING.warning(
+                                f'Run '
+                                f'"vss-cli configure set '
+                                f'gpt_server {self._gpt_server}" '
+                                f'to fix this warning.'
+                            )
+                            self.config_file.general.gpt_server = (
+                                self._gpt_server
+                            )
                         # set config_path defaults
                         for setting in const.GENERAL_SETTINGS:
                             try:
-                                # check if setting hasn't been set
+                                # check if a setting hasn't been set
                                 # by input or env
-                                # which overrides configuration file
-                                if getattr(self, setting) is None:
+                                # which overrides a configuration file
+                                setting_val = getattr(self, setting)
+                                if setting_val is None:
                                     setattr(
                                         self,
                                         setting,
@@ -389,6 +411,7 @@ class Configuration(VssManager):
                                 )
                         # printing out
                         _LOGGING.debug(f"General settings loaded: {self}")
+
                     # load preferred endpoint from file if any
                     if self.config_file.endpoints:
                         _LOGGING.debug(
@@ -1736,8 +1759,42 @@ class Configuration(VssManager):
         else:
             os.system('clear')
 
-    @staticmethod
+    def _get_client_ip(self) -> str:
+        """Get the client's IP address."""
+        import socket
+
+        try:
+            # Try to get the IP by connecting to a public DNS server
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.settimeout(1)
+            # Connect to Google's public DNS
+            s.connect(('8.8.8.8', 80))
+            ip = s.getsockname()[0]
+            s.close()
+            return ip
+        except Exception:
+            # Fallback to localhost if unable to determine
+            return '127.0.0.1'
+
+    def _generate_assistant_api_key(self) -> str:
+        """Generate a new API key for the assistant."""
+        ip_address = self._get_client_ip()
+        client_name = f'{self.user_agent}/{ip_address}'
+
+        auth_endpoint = f'{self.gpt_server}/api/generate-key'
+        payload = {'client_name': client_name}
+
+        with requests.post(auth_endpoint, json=payload) as response:
+            if response.status_code not in [200, 201]:
+                raise VssCliError(
+                    f'Failed to generate API key. '
+                    f'Status: {response.status_code}'
+                )
+            data = response.json()
+            return data.get('api_key')
+
     def get_new_chat_id(
+        self,
         chat_endpoint: str,
         persona_id: int,
         description: str,
@@ -1751,7 +1808,7 @@ class Configuration(VssManager):
             if response.status_code in [401, 403, 500, 502, 503, 504]:
                 raise VssCliError(
                     'Invalid response from the API. '
-                    'Have you provided VSS_GPT_TOKEN?'
+                    'Failed to create chat session.'
                 )
             rv = response.json()
             chat_id = rv['chat_session_id']
@@ -1762,24 +1819,15 @@ class Configuration(VssManager):
         message: str,
         spinner_cls: Optional[Spinner] = None,
         final_message: str = None,
-    ):
+    ) -> Tuple[str, str]:
         """Ask assistant."""
+        # Generate a new API key for this session
+        api_key = self._generate_assistant_api_key()
+
         headers = {
-            'Authorization': self.gpt_token,
+            'api-key': f'{api_key}',
             'Connection': 'keep-alive',
             'Content-Type': 'application/json',
-        }
-        retrieval_options = {
-            "run_search": "auto",
-            "real_time": True,
-            "limit": 5,
-            "filters": {
-                "source_type": None,
-                "document_set": None,
-                "time_cutoff": None,
-                "tags": [],
-                "user_file_ids": None,
-            },
         }
         top_documents = []
         chat_id = self.get_new_chat_id(
@@ -1790,17 +1838,9 @@ class Configuration(VssManager):
         )
         # chat payload
         payload = {
-            "alternate_assistant_id": 2,
             "chat_session_id": chat_id,
-            "prompt_id": self._gpt_persona,
-            "parent_message_id": None,
-            "regenerate": False,
-            "full_doc": False,
-            "search_doc_ids": [],
             "message": message,
-            "file_descriptors": [],
-            "retrieval_options": retrieval_options,
-            "use_agentic_search": False,
+            "parent_message_id": None,
         }
         _LOGGING.debug(f'User data payload {payload}')
         answer_text = ''
@@ -1812,27 +1852,117 @@ class Configuration(VssManager):
         ) as response:
             if spinner_cls is not None:
                 spinner_cls.stop()
+            reasoning_text = ''
+            message_content = ''
+            internal_search_queries = []
+            internal_search_docs = []
+            final_documents = []
+            citations = []
+            assistant_message_id = None
+
             for line in response.iter_lines():
+                _LOGGING.debug(f"{line=}")
                 if line:
                     data = json.loads(line)
-                    if 'top_documents' in data:
+
+                    # Handle initial message IDs
+                    if (
+                        'user_message_id' in data
+                        and 'reserved_assistant_message_id' in data
+                    ):
+                        assistant_message_id = data[
+                            'reserved_assistant_message_id'
+                        ]
+                        _LOGGING.debug(
+                            f"Message IDs - User: {data['user_message_id']},"
+                            f" Assistant: {assistant_message_id}"
+                        )
+                        continue
+
+                    # Handle indexed objects
+                    if 'ind' in data and 'obj' in data:
+                        obj = data['obj']
+                        obj_type = obj.get('type')
+
+                        # Handle reasoning streaming
+                        if obj_type == 'reasoning_start':
+                            _LOGGING.debug("Reasoning started")
+                        elif obj_type == 'reasoning_delta':
+                            reasoning_chunk = obj.get('reasoning', '')
+                            reasoning_text += reasoning_chunk
+                            # Optionally display reasoning to user
+                            # (you might want to hide this)
+                            self.smooth_print(reasoning_chunk)
+
+                        # Handle message content streaming
+                        elif obj_type == 'message_start':
+                            if 'final_documents' in obj:
+                                final_documents = obj['final_documents']
+                            _LOGGING.debug("Message started")
+                        elif obj_type == 'message_delta':
+                            content_chunk = obj.get('content', '')
+                            message_content += content_chunk
+                            answer_text += content_chunk
+                            self.smooth_print(content_chunk)
+
+                        # Handle internal search tool
+                        elif obj_type == 'internal_search_tool_start':
+                            _LOGGING.debug(
+                                f"Internal search started - Internet: "
+                                f"{obj.get('is_internet_search', False)}"
+                            )
+                        elif obj_type == 'internal_search_tool_delta':
+                            if 'queries' in obj and obj['queries']:
+                                internal_search_queries.extend(obj['queries'])
+                            if 'documents' in obj and obj['documents']:
+                                internal_search_docs.extend(obj['documents'])
+                                # Update top_documents for backward
+                                # compatibility
+                                top_documents = obj['documents']
+
+                        # Handle citations
+                        elif obj_type == 'citation_start':
+                            _LOGGING.debug("Citations started")
+                        elif obj_type == 'citation_delta':
+                            if 'citations' in obj:
+                                citations.extend(obj['citations'])
+
+                        # Handle section end and stop
+                        elif obj_type == 'section_end':
+                            _LOGGING.debug(
+                                f"Section ended for index {data['ind']}"
+                            )
+                        elif obj_type == 'stop':
+                            _LOGGING.debug(
+                                f"Stream stopped for index {data['ind']}"
+                            )
+
+                    # Handle legacy format (backward compatibility)
+                    elif 'top_documents' in data:
                         top_documents = data['top_documents']
-                    answer_piece = data.get('answer_piece')
-                    if answer_piece is not None:
-                        answer_text = answer_text + answer_piece
-                        self.smooth_print(answer_piece)
+                    elif 'answer_piece' in data:
+                        answer_piece = data['answer_piece']
+                        if answer_piece is not None:
+                            answer_text = answer_text + answer_piece
+                            self.smooth_print(answer_piece)
+        # Use final_documents if available, otherwise fall
+        # back to top_documents
+        docs_to_display = final_documents if final_documents else top_documents
+
         docs = []
         n = 1
-        for doc in top_documents:
-            docs.append(
-                f'[{n}] [{doc["semantic_identifier"]}]({doc["document_id"]})'
-            )
+        for doc in docs_to_display:
+            # Handle both document_id and link fields
+            doc_url = doc.get("link") or doc.get("document_id", "")
+            doc_title = doc.get("semantic_identifier", "Unknown Document")
+            docs.append(f'[{n}] [{doc_title}]({doc_url})')
             n += 1
         # make docs
-        docs_text = '\n'.join(docs)
+        docs_text = '\n'.join(docs[:5])
         answer_text = answer_text + '\n\n' + docs_text
         # clear console for formatting
-        self.clear_console()
+        if not self.debug:
+            self.clear_console()
         from rich.console import Console
         from rich.markdown import Markdown
 
@@ -1841,3 +1971,65 @@ class Configuration(VssManager):
         console.print(markdown)
         console.print()
         console.print(Markdown(f'**Note: {final_message}**'))
+
+        # Return the assistant message ID and API key
+        # for potential feedback
+        return assistant_message_id, api_key
+
+    def provide_assistant_feedback(
+        self,
+        chat_message_id: str,
+        api_key: str,
+        is_positive: bool,
+        feedback_text: Optional[str] = None,
+    ) -> bool:
+        """Provide feedback for an assistant response.
+
+        Args:
+            chat_message_id: The ID of the assistant message
+            to provide feedback for
+            api_key: The API key generated for this session
+            is_positive: True for thumbs up, False for thumbs down
+            feedback_text: Optional feedback text (defaults to
+            'Helpful' or 'Not helpful')
+
+        Returns:
+            bool: True if feedback was submitted successfully, False otherwise
+        """
+        if feedback_text is None:
+            feedback_text = 'Helpful' if is_positive else 'Not helpful'
+
+        headers = {
+            'api-key': f'{api_key}',
+            'Content-Type': 'application/json',
+        }
+
+        payload = {
+            "chat_message_id": chat_message_id,
+            "is_positive": is_positive,
+            "feedback_text": feedback_text,
+            "predefined_feedback": None,
+        }
+
+        feedback_endpoint = f'{self.gpt_server}/api/chat/create-chat-feedback'
+
+        try:
+            with requests.post(
+                feedback_endpoint, headers=headers, json=payload
+            ) as response:
+                if response.status_code in [200, 201]:
+                    _LOGGING.debug(
+                        f'Feedback submitted successfully '
+                        f'for message {chat_message_id}'
+                    )
+                    return True
+                else:
+                    _LOGGING.warning(
+                        f'Failed to submit feedback. '
+                        f'Status: {response.status_code}, '
+                        f'Response: {response.text}'
+                    )
+                    return False
+        except Exception as e:
+            _LOGGING.error(f'Error submitting feedback: {e}')
+            return False

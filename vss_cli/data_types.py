@@ -95,7 +95,7 @@ class ConfigFile:
     )
 
     def get_endpoint(self, ep_name_or_url: str) -> List[ConfigEndpoint]:
-        """Get endpoint by name or url."""
+        """Get an endpoint by name or url."""
         if self.endpoints:
             ep = list(
                 filter(lambda i: ep_name_or_url == i.name, self.endpoints)

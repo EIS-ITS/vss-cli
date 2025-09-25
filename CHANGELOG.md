@@ -1,10 +1,22 @@
 # Changelog 📝
 
+## [2025.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.9.0) (2025-09-25)
+
+**Bug Fixes:**
+
+- [#788](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/788): ``compute template set``: minor fix in help.
+
+**Improvements:**
+
+- [#786](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/785): ``assist``: new thoughtful search.
+- [#786](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/786): ``docs``: add docs for agents. 
+- [#787](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/787): ``assist``: use secure gateway.
+
 ## [2025.8.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.8.0) (2025-08-25)
 
 **Bug Fixes:**
 
-- [#780](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/780): ``assist``:  not returning a valid response due to hard-coded model.
+- [#780](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/780): ``assist``: not returning a valid response due to a hard-coded model.
 
 **Improvements:**
 

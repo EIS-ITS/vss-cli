@@ -8,7 +8,7 @@ except ImportError:
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2025.8.0"
+__version__ = "2025.9.0"
 
 
 DEFAULT_TIMEOUT = 30
@@ -16,7 +16,7 @@ DEFAULT_ENDPOINT = "https://cloud-api.eis.utoronto.ca"
 DEFAULT_ENDPOINT_NAME = "cloud-api"
 DEFAULT_S3_SERVER = "https://vskey-stor.eis.utoronto.ca"
 DEFAULT_VPN_SERVER = "https://vskey-vn.eis.utoronto.ca"
-DEFAULT_GPT_SERVER = "https://gpt.eis.utoronto.ca"
+DEFAULT_GPT_SERVER = "https://gpt-wpy.eis.utoronto.ca"
 DEFAULT_GPT_PERSONA = 2
 DEFAULT_GPT_TOKEN = ''
 _LEGACY_CONFIG = ("~", ".vss-cli", "config.json")
