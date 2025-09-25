@@ -369,14 +369,16 @@ class Configuration(VssManager):
                             self.config_file.general.gpt_server
                             != self._gpt_server
                         ):
-                            # add a deprecation warning for config_file.general.gpt_server
+                            # add a deprecation warning for
+                            # config_file.general.gpt_server
                             _LOGGING.warning(
                                 f'Found legacy gpt_server. '
                                 f'Updating to: {self._gpt_server}.'
                             )
                             _LOGGING.warning(
                                 f'Run '
-                                f'"vss-cli configure set gpt_server {self._gpt_server}" '
+                                f'"vss-cli configure set '
+                                f'gpt_server {self._gpt_server}" '
                                 f'to fix this warning.'
                             )
                             self.config_file.general.gpt_server = (
