@@ -6,6 +6,7 @@ import os
 import platform
 import sys
 import time
+import warnings
 from base64 import b64decode, b64encode
 from pathlib import Path
 from time import sleep
@@ -356,20 +357,39 @@ class Configuration(VssManager):
                     f'Loading configuration file: {self.config_path}'
                 )
                 if cfg_path.is_file():
-                    # load configuration file from json string into class
+                    # load the configuration file from json string into class
                     self.config_file = self.load_config_file(config=cfg_path)
                     # general area
                     if self.config_file.general:
                         _LOGGING.debug(
                             f'Loading general settings from {self.config_path}'
                         )
+                        # enforce new gpt server
+                        if (
+                            self.config_file.general.gpt_server
+                            != self._gpt_server
+                        ):
+                            # add a deprecation warning for config_file.general.gpt_server
+                            _LOGGING.warning(
+                                f'Found legacy gpt_server. '
+                                f'Updating to: {self._gpt_server}.'
+                            )
+                            _LOGGING.warning(
+                                f'Run '
+                                f'"vss-cli configure set gpt_server {self._gpt_server}" '
+                                f'to fix this warning.'
+                            )
+                            self.config_file.general.gpt_server = (
+                                self._gpt_server
+                            )
                         # set config_path defaults
                         for setting in const.GENERAL_SETTINGS:
                             try:
-                                # check if setting hasn't been set
+                                # check if a setting hasn't been set
                                 # by input or env
-                                # which overrides configuration file
-                                if getattr(self, setting) is None:
+                                # which overrides a configuration file
+                                setting_val = getattr(self, setting)
+                                if setting_val is None:
                                     setattr(
                                         self,
                                         setting,
@@ -389,6 +409,7 @@ class Configuration(VssManager):
                                 )
                         # printing out
                         _LOGGING.debug(f"General settings loaded: {self}")
+
                     # load preferred endpoint from file if any
                     if self.config_file.endpoints:
                         _LOGGING.debug(
