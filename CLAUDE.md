@@ -241,7 +241,6 @@ vss assist "I need to set up a development environment with 3 VMs, load balancer
 ## 🔒 Security Considerations
 
 ### Credential Management
-- **Token encryption**: Base64 encoded credentials in config
 - **MFA enforcement**: Supports TOTP, SMS, email methods
 - **Environment isolation**: Separate configs per endpoint
 
