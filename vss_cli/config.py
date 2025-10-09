@@ -265,22 +265,74 @@ class Configuration(VssManager):
     def load_profile(
         self, endpoint: str = None
     ) -> Tuple[Optional[ConfigEndpoint], Optional[str], Optional[str]]:
-        """Load profile from configuration file."""
+        """Load profile from configuration file.
+
+        Uses new credential backend system with fallback to legacy base64 auth.
+        """
         username, password = None, None
         # load from
         config_endpoint = self.config_file.get_endpoint(endpoint)
         if config_endpoint:
-            # get auth attr
+            endpoint_name = config_endpoint[0].name
+
+            # Try loading from new credential backend first
+            try:
+                from vss_cli.credentials.base import (
+                    CredentialType, detect_backend)
+
+                backend = detect_backend()
+
+                if backend.is_available():
+                    # Try to retrieve credentials from backend
+                    username_value = backend.retrieve_credential(
+                        endpoint_name, CredentialType.USERNAME
+                    )
+                    password_value = backend.retrieve_credential(
+                        endpoint_name, CredentialType.PASSWORD
+                    )
+
+                    if username_value and password_value:
+                        _LOGGING.debug(
+                            f'Loaded credentials from backend: '
+                            f'{backend.__class__.__name__}'
+                        )
+                        username = username_value.encode()
+                        password = password_value.encode()
+                        return (
+                            config_endpoint[0],
+                            bytes_to_str(username),
+                            bytes_to_str(password),
+                        )
+                    else:
+                        _LOGGING.debug(
+                            f'No credentials found in '
+                            f'backend for: {endpoint_name}'
+                        )
+            except Exception as e:
+                _LOGGING.debug(
+                    f'Could not load ' f'credentials from backend: {e}'
+                )
+
+            # Fallback to legacy base64 auth
             auth = config_endpoint[0].auth
-            # get token attr
             token = config_endpoint[0].token
-            if not auth or not token:
+
+            if auth and token:
+                try:
+                    auth_enc = auth.encode()
+                    credentials_decoded = b64decode(auth_enc)
+                    # get user/pass
+                    username, password = credentials_decoded.split(b':')
+                    _LOGGING.debug(
+                        f'Loaded credentials from '
+                        f'legacy base64 auth for: '
+                        f'{endpoint_name}'
+                    )
+                except Exception as e:
+                    _LOGGING.warning(f'Error decoding legacy credentials: {e}')
+            elif not (username and password):
                 _LOGGING.warning('Invalid configuration endpoint found.')
-            else:
-                auth_enc = auth.encode()
-                credentials_decoded = b64decode(auth_enc)
-                # get user/pass
-                username, password = credentials_decoded.split(b':')
+
             return (
                 config_endpoint[0],
                 bytes_to_str(username),
@@ -680,6 +732,8 @@ class Configuration(VssManager):
 
         Token might be ``None`` and will generate a new one
         using ``username`` and ``password``.
+
+        Also stores credentials in secure backend if available.
         """
         token = self._get_token_with_mfa(token=token)
         # encode or save
@@ -699,13 +753,74 @@ class Configuration(VssManager):
         payload = jwt.decode(
             self.api_token, options=dict(verify_signature=False)
         )
-        endpoint_cfg = {
-            'url': self.base_endpoint,
-            'name': self.endpoint_name,
-            'auth': auth,
-            'token': self.api_token,
-            'tf_enabled': payload.get('otp', False),
-        }
+
+        # Try to store credentials in secure backend
+        try:
+            from vss_cli.credentials.base import (
+                CredentialData, CredentialType, detect_backend)
+
+            backend = detect_backend()
+
+            if backend.is_available():
+                # Store username
+                username_cred = CredentialData(
+                    credential_type=CredentialType.USERNAME,
+                    value=bytes_to_str(username),
+                    endpoint=self.endpoint_name,
+                )
+                backend.store_credential(username_cred)
+
+                # Store password
+                password_cred = CredentialData(
+                    credential_type=CredentialType.PASSWORD,
+                    value=bytes_to_str(password),
+                    endpoint=self.endpoint_name,
+                )
+                backend.store_credential(password_cred)
+
+                # Store token
+                token_cred = CredentialData(
+                    credential_type=CredentialType.TOKEN,
+                    value=self.api_token,
+                    endpoint=self.endpoint_name,
+                )
+                backend.store_credential(token_cred)
+
+                _LOGGING.info(
+                    f'Stored credentials in backend: '
+                    f'{backend.__class__.__name__}'
+                )
+
+                # Don't include auth in config if stored in backend
+                endpoint_cfg = {
+                    'url': self.base_endpoint,
+                    'name': self.endpoint_name,
+                    'token': self.api_token,
+                    'tf_enabled': payload.get('otp', False),
+                }
+            else:
+                # Fallback to legacy auth storage
+                endpoint_cfg = {
+                    'url': self.base_endpoint,
+                    'name': self.endpoint_name,
+                    'auth': auth,
+                    'token': self.api_token,
+                    'tf_enabled': payload.get('otp', False),
+                }
+        except Exception as e:
+            _LOGGING.warning(
+                f'Could not store credentials in backend: {e}. '
+                f'Using legacy auth storage.'
+            )
+            # Fallback to legacy auth storage
+            endpoint_cfg = {
+                'url': self.base_endpoint,
+                'name': self.endpoint_name,
+                'auth': auth,
+                'token': self.api_token,
+                'tf_enabled': payload.get('otp', False),
+            }
+
         ep_cfg = ConfigEndpoint.from_json(json.dumps(endpoint_cfg))
         _LOGGING.debug(f'Configuration endpoint created: {ep_cfg}')
         return ep_cfg
