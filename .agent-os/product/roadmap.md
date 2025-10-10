@@ -51,7 +51,7 @@ The following features have been implemented and are in production:
 - CI/CD integration guides available for common scenarios
 
 ### Features
-
+- [x] **Secure Credential Store** - Implement secure credential storage using OS-native keystores (macOS Keychain) and password managers (1Password) to replace base64-encoded YAML storage, providing enhanced security with automatic migration for existing credentials. 
 - [ ] **Enhanced Specification Validation** - Implement comprehensive schema validation for VSS CLI specs with detailed error messages and suggestions `M`
 - [ ] **Specification Testing Framework** - Add dry-run and validation modes for testing specifications before deployment `M`
 - [ ] **Specification Templates** - Create reusable templates for common infrastructure patterns (web servers, databases, load balancers) `S`

@@ -12,6 +12,7 @@ from ruamel.yaml.parser import ParserError
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from vss_cli.credentials.base import CredentialType, detect_backend
 from vss_cli.data_types import ConfigEndpoint
 from vss_cli.helper import format_output, str2bool
 from vss_cli.utils.emoji import EMOJI_UNICODE
@@ -254,18 +255,54 @@ def ls(ctx: Configuration):
         ctx.set_defaults()
         default_endpoint = config_file.general.default_endpoint_name
         endpoints = config_file.endpoints or []
+
+        # Detect credential backend for secure storage
+        backend = detect_backend()
+
         # checking profiles
         for endpoint in endpoints:
             is_default = ej_check if default_endpoint == endpoint.name else ''
             token = ''
             user = ''
             pwd = ''
-            auth = endpoint.auth
+            source = 'config file (legacy)'  # default source
             url = endpoint.url
-            if auth:
-                auth_enc = auth.encode()
-                user, pwd = b64decode(auth_enc).split(b':')
-                user = user.decode()
+
+            # Try loading from backend first
+            try:
+                if backend and backend.is_available():
+                    username_value = backend.retrieve_credential(
+                        endpoint.name, CredentialType.USERNAME
+                    )
+                    if username_value:
+                        user = username_value
+                        source = backend.__class__.__name__
+                        # For display purposes, we show masked password
+                        # even though it's not retrieved from backend
+                        pwd = '********'
+                    else:
+                        # Fallback to legacy base64 auth
+                        if endpoint.auth:
+                            auth_enc = endpoint.auth.encode()
+                            user, pwd = b64decode(auth_enc).split(b':')
+                            user = user.decode()
+                else:
+                    # Backend unavailable, use legacy
+                    if endpoint.auth:
+                        auth_enc = endpoint.auth.encode()
+                        user, pwd = b64decode(auth_enc).split(b':')
+                        user = user.decode()
+            except Exception as e:
+                _LOGGING.debug(
+                    f'Could not load credentials from backend for '
+                    f'{endpoint.name}: {e}'
+                )
+                # Fall back to legacy
+                if endpoint.auth:
+                    auth_enc = endpoint.auth.encode()
+                    user, pwd = b64decode(auth_enc).split(b':')
+                    user = user.decode()
+
             masked_pwd = ''.join(['*' for i in range(len(pwd))])
             if endpoint.token:
                 token = f"{endpoint.token[:10]}...{endpoint.token[-10:]}"
@@ -279,7 +316,7 @@ def ls(ctx: Configuration):
                     'mfa': 'Yes' if endpoint.tf_enabled else 'No',
                     'pass': masked_pwd[:8],
                     'token': token,
-                    'source': 'config file',
+                    'source': source,
                 }
             )
     except FileNotFoundError as ex:
