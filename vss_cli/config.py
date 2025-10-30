@@ -310,7 +310,7 @@ class Configuration(VssManager):
                         )
             except Exception as e:
                 _LOGGING.debug(
-                    f'Could not load ' f'credentials from backend: {e}'
+                    f'Could not load credentials from backend: {e}'
                 )
 
             # Fallback to legacy base64 auth

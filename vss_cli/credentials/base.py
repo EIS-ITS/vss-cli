@@ -357,7 +357,7 @@ def detect_backend(
 
             backend = OnePasswordBackend(enable_cache=enable_cache)
             if backend.is_available():
-                _LOGGING.info('Using 1Password credential backend')
+                _LOGGING.debug('Using 1Password credential backend')
                 return backend
         except ImportError:
             _LOGGING.debug('1Password backend not available')
@@ -369,13 +369,13 @@ def detect_backend(
 
             backend = KeychainBackend(enable_cache=enable_cache)
             if backend.is_available():
-                _LOGGING.info('Using macOS Keychain credential backend')
+                _LOGGING.debug('Using macOS Keychain credential backend')
                 return backend
         except ImportError:
             _LOGGING.debug('Keychain backend not available')
 
     # Fall back to encrypted storage
-    _LOGGING.info('Using encrypted file storage credential backend')
+    _LOGGING.debug('Using encrypted file storage credential backend')
     from vss_cli.credentials.backends.encrypted import EncryptedFileBackend
 
     return EncryptedFileBackend(enable_cache=enable_cache)
