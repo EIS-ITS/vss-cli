@@ -1,5 +1,17 @@
 # Changelog 📝
 
+## [2025.10.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.10.0) (2025-11-05)
+
+**Bug Fixes:**
+
+- [#790](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/790): ``ci``: `sphinx` issue in pipeline.
+
+**Improvements:**
+
+- [#792](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/792): ``core``: agentOS implementation``[experimental]``.
+- [#793](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/793): ``core``: Secure Credential Keystore Integration ``[experimental]``.
+- [#794](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/794): ``core``: agentOS upgrade to v2 ``[experimental]``.
+
 ## [2025.9.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.9.0) (2025-09-25)
 
 **Bug Fixes:**
