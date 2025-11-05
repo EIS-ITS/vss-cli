@@ -12,6 +12,7 @@ from ruamel.yaml.parser import ParserError
 from vss_cli import const
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
+from vss_cli.credentials.base import CredentialType, detect_backend
 from vss_cli.data_types import ConfigEndpoint
 from vss_cli.helper import format_output, str2bool
 from vss_cli.utils.emoji import EMOJI_UNICODE
@@ -254,18 +255,54 @@ def ls(ctx: Configuration):
         ctx.set_defaults()
         default_endpoint = config_file.general.default_endpoint_name
         endpoints = config_file.endpoints or []
+
+        # Detect credential backend for secure storage
+        backend = detect_backend()
+
         # checking profiles
         for endpoint in endpoints:
             is_default = ej_check if default_endpoint == endpoint.name else ''
             token = ''
             user = ''
             pwd = ''
-            auth = endpoint.auth
+            source = 'config file (legacy)'  # default source
             url = endpoint.url
-            if auth:
-                auth_enc = auth.encode()
-                user, pwd = b64decode(auth_enc).split(b':')
-                user = user.decode()
+
+            # Try loading from backend first
+            try:
+                if backend and backend.is_available():
+                    username_value = backend.retrieve_credential(
+                        endpoint.name, CredentialType.USERNAME
+                    )
+                    if username_value:
+                        user = username_value
+                        source = backend.__class__.__name__
+                        # For display purposes, we show masked password
+                        # even though it's not retrieved from backend
+                        pwd = '********'
+                    else:
+                        # Fallback to legacy base64 auth
+                        if endpoint.auth:
+                            auth_enc = endpoint.auth.encode()
+                            user, pwd = b64decode(auth_enc).split(b':')
+                            user = user.decode()
+                else:
+                    # Backend unavailable, use legacy
+                    if endpoint.auth:
+                        auth_enc = endpoint.auth.encode()
+                        user, pwd = b64decode(auth_enc).split(b':')
+                        user = user.decode()
+            except Exception as e:
+                _LOGGING.debug(
+                    f'Could not load credentials from backend for '
+                    f'{endpoint.name}: {e}'
+                )
+                # Fall back to legacy
+                if endpoint.auth:
+                    auth_enc = endpoint.auth.encode()
+                    user, pwd = b64decode(auth_enc).split(b':')
+                    user = user.decode()
+
             masked_pwd = ''.join(['*' for i in range(len(pwd))])
             if endpoint.token:
                 token = f"{endpoint.token[:10]}...{endpoint.token[-10:]}"
@@ -279,7 +316,7 @@ def ls(ctx: Configuration):
                     'mfa': 'Yes' if endpoint.tf_enabled else 'No',
                     'pass': masked_pwd[:8],
                     'token': token,
-                    'source': 'config file',
+                    'source': source,
                 }
             )
     except FileNotFoundError as ex:
@@ -338,3 +375,310 @@ def edit(ctx: Configuration, launch):
         else:
             ctx.echo("No edits/changes returned from editor.")
             return
+
+
+@cli.command(
+    'migrate-credentials',
+    short_help='Migrate credentials to secure storage backend.',
+)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    default=False,
+    help='Proceed without confirmation prompts.',
+)
+@click.option(
+    '--dry-run',
+    is_flag=True,
+    default=False,
+    help='Show migration plan without making changes.',
+)
+@click.option(
+    '--rollback',
+    is_flag=True,
+    default=False,
+    help='Rollback previous migration and restore backup.',
+)
+@click.option(
+    '--validate',
+    is_flag=True,
+    default=False,
+    help='Validate migrated credentials.',
+)
+@pass_context
+def migrate_credentials(
+    ctx: Configuration,
+    yes: bool,
+    dry_run: bool,
+    rollback: bool,
+    validate: bool,
+):
+    """Migrate credentials from base64 storage to secure backends.
+
+    This command migrates your credentials from the legacy base64-encoded
+    format in config.yaml to OS-native secure storage backends like
+    macOS Keychain or encrypted file storage.
+
+    Security benefits:
+    - Credentials stored in OS-native keystores (macOS Keychain, etc.)
+    - Industry-standard AES-256-GCM encryption for fallback storage
+    - No plaintext credentials in configuration files
+    - Protection against casual file access
+
+    The migration process:
+    1. Detects existing base64-encoded credentials
+    2. Creates a backup of your configuration file
+    3. Stores credentials in the secure backend
+    4. Removes base64 auth field from config (keeps tokens)
+    5. Validates successful migration
+    """
+    from vss_cli.credentials.base import detect_backend
+    from vss_cli.credentials.migration import (
+        CredentialMigration, MigrationError, has_legacy_credentials)
+
+    ej_lock = EMOJI_UNICODE.get(':locked:')
+    ej_key = EMOJI_UNICODE.get(':key:')
+    ej_warn = EMOJI_UNICODE.get(':warning:')
+
+    config_file = Path(ctx.config_path)
+
+    # Check if config file exists
+    if not config_file.exists():
+        ctx.secho(
+            f'{ej_warn} Configuration file not found: {config_file}',
+            fg='red',
+            err=True,
+        )
+        ctx.secho(
+            'Run "vss-cli configure mk" to create a configuration file.',
+            fg='yellow',
+            err=True,
+        )
+        sys.exit(1)
+
+    # Detect available backend
+    backend = detect_backend()
+    migration = CredentialMigration(
+        config_file=config_file, backend=backend, dry_run=dry_run
+    )
+
+    # Handle rollback request
+    if rollback:
+        ctx.secho(
+            f'\n{ej_warn} Rolling back credential migration...\n',
+            fg='yellow',
+            bold=True,
+        )
+
+        if not migration.backup_file.exists():
+            ctx.secho(
+                f'{ej_warn} No backup file found. Cannot rollback.',
+                fg='red',
+                err=True,
+            )
+            sys.exit(1)
+
+        if not yes:
+            confirm = click.confirm(
+                'This will restore your '
+                'configuration from backup\n'
+                'and delete migrated credentials. Continue?',
+                default=False,
+            )
+            if not confirm:
+                ctx.echo('Rollback cancelled.')
+                sys.exit(0)
+
+        try:
+            migration.rollback()
+            ctx.secho(
+                f'\n{ej_check} Successfully rolled back migration {ej_tada}',
+                fg='green',
+            )
+            ctx.secho('Configuration restored from backup.', fg='green')
+        except MigrationError as e:
+            ctx.secho(f'\n{ej_warn} Rollback failed: {e}', fg='red', err=True)
+            sys.exit(1)
+
+        sys.exit(0)
+
+    # Handle validation request
+    if validate:
+        ctx.secho(
+            f'\n{ej_key} Validating migrated credentials...\n',
+            fg='cyan',
+            bold=True,
+        )
+
+        result = migration.validate()
+
+        if result['success']:
+            ctx.secho(
+                f'{ej_check} Validation successful! '
+                f'All {result["validated_count"]} credentials verified.',
+                fg='green',
+            )
+        else:
+            ctx.secho(
+                f'{ej_warn} Validation found issues:', fg='yellow', err=True
+            )
+            for error in result['errors']:
+                ctx.secho(f'  - {error}', fg='red', err=True)
+            sys.exit(1)
+
+        sys.exit(0)
+
+    # Get migration status
+    status = migration.get_status()
+
+    # Display header
+    ctx.secho(
+        f'\n{ej_lock} Credential Migration to Secure Storage {ej_lock}\n',
+        fg='cyan',
+        bold=True,
+    )
+
+    # Check if migration is needed
+    if not status['has_legacy_credentials']:
+        ctx.secho(
+            f'{ej_check} No legacy credentials found. '
+            f'Your credentials are already secure!',
+            fg='green',
+        )
+        sys.exit(0)
+
+    # Check backend availability
+    if not status['backend_available']:
+        ctx.secho(
+            f'{ej_warn} Secure storage backend is not available.',
+            fg='red',
+            err=True,
+        )
+        ctx.secho(
+            f'Backend: {backend.__class__.__name__}',
+            fg='yellow',
+            err=True,
+        )
+        sys.exit(1)
+
+    # Display migration info
+    ctx.secho(f'Configuration file: {status["config_file"]}', fg='white')
+    ctx.secho(f'Backend: {backend.__class__.__name__}', fg='white')
+    ctx.secho(f'Endpoints to migrate: {status["endpoints_count"]}', fg='white')
+
+    if status['backup_exists']:
+        ctx.secho(
+            f'\n{ej_warn} Existing backup found: {migration.backup_file}',
+            fg='yellow',
+        )
+
+    # Dry-run mode
+    if dry_run:
+        ctx.secho(
+            f'\n{ej_key} DRY-RUN MODE - No changes will be made\n',
+            fg='yellow',
+            bold=True,
+        )
+
+        result = migration.migrate()
+
+        ctx.secho('Migration plan:', fg='cyan', bold=True)
+        for ep_info in result['endpoints']:
+            ctx.secho(f"\n  Endpoint: {ep_info['name']}", fg='white')
+            ctx.secho(
+                f"  Credentials to migrate: "
+                f"{', '.join(ep_info['credentials_to_migrate'])}",
+                fg='white',
+            )
+
+        ctx.secho(
+            f'\n{ej_rkt} Run without --dry-run to perform migration.',
+            fg='green',
+        )
+        sys.exit(0)
+
+    # User education
+    ctx.secho('\nWhy migrate?', fg='cyan', bold=True)
+    ctx.secho(
+        '  - Credentials will be stored in OS-native secure storage',
+        fg='white',
+    )
+    ctx.secho(
+        '  - No more plaintext base64-encoded passwords in config files',
+        fg='white',
+    )
+    ctx.secho(
+        '  - Protection with AES-256-GCM encryption (encrypted fallback)',
+        fg='white',
+    )
+    ctx.secho('  - Backup will be created automatically', fg='white')
+
+    # Confirmation prompt
+    if not yes:
+        ctx.secho('\nWhat will happen:', fg='cyan', bold=True)
+        ctx.secho(f'  1. Backup created: {config_file}.backup', fg='white')
+        ctx.secho(
+            f'  2. Credentials stored in: {backend.__class__.__name__}',
+            fg='white',
+        )
+        ctx.secho('  3. Base64 auth field removed from config', fg='white')
+        ctx.secho(
+            '  4. Tokens preserved in config for quick access', fg='white'
+        )
+
+        confirm = click.confirm(
+            f'\n{ej_key} Proceed with migration?',
+            default=True,
+        )
+
+        if not confirm:
+            ctx.echo('Migration cancelled.')
+            sys.exit(0)
+
+    # Perform migration
+    ctx.secho(f'\n{ej_key} Migrating credentials...\n', fg='cyan', bold=True)
+
+    try:
+        result = migration.migrate()
+
+        if result['migrated']:
+            ctx.secho(
+                f'\n{ej_check} Migration successful! {ej_tada}\n',
+                fg='green',
+                bold=True,
+            )
+            ctx.secho(
+                f'Migrated {len(result["endpoints"])} endpoint(s):',
+                fg='green',
+            )
+            for endpoint in result['endpoints']:
+                ctx.secho(f'  - {endpoint}', fg='white')
+
+            ctx.secho(
+                f'\nBackup saved to: {migration.backup_file}',
+                fg='cyan',
+            )
+            ctx.secho(
+                '\nTo rollback: vss-cli configure '
+                'migrate-credentials --rollback',
+                fg='yellow',
+            )
+            ctx.secho(
+                'To validate: vss-cli configure '
+                'migrate-credentials --validate',
+                fg='yellow',
+            )
+
+    except MigrationError as e:
+        ctx.secho(
+            f'\n{ej_warn} Migration failed: {e}',
+            fg='red',
+            err=True,
+        )
+        ctx.secho(
+            '\nYour configuration has not been modified.',
+            fg='yellow',
+            err=True,
+        )
+        sys.exit(1)

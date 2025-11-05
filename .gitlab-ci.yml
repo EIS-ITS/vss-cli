@@ -376,8 +376,12 @@ build-docs-tag:
 release-docs-tag-confluence:
   image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
   stage: release
+  dependencies:
+    - build-docs-tag
   script:
-    - uv sync --locked --all-extras
+    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
+    - uv venv && source .venv/bin/activate
+    - uv sync --locked --all-extras && uv pip install .
     - export CONFLUENCE_DRYRUN= && sphinx-build -b confluence docs docs/_build/confluence -E -a
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/
