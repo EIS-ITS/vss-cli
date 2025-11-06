@@ -309,9 +309,7 @@ class Configuration(VssManager):
                             f'backend for: {endpoint_name}'
                         )
             except Exception as e:
-                _LOGGING.debug(
-                    f'Could not load credentials from backend: {e}'
-                )
+                _LOGGING.debug(f'Could not load credentials from backend: {e}')
 
             # Fallback to legacy base64 auth
             auth = config_endpoint[0].auth
@@ -1951,10 +1949,17 @@ class Configuration(VssManager):
             description=message[:20],
             headers=headers,
         )
+        # inject additional context to tell the assistant the user is
+        # on the vss-cli
+        pre_message = (
+            "Notes: User is asking through the vss-cli, thus responses must "
+            "be around the vss-cli context and "
+            "space is limited to a console, so be concise.\n"
+        )
         # chat payload
         payload = {
             "chat_session_id": chat_id,
-            "message": message,
+            "message": '\n\n'.join([pre_message, message]),
             "parent_message_id": None,
         }
         _LOGGING.debug(f'User data payload {payload}')
