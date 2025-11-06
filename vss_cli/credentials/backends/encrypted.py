@@ -5,7 +5,7 @@ import json
 import logging
 import os
 import threading
-import warnings
+# import warnings
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -77,13 +77,13 @@ class EncryptedFileBackend(CredentialBackend):
         self._file_lock = threading.Lock()
 
         # Issue security warning
-        warnings.warn(
-            'Using encrypted file storage for credentials. '
-            'For better security, consider using your system\'s '
-            'native keystore (macOS Keychain, 1Password, etc.)',
-            UserWarning,
-            stacklevel=2,
-        )
+        # warnings.warn(
+        #     'Using encrypted file storage for credentials. '
+        #     'For better security, consider using your system\'s '
+        #     'native keystore (macOS Keychain, 1Password, etc.)',
+        #     UserWarning,
+        #     stacklevel=2,
+        # )
 
         _LOGGING.debug(
             f'Initialized EncryptedFileBackend: {self._credential_file}'
