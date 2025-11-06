@@ -18,7 +18,7 @@ ej_thumbs_down = EMOJI_UNICODE.get(':thumbs_down:')
 ej_checkmark = EMOJI_UNICODE.get(':white_heavy_check_mark:')
 ej_star = EMOJI_UNICODE.get(':star:')
 
-we_msg = f"""Hi, I’m UTORcloudy {ej_ai}, the ITS Private Cloud virtual agent.
+we_msg = f"""Hi, I'm UTORcloudy {ej_ai}, the ITS Private Cloud virtual agent.
 I can help with account, virtual machine management, billing questions
 and more. {ej_rk}
 """
@@ -50,12 +50,24 @@ Always check sources and refer to actual policies for reliable information."""
 @click.option(
     '--no-feedback', is_flag=True, default=False, help='skip feedback prompt'
 )
+@click.option(
+    '--show-reasoning',
+    is_flag=True,
+    default=False,
+    help='display AI reasoning process',
+)
 @click.argument(
     "message",
     required=False,
 )
 @pass_context
-def cli(ctx: Configuration, no_load: bool, no_feedback: bool, message: str):
+def cli(
+    ctx: Configuration,
+    no_load: bool,
+    no_feedback: bool,
+    show_reasoning: bool,
+    message: str,
+):
     """Manage your VSS account."""
     with ctx.spinner(disable=ctx.debug) as spinner_cls:
         if no_load:
@@ -81,7 +93,10 @@ def cli(ctx: Configuration, no_load: bool, no_feedback: bool, message: str):
             spinner_cls.start()
         # ask assistant
         assistant_message_id, api_key = ctx.ask_assistant(
-            spinner_cls=spinner_cls, message=message, final_message=final_msg
+            spinner_cls=spinner_cls,
+            message=message,
+            final_message=final_msg,
+            show_reasoning=show_reasoning,
         )
         # Only ask for feedback if enabled and we have a valid message ID
         if not no_feedback and assistant_message_id and api_key:

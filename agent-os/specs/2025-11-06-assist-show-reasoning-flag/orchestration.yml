@@ -1,0 +1,9 @@
+task_groups:
+  - name: CLI Layer
+    claude_code_subagent: backend-architect
+  - name: API Integration Layer
+    claude_code_subagent: backend-architect
+  - name: Reasoning Display Logic
+    claude_code_subagent: backend-architect
+  - name: Testing & Integration
+    claude_code_subagent: test-writer-fixer

@@ -37,6 +37,7 @@ from vss_cli.validators import (
     validate_uuid, validate_vm_moref)
 
 _LOGGING = logging.getLogger(__name__)
+ej_ai = EMOJI_UNICODE.get(':robot_face:')
 
 
 class Configuration(VssManager):
@@ -1932,10 +1933,14 @@ class Configuration(VssManager):
         message: str,
         spinner_cls: Optional[Spinner] = None,
         final_message: str = None,
+        show_reasoning: bool = False,
     ) -> Tuple[str, str]:
         """Ask assistant."""
         # Generate a new API key for this session
         api_key = self._generate_assistant_api_key()
+
+        # Initialize spinner for reasoning indicator
+        reasoning_spinner = None
 
         headers = {
             'api-key': f'{api_key}',
@@ -2007,17 +2012,27 @@ class Configuration(VssManager):
                         # Handle reasoning streaming
                         if obj_type == 'reasoning_start':
                             _LOGGING.debug("Reasoning started")
+                            # Start spinner if reasoning is hidden
+                            if not show_reasoning and not self.debug:
+                                reasoning_spinner = Spinner(
+                                    f"{ej_ai} Thinking..."
+                                )
+                                reasoning_spinner.start()
                         elif obj_type == 'reasoning_delta':
                             reasoning_chunk = obj.get('reasoning', '')
                             reasoning_text += reasoning_chunk
-                            # Optionally display reasoning to user
-                            # (you might want to hide this)
-                            self.smooth_print(reasoning_chunk)
-
-                        # Handle message content streaming
+                            # Always log reasoning to debug
+                            _LOGGING.debug(f"Reasoning: {reasoning_chunk}")
+                            # Display reasoning if flag is true OR debug mode is active
+                            if self.debug or show_reasoning:
+                                self.smooth_print(reasoning_chunk)
                         elif obj_type == 'message_start':
                             if 'final_documents' in obj:
                                 final_documents = obj['final_documents']
+                            # Stop reasoning spinner if it exists
+                            if reasoning_spinner:
+                                reasoning_spinner.stop()
+                                reasoning_spinner = None
                             _LOGGING.debug("Message started")
                         elif obj_type == 'message_delta':
                             content_chunk = obj.get('content', '')
