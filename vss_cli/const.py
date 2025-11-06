@@ -8,7 +8,7 @@ except ImportError:
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2025.11.0-dev2"
+__version__ = "2025.11.0-dev3"
 
 
 DEFAULT_TIMEOUT = 30
@@ -19,6 +19,7 @@ DEFAULT_VPN_SERVER = "https://vskey-vn.eis.utoronto.ca"
 DEFAULT_GPT_SERVER = "https://gpt-wpy.eis.utoronto.ca"
 DEFAULT_GPT_PERSONA = 2
 DEFAULT_GPT_TOKEN = ''
+DEFAULT_TICKET_URL = 'https://utor.cloud/help'
 _LEGACY_CONFIG = ("~", ".vss-cli", "config.json")
 _DEFAULT_CONFIG = ("~", ".vss-cli", "config.yaml")
 _DEFAULT_HISTORY = ("~", ".vss-cli", "history")
@@ -45,6 +46,12 @@ DEFAULT_VERBOSE = False
 DEFAULT_DEBUG = False
 DEFAULT_COLUMNS_WIDTH = -1
 DEFAULT_WAIT_FOR_REQUESTS = False
+# Restore Suffix RESTORE-YYYY-MM-DD-HH-MM-SS (27 chars)
+# Max VM name len: 75
+# Actual name to use: Max - Restore Suffix
+MAX_VM_NAME_LENGTH = 75
+RESTORE_VM_SUFFIX_LENGTH = 27
+RESTORE_MAX_VM_NAME_LENGTH = MAX_VM_NAME_LENGTH - RESTORE_VM_SUFFIX_LENGTH
 
 DEFAULT_SETTINGS = {
     "endpoint": DEFAULT_ENDPOINT,
