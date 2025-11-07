@@ -684,10 +684,15 @@ class VmApiSpec:
                 data['item_id'] = item_id
                 data['built_from'] = 'contentlib'
             if cli_spec.built in ['clone', 'template']:
+                # set instance type for efficient lookup
+                instance_type = (
+                    'template' if cli_spec.built == 'template' else 'vm'
+                )
                 source_id = session.get_vm_by_id_or_name(
-                    cli_spec.machine.source
+                    cli_spec.machine.source, instance_type=instance_type
                 )[0]['moref']
                 data['source'] = source_id
+                # fetch spec
                 source_spec = session.get_vm_spec(source_id)
                 del source_spec['built_from']
                 if source_spec['extra_config']:
