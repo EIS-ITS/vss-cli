@@ -2023,7 +2023,8 @@ class Configuration(VssManager):
                             reasoning_text += reasoning_chunk
                             # Always log reasoning to debug
                             _LOGGING.debug(f"Reasoning: {reasoning_chunk}")
-                            # Display reasoning if flag is true OR debug mode is active
+                            # Display reasoning if flag is true
+                            # OR debug mode is active
                             if self.debug or show_reasoning:
                                 self.smooth_print(reasoning_chunk)
                         elif obj_type == 'message_start':
