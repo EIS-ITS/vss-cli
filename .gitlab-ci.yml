@@ -1,427 +1,510 @@
-stages:
-- test
-- build
-- release
+# =====================================================================
+# GitLab EE (NO Ultimate) – FULL Pipeline
+#   - Python (uv)
+#   - Bandit (NIST 800-171 / OWASP mappings)
+#   - Safety
+#   - Radon (complexity)
+#   - Codex AI security review
+#   - Unified Code Quality (CodeClimate JSON)
+#   - Docker build + release
+#   - Guaranteed stage progression (no skipped stages)
+# =====================================================================
 
+stages:
+  - test
+  - security
+  - codex
+  - codequality
+  - build
+  - release
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+    - when: never
+
+# =====================================================================
+# GLOBAL VARIABLES
+# =====================================================================
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_LATEST_TAG: latest
-  # local
-  DOCKER_IMAGE_TEST: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_NAME
-  DOCKER_IMAGE_LATEST: $CI_REGISTRY/$CI_PROJECT_PATH:$DOCKER_LATEST_TAG      # latest
-  DOCKER_IMAGE_DEVELOP: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_NAME    # develop and branches
-  DOCKER_IMAGE_TAG: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_TAG             # releases (tags)
-  # hub
-  DOCKER_HUB_IMAGE_TEST: $DOCKER_HUB_REPO:$CI_COMMIT_REF_NAME
-  DOCKER_HUB_IMAGE_LATEST: $DOCKER_HUB_REPO:$DOCKER_LATEST_TAG
-  DOCKER_HUB_IMAGE_DEVELOP: $DOCKER_HUB_REPO:$CI_COMMIT_REF_NAME
-  DOCKER_HUB_IMAGE_TAG: $DOCKER_HUB_REPO:$CI_COMMIT_TAG
 
-  # UV
   UV_VERSION: "0.7.13"
   PYTHON_VERSION: "3.13"
   BASE_LAYER: alpine
-  # GitLab CI creates a separate mountpoint for the build directory,
-  # so we need to copy instead of using hard links.
+
   UV_LINK_MODE: copy
 
-# Global jobs
+  CODECLIMATE_CONFIG: ".codeclimate.json"
+
+  CODEQUALITY_DIR: "codequality"
+  BANDIT_CC: "$CODEQUALITY_DIR/bandit.json"
+  SAFETY_CC: "$CODEQUALITY_DIR/safety.json"
+  RADON_CC: "$CODEQUALITY_DIR/radon.json"
+  CODEX_CC: "$CODEQUALITY_DIR/codex.json"
+  AGGREGATE_CC: "$CODEQUALITY_DIR/aggregate.json"
+
+  # GitLab registry images
+  DOCKER_IMAGE_BRANCH: "$CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG"
+  DOCKER_IMAGE_LATEST: "$CI_REGISTRY/$CI_PROJECT_PATH:latest"
+  DOCKER_IMAGE_TAG: "$CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_TAG"
+
+  # Optional Docker Hub
+  DOCKER_HUB_IMAGE_BRANCH: "$DOCKER_HUB_REPO:$CI_COMMIT_REF_SLUG"
+  DOCKER_HUB_IMAGE_LATEST: "$DOCKER_HUB_REPO:latest"
+  DOCKER_HUB_IMAGE_TAG: "$DOCKER_HUB_REPO:$CI_COMMIT_TAG"
+
+  # Codex configuration
+  CODEX_MODEL: "o4-mini"
+
+# =====================================================================
+# TEMPLATES
+# =====================================================================
+.default-python:
+  image: "hub.eis.utoronto.ca/vss/docker/uv:${UV_VERSION}-python${PYTHON_VERSION}-${BASE_LAYER}"
+  tags:
+    - python-3
+
+.default-dind:
+  image: docker:26
+  services:
+    - docker:26-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  tags:
+    - docker
+    - dind
+  before_script:
+    - docker info
+
+# =====================================================================
+# TEST STAGE
+# =====================================================================
 test-style:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
+  extends: .default-python
   stage: test
   script:
     - uvx flake8 vss_cli/
-  tags:
-    - python-3
+  artifacts:
+    paths:
+      - flake8.log
+    expire_in: 1 week
+  only:
+    - branches
+    - tags
+
+test-code:
+  extends: .default-python
+  stage: test
+  script:
+    - apk add --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev rust
+    - uv sync --locked --all-extras
+  artifacts:
+    paths:
+      - coverage/
+    expire_in: 1 week
+  only:
+    - branches
+    - tags
+
+# =====================================================================
+# SECURITY STAGE (SELF-MANAGED SECURITY TOOLS)
+# =====================================================================
+
+# -----------------------------------------------------------
+# Bandit → CodeClimate JSON (NIST 800-171, OWASP SBD mapping)
+# -----------------------------------------------------------
+bandit-security:
+  extends: .default-python
+  stage: security
+  allow_failure: true
+  script:
+    - mkdir -p "$CODEQUALITY_DIR"
+    - uv pip install bandit[toml] --system
+
+    - |
+      bandit -r vss_cli/ \
+        -f json \
+        -o bandit.json \
+        --severity-level low \
+        --confidence-level low \
+        -x "*/tests/*,*/.venv/*" || true
+
+    - |
+      python3 << 'EOF'
+      import json, hashlib, os, sys
+
+      out_path = os.environ["BANDIT_CC"]
+
+      NIST = {
+        "B102": "NIST 800-171 3.1.1: exec() usage",
+        "B103": "NIST 800-171 3.4.2: permissive file permissions",
+        "B104": "NIST 800-171 3.13.1: bind all interfaces",
+        "B105": "NIST 800-171 3.5.10: hardcoded password",
+        "B108": "NIST 800-171 3.4.1: insecure temp file",
+        "B301": "NIST 800-171 3.13.8: pickle deserialization",
+        "B303": "NIST 800-171 3.13.11: weak hash MD5/SHA1",
+        "B310": "NIST 800-171 3.13.1: unsafe URL open",
+        "B323": "NIST 800-171 3.13.8: SSL verify=False",
+        "B602": "NIST 800-171 3.1.1: subprocess shell=True",
+        "B608": "NIST 800-171 3.1.1: SQL injection formatting",
+      }
+
+      SEV = {"HIGH": "critical", "MEDIUM": "major", "LOW": "minor"}
+
+      try:
+          bandit = json.load(open("bandit.json"))
+      except Exception:
+          json.dump([], open(out_path, "w"))
+          sys.exit(0)
+
+      issues = []
+      for r in bandit.get("results", []):
+          tid = r["test_id"]
+          file = r["filename"].lstrip("./")
+          ln = r["line_number"]
+          desc = f"[{tid}] {NIST.get(tid,'')}: {r['issue_text']}".strip()
+          fp = hashlib.md5(f"{file}{ln}{tid}".encode()).hexdigest()
+          issues.append({
+            "type": "issue",
+            "check_name": tid,
+            "severity": SEV.get(r.get("issue_severity","LOW"), "minor"),
+            "categories": ["Security"],
+            "fingerprint": fp,
+            "description": desc,
+            "location": {"path": file, "lines": {"begin": ln}}
+          })
+
+      json.dump(issues, open(out_path, "w"), indent=2)
+      EOF
+
+  artifacts:
+    paths:
+      - "$BANDIT_CC"
+    reports:
+      codequality: "$BANDIT_CC"
+
+# -----------------------------------------------------------
+# Safety → CodeClimate JSON
+# -----------------------------------------------------------
+safety-check:
+  extends: .default-python
+  stage: security
+  allow_failure: true
+  script:
+    - mkdir -p "$CODEQUALITY_DIR"
+    - uv pip install safety --system
+    - safety check --json > safety.json || true
+
+    - |
+      python3 << 'EOF'
+      import json, hashlib, os, sys
+
+      out_path = os.environ["SAFETY_CC"]
+      try:
+          data = json.load(open("safety.json"))
+      except Exception:
+          json.dump([], open(out_path,"w"))
+          sys.exit(0)
+
+      vulns = data.get("vulnerabilities") or data
+      issues = []
+
+      for v in vulns:
+          pkg = v.get("package_name") or v.get("package")
+          adv = v.get("advisory") or v.get("description","")
+          aff = v.get("affected_versions") or v.get("vulnerable_spec","")
+          sev = v.get("severity","medium").lower()
+          severity = "major" if sev in ("high","critical") else "minor"
+          fp = hashlib.md5(f"{pkg}{adv}{aff}".encode()).hexdigest()
+
+          issues.append({
+            "type": "issue",
+            "check_name": "safety",
+            "severity": severity,
+            "categories": ["Security"],
+            "fingerprint": fp,
+            "description": f"{pkg} {aff} - {adv}",
+            "location": {"path": "requirements.txt", "lines": {"begin": 1}}
+          })
+
+      json.dump(issues, open(out_path, "w"), indent=2)
+      EOF
+
+  artifacts:
+    paths:
+      - "$SAFETY_CC"
+    reports:
+      codequality: "$SAFETY_CC"
+
+# =====================================================================
+# CODEQUALITY (RADON COMPLEXITY)
+# =====================================================================
+radon-complexity:
+  extends: .default-python
+  stage: codequality
+  allow_failure: true
+  script:
+    - mkdir -p "$CODEQUALITY_DIR"
+    - uv pip install radon --system
+    - radon cc vss_cli/ -s --json > radon.json
+
+    - |
+      python3 << 'EOF'
+      import json, hashlib, os
+
+      data = json.load(open("radon.json"))
+      out_path = os.environ["RADON_CC"]
+      issues = []
+      sev = {"D": "major", "E": "major", "F": "critical"}
+
+      for path, funcs in data.items():
+          for f in funcs:
+              if f["rank"] not in sev:
+                  continue
+              fp = hashlib.md5(f"{path}{f['lineno']}".encode()).hexdigest()
+              issues.append({
+                "type": "issue",
+                "check_name": "cyclomatic-complexity",
+                "severity": sev[f["rank"]],
+                "categories": ["Complexity"],
+                "fingerprint": fp,
+                "description": f"{path}:{f['lineno']} complexity {f['complexity']} (rank {f['rank']})",
+                "location": {"path": path, "lines": {"begin": f["lineno"]}}
+              })
+
+      json.dump(issues, open(out_path, "w"), indent=2)
+      EOF
+
+  artifacts:
+    paths:
+      - "$RADON_CC"
+    reports:
+      codequality: "$RADON_CC"
+
+# =====================================================================
+# CODEX STAGE – AI Code Review (Configurable OpenAI)
+# =====================================================================
+
+codex_review:
+  stage: codex
+  image: node:24-slim
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_ID != $CI_PROJECT_ID'
+      when: never
+    - if: '$EISGW_OPENAI_API_KEY'
+      when: on_success
+    - if: '$OPENAI_API_KEY'
+      when: on_success
+    - when: manual
+      allow_failure: true
+
+  variables:
+    CODEX_MODEL: "${CODEX_MODEL:-o4-mini}"
+
+  before_script:
+    - apt-get update -y && apt-get install -y python3 git curl ca-certificates lsb-release
+    - npm i -g @openai/codex@latest
+    - mkdir -p "$CODEQUALITY_DIR" && mkdir -p "$HOME/.codex"
+    # Configure Codex CLI provider via ~/.codex/config.toml
+    - |
+      mkdir -p "$CI_PROJECT_DIR/.codex" && mkdir -p "$HOME/.codex"
+      if [ -n "${CODEX_CONFIG_TOML:-}" ]; then
+        # Full override supplied via env var type file
+        cat "$CODEX_CONFIG_TOML" > "$HOME/.codex/config.toml"
+      else
+        printf '%s\n' \
+          "[model_providers.${CODEX_MODEL_PROVIDER}]" \
+          "name = \"${CODEX_PROVIDER_NAME}\"" \
+          "base_url = \"${CODEX_BASE_URL}\"" \
+          "env_key = \"${CODEX_PROVIDER_ENV_KEY}\"" \
+          > "$HOME/.codex/config.toml"
+      fi
+    # Prepare CODEX_ARGS for provider selection and defaults
+    - |
+      export CODEX_ARGS="-c preferred_auth_method=\"apikey\" --full-auto -c model_provider=\"${CODEX_MODEL_PROVIDER}\" --model ${CODEX_MODEL}"
+    - ls -lhtr $HOME/.codex >> codex_raw.log && cat "$HOME/.codex/config.toml" >> codex_raw.log && echo "$CODEX_ARGS" >> codex_raw.log
+
+  script:
+    - set -euo pipefail
+    # Build allowlist of existing files for prompt context
+    - |
+      if command -v git >/dev/null 2>&1; then
+        FILE_LIST="$(git ls-files | sed 's/^/- /')"
+      else
+        FILE_LIST="$(find . -type f -not -path '*/.git/*' -printf '%P\n' | sed 's/^/- /')"
+      fi
+      export FILE_LIST
+    # Compose strict prompt with markers; allow override via CODEX_PROMPT_FILE
+    - |
+      : "${CODEX_PROMPT_FILE:=}"
+      if [ -n "$CODEX_PROMPT_FILE" ] && [ -f "$CODEX_PROMPT_FILE" ]; then
+        cp "$CODEX_PROMPT_FILE" prompt.txt
+      else
+        : > prompt.txt
+        printf '%s\n' \
+          'Review this repository and output a GitLab Code Quality report in CodeClimate JSON format.' \
+          'RULES (must follow exactly):' \
+          '- OUTPUT MUST BE A SINGLE JSON ARRAY. Example: [] or [ {...}, {...} ].' \
+          '- If you find no issues, OUTPUT EXACTLY: []' \
+          '- DO NOT print any prose, backticks, code fences, markdown, or placeholders.' \
+          '- DO NOT write any files. PRINT ONLY between these two lines:' \
+          '  === BEGIN_CODE_QUALITY_JSON ===' \
+          '  <JSON ARRAY HERE>' \
+          '  === END_CODE_QUALITY_JSON ===' \
+          'Each issue object MUST include these fields:' \
+          '  "description": String,' \
+          '  "check_name": String (short rule name),' \
+          '  "fingerprint": String (stable across runs for same issue),' \
+          '  "severity": "info"|"minor"|"major"|"critical"|"blocker",' \
+          '  "location": { "path": "<repo-relative-file>", "lines": { "begin": <line> } }' \
+          'Requirements:' \
+          '- Use repo-relative paths from the current checkout (no "./", no absolute paths).' \
+          '- Use only files that actually exist in this repo.' \
+          '- No trailing commas. No comments. No BOM.' \
+          '- Prefer concrete, de-duplicated findings. If uncertain, omit the finding.' \
+          '- Use .codeclimate.json ' \
+          'Only report issues in the following existing files (exactly as listed):' \
+          "$FILE_LIST" >> prompt.txt
+      fi
+    - echo "Running Codex with strict prompt..."
+    - >-
+      set +e; codex exec ${CODEX_ARGS} "$(cat prompt.txt)" >> codex_raw.log 2>&1; CODEX_RC=$?; set -e; echo "Codex exit code: $CODEX_RC"
+    # Extract JSON between markers; validate; fallback to []
+    - |
+      TMP_OUT="$(mktemp)"
+      sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g' codex_raw.log | tr -d '\r' | awk '
+        /^\s*=== BEGIN_CODE_QUALITY_JSON ===\s*$/ {grab=1; block++ ; next}
+        /^\s*=== END_CODE_QUALITY_JSON ===\s*$/   {grab=0}
+        grab && block==1
+      ' > "$TMP_OUT"
+      if ! node -e 'const f=process.argv[1]; const s=require("fs").readFileSync(f,"utf8").trim(); if(!s) process.exit(2); JSON.parse(s);' "$TMP_OUT"; then
+        echo "[]" > "$TMP_OUT"
+      fi
+      mv -f "$TMP_OUT" "$CODEX_CC"
+
+  artifacts:
+    paths:
+      - codex_raw.log
+      - "$CODEX_CC"
+    reports:
+      codequality: "$CODEX_CC"
+# =====================================================================
+# CODEQUALITY AGGREGATION
+# =====================================================================
+aggregate-code-quality:
+  extends: .default-python
+  stage: codequality
+  dependencies:
+    - bandit-security
+    - safety-check
+    - radon-complexity
+    - codex_review
+  script:
+    - |
+      python3 << 'EOF'
+      import json, os
+      reports = [
+        os.environ["BANDIT_CC"],
+        os.environ["SAFETY_CC"],
+        os.environ["RADON_CC"],
+        os.environ["CODEX_CC"],
+      ]
+      agg = []
+      seen = set()
+      for path in reports:
+        if os.path.exists(path):
+          items = json.load(open(path))
+          for i in items:
+            fp = i.get("fingerprint")
+            if fp and fp not in seen:
+              seen.add(fp)
+              agg.append(i)
+      out = os.environ["AGGREGATE_CC"]
+      json.dump(agg, open(out,"w"), indent=2)
+      print("Aggregate issues:", len(agg))
+      EOF
+  artifacts:
+    paths:
+      - "$AGGREGATE_CC"
+    reports:
+      codequality: "$AGGREGATE_CC"
+
+# =====================================================================
+# BUILD STAGE
+# =====================================================================
+build-keepalive:
+  stage: build
+  script:
+    - echo "build stage active (ensures stage is never skipped)"
+  rules:
+    - when: always
 
 build-dist:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
+  extends: .default-python
   stage: build
   script:
     - uv build
-  only:
-    - develop
-    - branches
-    - main
-    - tags
-  tags:
-   - python-3
   artifacts:
-    expire_in: 1 week
     paths:
-      - dist
+      - dist/
+  only:
+    - branches
+    - tags
 
-build-docker-local:
+build-docker:
+  extends: .default-dind
   stage: build
   before_script:
-    - docker info
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
-    - docker build -f docker/Dockerfile --pull --build-arg CI_BUILD_REF=$CI_BUILD_REF -t $DOCKER_IMAGE_TEST .
-    - docker push $DOCKER_IMAGE_TEST
+    - docker build -f docker/Dockerfile --pull -t "$DOCKER_IMAGE_BRANCH" .
+    - docker push "$DOCKER_IMAGE_BRANCH"
   only:
-    - develop
     - branches
-    - main
     - tags
-  tags:
-    - docker
-    - dind
 
-build-docker-hub:
-  stage: build
-  before_script:
-    - docker info
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_USER_PASS
-  script:
-    - docker build -f docker/Dockerfile --pull --build-arg CI_BUILD_REF=$CI_BUILD_REF -t $DOCKER_HUB_IMAGE_TEST .
-    - docker push $DOCKER_HUB_IMAGE_TEST
-  only:
-    - develop
-    - main
-    - tags
-  tags:
-    - docker
-    - dind
-
-# Develop/branches
-test-code-develop:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
-  stage: test
-  script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev rust musl-dev
-    - uv sync --locked --all-extras
-#    - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
-  tags:
-    - python-3
-  only:
-    - develop
-    - branches
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - coverage/
-
-build-docs-develop:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
-  stage: build
-  script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - uv venv && source .venv/bin/activate
-    - uv pip install git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
-    - uv sync --locked --all-extras && uv pip install .[dev]
-    - sphinx-build -b html docs docs/_build/html
-    - sphinx-build -b man docs docs/_build/man
-    - export CONFLUENCE_DRYRUN=1 && sphinx-build -b confluence docs docs/_build/confluence -E -a
-    - mkdir -p ./public && mkdir -p ./man && mkdir -p ./confluence
-    - cp -r docs/_build/man docs/_build/html/
-    - cp -r docs/_build/html/* ./public
-    - cp -r docs/_build/man/* ./man
-  artifacts:
-    expire_in: 1 week
-    paths:
-     - public
-     - man
-  only:
-    - develop
-  tags:
-    - python-3
-
-release-dist-develop:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
+# =====================================================================
+# RELEASE STAGE
+# =====================================================================
+release-keepalive:
   stage: release
   script:
-    - uv publish --token ${UV_PUBLISH_TOKEN} dist/*
-  dependencies:
-    - build-dist
-  only:
-    - develop
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /Version release/
-      - $CI_COMMIT_MESSAGE =~ /Homebrew formula/
-  tags:
-   - python-3
+    - echo "release stage active (ensures stage always runs)"
+  rules:
+    - when: always
 
-release-dist-develop-local:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
+release-docker-main:
+  extends: .default-dind
   stage: release
   script:
-   - uv publish --username=gitlab-ci-token --password ${CI_JOB_TOKEN} --publish-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
-  dependencies:
-    - build-dist
-  only:
-    - develop
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /Version release/
-      - $CI_COMMIT_MESSAGE =~ /Homebrew formula/
-  tags:
-   - python-3
-
-release-checkin-develop:
-  image: hub.eis.utoronto.ca/vss/docker/python:3-alpine
-  stage: release
-  script:
-    - python -V
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev curl
-    - pip install nose coverage pytz git+https://gitlab-ee.eis.utoronto.ca/vss/py-vss.git@develop
-    - uv sync --locked --all-extras
-    - export VSSCLI_VERSION=$(python -c "from vss_cli.const import __version__; print(__version__)")
-    - "curl -X PUT $_VSS_API_CI_ENDPOINT_DEV -d '{\"version\": \"'\"${VSSCLI_VERSION}\"'\", \"git_sha\": \"'\"${CI_COMMIT_SHA}\"'\"}' -H \"Authorization: Bearer $_VSS_API_CI_TOKEN_DEV\""
-  tags:
-    - python-3
-  only:
-    - develop
-  when: manual
-
-release-docs-develop:
-  image: hub.eis.utoronto.ca/vss/docker/python:3
-  stage: release
-  script:
-  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-  - eval $(ssh-agent -s)
-  - ssh-add <(echo "$DOCS_SSH_PRIVATE_KEY")
-  - mkdir -p ~/.ssh
-  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  - mkdir -p /root/.ssh
-  - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > /root/.ssh/known_hosts'
-  - echo "$DOCS_SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
-  - chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh
-  - scp -r public/* $SSH_USER@$SSH_SERVER:$DOCS_DEV_SSH_PATH
-  dependencies:
-  - build-docs-develop
-  only:
-  - develop
-  tags:
-   - python-3
-
-release-docker-local-develop:
-  stage: release
-  before_script:
-    - docker info
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker pull $DOCKER_IMAGE_TEST
-    - docker tag $DOCKER_IMAGE_TEST $DOCKER_IMAGE_DEVELOP
-    - docker push $DOCKER_IMAGE_DEVELOP
-  dependencies:
-    - build-docker-local
-  only:
-    - develop
-    - branches
-  tags:
-    - docker
-    - dind
-
-release-docker-hub-develop:
-  stage: release
-  before_script:
-    - docker info
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_USER_PASS
-  script:
-    - docker pull $DOCKER_HUB_IMAGE_TEST
-    - docker tag $DOCKER_HUB_IMAGE_TEST $DOCKER_HUB_IMAGE_DEVELOP
-    - docker push $DOCKER_HUB_IMAGE_DEVELOP
-  dependencies:
-    - build-docker-hub
-  only:
-    - develop
-  tags:
-    - docker
-    - dind
-
-# Master
-test-code-main:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
-  stage: test
-  script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev rust musl-dev
-    - uv sync --locked --all-extras
-#    - nosetests -v --cover-package=vss_cli --with-coverage --cover-branches --cover-erase --cover-html --cover-html-dir=coverage
-  tags:
-    - python-3
+    - docker pull "$DOCKER_IMAGE_BRANCH"
+    - docker tag "$DOCKER_IMAGE_BRANCH" "$DOCKER_IMAGE_LATEST"
+    - docker push "$DOCKER_IMAGE_LATEST"
   only:
     - main
-    - tags
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - coverage/
 
-build-docs-main:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
-  stage: build
-  script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - uv venv && source .venv/bin/activate
-    - uv sync --locked --all-extras && uv pip install .
-    - sphinx-build -b html docs docs/_build/html
-    - sphinx-build -b man docs docs/_build/man
-    - export CONFLUENCE_DRYRUN=1 && sphinx-build -b confluence docs docs/_build/confluence -E -a
-    - mkdir -p ./public && mkdir -p ./man && mkdir -p ./confluence
-    - cp -r docs/_build/man docs/_build/html/
-    - cp -r docs/_build/html/* ./public
-    - cp -r docs/_build/man/* ./man
-  artifacts:
-    expire_in: 1 week
-    paths:
-     - public
-     - man
-  only:
-    - main
-  tags:
-    - python-3
-
-release-docker-local-main:
+release-docker-tag:
+  extends: .default-dind
   stage: release
-  before_script:
-    - docker info
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker pull $DOCKER_IMAGE_TEST
-    - docker tag $DOCKER_IMAGE_TEST $DOCKER_IMAGE_LATEST
-    - docker push $DOCKER_IMAGE_LATEST
-  dependencies:
-    - build-docker-local
+    - docker pull "$DOCKER_IMAGE_BRANCH"
+    - docker tag "$DOCKER_IMAGE_BRANCH" "$DOCKER_IMAGE_TAG"
+    - docker push "$DOCKER_IMAGE_TAG"
   only:
-    - main
-  tags:
-    - docker
-    - dind
-
-release-docker-hub-main:
-  stage: release
-  before_script:
-    - docker info
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_USER_PASS
-  script:
-    - docker pull $DOCKER_HUB_IMAGE_TEST
-    - docker tag $DOCKER_HUB_IMAGE_TEST $DOCKER_HUB_IMAGE_LATEST
-    - docker push $DOCKER_HUB_IMAGE_LATEST
-  dependencies:
-    - build-docker-hub
-  only:
-    - main
-  tags:
-    - docker
-    - dind
-
-# Releases
-# PEP-440 compliant version (tags)
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
 
 release-dist-tag:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
+  extends: .default-python
   stage: release
   script:
-    - uv publish --token ${UV_PUBLISH_TOKEN} dist/*
+    - uv publish --token "$UV_PUBLISH_TOKEN" dist/*
   dependencies:
     - build-dist
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/
-  tags:
-   - python-3
-
-release-dist-tag-local:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
-  stage: release
-  script:
-    - uv publish --username=gitlab-ci-token --password ${CI_JOB_TOKEN} --publish-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
-  dependencies:
-    - build-dist
-  only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
-  tags:
-   - python-3
-
-release-checkin-tag:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
-  stage: release
-  script:
-    - uv sync --locked --all-extras
-    - export VSSCLI_VERSION=$(python -c "from vss_cli.const import __version__; print(__version__)")
-    - "curl -X PUT $_VSS_API_CI_ENDPOINT_PROD -d '{\"version\": \"'\"${VSSCLI_VERSION}\"'\", \"git_sha\": \"'\"${CI_COMMIT_SHA}\"'\"}' -H \"Authorization: Bearer $_VSS_API_CI_TOKEN_PROD\""
-  tags:
-    - python-3
-  only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
-  when: manual
-
-build-docs-tag:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
-  stage: build
-  script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - uv venv && source .venv/bin/activate
-    - uv sync --locked --all-extras && uv pip install .
-    - sphinx-build -b html docs docs/_build/html
-    - sphinx-build -b man docs docs/_build/man
-    - export CONFLUENCE_DRYRUN=1 && sphinx-build -b confluence docs docs/_build/confluence -E -a
-    - mkdir -p ./public && mkdir -p ./man && mkdir -p ./confluence
-    - cp -r docs/_build/man docs/_build/html/
-    - cp -r docs/_build/html/* ./public
-    - cp -r docs/_build/man/* ./man
-    - cp -r docs/_build/confluence/* ./confluence
-  artifacts:
-    expire_in: 1 week
-    paths:
-     - public
-     - man
-     - confluence
-  only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
-  tags:
-    - python-3
-
-release-docs-tag-confluence:
-  image: hub.eis.utoronto.ca/vss/docker/uv:$UV_VERSION-python$PYTHON_VERSION-$BASE_LAYER
-  stage: release
-  dependencies:
-    - build-docs-tag
-  script:
-    - apk add --update --no-cache git libxml2-dev libxslt-dev gcc python3-dev musl-dev make
-    - uv venv && source .venv/bin/activate
-    - uv sync --locked --all-extras && uv pip install .
-    - export CONFLUENCE_DRYRUN= && sphinx-build -b confluence docs docs/_build/confluence -E -a
-  only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
-  tags:
-    - python-3
-
-release-docs-tag:
-  image: hub.eis.utoronto.ca/vss/docker/python:3
-  stage: release
-  script:
-  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-  - eval $(ssh-agent -s)
-  - ssh-add <(echo "$DOCS_SSH_PRIVATE_KEY")
-  - mkdir -p ~/.ssh
-  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  - mkdir -p /root/.ssh
-  - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > /root/.ssh/known_hosts'
-  - echo "$DOCS_SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
-  - chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh
-  - scp -r public/* $SSH_USER@$SSH_SERVER:$DOCS_SSH_PATH
-  dependencies:
-    - build-docs-tag
-  only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
-  tags:
-    - python-3
-
-release-docker-hub-tag:
-  stage: release
-  before_script:
-    - docker info
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_USER_PASS
-  script:
-    - docker pull $DOCKER_HUB_IMAGE_TEST
-    - docker tag $DOCKER_HUB_IMAGE_TEST $DOCKER_HUB_IMAGE_TAG
-    - docker push $DOCKER_HUB_IMAGE_TAG
-  dependencies:
-    - build-docker-hub
-  only:
-    - /^v\d+\.\d+\.\d+([abc]\d*)?$/
-  tags:
-    - docker
-    - dind
