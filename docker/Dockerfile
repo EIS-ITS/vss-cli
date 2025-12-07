@@ -1,7 +1,7 @@
 FROM hub.eis.utoronto.ca/vss/docker/uv:0.7.13-python3.13-alpine
 #FROM ghcr.io/astral-sh/uv:0.7.13-python3.13-alpine
 # Defining env vars
-ENV VSSCLI_VERSION="2025.11.0-dev5"
+ENV VSSCLI_VERSION="2025.11.0-dev6"
 ARG CI_BUILD_REF
 # Defininig tags
 LABEL maintainer="Jose Manuel Lopez <jm@eis.utoronto.ca>" \

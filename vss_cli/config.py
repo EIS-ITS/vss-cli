@@ -2070,7 +2070,8 @@ class Configuration(VssManager):
                             )
                         elif obj_type == 'stop':
                             _LOGGING.debug(
-                                f"Stream stopped for index {data['turn_index']}"
+                                f"Stream stopped for index"
+                                f" {data['turn_index']}"
                             )
 
                     # Handle legacy format (backward compatibility)
