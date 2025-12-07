@@ -2005,7 +2005,7 @@ class Configuration(VssManager):
                         continue
 
                     # Handle indexed objects
-                    if 'ind' in data and 'obj' in data:
+                    if 'turn_index' in data and 'obj' in data:
                         obj = data['obj']
                         obj_type = obj.get('type')
 
@@ -2066,11 +2066,11 @@ class Configuration(VssManager):
                         # Handle section end and stop
                         elif obj_type == 'section_end':
                             _LOGGING.debug(
-                                f"Section ended for index {data['ind']}"
+                                f"Section ended for index {data['turn_index']}"
                             )
                         elif obj_type == 'stop':
                             _LOGGING.debug(
-                                f"Stream stopped for index {data['ind']}"
+                                f"Stream stopped for index {data['turn_index']}"
                             )
 
                     # Handle legacy format (backward compatibility)
