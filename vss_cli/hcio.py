@@ -1,3 +1,4 @@
+"""Health checks Io,"""
 import logging
 
 import requests
@@ -11,10 +12,11 @@ _LOGGING = logging.getLogger(__name__)
 
 
 def check_status():
+    """Checks Io,"""
     status = 'unknown'
     icon = EMOJI_UNICODE.get(':question_mark:')
     try:
-        r = requests.get(hc_io_badge)
+        r = requests.get(hc_io_badge, timeout=10)
         _status = r.json()
         status = _status.get('status')
         if status in ['up']:

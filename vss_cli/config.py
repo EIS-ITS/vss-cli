@@ -1898,14 +1898,24 @@ class Configuration(VssManager):
         auth_endpoint = f'{self.gpt_server}/api/generate-key'
         payload = {'client_name': client_name}
 
-        with requests.post(auth_endpoint, json=payload) as response:
-            if response.status_code not in [200, 201]:
-                raise VssCliError(
-                    f'Failed to generate API key. '
-                    f'Status: {response.status_code}'
-                )
-            data = response.json()
-            return data.get('api_key')
+        try:
+            with requests.post(
+                auth_endpoint,
+                json=payload,
+                timeout=self.timeout or const.DEFAULT_TIMEOUT,
+            ) as response:
+                if response.status_code not in [200, 201]:
+                    raise VssCliError(
+                        f'Failed to generate API key. '
+                        f'Status: {response.status_code}'
+                    )
+                data = response.json()
+                return data.get('api_key')
+        except requests.exceptions.Timeout:
+            raise VssCliError(
+                'Request to generate assistant API key timed out. '
+                'The service may be temporarily unavailable.'
+            )
 
     def get_new_chat_id(
         self,
@@ -1916,17 +1926,26 @@ class Configuration(VssManager):
     ) -> Optional[int]:
         """Get the new chat id."""
         payload = {"persona_id": persona_id, "description": description}
-        with requests.post(
-            chat_endpoint, headers=headers, json=payload
-        ) as response:
-            if response.status_code in [401, 403, 500, 502, 503, 504]:
-                raise VssCliError(
-                    'Invalid response from the API. '
-                    'Failed to create chat session.'
-                )
-            rv = response.json()
-            chat_id = rv['chat_session_id']
-            return chat_id
+        try:
+            with requests.post(
+                chat_endpoint,
+                headers=headers,
+                json=payload,
+                timeout=self.timeout or const.DEFAULT_TIMEOUT,
+            ) as response:
+                if response.status_code in [401, 403, 500, 502, 503, 504]:
+                    raise VssCliError(
+                        'Invalid response from the API. '
+                        'Failed to create chat session.'
+                    )
+                rv = response.json()
+                chat_id = rv['chat_session_id']
+                return chat_id
+        except requests.exceptions.Timeout:
+            raise VssCliError(
+                'Request to create chat session timed out. '
+                'The service may be temporarily unavailable.'
+            )
 
     def ask_assistant(
         self,
@@ -1969,6 +1988,8 @@ class Configuration(VssManager):
         }
         _LOGGING.debug(f'User data payload {payload}')
         answer_text = ''
+        # NOTE: No timeout for streaming request - response duration varies
+        # based on AI response complexity
         with requests.post(
             f'{self.gpt_server}/api/chat/send-message',
             json=payload,
@@ -2152,7 +2173,10 @@ class Configuration(VssManager):
 
         try:
             with requests.post(
-                feedback_endpoint, headers=headers, json=payload
+                feedback_endpoint,
+                headers=headers,
+                json=payload,
+                timeout=self.timeout or const.DEFAULT_TIMEOUT,
             ) as response:
                 if response.status_code in [200, 201]:
                     _LOGGING.debug(
@@ -2167,6 +2191,12 @@ class Configuration(VssManager):
                         f'Response: {response.text}'
                     )
                     return False
+        except requests.exceptions.Timeout:
+            _LOGGING.warning(
+                'Request to submit feedback timed out. '
+                'The service may be temporarily unavailable.'
+            )
+            return False
         except Exception as e:
             _LOGGING.error(f'Error submitting feedback: {e}')
             return False
