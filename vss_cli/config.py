@@ -1812,7 +1812,6 @@ class Configuration(VssManager):
             "be around the vss-cli context and "
             "space is limited to a console, so be concise.\n"
         )
-        # chat payload
         payload = {
             "chat_session_id": chat_id,
             "message": '\n\n'.join([pre_message, message]),
@@ -1857,11 +1856,22 @@ class Configuration(VssManager):
                         )
                         continue
 
-                    # Handle indexed objects
-                    if 'turn_index' in data and 'obj' in data:
+                    # Handle blocked/malicious prompt response from proxy
+                    if 'message' in data and len(data) == 1:
+                        blocked_message = data['message']
+                        _LOGGING.debug(
+                            f"Prompt blocked by proxy: {blocked_message}"
+                        )
+                        answer_text = blocked_message
+                        # No assistant message ID for blocked prompts
+                        assistant_message_id = None
+                        continue
+
+                    # Handle indexed objects (new format uses 'placement')
+                    if 'placement' in data and 'obj' in data:
                         obj = data['obj']
                         obj_type = obj.get('type')
-
+                        placement = data['placement']
                         # Handle reasoning streaming
                         if obj_type == 'reasoning_start':
                             _LOGGING.debug("Reasoning started")
@@ -1919,12 +1929,13 @@ class Configuration(VssManager):
                         # Handle section end and stop
                         elif obj_type == 'section_end':
                             _LOGGING.debug(
-                                f"Section ended for index {data['turn_index']}"
+                                f"Section ended for index "
+                                f"{placement.get('turn_index')}"
                             )
                         elif obj_type == 'stop':
                             _LOGGING.debug(
-                                f"Stream stopped for index"
-                                f" {data['turn_index']}"
+                                f"Stream stopped for index "
+                                f"{placement.get('turn_index')}"
                             )
 
                     # Handle legacy format (backward compatibility)
