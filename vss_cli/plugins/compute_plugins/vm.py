@@ -8,6 +8,8 @@ from typing import Optional
 import click
 from click_plugins import with_plugins
 
+from vss_cli.const import DEFAULT_TICKET_URL, RESTORE_MAX_VM_NAME_LENGTH
+
 try:
     import importlib_metadata as ilm
 except ImportError:
@@ -3595,6 +3597,12 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
 @click.option(
     '--reason', type=click.STRING, required=False, help='Restore reason.'
 )
+@click.option(
+    '--force',
+    is_flag=True,
+    default=False,
+    help='Force submission',
+)
 @click.argument(
     'vm_id',
     type=click.STRING,
@@ -3603,13 +3611,32 @@ def compute_vm_set_controller_scsi_rm(ctx: Configuration, bus_number, rm):
 )
 @pass_context
 def compute_vm_restore(
-    ctx: Configuration, vm_id: str, timestamp: str, reason: str = None
+    ctx: Configuration,
+    vm_id: str,
+    timestamp: str,
+    reason: str = None,
+    force: bool = None,
 ):
     """Restore virtual machine from restore point."""
     _LOGGING.debug(f'Attempting to restore {vm_id}')
     _vm = ctx.get_vm_by_id_or_name(vm_id)
     # get moref from reference
     moref = _vm[0]['moref']
+    name = _vm[0]['name']
+    # validate name
+    if len(name) > RESTORE_MAX_VM_NAME_LENGTH:
+        name_msg = (
+            f"Name too long. After adding Restore Suffix, "
+            f"only {RESTORE_MAX_VM_NAME_LENGTH} are available"
+        )
+        if not force:
+            raise click.BadArgumentUsage(name_msg)
+        else:
+            _LOGGING.warning(name_msg)
+            _LOGGING.warning(
+                f'If Restore request fails, '
+                f'please reach out for help {DEFAULT_TICKET_URL}'
+            )
     # get id from reference
     _rp = ctx.get_vm_restore_points_by_id_or_timestamp(moref, timestamp)
     rp_timestamp = _rp[0]['timestamp']

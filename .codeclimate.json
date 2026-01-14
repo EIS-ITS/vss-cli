@@ -1,0 +1,726 @@
+{
+  "version": "2",
+  "checks": {
+    "argument-count": {
+      "enabled": true,
+      "config": {
+        "threshold": 5
+      }
+    },
+    "complex-logic": {
+      "enabled": true,
+      "config": {
+        "threshold": 4
+      }
+    },
+    "file-lines": {
+      "enabled": true,
+      "config": {
+        "threshold": 500
+      }
+    },
+    "method-complexity": {
+      "enabled": true,
+      "config": {
+        "threshold": 10
+      }
+    },
+    "method-count": {
+      "enabled": true,
+      "config": {
+        "threshold": 20
+      }
+    },
+    "method-lines": {
+      "enabled": true,
+      "config": {
+        "threshold": 50
+      }
+    },
+    "nested-control-flow": {
+      "enabled": true,
+      "config": {
+        "threshold": 4
+      }
+    },
+    "return-statements": {
+      "enabled": true,
+      "config": {
+        "threshold": 4
+      }
+    },
+    "similar-code": {
+      "enabled": true,
+      "config": {
+        "threshold": null
+      }
+    },
+    "identical-code": {
+      "enabled": true,
+      "config": {
+        "threshold": null
+      }
+    }
+  },
+  "plugins": {
+    "bandit": {
+      "enabled": true,
+      "config": {
+        "severity": "low",
+        "confidence": "low",
+        "checks": {
+          "B101": {
+            "enabled": true,
+            "description": "OWASP-SBD: Assert used - may be stripped in optimized bytecode",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B102": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Use of exec detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["AC-3", "SI-10"]
+          },
+          "B103": {
+            "enabled": true,
+            "description": "NIST 800-171 3.4.2: Permissive file permissions",
+            "category": "Security",
+            "owasp_category": "A01:2021-Broken Access Control",
+            "nist_controls": ["AC-3", "AC-6"]
+          },
+          "B104": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.1: Binding to all interfaces",
+            "category": "Security",
+            "owasp_category": "A05:2021-Security Misconfiguration",
+            "nist_controls": ["SC-7", "AC-17"]
+          },
+          "B105": {
+            "enabled": true,
+            "description": "NIST 800-171 3.5.10: Hardcoded password string",
+            "category": "Security",
+            "owasp_category": "A07:2021-Identification and Authentication Failures",
+            "nist_controls": ["IA-5", "SC-28"]
+          },
+          "B106": {
+            "enabled": true,
+            "description": "NIST 800-171 3.5.10: Hardcoded password in function argument",
+            "category": "Security",
+            "owasp_category": "A07:2021-Identification and Authentication Failures",
+            "nist_controls": ["IA-5", "SC-28"]
+          },
+          "B107": {
+            "enabled": true,
+            "description": "NIST 800-171 3.5.10: Hardcoded password default",
+            "category": "Security",
+            "owasp_category": "A07:2021-Identification and Authentication Failures",
+            "nist_controls": ["IA-5", "SC-28"]
+          },
+          "B108": {
+            "enabled": true,
+            "description": "NIST 800-171 3.4.1: Insecure temp file usage",
+            "category": "Security",
+            "owasp_category": "A01:2021-Broken Access Control",
+            "nist_controls": ["AC-3", "SC-28"]
+          },
+          "B110": {
+            "enabled": true,
+            "description": "OWASP-SBD: Try/except/pass detected - silent failure",
+            "category": "Security",
+            "owasp_category": "A09:2021-Security Logging and Monitoring Failures",
+            "nist_controls": ["AU-2", "AU-12"]
+          },
+          "B112": {
+            "enabled": true,
+            "description": "OWASP-SBD: Try/except/continue detected",
+            "category": "Security",
+            "owasp_category": "A09:2021-Security Logging and Monitoring Failures",
+            "nist_controls": ["AU-2", "AU-12"]
+          },
+          "B201": {
+            "enabled": true,
+            "description": "NIST 800-171 3.14.1: Flask debug mode enabled",
+            "category": "Security",
+            "owasp_category": "A05:2021-Security Misconfiguration",
+            "nist_controls": ["CM-6", "CM-7"]
+          },
+          "B301": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: Pickle usage detected - deserialization risk",
+            "category": "Security",
+            "owasp_category": "A08:2021-Software and Data Integrity Failures",
+            "nist_controls": ["SI-10", "SC-8"]
+          },
+          "B302": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: Marshal module usage",
+            "category": "Security",
+            "owasp_category": "A08:2021-Software and Data Integrity Failures",
+            "nist_controls": ["SI-10", "SC-8"]
+          },
+          "B303": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.11: Insecure hash function (MD5/SHA1)",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13", "IA-7"]
+          },
+          "B304": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.11: Insecure cipher usage (DES)",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13", "SC-8"]
+          },
+          "B305": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.11: Insecure cipher mode",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13", "SC-8"]
+          },
+          "B306": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: mktemp usage - race condition risk",
+            "category": "Security",
+            "owasp_category": "A01:2021-Broken Access Control",
+            "nist_controls": ["AC-3", "SI-10"]
+          },
+          "B307": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: eval() usage detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10", "AC-3"]
+          },
+          "B308": {
+            "enabled": true,
+            "description": "OWASP-SBD: mark_safe usage detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B310": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.1: URL open with user input",
+            "category": "Security",
+            "owasp_category": "A10:2021-Server-Side Request Forgery",
+            "nist_controls": ["SC-7", "SI-10"]
+          },
+          "B311": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.11: Random not for cryptographic use",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13"]
+          },
+          "B312": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: Telnet-related function usage",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-8", "AC-17"]
+          },
+          "B313": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML parsing vulnerable to attacks",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B314": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML parsing vulnerable to attacks",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B315": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML parsing vulnerable to attacks",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B316": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML parsing vulnerable to attacks",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B317": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML parsing vulnerable to attacks",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B318": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML parsing vulnerable to attacks",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B319": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML parsing vulnerable to attacks",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B320": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML parsing vulnerable to attacks",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B321": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: FTP-related function usage",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-8", "AC-17"]
+          },
+          "B322": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: input() function in Python 2",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B323": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: SSL without certificate verification",
+            "category": "Security",
+            "owasp_category": "A07:2021-Identification and Authentication Failures",
+            "nist_controls": ["SC-8", "SC-23", "IA-5"]
+          },
+          "B324": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.11: Insecure hash function usage",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13"]
+          },
+          "B401": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: Telnetlib import detected",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-8", "AC-17"]
+          },
+          "B402": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: FTPlib import detected",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-8", "AC-17"]
+          },
+          "B403": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: Pickle import detected",
+            "category": "Security",
+            "owasp_category": "A08:2021-Software and Data Integrity Failures",
+            "nist_controls": ["SI-10"]
+          },
+          "B404": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Subprocess module import",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10", "AC-3"]
+          },
+          "B405": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML.etree import detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B406": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML.sax import detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B407": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML.expat import detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B408": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML.minidom import detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B409": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: XML.pulldom import detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B410": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: lxml import detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B411": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: xmlrpc import detected",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B412": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: httpoxy import detected",
+            "category": "Security",
+            "owasp_category": "A05:2021-Security Misconfiguration",
+            "nist_controls": ["SC-7"]
+          },
+          "B413": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.11: pycrypto import detected (deprecated)",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13"]
+          },
+          "B415": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.11: pyghmi import detected",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13"]
+          },
+          "B501": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: Request with verify=False",
+            "category": "Security",
+            "owasp_category": "A07:2021-Identification and Authentication Failures",
+            "nist_controls": ["SC-8", "SC-23"]
+          },
+          "B502": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: SSL with bad version",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-8", "SC-13"]
+          },
+          "B503": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: SSL with bad defaults",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-8", "SC-13"]
+          },
+          "B504": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: SSL without version check",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-8", "SC-13"]
+          },
+          "B505": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.11: Weak cryptographic key",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13", "IA-7"]
+          },
+          "B506": {
+            "enabled": true,
+            "description": "OWASP-SBD: YAML load usage detected",
+            "category": "Security",
+            "owasp_category": "A08:2021-Software and Data Integrity Failures",
+            "nist_controls": ["SI-10"]
+          },
+          "B507": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: SSH with missing host key verification",
+            "category": "Security",
+            "owasp_category": "A07:2021-Identification and Authentication Failures",
+            "nist_controls": ["SC-8", "IA-5"]
+          },
+          "B508": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: Snmp insecure version",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-8"]
+          },
+          "B509": {
+            "enabled": true,
+            "description": "NIST 800-171 3.13.8: Snmp weak cryptography",
+            "category": "Security",
+            "owasp_category": "A02:2021-Cryptographic Failures",
+            "nist_controls": ["SC-13"]
+          },
+          "B601": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Paramiko call with policy set to auto-add",
+            "category": "Security",
+            "owasp_category": "A07:2021-Identification and Authentication Failures",
+            "nist_controls": ["IA-5", "SC-8"]
+          },
+          "B602": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Subprocess popen with shell=True",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10", "AC-3"]
+          },
+          "B603": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Subprocess without shell equals true",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B604": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Any other function with shell=True",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10", "AC-3"]
+          },
+          "B605": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Start process with shell",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10", "AC-3"]
+          },
+          "B606": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Start process with no shell",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B607": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Start process with partial path",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10", "CM-6"]
+          },
+          "B608": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: SQL injection via string formatting",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B609": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Wildcard injection",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B610": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Django extra used",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B611": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Django RawSQL used",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B612": {
+            "enabled": true,
+            "description": "NIST 800-171 3.1.1: Logging config insecure listen",
+            "category": "Security",
+            "owasp_category": "A09:2021-Security Logging and Monitoring Failures",
+            "nist_controls": ["AU-9", "SC-7"]
+          },
+          "B701": {
+            "enabled": true,
+            "description": "OWASP-SBD: Jinja2 autoescape false",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B702": {
+            "enabled": true,
+            "description": "OWASP-SBD: Mako templates used",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          },
+          "B703": {
+            "enabled": true,
+            "description": "OWASP-SBD: Django mark_safe used",
+            "category": "Security",
+            "owasp_category": "A03:2021-Injection",
+            "nist_controls": ["SI-10"]
+          }
+        }
+      }
+    },
+    "radon": {
+      "enabled": true,
+      "config": {
+        "threshold": "C"
+      }
+    },
+    "pylint": {
+      "enabled": true,
+      "channel": "pylint",
+      "config": {
+        "disable": [
+          "C0114",
+          "C0115",
+          "C0116"
+        ]
+      }
+    },
+    "pep8": {
+      "enabled": true,
+      "config": {
+        "max_line_length": 120
+      }
+    },
+    "duplication": {
+      "enabled": true,
+      "config": {
+        "languages": {
+          "python": {
+            "mass_threshold": 40,
+            "count_threshold": 2
+          }
+        }
+      }
+    },
+    "fixme": {
+      "enabled": true,
+      "config": {
+        "strings": [
+          "FIXME",
+          "TODO",
+          "HACK",
+          "XXX",
+          "BUG",
+          "SECURITY"
+        ]
+      }
+    }
+  },
+  "exclude_patterns": [
+    ".git/",
+    ".tox/",
+    ".eggs/",
+    "*.egg-info/",
+    "build/",
+    "dist/",
+    "venv/",
+    ".venv/",
+    "__pycache__/",
+    "*.pyc",
+    "docs/",
+    "tests/fixtures/",
+    "node_modules/",
+    ".mypy_cache/",
+    ".pytest_cache/",
+    "htmlcov/",
+    "*.min.js"
+  ],
+  "custom_security_rules": {
+    "_comment": "Custom rules mapping to NIST 800-171 and OWASP Secure by Design",
+    "nist_800_171_mapping": {
+      "3.1.1": {
+        "name": "Access Control - Authorized Access",
+        "description": "Limit system access to authorized users",
+        "checks": ["B102", "B307", "B602", "B603", "B604", "B605", "B606", "B607", "B608", "B609"]
+      },
+      "3.1.2": {
+        "name": "Access Control - Transaction Types",
+        "description": "Limit system access to types of transactions and functions",
+        "checks": ["B103", "B108"]
+      },
+      "3.4.1": {
+        "name": "Configuration Management - Baseline",
+        "description": "Establish and maintain baseline configurations",
+        "checks": ["B108", "B201"]
+      },
+      "3.4.2": {
+        "name": "Configuration Management - Security Settings",
+        "description": "Establish and enforce security configuration settings",
+        "checks": ["B103", "B104"]
+      },
+      "3.5.10": {
+        "name": "Identification and Authentication - Password Storage",
+        "description": "Store and transmit only cryptographically-protected passwords",
+        "checks": ["B105", "B106", "B107"]
+      },
+      "3.13.1": {
+        "name": "System and Communications - Boundary Protection",
+        "description": "Monitor, control, and protect communications at boundaries",
+        "checks": ["B104", "B310"]
+      },
+      "3.13.8": {
+        "name": "System and Communications - Cryptographic Protection",
+        "description": "Implement cryptographic mechanisms to prevent unauthorized disclosure",
+        "checks": ["B301", "B302", "B306", "B312", "B321", "B323", "B401", "B402", "B501", "B502", "B503", "B504", "B507", "B508", "B509"]
+      },
+      "3.13.11": {
+        "name": "System and Communications - FIPS Cryptography",
+        "description": "Employ FIPS-validated cryptography",
+        "checks": ["B303", "B304", "B305", "B311", "B324", "B413", "B415", "B505"]
+      },
+      "3.14.1": {
+        "name": "System and Information Integrity - Flaw Remediation",
+        "description": "Identify, report, and correct system flaws",
+        "checks": ["B201"]
+      }
+    },
+    "owasp_secure_by_design_mapping": {
+      "input_validation": {
+        "description": "Validate all inputs at trust boundaries",
+        "checks": ["B307", "B310", "B313", "B314", "B315", "B316", "B317", "B318", "B319", "B320", "B506", "B608"]
+      },
+      "output_encoding": {
+        "description": "Encode outputs to prevent injection",
+        "checks": ["B308", "B701", "B702", "B703"]
+      },
+      "authentication_integrity": {
+        "description": "Ensure strong authentication mechanisms",
+        "checks": ["B105", "B106", "B107", "B323", "B507", "B601"]
+      },
+      "cryptography": {
+        "description": "Use strong, modern cryptographic algorithms",
+        "checks": ["B303", "B304", "B305", "B311", "B413", "B502", "B503", "B504", "B505"]
+      },
+      "error_handling": {
+        "description": "Handle errors securely without information leakage",
+        "checks": ["B101", "B110", "B112"]
+      },
+      "logging_monitoring": {
+        "description": "Implement comprehensive security logging",
+        "checks": ["B612"]
+      },
+      "secure_defaults": {
+        "description": "Configure secure defaults for all components",
+        "checks": ["B201", "B506"]
+      }
+    }
+  }
+}

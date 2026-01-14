@@ -1,0 +1,17 @@
+task_groups:
+  - name: Create OVF Helper Module Foundation
+    claude_code_subagent: implementer
+  - name: File Extraction Function
+    claude_code_subagent: implementer
+  - name: Strings and References Parsers
+    claude_code_subagent: implementer
+  - name: Disk and Network Section Parsers
+    claude_code_subagent: implementer
+  - name: Deployment Options Parser
+    claude_code_subagent: implementer
+  - name: Virtual System Parser
+    claude_code_subagent: implementer
+  - name: Main Orchestrator and API Integration
+    claude_code_subagent: implementer
+  - name: Final Validation
+    claude_code_subagent: implementer

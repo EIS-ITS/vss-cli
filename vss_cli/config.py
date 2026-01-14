@@ -30,6 +30,7 @@ from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
     bytes_to_str, debug_requests_on, format_output, get_hostname_from_url)
+from vss_cli.ovf_helper import parse_ovf
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import (
@@ -37,6 +38,7 @@ from vss_cli.validators import (
     validate_uuid, validate_vm_moref)
 
 _LOGGING = logging.getLogger(__name__)
+ej_ai = EMOJI_UNICODE.get(':robot_face:')
 
 
 class Configuration(VssManager):
@@ -309,9 +311,7 @@ class Configuration(VssManager):
                             f'backend for: {endpoint_name}'
                         )
             except Exception as e:
-                _LOGGING.debug(
-                    f'Could not load credentials from backend: {e}'
-                )
+                _LOGGING.debug(f'Could not load credentials from backend: {e}')
 
             # Fallback to legacy base64 auth
             auth = config_endpoint[0].auth
@@ -1521,176 +1521,7 @@ class Configuration(VssManager):
     @staticmethod
     def parse_ova_or_ovf(file_path: Union[Path, str]) -> Dict:
         """Parse ova or ovf."""
-        file = Path(file_path)
-        ovf_str = ''
-        if file.suffix.lower() == '.ovf':
-            ovf_str = file.read_text()
-        elif file.suffix.lower() in ['.ova', '.zip', '.tar']:
-            import tarfile
-
-            tar = tarfile.open(str(file))
-            ovf_member = list(
-                filter(lambda x: '.ovf' in x.name.lower(), tar.getmembers())
-            )
-            if ovf_member:
-                f = tar.extractfile(ovf_member[0])
-                ovf_str = f.read()
-                tar.close()
-        else:
-            raise VssCliError('Invalid OVA/OVF format.')
-        # proceed to parsing
-        import xmltodict
-
-        xpars = xmltodict.parse(ovf_str)
-        data = json.dumps(xpars)
-        data_dict = json.loads(data)
-        _LOGGING.debug(f'Parsed OVF and found keys: {data_dict.keys()}')
-        if 'Envelope' not in data_dict and 'ovf:Envelope' not in data_dict:
-            raise VssCliError('Invalid OVF format: missing ovf:Envelope')
-        ovf_dict = data_dict.get('Envelope') or data_dict.get('ovf:Envelope')
-        output = {}
-        # process first Strings or ovf:Strings for reference
-        ovf_strings = {}
-        has_strings = ovf_dict.get('Strings') or ovf_dict.get('ovf:Strings')
-        if has_strings:
-            msgs = has_strings.get('Msg', [])
-            for msg in msgs:
-                _key = msg.get('@ovf:msgid')
-                _val = msg.get('#text')
-                ovf_strings[_key] = _val
-        for key, value in ovf_dict.items():
-            # ovf:References
-            if key in ['References', 'ovf:References']:
-                files_ref = value.get('File') or value.get('ovf:File', [])
-                if isinstance(files_ref, dict):
-                    files_ref = [files_ref]
-                files = [
-                    {
-                        'href': x['@ovf:href'],
-                        'id': x['@ovf:id'],
-                        'size': x['@ovf:size'],
-                    }
-                    for x in files_ref
-                ]
-                output['Files'] = files
-            # ovf:DiskSection
-            elif key in ['DiskSection', 'ovf:DiskSection']:
-                disks_ref = value.get('Disk') or value.get('ovf:Disk', [])
-                _LOGGING.debug(
-                    f'Found Disks: {disks_ref}: type: {type(disks_ref)}'
-                )
-                if isinstance(disks_ref, dict):
-                    disks_ref = [disks_ref]
-                disks = [
-                    {
-                        'capacity': x['@ovf:capacity'],
-                        'capacityAllocationUnits': x[
-                            '@ovf:capacityAllocationUnits'
-                        ],
-                        'diskId': x['@ovf:diskId'],
-                        'fileRef': x.get('@ovf:fileRef'),
-                    }
-                    for x in disks_ref
-                ]
-                output['Disks'] = disks
-            # ovf:NetworkSection
-            elif key in ['NetworkSection', 'ovf:NetworkSection']:
-                nets = value.get('Network') or value.get('ovf:Network', [])
-                _LOGGING.debug(f'Found Networks: {nets}: type: {type(nets)}')
-                if isinstance(nets, dict):
-                    nets = [nets]
-                networks = [
-                    {
-                        'name': x['@ovf:name'],
-                        'description': x.get('Description')
-                        or x.get('ovf:Description'),
-                    }
-                    for x in nets
-                ]
-                output['Networks'] = networks
-            # ovf:DeploymentOptionSection
-            elif key in [
-                'DeploymentOptionSection',
-                'ovf:DeploymentOptionSection',
-            ]:
-                raw_dparams = value.get('Configuration') or value.get(
-                    'ovf:Configuration', []
-                )
-                dparams = []
-                for x in raw_dparams:
-                    _desc = x.get('Description') or x.get('ovf:Description')
-                    _label = x.get('Label') or x.get('ovf:Label')
-                    label = ''
-                    description = _desc
-                    if isinstance(_desc, dict):
-                        if '@ovf:msgid' in _desc or 'msgid' in _desc:
-                            description = ovf_strings.get(
-                                _desc.get('@ovf:msgid') or _desc.get('msgid')
-                            )
-                    if isinstance(_label, dict):
-                        if '@ovf:msgid' in _desc or 'msgid' in _label:
-                            label = ovf_strings.get(
-                                _label.get('@ovf:msgid') or _label.get('msgid')
-                            )
-                    obj = {
-                        'id': x['@ovf:id'],
-                        'description': description,
-                        'label': label,
-                    }
-                    dparams.append(obj)
-
-                output['DeploymentOptionParams'] = dparams
-            # ovf:VirtualSystem
-            elif key in ['VirtualSystem', 'ovf:VirtualSystem']:
-                output['Name'] = value.get('ovf:Name') or value.get('Name')
-                if 'ovf:ProductSection' in value or 'ProductSection' in value:
-                    prod_sect = value.get('ProductSection') or value.get(
-                        'ovf:ProductSection'
-                    )
-                    prod_props = []
-                    if isinstance(prod_sect, list):
-                        for item in prod_sect:
-                            if 'Product' in item:
-                                output['Product'] = item.get('Product')
-                            if 'Vendor' in item:
-                                output['Vendor'] = item.get('Vendor')
-                            if 'Property' in item:
-                                prod_props.extend(item.get('Property', []))
-                    elif isinstance(prod_sect, dict):
-                        output['Product'] = prod_sect.get(
-                            'Product'
-                        ) or prod_sect.get('ovf:FullVersion')
-                        output['Version'] = prod_sect.get(
-                            'Version'
-                        ) or prod_sect.get('ovf:Version')
-                    if (
-                        'Property' in prod_sect
-                        or 'ovf:Property' in prod_sect
-                        or prod_props
-                    ):
-                        pparams = []
-                        properties = (
-                            prod_props
-                            or prod_sect.get('Property')
-                            or prod_sect.get('ovf:Property', [])
-                        )
-                        for prop in properties:
-                            if (
-                                prop.get('@ovf:userConfigurable', None)
-                                == 'true'
-                            ):
-                                prop = {
-                                    'key': prop['@ovf:key'],
-                                    'type': prop['@ovf:type'],
-                                    'description': prop.get('Description')
-                                    or prop.get('ovf:Description')
-                                    or prop.get('Label')
-                                    or prop.get('ovf:Label'),
-                                    'default': prop.get('@ovf:value'),
-                                }
-                                pparams.append(prop)
-                        output['PropertyParams'] = pparams
-        return output
+        return parse_ovf(file_path)
 
     def yaml(self) -> YAML:
         """Create default yaml parser."""
@@ -1899,14 +1730,24 @@ class Configuration(VssManager):
         auth_endpoint = f'{self.gpt_server}/api/generate-key'
         payload = {'client_name': client_name}
 
-        with requests.post(auth_endpoint, json=payload) as response:
-            if response.status_code not in [200, 201]:
-                raise VssCliError(
-                    f'Failed to generate API key. '
-                    f'Status: {response.status_code}'
-                )
-            data = response.json()
-            return data.get('api_key')
+        try:
+            with requests.post(
+                auth_endpoint,
+                json=payload,
+                timeout=self.timeout or const.DEFAULT_TIMEOUT,
+            ) as response:
+                if response.status_code not in [200, 201]:
+                    raise VssCliError(
+                        f'Failed to generate API key. '
+                        f'Status: {response.status_code}'
+                    )
+                data = response.json()
+                return data.get('api_key')
+        except requests.exceptions.Timeout:
+            raise VssCliError(
+                'Request to generate assistant API key timed out. '
+                'The service may be temporarily unavailable.'
+            )
 
     def get_new_chat_id(
         self,
@@ -1917,27 +1758,40 @@ class Configuration(VssManager):
     ) -> Optional[int]:
         """Get the new chat id."""
         payload = {"persona_id": persona_id, "description": description}
-        with requests.post(
-            chat_endpoint, headers=headers, json=payload
-        ) as response:
-            if response.status_code in [401, 403, 500, 502, 503, 504]:
-                raise VssCliError(
-                    'Invalid response from the API. '
-                    'Failed to create chat session.'
-                )
-            rv = response.json()
-            chat_id = rv['chat_session_id']
-            return chat_id
+        try:
+            with requests.post(
+                chat_endpoint,
+                headers=headers,
+                json=payload,
+                timeout=self.timeout or const.DEFAULT_TIMEOUT,
+            ) as response:
+                if response.status_code in [401, 403, 500, 502, 503, 504]:
+                    raise VssCliError(
+                        'Invalid response from the API. '
+                        'Failed to create chat session.'
+                    )
+                rv = response.json()
+                chat_id = rv['chat_session_id']
+                return chat_id
+        except requests.exceptions.Timeout:
+            raise VssCliError(
+                'Request to create chat session timed out. '
+                'The service may be temporarily unavailable.'
+            )
 
     def ask_assistant(
         self,
         message: str,
         spinner_cls: Optional[Spinner] = None,
         final_message: str = None,
+        show_reasoning: bool = False,
     ) -> Tuple[str, str]:
         """Ask assistant."""
         # Generate a new API key for this session
         api_key = self._generate_assistant_api_key()
+
+        # Initialize spinner for reasoning indicator
+        reasoning_spinner = None
 
         headers = {
             'api-key': f'{api_key}',
@@ -1951,14 +1805,22 @@ class Configuration(VssManager):
             description=message[:20],
             headers=headers,
         )
-        # chat payload
+        # inject additional context to tell the assistant the user is
+        # on the vss-cli
+        pre_message = (
+            "Notes: User is asking through the vss-cli, thus responses must "
+            "be around the vss-cli context and "
+            "space is limited to a console, so be concise.\n"
+        )
         payload = {
             "chat_session_id": chat_id,
-            "message": message,
+            "message": '\n\n'.join([pre_message, message]),
             "parent_message_id": None,
         }
         _LOGGING.debug(f'User data payload {payload}')
         answer_text = ''
+        # NOTE: No timeout for streaming request - response duration varies
+        # based on AI response complexity
         with requests.post(
             f'{self.gpt_server}/api/chat/send-message',
             json=payload,
@@ -1994,25 +1856,47 @@ class Configuration(VssManager):
                         )
                         continue
 
-                    # Handle indexed objects
-                    if 'ind' in data and 'obj' in data:
+                    # Handle blocked/malicious prompt response from proxy
+                    if 'message' in data and len(data) == 1:
+                        blocked_message = data['message']
+                        _LOGGING.debug(
+                            f"Prompt blocked by proxy: {blocked_message}"
+                        )
+                        answer_text = blocked_message
+                        # No assistant message ID for blocked prompts
+                        assistant_message_id = None
+                        continue
+
+                    # Handle indexed objects (new format uses 'placement')
+                    if 'placement' in data and 'obj' in data:
                         obj = data['obj']
                         obj_type = obj.get('type')
-
+                        placement = data['placement']
                         # Handle reasoning streaming
                         if obj_type == 'reasoning_start':
                             _LOGGING.debug("Reasoning started")
+                            # Start spinner if reasoning is hidden
+                            if not show_reasoning and not self.debug:
+                                reasoning_spinner = Spinner(
+                                    f"{ej_ai} Thinking..."
+                                )
+                                reasoning_spinner.start()
                         elif obj_type == 'reasoning_delta':
                             reasoning_chunk = obj.get('reasoning', '')
                             reasoning_text += reasoning_chunk
-                            # Optionally display reasoning to user
-                            # (you might want to hide this)
-                            self.smooth_print(reasoning_chunk)
-
-                        # Handle message content streaming
+                            # Always log reasoning to debug
+                            _LOGGING.debug(f"Reasoning: {reasoning_chunk}")
+                            # Display reasoning if flag is true
+                            # OR debug mode is active
+                            if self.debug or show_reasoning:
+                                self.smooth_print(reasoning_chunk)
                         elif obj_type == 'message_start':
                             if 'final_documents' in obj:
                                 final_documents = obj['final_documents']
+                            # Stop reasoning spinner if it exists
+                            if reasoning_spinner:
+                                reasoning_spinner.stop()
+                                reasoning_spinner = None
                             _LOGGING.debug("Message started")
                         elif obj_type == 'message_delta':
                             content_chunk = obj.get('content', '')
@@ -2045,11 +1929,13 @@ class Configuration(VssManager):
                         # Handle section end and stop
                         elif obj_type == 'section_end':
                             _LOGGING.debug(
-                                f"Section ended for index {data['ind']}"
+                                f"Section ended for index "
+                                f"{placement.get('turn_index')}"
                             )
                         elif obj_type == 'stop':
                             _LOGGING.debug(
-                                f"Stream stopped for index {data['ind']}"
+                                f"Stream stopped for index "
+                                f"{placement.get('turn_index')}"
                             )
 
                     # Handle legacy format (backward compatibility)
@@ -2130,7 +2016,10 @@ class Configuration(VssManager):
 
         try:
             with requests.post(
-                feedback_endpoint, headers=headers, json=payload
+                feedback_endpoint,
+                headers=headers,
+                json=payload,
+                timeout=self.timeout or const.DEFAULT_TIMEOUT,
             ) as response:
                 if response.status_code in [200, 201]:
                     _LOGGING.debug(
@@ -2145,6 +2034,12 @@ class Configuration(VssManager):
                         f'Response: {response.text}'
                     )
                     return False
+        except requests.exceptions.Timeout:
+            _LOGGING.warning(
+                'Request to submit feedback timed out. '
+                'The service may be temporarily unavailable.'
+            )
+            return False
         except Exception as e:
             _LOGGING.error(f'Error submitting feedback: {e}')
             return False
