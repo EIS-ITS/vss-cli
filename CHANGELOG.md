@@ -1,5 +1,26 @@
 # Changelog 📝
 
+## [2026.1.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2026.1.0) (2026-01-14)
+
+**Bug Fixes:**
+
+- [#802](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/802): ``compute mk from-file``: fix errors when selecting template.
+- [#805](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/805): ``ci``: fix missing docs jobs in pipeline
+- [#806](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/806): ``core``: fix call to requests without timeout
+- [#807](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/807): ``ovf``: Fix SAST Config Complexity - OVF Parser Refactoring
+
+**Improvements:**
+
+- [#797](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/797): ``assist``: optional show thought process
+- [#798](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/798): ``core``: fix core security warning
+- [#799](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/799):  ``assist``: set propper context when calling the agent
+- [#800](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/800): ``compute vm res``: to restore validate name length less than 70 chars without prefix
+- [#801](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/801): ``core``: Windows Credential Locker Support
+- [#803](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/803): ``security``: CodeClimate Security Scanning with NIST 800-171/OWASP Compliance
+- [#804](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/804): ``assist``: implement new turn_index attribute in response
+- [#808](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/808): ``assist``: Chat Endpoint Migration
+
+
 ## [2025.10.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.10.0) (2025-11-05)
 
 **Bug Fixes:**
