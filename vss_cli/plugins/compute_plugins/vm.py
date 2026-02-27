@@ -4289,7 +4289,7 @@ def compute_vm_mk_template(
 ):
     """Deploy virtual machine from template."""
     # get source from uuid or name
-    _vm = ctx.get_vm_by_id_or_name(source)
+    _vm = ctx.get_vm_by_id_or_name(source, instance_type='template')
     vm_id = _vm[0]['moref']
     # payload
     payload = dict(
