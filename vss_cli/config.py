@@ -1151,8 +1151,8 @@ class Configuration(VssManager):
             # is not a valid hex code for a UUID.
             # get vm by name
             g_vms = lookup_f(per_page=3000)
-            vm_id = vm_id.lower()
-            v = list(filter(lambda i: vm_id in i['name'].lower(), g_vms))
+            vm_id_lower = vm_id.lower()
+            v = list(filter(lambda i: vm_id_lower in i['name'].lower(), g_vms))
             if not v:
                 if not v:
                     raise click.BadParameter(f'{vm_id} could not be found')
