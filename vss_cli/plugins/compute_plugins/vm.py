@@ -3932,6 +3932,7 @@ def compute_vm_from_file(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -3964,6 +3965,7 @@ def compute_vm_mk_spec(
     vss_service,
     instances,
     firmware,
+    gpu_profile,
     storage_type,
     retire_type,
     retire_warning,
@@ -4008,6 +4010,12 @@ def compute_vm_mk_spec(
     if iso:
         _iso = ctx.get_iso_by_name_or_path(iso)
         payload['iso'] = _iso[0]['path']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4096,6 +4104,7 @@ def compute_vm_mk_spec(
 @c_so.storage_type_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -4128,6 +4137,7 @@ def compute_vm_mk_shell(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     retire_type,
     retire_warning,
@@ -4165,6 +4175,12 @@ def compute_vm_mk_shell(
     if iso:
         _iso = ctx.get_iso_by_name_or_path(iso)
         payload['iso'] = _iso[0]['path']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4248,6 +4264,7 @@ def compute_vm_mk_shell(
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -4281,6 +4298,7 @@ def compute_vm_mk_template(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     instances,
     retire_type,
@@ -4319,6 +4337,12 @@ def compute_vm_mk_template(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guest_id']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4403,6 +4427,7 @@ def compute_vm_mk_template(
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.snapshot
 @c_so.retire_type
@@ -4438,6 +4463,7 @@ def compute_vm_mk_clone(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     snapshot,
     retire_type,
@@ -4480,6 +4506,12 @@ def compute_vm_mk_clone(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guest_id']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4571,6 +4603,7 @@ def compute_vm_mk_clone(
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -4605,6 +4638,7 @@ def compute_vm_mk_image(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     retire_type,
     retire_warning,
@@ -4642,6 +4676,12 @@ def compute_vm_mk_image(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guest_id']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4735,6 +4775,7 @@ def compute_vm_mk_image(
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -4774,6 +4815,7 @@ def compute_vm_mk_clib(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     retire_type,
     retire_warning,
@@ -4809,6 +4851,12 @@ def compute_vm_mk_clib(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guest_id']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
