@@ -330,6 +330,14 @@ gpu_profile_opt = click.option(
     shell_complete=autocompletion.vm_gpu_profiles,
     required=True,
 )
+gpu_profile_mk_opt = click.option(
+    '--gpu-profile',
+    type=click.STRING,
+    help='GPU profile to add to VM.',
+    multiple=True,
+    required=False,
+    shell_complete=autocompletion.vm_gpu_profiles,
+)
 firmware_nr_opt = click.option(
     '--firmware',
     '-w',

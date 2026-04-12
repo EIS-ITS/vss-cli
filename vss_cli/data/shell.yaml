@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec shell VM 2026.1.0             #
+#     VSS-CLI Spec shell VM 2026.4.0-dev0             #
 ####################################################
 built: os_install         # Required: Do not remove.
 machine:
@@ -26,6 +26,8 @@ machine:
 #  template: false        # Optional: Mark resulting vm as template.
 #  tpm: true              # Optional: Enable vTrusted Platform Module Device.
 #  vbs: true              # Optional: Enable Virtualization Based Security.
+#  gpus:                   # Optional: GPU profiles to attach to VM.
+#    - nvidia_l4-24c
 # VM extra configuration (Uncomment to enable)
 # extra_config:
 #  - disk.EnableUUID="TRUE"

@@ -254,6 +254,9 @@ class VmMachine:
     item: Optional[str] = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
+    gpus: Optional[List[str]] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
 
 
 @dataclass_json
@@ -669,6 +672,9 @@ class VmApiSpec:
     additional_parameters: Optional[Dict] = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
+    gpus: Optional[List[str]] = field(
+        default=None, metadata=dc_config(exclude=lambda x: x is None)
+    )
 
     @classmethod
     def from_cli_spec(cls, cli_spec: VmCliSpec, session=None):
@@ -817,4 +823,10 @@ class VmApiSpec:
             data['notes'] = cli_spec.metadata.notes
         if cli_spec.additional_parameters:
             data['additional_parameters'] = cli_spec.additional_parameters
+        if cli_spec.machine.gpus:
+            _gpus = []
+            for gp in cli_spec.machine.gpus:
+                _resolved = session.get_vm_gpu_profiles_by_name_or_desc(gp)
+                _gpus.append(_resolved[0]['type'])
+            data['gpus'] = _gpus
         return cls.from_dict(data)
