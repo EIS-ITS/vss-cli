@@ -1,7 +1,8 @@
 """Account Management plugin for VSS CLI (vss-cli)."""
+
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Tuple
 
 import click
@@ -19,7 +20,7 @@ ej_mail = EMOJI_UNICODE.get(':closed_mailbox_with_raised_flag:')
 _LOGGING = logging.getLogger(__name__)
 
 
-def get_endpoint_and_creds(ctx: Configuration) -> Tuple[str, str, str]:
+def get_endpoint_and_creds(ctx: Configuration) -> tuple[str, str, str]:
     """Get endpoint credentials."""
     endpoint = ctx.endpoint or click.prompt(
         'Endpoint',
@@ -374,7 +375,10 @@ def mfa_verify(ctx: Configuration, otp):
     """Verify existing MFA setup."""
     endpoint, username, password = get_endpoint_and_creds(ctx)
     totp = otp or click.prompt(
-        'TOTP Code', hide_input=False, type=click.STRING, err=True,
+        'TOTP Code',
+        hide_input=False,
+        type=click.STRING,
+        err=True,
     )
 
     try:
@@ -438,7 +442,10 @@ def mfa_mk(ctx: Configuration, method: str, phone: str):
                 nl=True,
             )
             ctx.secho(
-                f'{key}\n', file=sys.stderr, fg='blue', nl=True,
+                f'{key}\n',
+                file=sys.stderr,
+                fg='blue',
+                nl=True,
             )
     # print recovery codes.
     if recovery_codes is not None:

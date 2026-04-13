@@ -1,4 +1,5 @@
 """Tests for GPU profile support in VM creation commands."""
+
 import unittest
 from unittest.mock import patch
 
@@ -6,8 +7,13 @@ from click.testing import CliRunner
 
 import vss_cli.cli as cli
 from vss_cli.plugins.compute_plugins.vm import (
-    compute_vm_mk_clib, compute_vm_mk_clone, compute_vm_mk_image,
-    compute_vm_mk_shell, compute_vm_mk_spec, compute_vm_mk_template)
+    compute_vm_mk_clib,
+    compute_vm_mk_clone,
+    compute_vm_mk_image,
+    compute_vm_mk_shell,
+    compute_vm_mk_spec,
+    compute_vm_mk_template,
+)
 
 
 class TestVmMkGpuProfileRegistration(unittest.TestCase):

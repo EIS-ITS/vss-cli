@@ -1,4 +1,5 @@
 """Misc plugin for VSS CLI (vss-cli)."""
+
 import logging
 from pathlib import Path
 

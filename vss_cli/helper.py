@@ -1,4 +1,5 @@
 """Helpers used by VSS CLI (vss-cli)."""
+
 import contextlib
 import csv
 import io
@@ -7,9 +8,10 @@ import logging
 import re
 import shlex
 import shutil
+from collections.abc import Generator
 from http.client import HTTPConnection
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 from click import BadArgumentUsage
 from rich.console import Console
@@ -24,7 +26,7 @@ import vss_cli.yaml as yaml
 _LOGGING = logging.getLogger(__name__)
 
 
-def bytes_to_str(item: Optional[Union[str, bytes]]) -> str:
+def bytes_to_str(item: str | bytes | None) -> str:
     """Convert bytes to string."""
     if isinstance(item, bytes):
         return item.decode('utf-8')
@@ -33,7 +35,7 @@ def bytes_to_str(item: Optional[Union[str, bytes]]) -> str:
     return str(item)
 
 
-def to_attributes(entry: str) -> Dict[str, str]:
+def to_attributes(entry: str) -> dict[str, str]:
     """Convert list of key=value pairs to dictionary."""
     if not entry:
         return {}
@@ -48,7 +50,7 @@ def to_attributes(entry: str) -> Dict[str, str]:
     return attributes_dict
 
 
-def to_tuples(entry: str) -> List[Tuple[str, str]]:
+def to_tuples(entry: str) -> list[tuple[str, str]]:
     """Convert list of key=value pairs to list of tuples."""
     if not entry:
         return []
@@ -65,14 +67,14 @@ def to_tuples(entry: str) -> List[Tuple[str, str]]:
 
 def raw_format_output(
     output: str,
-    data: List[Dict[str, Any]],
+    data: list[dict[str, Any]],
     yamlparser: YAML,
-    columns: Optional[List] = None,
-    columns_width: Optional[int] = -1,
+    columns: list | None = None,
+    columns_width: int | None = -1,
     no_headers: bool = False,
     table_format: str = 'plain',
-    sort_by: Optional[str] = None,
-    single: Optional[str] = None,
+    sort_by: str | None = None,
+    single: str | None = None,
     highlighted: bool = True,
 ) -> str:
     """Format the raw output."""
@@ -187,13 +189,13 @@ def raw_format_output(
         )
 
 
-def _sort_table(result: List[Any], sort_by: str) -> List[Any]:
+def _sort_table(result: list[Any], sort_by: str) -> list[Any]:
     """Sort table based on attribute."""
     from jsonpath_ng import parse
 
     expr = parse(sort_by)
 
-    def _internal_sort(row: Dict[Any, str]) -> Any:
+    def _internal_sort(row: dict[Any, str]) -> Any:
         val = next(iter([match.value for match in expr.find(row)]), None)
         return (val is None, val)
 
@@ -203,9 +205,9 @@ def _sort_table(result: List[Any], sort_by: str) -> List[Any]:
 
 def format_output(
     ctx,
-    data: List[Dict[str, Any]],
-    columns: Optional[List] = None,
-    single: Optional[bool] = False,
+    data: list[dict[str, Any]],
+    columns: list | None = None,
+    single: bool | None = False,
 ) -> str:
     """Format data to output based on settings in ctx/Context."""
     return raw_format_output(
@@ -278,7 +280,7 @@ def str2bool(value: str) -> bool:
     return value.lower() in ("yes", "true", "t", "1", "y")
 
 
-def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
+def dump_object(obj: Any, _key: str = None, _list: list[str] = None) -> None:
     """Dump dictionary in kv format."""
     for key, value in obj.items():
         if isinstance(value, list):
@@ -294,7 +296,7 @@ def dump_object(obj: Any, _key: str = None, _list: List[str] = None) -> None:
             dump_object(value, key, _list)
 
 
-def process_sort(ctx, param, value: List[str]) -> List[str]:
+def process_sort(ctx, param, value: list[str]) -> list[str]:
     """Process sort parameters from input."""
     ops = ['asc', 'desc']
     processed_sorts = []
@@ -318,7 +320,7 @@ def process_sort(ctx, param, value: List[str]) -> List[str]:
     return processed_sorts
 
 
-def process_filters(ctx, param, value: List[str]) -> List[str]:
+def process_filters(ctx, param, value: list[str]) -> list[str]:
     """Process filter parameter."""
     ops = ['gt', 'lt', 'le', 'like', 'in', 'ge', 'eq', 'ne']
     processed_filters = []

@@ -1,4 +1,5 @@
 """Auto-completion for VSS CLI (vss-cli)."""
+
 import click
 from click.shell_completion import get_completion_class
 

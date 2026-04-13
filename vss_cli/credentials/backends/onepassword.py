@@ -1,4 +1,5 @@
 """1Password credential backend using CLI integration."""
+
 import json
 import logging
 import shutil
@@ -6,7 +7,10 @@ import subprocess
 from typing import Dict, List, Optional
 
 from vss_cli.credentials.base import (
-    CredentialBackend, CredentialData, CredentialType)
+    CredentialBackend,
+    CredentialData,
+    CredentialType,
+)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -52,8 +56,8 @@ class OnePasswordBackend(CredentialBackend):
 
     def __init__(
         self,
-        vault: Optional[str] = None,
-        account: Optional[str] = None,
+        vault: str | None = None,
+        account: str | None = None,
         enable_cache: bool = True,
         cache_ttl: int = 300,
     ):
@@ -101,7 +105,7 @@ class OnePasswordBackend(CredentialBackend):
 
     def _run_op_command(
         self,
-        args: List[str],
+        args: list[str],
         check_signin: bool = True,
         capture_output: bool = True,
     ) -> subprocess.CompletedProcess:
@@ -201,7 +205,7 @@ class OnePasswordBackend(CredentialBackend):
 
         return endpoint, cred_type
 
-    def _build_item_json(self, credential: CredentialData) -> Dict:
+    def _build_item_json(self, credential: CredentialData) -> dict:
         """Build 1Password item JSON structure.
 
         Args:
@@ -245,7 +249,7 @@ class OnePasswordBackend(CredentialBackend):
 
         return item
 
-    def _extract_field_value(self, item: Dict, field_id: str) -> Optional[str]:
+    def _extract_field_value(self, item: dict, field_id: str) -> str | None:
         """Extract field value from 1Password item.
 
         Args:
@@ -263,7 +267,7 @@ class OnePasswordBackend(CredentialBackend):
 
     def _get_item(
         self, endpoint: str, credential_type: CredentialType
-    ) -> Optional[Dict]:
+    ) -> dict | None:
         """Get 1Password item by title.
 
         Args:
@@ -408,7 +412,7 @@ class OnePasswordBackend(CredentialBackend):
 
     def _retrieve_credential(
         self, endpoint: str, credential_type: CredentialType
-    ) -> Optional[str]:
+    ) -> str | None:
         """Retrieve credential from 1Password.
 
         Args:
@@ -453,7 +457,7 @@ class OnePasswordBackend(CredentialBackend):
             _LOGGING.error(f'Error deleting 1Password item: {e}')
             return False
 
-    def _list_endpoints(self) -> List[str]:
+    def _list_endpoints(self) -> list[str]:
         """List all endpoints with stored credentials.
 
         Returns:
@@ -486,7 +490,7 @@ class OnePasswordBackend(CredentialBackend):
             _LOGGING.error(f'Error listing endpoints: {e}')
             return []
 
-    def _get_accounts(self) -> List[Dict]:
+    def _get_accounts(self) -> list[dict]:
         """Get list of 1Password accounts.
 
         Returns:
@@ -506,7 +510,7 @@ class OnePasswordBackend(CredentialBackend):
             _LOGGING.debug(f'Error listing accounts: {e}')
             return []
 
-    def _list_vaults(self) -> List[Dict]:
+    def _list_vaults(self) -> list[dict]:
         """List available vaults.
 
         Returns:

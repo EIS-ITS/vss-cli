@@ -1,0 +1,16 @@
+---
+extends: default
+
+rules:
+  document-start: disable
+  line-length:
+    max: 200
+  indentation: disable
+  comments: disable
+  comments-indentation: disable
+  hyphens: disable
+  empty-lines: disable
+  new-line-at-end-of-file: disable
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']
+

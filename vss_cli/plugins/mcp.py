@@ -1,4 +1,5 @@
 """MCP server module."""
+
 import logging
 import shutil
 import sys

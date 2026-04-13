@@ -1,4 +1,5 @@
 """Shell plugin for VSS CLI (vss-cli)."""
+
 import logging
 import os
 

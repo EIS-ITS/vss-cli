@@ -1,4 +1,5 @@
 """Compute plugin for VSS CLI (vss-cli)."""
+
 import click
 from click_plugins import with_plugins
 

@@ -1,4 +1,5 @@
 """Compute Template plugin for VSS CLI (vss-cli)."""
+
 import logging
 from typing import List
 
@@ -132,7 +133,7 @@ def compute_vm_set_template(ctx: Configuration):
 @pass_context
 def compute_template_rm(
     ctx: Configuration,
-    vm_id: List[str],
+    vm_id: list[str],
     max_del: int,
     show_info: bool,
 ):

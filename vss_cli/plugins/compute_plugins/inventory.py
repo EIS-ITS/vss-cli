@@ -1,11 +1,13 @@
 """Compute Inventory plugin for VSS CLI (vss-cli)."""
+
 import logging
 from typing import List
 
 import click
 
-from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
+from vss_cli import const
+from vss_cli import rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output
@@ -81,7 +83,7 @@ def compute_inventory_mk(
     ctx: Configuration,
     fmt: str,
     all: bool,
-    attribute: List[str],
+    attribute: list[str],
     transfer: bool,
 ):
     """Submit an inventory report request.
