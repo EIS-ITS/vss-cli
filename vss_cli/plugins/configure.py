@@ -1,4 +1,5 @@
 """Configuration plugin for VSS CLI (vss-cli)."""
+
 import json
 import logging
 import os
@@ -435,7 +436,10 @@ def migrate_credentials(
     """
     from vss_cli.credentials.base import detect_backend
     from vss_cli.credentials.migration import (
-        CredentialMigration, MigrationError, has_legacy_credentials)
+        CredentialMigration,
+        MigrationError,
+        has_legacy_credentials,
+    )
 
     ej_lock = EMOJI_UNICODE.get(':locked:')
     ej_key = EMOJI_UNICODE.get(':key:')

@@ -1,4 +1,5 @@
-"""Health checks Io,"""
+"""Health checks IO."""
+
 import logging
 
 import requests
@@ -12,7 +13,7 @@ _LOGGING = logging.getLogger(__name__)
 
 
 def check_status():
-    """Checks Io,"""
+    """Check health status."""
     status = 'unknown'
     icon = EMOJI_UNICODE.get(':question_mark:')
     try:

@@ -1,10 +1,15 @@
 """Data types definitions."""
+
 import json
 import logging
 import re
 from dataclasses import dataclass, field
 from ipaddress import (
-    AddressValueError, IPv4Address, IPv4Network, NetmaskValueError)
+    AddressValueError,
+    IPv4Address,
+    IPv4Network,
+    NetmaskValueError,
+)
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -63,10 +68,10 @@ class ConfigEndpoint:
     """Configuration endpoint class."""
 
     url: Url
-    name: Optional[str] = None
-    auth: Optional[str] = None
-    token: Optional[str] = None
-    tf_enabled: Optional[bool] = False
+    name: str | None = None
+    auth: str | None = None
+    token: str | None = None
+    tf_enabled: bool | None = False
 
     def __post_init__(self):
         """Post init method."""
@@ -90,11 +95,9 @@ class ConfigFile:
     """Configuration file data class."""
 
     general: ConfigFileGeneral
-    endpoints: Optional[Union[List[ConfigEndpoint]]] = field(
-        default_factory=lambda: []
-    )
+    endpoints: list[ConfigEndpoint] | None = field(default_factory=lambda: [])
 
-    def get_endpoint(self, ep_name_or_url: str) -> List[ConfigEndpoint]:
+    def get_endpoint(self, ep_name_or_url: str) -> list[ConfigEndpoint]:
         """Get an endpoint by name or url."""
         if self.endpoints:
             ep = list(
@@ -108,7 +111,7 @@ class ConfigFile:
 
     def update_endpoint(
         self, endpoint: ConfigEndpoint
-    ) -> List[ConfigEndpoint]:
+    ) -> list[ConfigEndpoint]:
         """Update single endpoint."""
         if self.endpoints:
             for idx, val in enumerate(self.endpoints):
@@ -122,8 +125,8 @@ class ConfigFile:
         return self.endpoints
 
     def update_endpoints(
-        self, *endpoints: List[ConfigEndpoint]
-    ) -> List[ConfigEndpoint]:
+        self, *endpoints: list[ConfigEndpoint]
+    ) -> list[ConfigEndpoint]:
         """Update multiple endpoints."""
         for endpoint in endpoints:
             self.update_endpoint(endpoint)
@@ -186,13 +189,13 @@ class VmDisk:
     """Vm Disk spec."""
 
     capacity_gb: int
-    backing_mode: Optional[str] = field(
+    backing_mode: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    backing_sharing: Optional[str] = field(
+    backing_sharing: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    scsi: Optional[int] = field(
+    scsi: int | None = field(
         default=0, metadata=dc_config(exclude=lambda x: x is None)
     )
 
@@ -203,10 +206,10 @@ class VmScsi:
     """Vm SCSI."""
 
     bus: int
-    sharing: Optional[str] = field(
+    sharing: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    type: Optional[str] = field(
+    type: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
@@ -217,44 +220,44 @@ class VmMachine:
     """Vm Machine."""
 
     name: str
-    folder: Optional[str] = None
-    os: Optional[str] = None
-    source: Optional[str] = field(
+    folder: str | None = None
+    os: str | None = None
+    source: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    domain: Optional[str] = field(
+    domain: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    iso: Optional[str] = field(
+    iso: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    power_on: Optional[bool] = field(default_factory=lambda: False)
-    template: Optional[bool] = field(default_factory=lambda: False)
-    tpm: Optional[bool] = field(default_factory=lambda: False)
-    vbs: Optional[bool] = field(default_factory=lambda: False)
-    disks: Optional[List[VmDisk]] = field(
+    power_on: bool | None = field(default_factory=lambda: False)
+    template: bool | None = field(default_factory=lambda: False)
+    tpm: bool | None = field(default_factory=lambda: False)
+    vbs: bool | None = field(default_factory=lambda: False)
+    disks: list[VmDisk] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    scsi: Optional[List[VmScsi]] = field(
+    scsi: list[VmScsi] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    cpu: Optional[int] = field(default_factory=lambda: 1)
-    memory: Optional[int] = field(default_factory=lambda: 1)
-    firmware: Optional[str] = field(default_factory=lambda: 'efi')
-    storage_type: Optional[str] = field(
+    cpu: int | None = field(default_factory=lambda: 1)
+    memory: int | None = field(default_factory=lambda: 1)
+    firmware: str | None = field(default_factory=lambda: 'efi')
+    storage_type: str | None = field(
         default='hdd',
         metadata=dc_config(
             exclude=lambda x: x is None, field_name="storage-type"
         ),
     )
-    version: Optional[str] = field(default_factory=lambda: 'vmx-19')
-    source_snapshot: Optional[str] = field(
+    version: str | None = field(default_factory=lambda: 'vmx-19')
+    source_snapshot: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    item: Optional[str] = field(
+    item: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    gpus: Optional[List[str]] = field(
+    gpus: list[str] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
@@ -265,13 +268,13 @@ class VmNetwork:
     """Vm network."""
 
     network: str
-    network_id: Optional[str] = field(
+    network_id: str | None = field(
         default=None,
         metadata=dc_config(
             exclude=lambda x: x is None,
         ),
     )
-    type: Optional[str] = field(default_factory=lambda x: 'vmxnet3')
+    type: str | None = field(default_factory=lambda x: 'vmxnet3')
 
 
 @dataclass_json
@@ -279,7 +282,7 @@ class VmNetwork:
 class VmNetworking:
     """Vm networking."""
 
-    interfaces: List[VmNetwork]
+    interfaces: list[VmNetwork]
 
 
 @dataclass_json
@@ -287,9 +290,9 @@ class VmNetworking:
 class VmMetaAdmin:
     """VM meta admin."""
 
-    name: Optional[str]
-    email: Optional[Email]
-    phone: Optional[str]
+    name: str | None
+    email: Email | None
+    phone: str | None
 
 
 @dataclass_json
@@ -300,11 +303,11 @@ class VmMeta:
     description: str
     usage: str
     client: str
-    inform: Optional[List[str]] = None
-    admin: Optional[VmMetaAdmin] = None
-    vss_service: Optional[str] = None
-    notes: Optional[List[Dict]] = None
-    vss_options: Optional[List[str]] = None
+    inform: list[str] | None = None
+    admin: VmMetaAdmin | None = None
+    vss_service: str | None = None
+    notes: list[dict] | None = None
+    vss_options: list[str] | None = None
 
 
 @dataclass_json
@@ -312,7 +315,7 @@ class VmMeta:
 class VmAdditionalParams:
     """Vm add params."""
 
-    additional_parameters: Union[Path]
+    additional_parameters: Path
 
 
 @dataclass_json
@@ -326,40 +329,40 @@ class VmDayZero:
             exclude=lambda x: x is None, field_name="config-file"
         ),
     )
-    config: Optional[str] = field(default=None)
-    config_name: Optional[str] = field(
+    config: str | None = field(default=None)
+    config_name: str | None = field(
         default='day0-config',
         metadata=dc_config(
             exclude=lambda x: x is None, field_name="config-name"
         ),
     )
 
-    id_token_file: Optional[Path] = field(
+    id_token_file: Path | None = field(
         default=None, metadata=dc_config(exclude=lambda x: True)
     )
-    id_token_name: Optional[str] = field(
+    id_token_name: str | None = field(
         default=None,
         metadata=dc_config(
             exclude=lambda x: x is None, field_name="id-token-name"
         ),
     )
-    config_encoding: Optional[str] = field(
+    config_encoding: str | None = field(
         default=None,
         metadata=dc_config(
             exclude=lambda x: x is None, field_name="config-encoding"
         ),
     )
-    idtoken: Optional[str] = field(
+    idtoken: str | None = field(
         default=None,
         metadata=dc_config(exclude=lambda x: x is None, field_name="idtoken"),
     )
-    idtoken_encoding: Optional[str] = field(
+    idtoken_encoding: str | None = field(
         default=None,
         metadata=dc_config(
             exclude=lambda x: x is None, field_name="idtoken-encoding"
         ),
     )
-    idtoken_name: Optional[str] = field(
+    idtoken_name: str | None = field(
         default=None,
         metadata=dc_config(
             exclude=lambda x: x is None, field_name="id-token-name"
@@ -367,7 +370,7 @@ class VmDayZero:
     )
 
     @staticmethod
-    def _load_file(path: Path, attr: str) -> Tuple[str, str]:
+    def _load_file(path: Path, attr: str) -> tuple[str, str]:
         """Load file."""
         from pyvss.helper import compress_encode_string
 
@@ -398,25 +401,25 @@ class VmDayZero:
 class VmCloudInit:
     """Vm Cloud init."""
 
-    user_data: Union[Path]
-    userdata: Optional[str] = field(
+    user_data: Path
+    userdata: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    userdata_encoding: Optional[str] = field(
+    userdata_encoding: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    network_data: Optional[Path] = field(
+    network_data: Path | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    networkconfig: Optional[str] = field(
+    networkconfig: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    networkconfig_encoding: Optional[str] = field(
+    networkconfig_encoding: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
     @staticmethod
-    def _load_yaml_file(path: Path, attr: str) -> Tuple[str, str]:
+    def _load_yaml_file(path: Path, attr: str) -> tuple[str, str]:
         """Load Yaml."""
         from pyvss.helper import compress_encode_string
 
@@ -451,14 +454,14 @@ class VmCloudInit:
 class VmCustomSpecIface:
     """Vm Custom Spec."""
 
-    dhcp: Optional[bool] = False
-    ip: Optional[str] = field(
+    dhcp: bool | None = False
+    ip: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    gateway: Optional[List[IPv4Address]] = field(
+    gateway: list[IPv4Address] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    mask: Optional[str] = field(
+    mask: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
@@ -482,11 +485,11 @@ class VmCustomSpec:
 
     hostname: str
     domain: Domain
-    interfaces: List[VmCustomSpecIface]
-    dns: Optional[List[IP]] = field(
+    interfaces: list[VmCustomSpecIface]
+    dns: list[IP] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    time_zone: Optional[Union[str, int]] = field(
+    time_zone: str | int | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
@@ -503,31 +506,31 @@ class VmCliSpec:
     built: str
     machine: VmMachine
     metadata: VmMeta
-    networking: Optional[VmNetworking] = field(
+    networking: VmNetworking | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    iso: Optional[str] = field(
+    iso: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    custom_spec: Optional[VmCustomSpec] = field(
+    custom_spec: VmCustomSpec | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    cloud_init: Optional[VmCloudInit] = field(
+    cloud_init: VmCloudInit | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    extra_config: Optional[Union[List[str], List[Dict]]] = field(
+    extra_config: list[str] | list[dict] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    day_zero: Optional[VmDayZero] = field(
+    day_zero: VmDayZero | None = field(
         default=None,
         metadata=dc_config(exclude=lambda x: x is None, field_name="day-zero"),
     )
-    additional_parameters: Optional[Union[Path, Dict]] = field(
+    additional_parameters: Path | dict | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
     @staticmethod
-    def _process_extra_config(value: List[str]) -> List[Dict[str, str]]:
+    def _process_extra_config(value: list[str]) -> list[dict[str, str]]:
         """Process extra configuration."""
         from vss_cli.helper import to_tuples
 
@@ -535,7 +538,7 @@ class VmCliSpec:
         return [{opt[0]: opt[1]} for opt in _options]
 
     @staticmethod
-    def _process_json_file_or_type(value: Union[str, Path], attr: str):
+    def _process_json_file_or_type(value: str | Path, attr: str):
         """Process json file or type."""
         val = None
         try:
@@ -579,10 +582,10 @@ class UserData:
 
     userdata: str
     userdata_encoding: str
-    networkconfig: Optional[str] = field(
+    networkconfig: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    networkconfig_encoding: Optional[str] = field(
+    networkconfig_encoding: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
@@ -598,81 +601,81 @@ class VmApiSpec:
     client: str
     cpu: int
     description: str
-    disks: List[VmDisk]
+    disks: list[VmDisk]
     firmware: str
     folder: str
-    inform: List[str]
+    inform: list[str]
     memory_gb: int
-    memoryGB: Optional[int]
+    memoryGB: int | None
     name: str
-    networks: List[VmNetwork]
+    networks: list[VmNetwork]
     os: str
     version: str
-    storage_type: Optional[str] = field(
+    storage_type: str | None = field(
         default='hdd', metadata=dc_config(exclude=lambda x: x is None)
     )
-    tpm: Optional[bool] = False
-    vbs: Optional[bool] = False
-    power_on: Optional[bool] = False
-    template: Optional[bool] = False
-    built: Optional[str] = field(
+    tpm: bool | None = False
+    vbs: bool | None = False
+    power_on: bool | None = False
+    template: bool | None = False
+    built: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    domain: Optional[str] = field(
+    domain: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    iso: Optional[str] = field(
+    iso: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    scsi: Optional[List[VmScsi]] = field(
+    scsi: list[VmScsi] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    vss_options: Optional[List[str]] = field(
+    vss_options: list[str] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    vss_service: Optional[str] = field(
+    vss_service: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    custom_spec: Optional[VmCustomSpec] = field(
+    custom_spec: VmCustomSpec | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    extra_config: Optional[List[Dict[str, Any]]] = field(
+    extra_config: list[dict[str, Any]] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    user_data: Optional[UserData] = field(
+    user_data: UserData | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    admin_email: Optional[str] = field(
+    admin_email: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    admin_name: Optional[str] = field(
+    admin_name: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    admin_phone: Optional[str] = field(
+    admin_phone: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    notes: Optional[List[Dict]] = field(
+    notes: list[dict] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    source: Optional[str] = field(
+    source: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    source_template: Optional[str] = field(
+    source_template: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    source_snap_id: Optional[int] = field(
+    source_snap_id: int | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    day_zero: Optional[VmDayZero] = field(
+    day_zero: VmDayZero | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    item_id: Optional[str] = field(
+    item_id: str | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    additional_parameters: Optional[Dict] = field(
+    additional_parameters: dict | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
-    gpus: Optional[List[str]] = field(
+    gpus: list[str] | None = field(
         default=None, metadata=dc_config(exclude=lambda x: x is None)
     )
 
@@ -718,15 +721,11 @@ class VmApiSpec:
                     cli_spec.built in ['clone']
                     and cli_spec.machine.source_snapshot
                 ):
-                    data[
-                        'source_snap_id'
-                    ] = session.get_vm_snapshot_by_id_name_or_desc(
-                        source_id, cli_spec.machine.source_snapshot
-                    )[
-                        0
-                    ][
-                        'id'
-                    ]
+                    data['source_snap_id'] = (
+                        session.get_vm_snapshot_by_id_name_or_desc(
+                            source_id, cli_spec.machine.source_snapshot
+                        )[0]['id']
+                    )
         if cli_spec.built in ['os_install']:
             data['iso'] = session.get_iso_by_name_or_path(
                 cli_spec.machine.iso

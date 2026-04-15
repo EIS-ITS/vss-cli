@@ -1,4 +1,5 @@
 """Constants used by VSS CLI (vss-cli)."""
+
 import os
 
 try:

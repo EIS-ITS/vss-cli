@@ -1,4 +1,5 @@
 """Tests for 1Password credential backend."""
+
 import json
 import subprocess
 import tempfile
@@ -7,8 +8,12 @@ from pathlib import Path
 from unittest.mock import MagicMock, Mock, call, patch
 
 from vss_cli.credentials.backends.onepassword import (
-    OnePasswordBackend, OnePasswordCLIError, OnePasswordNotInstalledError,
-    OnePasswordNotSignedInError, OnePasswordVaultNotFoundError)
+    OnePasswordBackend,
+    OnePasswordCLIError,
+    OnePasswordNotInstalledError,
+    OnePasswordNotSignedInError,
+    OnePasswordVaultNotFoundError,
+)
 from vss_cli.credentials.base import CredentialData, CredentialType
 
 

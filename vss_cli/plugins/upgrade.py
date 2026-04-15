@@ -1,7 +1,8 @@
 """Upgrade plugin for VSS CLI (vss-cli)."""
+
 import logging
-from subprocess import call
 import sys
+from subprocess import call
 
 import click
 

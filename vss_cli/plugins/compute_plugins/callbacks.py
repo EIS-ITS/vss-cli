@@ -1,4 +1,5 @@
 """Compute Callback module for VSS CLI (vss-cli)."""
+
 import json
 from pathlib import Path
 from typing import Optional, Tuple
@@ -221,7 +222,7 @@ def process_firmware(ctx: Configuration, param, value):
 
 def process_day_zero(
     ctx: Configuration, param, value
-) -> Optional[Tuple[str, str]]:
+) -> tuple[str, str] | None:
     """Process day zero configuration."""
     from pyvss.helper import compress_encode_string
 
@@ -240,7 +241,7 @@ def process_day_zero(
 
 def process_user_data(
     ctx: Configuration, param, value
-) -> Optional[Tuple[str, str]]:
+) -> tuple[str, str] | None:
     """Process user_data."""
     from pyvss.helper import compress_encode_string
 

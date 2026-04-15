@@ -1,10 +1,14 @@
 """Tests for macOS Keychain credential backend."""
+
 import platform
 import unittest
 from unittest.mock import MagicMock, call, patch
 
 from vss_cli.credentials.backends.keychain import (
-    KeychainBackend, KeychainError, KeychainLockedError)
+    KeychainBackend,
+    KeychainError,
+    KeychainLockedError,
+)
 from vss_cli.credentials.base import CredentialData, CredentialType
 
 

@@ -1,4 +1,5 @@
 """Tests for encrypted file-based credential backend."""
+
 import json
 import os
 import tempfile
@@ -7,7 +8,9 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from vss_cli.credentials.backends.encrypted import (
-    EncryptedFileBackend, EncryptionError)
+    EncryptedFileBackend,
+    EncryptionError,
+)
 from vss_cli.credentials.base import CredentialData, CredentialType
 
 

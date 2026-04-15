@@ -1,4 +1,5 @@
 """Tests for credential backend module."""
+
 import unittest
 from abc import ABC
 from datetime import datetime, timedelta
@@ -6,8 +7,13 @@ from typing import Optional
 from unittest.mock import MagicMock, patch
 
 from vss_cli.credentials.base import (
-    CredentialBackend, CredentialCache, CredentialData, CredentialType,
-    detect_backend, get_namespace)
+    CredentialBackend,
+    CredentialCache,
+    CredentialData,
+    CredentialType,
+    detect_backend,
+    get_namespace,
+)
 
 
 class TestCredentialType(unittest.TestCase):
@@ -92,7 +98,7 @@ class ConcreteCredentialBackend(CredentialBackend):
 
     def _retrieve_credential(
         self, endpoint: str, credential_type: CredentialType
-    ) -> Optional[str]:
+    ) -> str | None:
         """Retrieve a credential."""
         key = self._get_storage_key(endpoint, credential_type)
         return self._storage.get(key)

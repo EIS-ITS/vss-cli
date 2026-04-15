@@ -1,11 +1,15 @@
 """Compute Shared Options plugin for VSS CLI (vss-cli)."""
+
 import click
 
 import vss_cli.autocompletion as autocompletion
 from vss_cli.plugins.compute_plugins import callbacks
 from vss_cli.validators import (
-    retirement_value, validate_admin, validate_inform,
-    validate_json_file_or_type)
+    retirement_value,
+    validate_admin,
+    validate_inform,
+    validate_json_file_or_type,
+)
 
 source_opt = click.option(
     '--source',

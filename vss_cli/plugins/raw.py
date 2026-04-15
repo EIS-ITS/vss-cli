@@ -1,4 +1,5 @@
 """Raw plugin for VSS CLI (vss-cli)."""
+
 import json as json_
 import logging
 import re

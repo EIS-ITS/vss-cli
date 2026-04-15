@@ -1,11 +1,16 @@
 """macOS Keychain credential backend."""
+
 import logging
 import re
 import subprocess
 from typing import List, Optional
 
 from vss_cli.credentials.base import (
-    CredentialBackend, CredentialData, CredentialType, get_namespace)
+    CredentialBackend,
+    CredentialData,
+    CredentialType,
+    get_namespace,
+)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -143,7 +148,7 @@ class KeychainBackend(CredentialBackend):
 
     def _retrieve_credential(
         self, endpoint: str, credential_type: CredentialType
-    ) -> Optional[str]:
+    ) -> str | None:
         """Retrieve credential from Keychain.
 
         Args:
@@ -212,7 +217,10 @@ class KeychainBackend(CredentialBackend):
         """
         import keyring
         from keyring.errors import (
-            KeyringError, KeyringLocked, PasswordDeleteError)
+            KeyringError,
+            KeyringLocked,
+            PasswordDeleteError,
+        )
 
         try:
             service = self._get_service_name()
@@ -247,7 +255,7 @@ class KeychainBackend(CredentialBackend):
             _LOGGING.error(f'Unexpected error deleting credential: {e}')
             raise KeychainError(f'Unexpected error deleting credential: {e}')
 
-    def _list_endpoints(self) -> List[str]:
+    def _list_endpoints(self) -> list[str]:
         """List all endpoints with stored credentials.
 
         Uses the macOS security command to query Keychain entries.

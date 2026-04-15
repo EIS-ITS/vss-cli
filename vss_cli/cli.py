@@ -1,4 +1,5 @@
 """VSS CLI (vss-cli)."""
+
 import logging
 import os
 import platform
@@ -68,7 +69,7 @@ def run() -> None:
 class VssCli(click.Group):
     """The ITS Private Cloud Command-line."""
 
-    def list_commands(self, ctx: Context) -> List[str]:
+    def list_commands(self, ctx: Context) -> list[str]:
         """List all command available as plugin."""
         cmd_folder = os.path.abspath(
             os.path.join(os.path.dirname(__file__), 'plugins')
@@ -84,7 +85,7 @@ class VssCli(click.Group):
 
     def get_command(
         self, ctx: Context, cmd_name: str
-    ) -> Optional[Union[Group, Command]]:
+    ) -> Group | Command | None:
         """Import the commands of the plugins."""
         try:
             mod = __import__(
@@ -100,7 +101,7 @@ class VssCli(click.Group):
         return cast(Union[Group, Command], mod.cli)
 
 
-def _default_token() -> Optional[str]:
+def _default_token() -> str | None:
     return os.environ.get('VSS_TOKEN', os.environ.get('VSS_API_TOKEN', None))
 
 
@@ -277,27 +278,27 @@ def _default_token() -> Optional[str]:
 def cli(
     ctx: Configuration,
     verbose: bool,
-    endpoint: Optional[str],
-    token: Optional[str],
-    username: Optional[str],
-    password: Optional[str],
-    totp: Optional[str],
+    endpoint: str | None,
+    token: str | None,
+    username: str | None,
+    password: str | None,
+    totp: str | None,
     config: str,
     output: str,
-    timeout: Optional[int],
+    timeout: int | None,
     debug: bool,
     showexceptions: bool,
     columns: str,
     columns_width: int,
     no_headers: bool,
     table_format: str,
-    sort_by: Optional[str],
-    wait: Optional[bool],
-    s3_server: Optional[str],
-    vpn_server: Optional[str],
-    gpt_token: Optional[str],
-    gpt_server: Optional[str],
-    gpt_persona: Optional[int],
+    sort_by: str | None,
+    wait: bool | None,
+    s3_server: str | None,
+    vpn_server: str | None,
+    gpt_token: str | None,
+    gpt_server: str | None,
+    gpt_persona: int | None,
 ):
     """Command line interface for the ITS Private Cloud."""
     ctx.verbose = verbose

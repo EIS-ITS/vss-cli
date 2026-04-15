@@ -1,4 +1,5 @@
 """Compute VM plugin for VSS CLI (vss-cli)."""
+
 import datetime
 import logging
 import os
@@ -27,10 +28,16 @@ from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_args as c_sa
 from vss_cli.plugins.compute_plugins import rel_opts as c_so
 from vss_cli.plugins.compute_plugins.helper import (
-    get_restore_user_confirmation, process_retirement_new)
+    get_restore_user_confirmation,
+    process_retirement_new,
+)
 from vss_cli.validators import (
-    flexible_email_args, retirement_value, validate_email, validate_json_type,
-    validate_phone_number)
+    flexible_email_args,
+    retirement_value,
+    validate_email,
+    validate_json_type,
+    validate_phone_number,
+)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -1384,7 +1391,7 @@ def compute_vm_set_cpu(ctx: Configuration):
 @click.argument('cpu_count', type=click.INT, required=True)
 @pass_context
 def compute_vm_set_cpu_count(
-    ctx: Configuration, cpu_count: int, cores_per_socket: Optional[int] = 1
+    ctx: Configuration, cpu_count: int, cores_per_socket: int | None = 1
 ):
     """Update CPU count and cores per socket.
 

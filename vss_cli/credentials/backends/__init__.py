@@ -1,16 +1,20 @@
 """Credential backend implementations."""
+
 from vss_cli.credentials.backends.encrypted import (  # noqa: F401
-    EncryptedFileBackend)
+    EncryptedFileBackend,
+)
 
 try:
     from vss_cli.credentials.backends.keychain import (  # noqa: F401
-        KeychainBackend)
+        KeychainBackend,
+    )
 except ImportError:
     KeychainBackend = None
 
 try:
     from vss_cli.credentials.backends.onepassword import (  # noqa: F401
-        OnePasswordBackend)
+        OnePasswordBackend,
+    )
 except ImportError:
     OnePasswordBackend = None
 

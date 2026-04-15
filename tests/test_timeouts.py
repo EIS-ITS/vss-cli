@@ -1,4 +1,5 @@
 """Tests for request timeout handling (Bandit B113 security fix)."""
+
 import logging
 import unittest
 from unittest.mock import MagicMock, Mock, patch

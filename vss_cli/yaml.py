@@ -21,7 +21,7 @@ def load_yaml(yamlp: YAML, source: str) -> Any:
 
 def dump_yaml(
     yamlp: YAML, data: Any, stream: Any = None, **kw: Any
-) -> Optional[str]:
+) -> str | None:
     """Dump YAML to string."""
     inefficient = False
     if stream is None:

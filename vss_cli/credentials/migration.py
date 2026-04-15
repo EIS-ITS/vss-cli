@@ -1,4 +1,5 @@
 """Credential migration from legacy base64 storage to secure backends."""
+
 import logging
 import shutil
 from base64 import b64decode
@@ -8,7 +9,10 @@ from typing import Dict, List, Optional
 from ruamel.yaml import YAML
 
 from vss_cli.credentials.base import (
-    CredentialBackend, CredentialData, CredentialType)
+    CredentialBackend,
+    CredentialData,
+    CredentialType,
+)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -51,7 +55,7 @@ def parse_legacy_auth(auth: str) -> tuple[str, str]:
 
 def detect_legacy_credentials(
     config_file: Path,
-) -> List[Dict[str, Optional[str]]]:
+) -> list[dict[str, str | None]]:
     """Detect legacy base64-encoded credentials in config file.
 
     Args:
@@ -143,7 +147,7 @@ class CredentialMigration:
         self.backup_file = Path(str(config_file) + '.backup')
         self.backend = backend
         self.dry_run = dry_run
-        self._migrated_credentials: List[Dict] = []
+        self._migrated_credentials: list[dict] = []
 
         _LOGGING.debug(
             f'Initialized CredentialMigration: '
@@ -152,7 +156,7 @@ class CredentialMigration:
             f'dry_run={dry_run}'
         )
 
-    def get_status(self) -> Dict:
+    def get_status(self) -> dict:
         """Get migration status.
 
         Returns:
@@ -171,7 +175,7 @@ class CredentialMigration:
         _LOGGING.debug(f'Migration status: {status}')
         return status
 
-    def migrate(self) -> Dict:
+    def migrate(self) -> dict:
         """Migrate credentials from legacy storage to backend.
 
         Returns:
@@ -259,7 +263,7 @@ class CredentialMigration:
         except Exception as e:
             raise MigrationError(f'Failed to create backup: {e}')
 
-    def _migrate_endpoint(self, cred_info: Dict) -> None:
+    def _migrate_endpoint(self, cred_info: dict) -> None:
         """Migrate credentials for a single endpoint.
 
         Args:
@@ -324,7 +328,7 @@ class CredentialMigration:
         except Exception as e:
             raise MigrationError(f'Failed to migrate endpoint {endpoint}: {e}')
 
-    def _update_config_file(self, legacy_creds: List[Dict]) -> None:
+    def _update_config_file(self, legacy_creds: list[dict]) -> None:
         """Update config file to remove auth fields.
 
         Args:
@@ -400,7 +404,7 @@ class CredentialMigration:
         except Exception as e:
             raise MigrationError(f'Rollback failed: {e}')
 
-    def validate(self) -> Dict:
+    def validate(self) -> dict:
         """Validate migration by checking stored credentials.
 
         Returns:

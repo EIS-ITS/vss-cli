@@ -1,4 +1,5 @@
 """VSS check vpn status."""
+
 import logging
 from typing import Dict, List
 
@@ -10,7 +11,7 @@ from vss_cli.vssconst import VSS_VPN_ENDPOINT
 _LOGGING = logging.getLogger(__name__)
 
 
-def check_vpn_status() -> List[Dict]:
+def check_vpn_status() -> list[dict]:
     """Check vpn status."""
     icon = EMOJI_UNICODE.get(':question_mark:')
     result = []

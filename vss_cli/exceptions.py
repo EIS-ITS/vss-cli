@@ -1,4 +1,5 @@
 """The exceptions used by VSS CLI."""
+
 from pyvss.exceptions import VssError
 
 
@@ -7,4 +8,4 @@ class VssCliError(Exception):
 
 
 class ValidationError(Exception):
-    """Validation error exception"""
+    """Validation error exception."""
