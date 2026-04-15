@@ -1,4 +1,5 @@
 """Configuration for VSS CLI (vss-cli)."""
+
 import functools
 import json
 import logging
@@ -8,10 +9,10 @@ import sys
 import time
 import warnings
 from base64 import b64decode, b64encode
+from collections.abc import Callable
 from pathlib import Path
 from time import sleep
-from typing import (  # noqa: F401
-    Any, Callable, Dict, List, Optional, Tuple, Union, cast)
+from typing import Any, Dict, List, Optional, Tuple, Union, cast  # noqa: F401
 
 import click
 import jwt
@@ -29,13 +30,21 @@ import vss_cli.yaml as yaml
 from vss_cli.data_types import ConfigEndpoint, ConfigFile, ConfigFileGeneral
 from vss_cli.exceptions import VssCliError
 from vss_cli.helper import (
-    bytes_to_str, debug_requests_on, format_output, get_hostname_from_url)
+    bytes_to_str,
+    debug_requests_on,
+    format_output,
+    get_hostname_from_url,
+)
 from vss_cli.ovf_helper import parse_ovf
 from vss_cli.utils.emoji import EMOJI_UNICODE
 from vss_cli.utils.threading import WorkerQueue
 from vss_cli.validators import (
-    validate_email, validate_json_file_or_type, validate_phone_number,
-    validate_uuid, validate_vm_moref)
+    validate_email,
+    validate_json_file_or_type,
+    validate_phone_number,
+    validate_uuid,
+    validate_vm_moref,
+)
 
 _LOGGING = logging.getLogger(__name__)
 ej_ai = EMOJI_UNICODE.get(':robot_face:')
@@ -142,9 +151,9 @@ class Configuration(VssManager):
 
     def get_token(
         self,
-        user: Optional[str] = '',
-        password: Optional[str] = '',
-        otp: Optional[str] = None,
+        user: str | None = '',
+        password: str | None = '',
+        otp: str | None = None,
     ) -> str:
         """Generate token and returns value."""
         self.api_token = super().get_token(user, password, otp)
@@ -158,24 +167,24 @@ class Configuration(VssManager):
         self.token_endpoint = f'{endpoint}/auth/request-token'
         self.tf_endpoint = f'{endpoint}/tf'
 
-    def echo(self, msg: str, *args: Optional[Any]) -> None:
+    def echo(self, msg: str, *args: Any | None) -> None:
         """Put content message to stdout."""
         self.log(msg, *args)
 
     def log(  # pylint: disable=no-self-use
-        self, msg: str, *args: Optional[str]
+        self, msg: str, *args: str | None
     ) -> None:  # pylint: disable=no-self-use
         """Log a message to stdout."""
         if args:
             msg %= args
         click.echo(msg, file=sys.stdout)
 
-    def secho(self, msg: str, *args: Optional[Any], **kwargs) -> None:
+    def secho(self, msg: str, *args: Any | None, **kwargs) -> None:
         """Put content message to stdout with style."""
         self.slog(msg, *args, **kwargs)
 
     def slog(  # pylint: disable=no-self-use
-        self, msg: str, *args: Optional[str], **kwargs
+        self, msg: str, *args: str | None, **kwargs
     ) -> None:  # pylint: disable=no-self-use
         """Log a message to stdout with style."""
         file = sys.stdout
@@ -186,7 +195,7 @@ class Configuration(VssManager):
             del kwargs['file']
         click.secho(msg, file=file, **kwargs)
 
-    def vlog(self, msg: str, *args: Optional[str]) -> None:
+    def vlog(self, msg: str, *args: str | None) -> None:
         """Log a message only if verbose is enabled."""
         if self.verbose:
             self.log(msg, *args)
@@ -266,7 +275,7 @@ class Configuration(VssManager):
 
     def load_profile(
         self, endpoint: str = None
-    ) -> Tuple[Optional[ConfigEndpoint], Optional[str], Optional[str]]:
+    ) -> tuple[ConfigEndpoint | None, str | None, str | None]:
         """Load profile from configuration file.
 
         Uses new credential backend system with fallback to legacy base64 auth.
@@ -280,7 +289,9 @@ class Configuration(VssManager):
             # Try loading from new credential backend first
             try:
                 from vss_cli.credentials.base import (
-                    CredentialType, detect_backend)
+                    CredentialType,
+                    detect_backend,
+                )
 
                 backend = detect_backend()
 
@@ -341,17 +352,15 @@ class Configuration(VssManager):
         else:
             return None, bytes_to_str(username), bytes_to_str(password)
 
-    def load_config_file(
-        self, config: Union[Path, str] = None
-    ) -> Optional[ConfigFile]:
+    def load_config_file(self, config: Path | str = None) -> ConfigFile | None:
         """Load raw configuration file and return ConfigFile object."""
         raw_config = self.load_raw_config_file(config=config)
         self.config_file = ConfigFile.from_json(raw_config)
         return self.config_file
 
     def load_raw_config_file(
-        self, config: Optional[Union[Path, str]] = None
-    ) -> Optional[str]:
+        self, config: Path | str | None = None
+    ) -> str | None:
         """Load raw configuration file from path."""
         config_file = config or self.config_path
         try:
@@ -369,8 +378,8 @@ class Configuration(VssManager):
             )
 
     def load_config(
-        self, validate: bool = True, spinner_cls: Optional[Spinner] = None
-    ) -> Optional[Tuple[str, str, str]]:
+        self, validate: bool = True, spinner_cls: Spinner | None = None
+    ) -> tuple[str, str, str] | None:
         """Load configuration and validate.
 
         Load configuration either from previously set
@@ -668,8 +677,8 @@ class Configuration(VssManager):
 
     def _get_token_with_mfa(
         self,
-        token: Optional[str] = None,
-        spinner_cls: Optional[Spinner] = None,
+        token: str | None = None,
+        spinner_cls: Spinner | None = None,
     ):
         """Get token with MFA."""
         try:
@@ -757,7 +766,10 @@ class Configuration(VssManager):
         # Try to store credentials in secure backend
         try:
             from vss_cli.credentials.base import (
-                CredentialData, CredentialType, detect_backend)
+                CredentialData,
+                CredentialType,
+                detect_backend,
+            )
 
             backend = detect_backend()
 
@@ -837,9 +849,9 @@ class Configuration(VssManager):
 
     def write_config_file(
         self,
-        new_config_file: Optional[ConfigFile] = None,
-        new_endpoint: Optional[ConfigEndpoint] = None,
-        config_general: Optional[ConfigFileGeneral] = None,
+        new_config_file: ConfigFile | None = None,
+        new_endpoint: ConfigEndpoint | None = None,
+        config_general: ConfigFileGeneral | None = None,
     ) -> bool:
         """Create or update configuration endpoint section."""
         # load template in case it fails
@@ -915,8 +927,8 @@ class Configuration(VssManager):
         username: str,
         password: str,
         endpoint: str,
-        replace: Optional[bool] = False,
-        endpoint_name: Optional[str] = None,
+        replace: bool | None = False,
+        endpoint_name: str | None = None,
     ) -> bool:
         """Configure endpoint with provided settings."""
         self.username = username
@@ -987,8 +999,8 @@ class Configuration(VssManager):
 
     @staticmethod
     def _filter_objects_by_attrs(
-        value: str, objects: List[dict], attrs: List[Tuple[Any, Any]]
-    ) -> List[Any]:
+        value: str, objects: list[dict], attrs: list[tuple[Any, Any]]
+    ) -> list[Any]:
         """Filter objects by a given `value` based on attributes.
 
         Attributes may be a list of tuples with attribute name, type.
@@ -1034,7 +1046,7 @@ class Configuration(VssManager):
         return _objs
 
     @staticmethod
-    def pick(objects: List[Dict], options=None, indicator='=>'):
+    def pick(objects: list[dict], options=None, indicator='=>'):
         """Show a ``picker`` for a list of dicts."""
         count = len(objects)
         msg = f"Found {count} matches. Please select one:"
@@ -1073,7 +1085,7 @@ class Configuration(VssManager):
         )
         return rv
 
-    def get_vss_vpn_status(self, **kwargs) -> Dict:
+    def get_vss_vpn_status(self, **kwargs) -> dict:
         """Get status of VPN."""
         self.init_vss_vpn(self.vpn_server)
         _LOGGING.debug(f'{self.username=} -> {self.vpn_server=}')
@@ -1106,7 +1118,7 @@ class Configuration(VssManager):
 
     def get_vm_by_id_or_name(
         self, vm_id: str, silent=False, instance_type: str = 'vm'
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> list[dict[str, Any]] | None:
         """Get VM by ID or Name.
 
         This new implementation uses instance_type to distinct between
@@ -1151,8 +1163,8 @@ class Configuration(VssManager):
             # is not a valid hex code for a UUID.
             # get vm by name
             g_vms = lookup_f(per_page=3000)
-            vm_id = vm_id.lower()
-            v = list(filter(lambda i: vm_id in i['name'].lower(), g_vms))
+            vm_id_lower = vm_id.lower()
+            v = list(filter(lambda i: vm_id_lower in i['name'].lower(), g_vms))
             if not v:
                 if not v:
                     raise click.BadParameter(f'{vm_id} could not be found')
@@ -1172,7 +1184,7 @@ class Configuration(VssManager):
 
     def get_vm_snapshot_by_id_name_or_desc(
         self, vm_id: str, id_name_or_desc: str
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Get vm snapshot by id name or description."""
         snapshots = self.get_vm_snapshots(vm_id)
         attributes = [('id', int), ('name', str), ('description', str)]
@@ -1191,7 +1203,7 @@ class Configuration(VssManager):
 
     def get_vm_restore_points_by_id_or_timestamp(
         self, vm_id: str, id_or_timestamp: str
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Get vm restore points by id or timestamp."""
         rps = self.get_vm_restore_points(vm_id)
         attributes = [('id', int), ('timestamp', str)]
@@ -1206,7 +1218,7 @@ class Configuration(VssManager):
             )
         return objs
 
-    def get_domain_by_name_or_moref(self, name_or_moref: str) -> List[Dict]:
+    def get_domain_by_name_or_moref(self, name_or_moref: str) -> list[dict]:
         """Get domain by name or mo reference."""
         g_domains = self.get_domains()
         attributes = [('name', str), ('moref', str)]
@@ -1222,7 +1234,7 @@ class Configuration(VssManager):
             )
         return objs
 
-    def get_network_by_name_or_moref(self, name_or_moref: str) -> List[Dict]:
+    def get_network_by_name_or_moref(self, name_or_moref: str) -> list[dict]:
         """Get network by name or mo reference."""
         g_networks = self.get_networks(
             sort='name,desc', show_all=True, per_page=500
@@ -1242,7 +1254,7 @@ class Configuration(VssManager):
 
     def get_folder_by_name_or_moref_path(
         self, name_moref_path: str, silent: bool = False
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Get domain by name or mo reference."""
         g_folders = self.get_folders(
             sort='path,desc', show_all=True, per_page=500
@@ -1261,7 +1273,7 @@ class Configuration(VssManager):
             )
         return objs
 
-    def get_os_by_name_or_guest(self, name_or_guest: str) -> List[Dict]:
+    def get_os_by_name_or_guest(self, name_or_guest: str) -> list[dict]:
         """Get operating system by name, ``guest_id`` or ``full_name``."""
         g_os = self.get_os(
             sort='guestFullName,desc', show_all=True, per_page=500
@@ -1279,8 +1291,8 @@ class Configuration(VssManager):
         return objs
 
     def get_vss_service_by_name_label_or_id(
-        self, name_label_or_id: Union[str, int]
-    ) -> List[Dict]:
+        self, name_label_or_id: str | int
+    ) -> list[dict]:
         """Get service by name label or identifier."""
         vss_services = self.get_vss_services(
             sort='label,desc', show_all=True, per_page=200
@@ -1299,8 +1311,8 @@ class Configuration(VssManager):
         return objs
 
     def get_vss_groups_by_name_desc_or_id(
-        self, name_desc_or_id: Union[str, int]
-    ) -> List[Dict]:
+        self, name_desc_or_id: str | int
+    ) -> list[dict]:
         """Get groups by name, description or identifier."""
         vss_groups = self.get_user_groups(
             sort='name,desc', show_all=True, per_page=100
@@ -1325,8 +1337,8 @@ class Configuration(VssManager):
         return objs
 
     def _get_images_by_name_path_or_id(
-        self, f: Callable, name_or_path_or_id: Union[int, str]
-    ) -> List[Dict]:
+        self, f: Callable, name_or_path_or_id: int | str
+    ) -> list[dict]:
         """Get images by name path or identifier."""
         g_img = f(show_all=True, per_page=500)
         attributes = [('id', int), ('name', str), ('path', str)]
@@ -1345,31 +1357,31 @@ class Configuration(VssManager):
         return objs
 
     def get_vmdk_by_name_path_or_id(
-        self, name_or_path_or_id: Union[str, int]
-    ) -> List[Any]:
+        self, name_or_path_or_id: str | int
+    ) -> list[Any]:
         """Get vmdk by name, path or id."""
         return self._get_images_by_name_path_or_id(
             self.get_user_vmdks, name_or_path_or_id
         )
 
     def get_floppy_by_name_or_path(
-        self, name_or_path_or_id: Union[str, int]
-    ) -> List[Dict]:
+        self, name_or_path_or_id: str | int
+    ) -> list[dict]:
         """Get Floppy image by name, path or identifier."""
         return self._get_images_by_name_path_or_id(
             self.get_floppies, name_or_path_or_id
         )
 
     def get_iso_by_name_or_path(
-        self, name_or_path_or_id: Union[str, int]
-    ) -> List[Any]:
+        self, name_or_path_or_id: str | int
+    ) -> list[Any]:
         """Get ISO image by name, path or identifier."""
         return self._get_images_by_name_path_or_id(
             self.get_isos, name_or_path_or_id
         )
 
     def get_clib_deployable_item_by_name_or_id_path(
-        self, name_or_id_or_path: Union[str, int]
+        self, name_or_id_or_path: str | int
     ):
         """Get content library deployable items."""
         items = self.get_content_library_items(
@@ -1392,14 +1404,14 @@ class Configuration(VssManager):
         return objs
 
     def get_vm_image_by_name_or_id_path(
-        self, name_or_path_or_id: Union[str, int]
-    ) -> List[Any]:
+        self, name_or_path_or_id: str | int
+    ) -> list[Any]:
         """Get VM image by name, path or identifier."""
         return self._get_images_by_name_path_or_id(
             self.get_images, name_or_path_or_id
         )
 
-    def _get_types_by_name(self, name: Union[str, int], types_f, attrs=None):
+    def _get_types_by_name(self, name: str | int, types_f, attrs=None):
         g_types = types_f(only_type=False)
         attributes = attrs or [('type', str)]
         objs = self._filter_objects_by_attrs(str(name), g_types, attributes)
@@ -1417,27 +1429,27 @@ class Configuration(VssManager):
             )
         return objs
 
-    def get_vm_scsi_type_by_name(self, name: Union[str, int]):
+    def get_vm_scsi_type_by_name(self, name: str | int):
         """Get SCSI type by name."""
         return self._get_types_by_name(
             name, self.get_supported_scsi_controllers
         )
 
-    def get_vm_scsi_sharing_by_name(self, name: Union[str, int]):
+    def get_vm_scsi_sharing_by_name(self, name: str | int):
         """Get SCSI sharing by name."""
         return self._get_types_by_name(name, self.get_supported_scsi_sharing)
 
-    def get_vm_disk_backing_mode_by_name(self, name: Union[str, int]):
+    def get_vm_disk_backing_mode_by_name(self, name: str | int):
         """Get Disk Backing Mode by name."""
         return self._get_types_by_name(
             name, self.get_supported_disk_backing_modes
         )
 
-    def get_vm_disk_backing_sharing_by_name(self, name: Union[str, int]):
+    def get_vm_disk_backing_sharing_by_name(self, name: str | int):
         """Get Disk Sharing Mode by name."""
         return self._get_types_by_name(name, self.get_supported_disk_sharing)
 
-    def get_vm_firmware_by_type_or_desc(self, name: Union[str, int]):
+    def get_vm_firmware_by_type_or_desc(self, name: str | int):
         """Get VM firmware by name."""
         return self._get_types_by_name(
             name,
@@ -1445,7 +1457,7 @@ class Configuration(VssManager):
             attrs=[('type', str), ('description', str)],
         )
 
-    def get_vm_gpu_profiles_by_name_or_desc(self, name: Union[str, int]):
+    def get_vm_gpu_profiles_by_name_or_desc(self, name: str | int):
         """Get VM gpu by name or desc."""
         return self._get_types_by_name(
             name,
@@ -1453,7 +1465,7 @@ class Configuration(VssManager):
             attrs=[('type', str), ('description', str)],
         )
 
-    def get_vm_storage_type_by_type_or_desc(self, name: Union[str, int]):
+    def get_vm_storage_type_by_type_or_desc(self, name: str | int):
         """Get VM supported storage types by name."""
         return self._get_types_by_name(
             name,
@@ -1461,7 +1473,7 @@ class Configuration(VssManager):
             attrs=[('type', str), ('description', str)],
         )
 
-    def get_vm_nic_type_by_name(self, name: Union[str, int]):
+    def get_vm_nic_type_by_name(self, name: str | int):
         """Get VM NIC type by name."""
         g_types = self.get_supported_nic_types(only_type=False)
         attributes = [('type', str)]
@@ -1482,7 +1494,7 @@ class Configuration(VssManager):
 
     def get_cli_spec_from_api_spec(
         self, payload: dict, template: dict
-    ) -> Dict:
+    ) -> dict:
         """Get CLI specification from API specification."""
         os_q = self.get_os(filter=f"guest_id,eq,{payload.get('os')}")
         machine_os = os_q[0]['full_name'] if os_q else payload.get('os')
@@ -1519,7 +1531,7 @@ class Configuration(VssManager):
         return template
 
     @staticmethod
-    def parse_ova_or_ovf(file_path: Union[Path, str]) -> Dict:
+    def parse_ova_or_ovf(file_path: Path | str) -> dict:
         """Parse ova or ovf."""
         return parse_ovf(file_path)
 
@@ -1538,13 +1550,13 @@ class Configuration(VssManager):
 
     def yaml_dump_stream(
         self, data: Any, stream: Any = None, **kw: Any
-    ) -> Optional[str]:
+    ) -> str | None:
         """Dump yaml to stream."""
         return yaml.dump_yaml(self.yaml(), data, stream, **kw)
 
     def download_inventory_file(
         self, request_id: int, directory: str = ''
-    ) -> Dict:
+    ) -> dict:
         """Download inventory file to a given directory."""
         with self.spinner(disable=self.debug):
             file_path = self.download_inventory_result(
@@ -1560,7 +1572,7 @@ class Configuration(VssManager):
     def wait_for_requests_to(
         self,
         obj,
-        required: List[str] = (
+        required: list[str] = (
             RequestStatus.PROCESSED.name,
             RequestStatus.SCHEDULED.name,
         ),
@@ -1599,14 +1611,14 @@ class Configuration(VssManager):
     def wait_for_request_to(
         self,
         obj: dict,
-        required: List[str] = (
+        required: list[str] = (
             RequestStatus.PROCESSED.name,
             RequestStatus.SCHEDULED.name,
         ),
         wait: int = 5,
         max_tries: int = 720,
         threaded: bool = False,
-    ) -> Optional[bool]:
+    ) -> bool | None:
         """Wait for request to given status."""
         # wait
         request_message = {}
@@ -1754,8 +1766,8 @@ class Configuration(VssManager):
         chat_endpoint: str,
         persona_id: int,
         description: str,
-        headers: Dict[str, str],
-    ) -> Optional[int]:
+        headers: dict[str, str],
+    ) -> int | None:
         """Get the new chat id."""
         payload = {"persona_id": persona_id, "description": description}
         try:
@@ -1782,10 +1794,10 @@ class Configuration(VssManager):
     def ask_assistant(
         self,
         message: str,
-        spinner_cls: Optional[Spinner] = None,
+        spinner_cls: Spinner | None = None,
         final_message: str = None,
         show_reasoning: bool = False,
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Ask assistant."""
         # Generate a new API key for this session
         api_key = self._generate_assistant_api_key()
@@ -1982,7 +1994,7 @@ class Configuration(VssManager):
         chat_message_id: str,
         api_key: str,
         is_positive: bool,
-        feedback_text: Optional[str] = None,
+        feedback_text: str | None = None,
     ) -> bool:
         """Provide feedback for an assistant response.
 

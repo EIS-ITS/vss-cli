@@ -27,19 +27,21 @@ The following is the YAML definition of valid VM Content Library CLI specificati
     # Disks (Uncomment to enable)
       disks:
         - capacity_gb: 40                  # Disk capacity in GB (Default: 40GB).
-          backing_mode: persistent         # Optional Disk backing mode (Default: persistent).
-          backing_sharing: sharingnone     # Optional Disk sharing mode (Default: sharingnone).
-          scsi: 0                       # Optional Disk SCSI controller (Default: 0).
+          scsi: 0                          # Optional Disk SCSI controller (Default: 0).
+    #      backing_mode: persistent      # Optional Disk backing mode (Default: persistent).
+    #      backing_sharing: sharingnone  # Optional Disk sharing mode (Default: sharingnone).
       scsi:
-        -  bus: 0                       # SCSI controller bus number (Default: 0).
-           type: paravirtual            # Required: Disk type (Recommended: paravirtual).
-           sharing: nosharing           # Optional Disk sharing mode (Default: nosharing).
+       -  bus: 0
+          type: paravirtual             # Required: Disk type (Recommended: paravirtual).
+    #      sharing: nosharing           # Optional Disk sharing mode (Default: nosharing).
     # Additional (Uncomment to enable)
-      domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
-      power_on: true         # Optional: Power on after successful deployment.
-    # template: false        # Optional: Mark resulting vm as template.
-    # tpm: true              # Optional: Enable vTrusted Platform Module Device.
-    # vbs: true              # Optional: Enable Virtualization Based Security.
+    #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
+    #  power_on: true         # Optional: Power on after successful deployment.
+    #  template: false        # Optional: Mark resulting vm as template.
+    #  tpm: true              # Optional: Enable vTrusted Platform Module Device.
+    #  vbs: true              # Optional: Enable Virtualization Based Security.
+    #  gpus:                   # Optional: GPU profiles to attach to VM.
+    #    - nvidia_l4-24c
     networking:
       interfaces:
         - network: CGN        # Required: Network name or network ID.

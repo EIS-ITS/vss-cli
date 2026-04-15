@@ -1,10 +1,12 @@
 """OVF plugin for VSS CLI (vss-cli)."""
+
 import logging
 from pathlib import Path
 
 import click
 
-from vss_cli import const, rel_opts as so
+from vss_cli import const
+from vss_cli import rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.helper import format_output, raw_format_output

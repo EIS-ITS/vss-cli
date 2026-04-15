@@ -1,4 +1,5 @@
 """Tests for credential migration logic."""
+
 import json
 import tempfile
 import unittest
@@ -8,8 +9,11 @@ from unittest.mock import MagicMock, patch
 
 from vss_cli.credentials.base import CredentialType
 from vss_cli.credentials.migration import (
-    CredentialMigration, MigrationError, detect_legacy_credentials,
-    has_legacy_credentials)
+    CredentialMigration,
+    MigrationError,
+    detect_legacy_credentials,
+    has_legacy_credentials,
+)
 
 
 class TestLegacyCredentialDetection(unittest.TestCase):

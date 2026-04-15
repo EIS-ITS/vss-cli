@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from Template 2026.1.0        #
+#     VSS-CLI Spec from Template 2026.4.0        #
 ####################################################
 built: template           # Required: Do not remove.
 machine:
@@ -19,6 +19,8 @@ machine:
 #  template: false        # Optional: Mark resulting vm as template.
 #  tpm: true              # Optional: Enable vTrusted Platform Module Device.
 #  vbs: true              # Optional: Enable Virtualization Based Security.
+#  gpus:                   # Optional: GPU profiles to attach to VM.
+#    - nvidia_l4-24c
 # Networking
 networking:               # Optional: Networking (Default: source vm interfaces layout)
   interfaces:             # Optional: Interfaces (Default: source vm interfaces layout)

@@ -1,4 +1,5 @@
 """AI assistant."""
+
 import logging
 import random
 import sys

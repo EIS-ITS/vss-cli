@@ -1,6 +1,54 @@
 Changelog 📝
 ============
 
+`v2026.4.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2026.4.0>`_ (2026-04-15)
+------------------------------------------------------------------------------------------
+
+**Bug Fixes:**
+
+- `#811 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/811>`_: ``compute vm mk from-template``: Unable to find source when creating a virtual machine from template.
+- `#814 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/814>`_: ``core``: fix dependabot vulnerabilities.
+- `#815 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/815>`_: ``core``: fix pre-commit hooks.
+
+**Improvements:**
+
+- `#812 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/812>`_: ``compute vm mk * --gpu-profile``: add option to specify gpu profile when creating a vm with gpu.
+- `#813 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/813>`_: ``core``: upgrade ``pyvss`` to ``v2026.4.0``.
+
+`v2026.1.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2026.1.0>`_ (2026-01-14)
+------------------------------------------------------------------------------------------
+
+**Bug Fixes:**
+
+- `#802 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/802>`_: ``compute mk from-file``: fix errors when selecting template.
+- `#805 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/805>`_: ``ci``: fix missing docs jobs in pipeline
+- `#806 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/806>`_: ``core``: fix call to requests without timeout
+- `#807 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/807>`_: ``ovf``: Fix SAST Config Complexity - OVF Parser Refactoring
+
+**Improvements:**
+
+- `#797 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/797>`_: ``assist``: optional show thought process
+- `#798 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/798>`_: ``core``: fix core security warning
+- `#799 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/799>`_:  ``assist``: set propper context when calling the agent
+- `#800 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/800>`_: ``compute vm res``: to restore validate name length less than 70 chars without prefix
+- `#801 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/801>`_: ``core``: Windows Credential Locker Support
+- `#803 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/803>`_: ``security``: CodeClimate Security Scanning with NIST 800-171/OWASP Compliance
+- `#804 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/804>`_: ``assist``: implement new turn_index attribute in response
+- `#808 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/808>`_: ``assist``: Chat Endpoint Migration
+
+`v2025.10.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.10.0>`_ (2025-11-05)
+--------------------------------------------------------------------------------------------
+
+**Bug Fixes:**
+
+- `#790 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/790>`_: ``ci``: `sphinx` issue in pipeline.
+
+**Improvements:**
+
+- `#792 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/792>`_: ``core``: agentOS implementation ``[experimental]``.
+- `#793 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/793>`_: ``core``: Secure Credential Keystore Integration ``[experimental]``.
+- `#794 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/794>`_: ``core``: agentOS upgrade to v2 ``[experimental]``.
+
 `v2025.9.0 <https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2025.9.0>`_ (2025-09-25)
 ------------------------------------------------------------------------------------------
 

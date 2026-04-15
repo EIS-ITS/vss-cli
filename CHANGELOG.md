@@ -1,5 +1,18 @@
 # Changelog 📝
 
+## [2026.4.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2026.4.0) (2026-04-15)
+
+**Bug Fixes:**
+
+- [#811](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/811): ``compute vm mk from-template``: Unable to find source when creating a virtual machine from template.
+- [#814](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/814): ``core``: fix dependabot vulnerabilities.
+- [#815](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/815): ``core``: fix pre-commit hooks.
+
+**Improvements:**
+
+- [#812](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/812): ``compute vm mk * --gpu-profile``: add option to specify gpu profile when creating a vm with gpu.
+- [#813](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/issues/813): ``core``: upgrade ``pyvss`` to ``v2026.4.0``.
+
 ## [2026.1.0](https://gitlab-ee.eis.utoronto.ca/vss/vss-cli/tags/v2026.1.0) (2026-01-14)
 
 **Bug Fixes:**

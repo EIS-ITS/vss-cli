@@ -1,4 +1,5 @@
 """Integration tests for configure commands with backend integration."""
+
 import os
 import tempfile
 import unittest

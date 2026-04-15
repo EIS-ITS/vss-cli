@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from CLib 2026.1.0             #
+#     VSS-CLI Spec from CLib 2026.4.0             #
 ####################################################
 built: clib               # Required: Do not remove.
 machine:
@@ -27,6 +27,8 @@ machine:
 #  template: false        # Optional: Mark resulting vm as template.
 #  tpm: true              # Optional: Enable vTrusted Platform Module Device.
 #  vbs: true              # Optional: Enable Virtualization Based Security.
+#  gpus:                   # Optional: GPU profiles to attach to VM.
+#    - nvidia_l4-24c
 networking:
   interfaces:
     - network: CGN        # Required: Network name or network ID.

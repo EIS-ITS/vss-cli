@@ -1,4 +1,5 @@
 """Base credential backend implementation."""
+
 import logging
 import re
 import time
@@ -31,7 +32,7 @@ class CredentialData:
     credential_type: CredentialType
     value: str
     endpoint: str
-    metadata: Optional[Dict[str, str]] = field(default=None)
+    metadata: dict[str, str] | None = field(default=None)
 
 
 def get_namespace(endpoint: str) -> str:
@@ -67,13 +68,13 @@ class CredentialCache:
             ttl_seconds: Time-to-live for cache entries in seconds
                          (default: 300 = 5 minutes)
         """
-        self._cache: Dict[Tuple[str, CredentialType], Tuple[str, float]] = {}
+        self._cache: dict[tuple[str, CredentialType], tuple[str, float]] = {}
         self._ttl = ttl_seconds
         _LOGGING.debug(f'Initialized credential cache with TTL={ttl_seconds}s')
 
     def get(
         self, endpoint: str, credential_type: CredentialType
-    ) -> Optional[str]:
+    ) -> str | None:
         """Retrieve credential from cache.
 
         Args:
@@ -187,7 +188,7 @@ class CredentialBackend(ABC):
     @abstractmethod
     def _retrieve_credential(
         self, endpoint: str, credential_type: CredentialType
-    ) -> Optional[str]:
+    ) -> str | None:
         """Retrieve a credential from the backend.
 
         Implementation-specific method for retrieving credentials.
@@ -258,7 +259,7 @@ class CredentialBackend(ABC):
 
     def retrieve_credential(
         self, endpoint: str, credential_type: CredentialType
-    ) -> Optional[str]:
+    ) -> str | None:
         """Retrieve a credential (public interface).
 
         Checks cache first, then backend storage.
@@ -353,7 +354,8 @@ def detect_backend(
     if prefer_1password:
         try:
             from vss_cli.credentials.backends.onepassword import (
-                OnePasswordBackend)
+                OnePasswordBackend,
+            )
 
             backend = OnePasswordBackend(enable_cache=enable_cache)
             if backend.is_available():

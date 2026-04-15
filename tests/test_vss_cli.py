@@ -2,9 +2,9 @@ import datetime
 import os
 import unittest
 
-from click.testing import CliRunner
 import click_log.core as logcore
 import pytz
+from click.testing import CliRunner
 
 import vss_cli.cli as cli
 from vss_cli.const import __version__
@@ -23,7 +23,7 @@ class TestVssCLI(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestVssCLI, cls).setUpClass()
+        super().setUpClass()
         # setting up the CLI
         cls.runner = CliRunner()
         # Setting up credentials and endpoint

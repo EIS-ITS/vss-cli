@@ -23,7 +23,7 @@ The following is the YAML definition of valid VM Clone CLI specification:
    # Additional (Uncomment to enable)
    #  source_snapshot:       # Optional: Snapshot name, id or description source to clone from
    #  folder: MyFolder       # Optional: Folder name, path or ID (Default: source vm folder)
-   #  firmware: efi          # Optional: Firmware to use: Either bios or efi (Default: source vm firmware).
+   #  firmware: efi         # Optional: Firmware to use: Either bios or efi (Default: source vm firmware).
    #  storage-type: hdd      # Optional: Storage Type to use for this VM. ssd or hdd
    #  os:                    # Optional: Guest Operating System name or Id (Default: source vm)
    #  cpu:                   # Optional: CPU count (Default: source vm cpu count)
@@ -33,6 +33,8 @@ The following is the YAML definition of valid VM Clone CLI specification:
    #  template: false        # Optional: Mark resulting vm as template.
    #  tpm: true              # Optional: Enable vTrusted Platform Module Device.
    #  vbs: true              # Optional: Enable Virtualization Based Security.
+   #  gpus:                   # Optional: GPU profiles to attach to VM.
+   #    - nvidia_l4-24c
    # Networking
    networking:               # Optional: Networking (Default: source vm interfaces layout)
      interfaces:             # Optional: Interfaces (Default: source vm interfaces layout)

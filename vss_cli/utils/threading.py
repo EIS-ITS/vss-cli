@@ -1,3 +1,5 @@
+"""Worker queue for concurrent request processing."""
+
 import contextlib
 import itertools
 import logging
@@ -11,15 +13,15 @@ import click_threading
 _LOGGING = logging.getLogger(__name__)
 
 
-class WorkerQueue(object):
-    '''
-    Based on https://github.com/pimutils/vdirsyncer
-    A simple worker-queue setup.
+class WorkerQueue:
+    """Simple worker-queue setup based on vdirsyncer.
+
     Note that workers quit if queue is empty. That means you have to first put
     things into the queue before spawning the worker!
-    '''
+    """
 
     def __init__(self, max_workers):
+        """Initialize worker queue with max concurrency."""
         self._queue = queue.Queue()
         self._workers = []
         self._max_workers = max_workers
@@ -31,6 +33,7 @@ class WorkerQueue(object):
         self.num_failed_tasks = itertools.count()
 
     def shutdown(self):
+        """Shut down all registered handlers."""
         while self._shutdown_handlers:
             try:
                 self._shutdown_handlers.pop()()
@@ -38,6 +41,7 @@ class WorkerQueue(object):
                 pass
 
     def _worker(self):
+        """Worker thread function."""
         while True:
             try:
                 func = self._queue.get(False)
@@ -56,6 +60,7 @@ class WorkerQueue(object):
                     self.shutdown()
 
     def spawn_worker(self):
+        """Spawn a new worker thread if under the limit."""
         if self._max_workers and len(self._workers) >= self._max_workers:
             return
 
@@ -65,6 +70,7 @@ class WorkerQueue(object):
 
     @contextlib.contextmanager
     def join(self, debug=False):
+        """Join all workers and wait for completion."""
         assert self._workers or not self._queue.unfinished_tasks
         ui_worker = click_threading.UiWorker()
         self._shutdown_handlers.append(ui_worker.shutdown)
@@ -91,10 +97,9 @@ class WorkerQueue(object):
         tasks_done = next(self.num_done_tasks)
 
         if tasks_failed > 0:
-            _LOGGING.error(
-                '{} out of {} tasks failed.'.format(tasks_failed, tasks_done)
-            )
+            _LOGGING.error(f'{tasks_failed} out of {tasks_done} tasks failed.')
             sys.exit(1)
 
     def put(self, f):
+        """Put a callable into the work queue."""
         return self._queue.put(f)

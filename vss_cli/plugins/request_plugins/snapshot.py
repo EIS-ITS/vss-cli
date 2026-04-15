@@ -1,4 +1,5 @@
 """Vm Snapshot Request Management plugin for VSS CLI (vss-cli)."""
+
 import logging
 
 import click

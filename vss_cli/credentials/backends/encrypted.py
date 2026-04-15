@@ -1,10 +1,12 @@
 """Encrypted file-based credential backend (fallback)."""
+
 import hashlib
 import hmac
 import json
 import logging
 import os
 import threading
+
 # import warnings
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -15,7 +17,11 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from vss_cli.credentials.base import (
-    CredentialBackend, CredentialData, CredentialType, get_namespace)
+    CredentialBackend,
+    CredentialData,
+    CredentialType,
+    get_namespace,
+)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -51,8 +57,8 @@ class EncryptedFileBackend(CredentialBackend):
 
     def __init__(
         self,
-        credential_file: Optional[Path] = None,
-        passphrase: Optional[str] = None,
+        credential_file: Path | None = None,
+        passphrase: str | None = None,
         *args,
         **kwargs,
     ):
@@ -155,7 +161,7 @@ class EncryptedFileBackend(CredentialBackend):
         entropy_hash = hashlib.sha256(entropy_str.encode()).digest()
         return entropy_hash
 
-    def _encrypt_data(self, data: Dict) -> bytes:
+    def _encrypt_data(self, data: dict) -> bytes:
         """Encrypt credential data.
 
         Args:
@@ -209,7 +215,7 @@ class EncryptedFileBackend(CredentialBackend):
             _LOGGING.error(f'Encryption error: {e}')
             raise EncryptionError(f'Failed to encrypt data: {e}')
 
-    def _decrypt_data(self, encrypted_bytes: bytes) -> Dict:
+    def _decrypt_data(self, encrypted_bytes: bytes) -> dict:
         """Decrypt credential data.
 
         Args:
@@ -262,7 +268,7 @@ class EncryptedFileBackend(CredentialBackend):
             _LOGGING.error(f'Decryption error: {e}')
             raise EncryptionError(f'Failed to decrypt data: {e}')
 
-    def _read_encrypted_file(self) -> Dict:
+    def _read_encrypted_file(self) -> dict:
         """Read and decrypt credential file.
 
         Returns:
@@ -288,7 +294,7 @@ class EncryptedFileBackend(CredentialBackend):
                 _LOGGING.error(f'Error reading credential file: {e}')
                 raise EncryptionError(f'Failed to read credential file: {e}')
 
-    def _write_encrypted_file(self, data: Dict) -> None:
+    def _write_encrypted_file(self, data: dict) -> None:
         """Encrypt and write credential file.
 
         Args:
@@ -374,7 +380,7 @@ class EncryptedFileBackend(CredentialBackend):
 
     def _retrieve_credential(
         self, endpoint: str, credential_type: CredentialType
-    ) -> Optional[str]:
+    ) -> str | None:
         """Retrieve credential from encrypted file.
 
         Args:
@@ -445,7 +451,7 @@ class EncryptedFileBackend(CredentialBackend):
             _LOGGING.error(f'Failed to delete credential: {e}')
             raise EncryptionError(f'Failed to delete credential: {e}')
 
-    def _list_endpoints(self) -> List[str]:
+    def _list_endpoints(self) -> list[str]:
         """List all endpoints with stored credentials.
 
         Returns:

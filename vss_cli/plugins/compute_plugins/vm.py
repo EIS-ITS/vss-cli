@@ -1,4 +1,5 @@
 """Compute VM plugin for VSS CLI (vss-cli)."""
+
 import datetime
 import logging
 import os
@@ -27,10 +28,16 @@ from vss_cli.plugins.compute import cli
 from vss_cli.plugins.compute_plugins import rel_args as c_sa
 from vss_cli.plugins.compute_plugins import rel_opts as c_so
 from vss_cli.plugins.compute_plugins.helper import (
-    get_restore_user_confirmation, process_retirement_new)
+    get_restore_user_confirmation,
+    process_retirement_new,
+)
 from vss_cli.validators import (
-    flexible_email_args, retirement_value, validate_email, validate_json_type,
-    validate_phone_number)
+    flexible_email_args,
+    retirement_value,
+    validate_email,
+    validate_json_type,
+    validate_phone_number,
+)
 
 _LOGGING = logging.getLogger(__name__)
 
@@ -1384,7 +1391,7 @@ def compute_vm_set_cpu(ctx: Configuration):
 @click.argument('cpu_count', type=click.INT, required=True)
 @pass_context
 def compute_vm_set_cpu_count(
-    ctx: Configuration, cpu_count: int, cores_per_socket: Optional[int] = 1
+    ctx: Configuration, cpu_count: int, cores_per_socket: int | None = 1
 ):
     """Update CPU count and cores per socket.
 
@@ -3932,6 +3939,7 @@ def compute_vm_from_file(
 @c_so.vss_service_opt
 @c_so.instances
 @c_so.firmware_nr_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -3964,6 +3972,7 @@ def compute_vm_mk_spec(
     vss_service,
     instances,
     firmware,
+    gpu_profile,
     storage_type,
     retire_type,
     retire_warning,
@@ -4008,6 +4017,12 @@ def compute_vm_mk_spec(
     if iso:
         _iso = ctx.get_iso_by_name_or_path(iso)
         payload['iso'] = _iso[0]['path']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4096,6 +4111,7 @@ def compute_vm_mk_spec(
 @c_so.storage_type_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.retire_type
 @c_so.retire_warning
 @c_so.retire_value
@@ -4128,6 +4144,7 @@ def compute_vm_mk_shell(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     retire_type,
     retire_warning,
@@ -4165,6 +4182,12 @@ def compute_vm_mk_shell(
     if iso:
         _iso = ctx.get_iso_by_name_or_path(iso)
         payload['iso'] = _iso[0]['path']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4248,6 +4271,7 @@ def compute_vm_mk_shell(
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -4281,6 +4305,7 @@ def compute_vm_mk_template(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     instances,
     retire_type,
@@ -4289,7 +4314,7 @@ def compute_vm_mk_template(
 ):
     """Deploy virtual machine from template."""
     # get source from uuid or name
-    _vm = ctx.get_vm_by_id_or_name(source)
+    _vm = ctx.get_vm_by_id_or_name(source, instance_type='template')
     vm_id = _vm[0]['moref']
     # payload
     payload = dict(
@@ -4319,6 +4344,12 @@ def compute_vm_mk_template(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guest_id']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4403,6 +4434,7 @@ def compute_vm_mk_template(
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.snapshot
 @c_so.retire_type
@@ -4438,6 +4470,7 @@ def compute_vm_mk_clone(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     snapshot,
     retire_type,
@@ -4480,6 +4513,12 @@ def compute_vm_mk_clone(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guest_id']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4571,6 +4610,7 @@ def compute_vm_mk_clone(
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -4605,6 +4645,7 @@ def compute_vm_mk_image(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     retire_type,
     retire_warning,
@@ -4642,6 +4683,12 @@ def compute_vm_mk_image(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guest_id']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)
@@ -4735,6 +4782,7 @@ def compute_vm_mk_image(
 @c_so.firmware_nr_opt
 @c_so.tpm_enable_opt
 @c_so.vbs_enable_opt
+@c_so.gpu_profile_mk_opt
 @c_so.storage_type_nr_opt
 @c_so.retire_type
 @c_so.retire_warning
@@ -4774,6 +4822,7 @@ def compute_vm_mk_clib(
     firmware,
     tpm,
     vbs,
+    gpu_profile,
     storage_type,
     retire_type,
     retire_warning,
@@ -4809,6 +4858,12 @@ def compute_vm_mk_clib(
     if os:
         _os = ctx.get_os_by_name_or_guest(os)
         payload['os'] = _os[0]['guest_id']
+    if gpu_profile:
+        _gpus = []
+        for gp in gpu_profile:
+            _gp = ctx.get_vm_gpu_profiles_by_name_or_desc(gp)
+            _gpus.append(_gp[0]['type'])
+        payload['gpus'] = _gpus
     # Logical
     if folder:
         _folder = ctx.get_folder_by_name_or_moref_path(folder)

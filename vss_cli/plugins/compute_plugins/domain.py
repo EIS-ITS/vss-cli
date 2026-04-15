@@ -1,10 +1,12 @@
 """Compute Domain plugin for VSS CLI (vss-cli)."""
+
 import logging
 
 import click
 
-from vss_cli import const, rel_opts as so
 import vss_cli.autocompletion as autocompletion
+from vss_cli import const
+from vss_cli import rel_opts as so
 from vss_cli.cli import pass_context
 from vss_cli.config import Configuration
 from vss_cli.exceptions import VssCliError

@@ -1,11 +1,15 @@
 """Compute Shared Options plugin for VSS CLI (vss-cli)."""
+
 import click
 
 import vss_cli.autocompletion as autocompletion
 from vss_cli.plugins.compute_plugins import callbacks
 from vss_cli.validators import (
-    retirement_value, validate_admin, validate_inform,
-    validate_json_file_or_type)
+    retirement_value,
+    validate_admin,
+    validate_inform,
+    validate_json_file_or_type,
+)
 
 source_opt = click.option(
     '--source',
@@ -329,6 +333,14 @@ gpu_profile_opt = click.option(
     help='GPU Profile',
     shell_complete=autocompletion.vm_gpu_profiles,
     required=True,
+)
+gpu_profile_mk_opt = click.option(
+    '--gpu-profile',
+    type=click.STRING,
+    help='GPU profile to add to VM.',
+    multiple=True,
+    required=False,
+    shell_complete=autocompletion.vm_gpu_profiles,
 )
 firmware_nr_opt = click.option(
     '--firmware',

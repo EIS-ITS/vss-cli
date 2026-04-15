@@ -1,4 +1,5 @@
 """Statuspage.io module."""
+
 import logging
 
 import requests
@@ -82,9 +83,9 @@ def get_upcoming_maintenance_by_service():
                         'created_at': created_at,
                         'scheduled_for': scheduled_for,
                         'scheduled_until': scheduled_until,
-                        'description': updates[0].get('body')
-                        if updates
-                        else None,
+                        'description': (
+                            updates[0].get('body') if updates else None
+                        ),
                     }
                     maintenances.append(maint_dict)
         return maintenances

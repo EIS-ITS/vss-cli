@@ -1,4 +1,5 @@
 """Simplified integration tests for configure commands with backend integration."""  # noqa
+
 import tempfile
 import unittest
 from pathlib import Path

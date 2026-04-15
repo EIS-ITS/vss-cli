@@ -1,4 +1,5 @@
 """Constants used by VSS CLI (vss-cli)."""
+
 import os
 
 try:
@@ -8,7 +9,7 @@ except ImportError:
 
 PACKAGE_NAME = "vss_cli"
 
-__version__ = "2026.1.0"
+__version__ = "2026.4.0"
 
 
 DEFAULT_TIMEOUT = 30

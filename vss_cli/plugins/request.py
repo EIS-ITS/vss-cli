@@ -1,4 +1,5 @@
 """Request Management plugin for VSS CLI (vss-cli)."""
+
 import click
 
 from vss_cli.cli import pass_context

@@ -1,4 +1,5 @@
 """Tests for the assist command --show-reasoning flag."""
+
 import json
 import unittest
 from unittest.mock import MagicMock, Mock, patch
@@ -700,7 +701,7 @@ class TestAssistIntegration(unittest.TestCase):
                 mock_spinner_cls.return_value = mock_spinner
 
                 # Call with show_reasoning=False (default)
-                result = config.ask_assistant(
+                _result = config.ask_assistant(
                     message='test question',
                     spinner_cls=None,
                     final_message='test',
@@ -787,7 +788,7 @@ class TestAssistIntegration(unittest.TestCase):
 
             with patch('vss_cli.config.Spinner') as mock_spinner_cls:
                 # Call with show_reasoning=True
-                result = config.ask_assistant(
+                _result = config.ask_assistant(
                     message='test question',
                     spinner_cls=None,
                     final_message='test',
@@ -905,11 +906,11 @@ class TestAssistIntegration(unittest.TestCase):
 
             with patch('vss_cli.config.Spinner') as mock_spinner_cls:
                 # Call with show_reasoning=False BUT debug=True
-                result = config.ask_assistant(
+                _result = config.ask_assistant(
                     message='test question',
                     spinner_cls=None,
                     final_message='test',
-                    show_reasoning=False,  # Flag says hide, but debug should override
+                    show_reasoning=False,
                 )
 
                 # Verify debug override worked

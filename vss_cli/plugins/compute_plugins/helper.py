@@ -1,4 +1,5 @@
 """Helper module for the vss-cli compute plugins."""
+
 from typing import Dict, Optional, Tuple, Union
 
 import click
@@ -6,7 +7,7 @@ import click
 
 def get_restore_user_confirmation(
     ctx, _vm, _rp, reason
-) -> Tuple[str, str, Dict[str, str]]:
+) -> tuple[str, str, dict[str, str]]:
     """Get restore user confirmation."""
     from vss_cli import const
 
@@ -30,8 +31,7 @@ def get_restore_user_confirmation(
     c2_fmt = const.VM_RESTORE_PRICE_GB.copy()
     c2_fmt['provisioned_gb'] = _vm[0]['provisioned_gb']
     c2_fmt['total_gb'] = (
-        const.VM_RESTORE_PRICE_GB[storage_type]
-        * _vm[0]['provisioned_gb']
+        const.VM_RESTORE_PRICE_GB[storage_type] * _vm[0]['provisioned_gb']
     )
     c2_str = const.CONFIRM_VM_RESTORE_MSG.format(**c2_fmt)
     confirmation_2 = click.confirm(c2_str)
@@ -40,9 +40,9 @@ def get_restore_user_confirmation(
 
 def process_retirement_new(
     retire_type: str,
-    retire_value: Union[Tuple[int, int, int], str],
-    retire_warning: Optional[int] = None,
-) -> Dict:
+    retire_value: tuple[int, int, int] | str,
+    retire_warning: int | None = None,
+) -> dict:
     """Process retirement for new vm commands."""
     if not all([retire_type, retire_value]):
         raise click.BadParameter(

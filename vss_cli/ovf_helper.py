@@ -1,4 +1,5 @@
 """OVF/OVA parsing helpers used by VSS CLI (vss-cli)."""
+
 import json
 import logging
 import tarfile
@@ -12,7 +13,7 @@ from vss_cli.exceptions import VssCliError
 _LOGGING = logging.getLogger(__name__)
 
 
-def get_namespaced_value(data: Dict, key: str, prefix: str = 'ovf') -> Any:
+def get_namespaced_value(data: dict, key: str, prefix: str = 'ovf') -> Any:
     """Get value from dict, trying namespaced key first then plain key.
 
     This abstracts the dual-key pattern commonly found in OVF XML where
@@ -37,7 +38,7 @@ def get_namespaced_value(data: Dict, key: str, prefix: str = 'ovf') -> Any:
     return None
 
 
-def extract_ovf_content(file_path: Union[Path, str]) -> str:
+def extract_ovf_content(file_path: Path | str) -> str:
     """Extract OVF content from file or archive.
 
     Handles different file formats:
@@ -87,7 +88,7 @@ def _extract_ovf_from_archive(file: Path) -> str:
     return ''
 
 
-def parse_ovf_strings(ovf_dict: Dict) -> Dict:
+def parse_ovf_strings(ovf_dict: dict) -> dict:
     """Parse OVF strings section for message ID lookups.
 
     Extracts the Strings/ovf:Strings section from the OVF envelope and
@@ -116,7 +117,7 @@ def parse_ovf_strings(ovf_dict: Dict) -> Dict:
     return ovf_strings
 
 
-def parse_references(ovf_dict: Dict) -> List[Dict]:
+def parse_references(ovf_dict: dict) -> list[dict]:
     """Parse OVF references section for file information.
 
     Extracts file references from the References/ovf:References section.
@@ -155,7 +156,7 @@ def parse_references(ovf_dict: Dict) -> List[Dict]:
     return files
 
 
-def parse_disk_section(ovf_dict: Dict) -> List[Dict]:
+def parse_disk_section(ovf_dict: dict) -> list[dict]:
     """Parse OVF disk section for disk information.
 
     Extracts disk information from the DiskSection/ovf:DiskSection section.
@@ -197,7 +198,7 @@ def parse_disk_section(ovf_dict: Dict) -> List[Dict]:
     return disks
 
 
-def parse_network_section(ovf_dict: Dict) -> List[Dict]:
+def parse_network_section(ovf_dict: dict) -> list[dict]:
     """Parse OVF network section for network information.
 
     Extracts network information from the NetworkSection/ovf:NetworkSection
@@ -236,7 +237,7 @@ def parse_network_section(ovf_dict: Dict) -> List[Dict]:
     return networks
 
 
-def _resolve_msgid(value: Any, ovf_strings: Dict) -> Optional[str]:
+def _resolve_msgid(value: Any, ovf_strings: dict) -> str | None:
     """Resolve a value that may contain an @ovf:msgid reference.
 
     If the value is a dict with @ovf:msgid or msgid key, looks up
@@ -265,7 +266,7 @@ def _resolve_msgid(value: Any, ovf_strings: Dict) -> Optional[str]:
     return None
 
 
-def parse_deployment_options(ovf_dict: Dict, ovf_strings: Dict) -> List[Dict]:
+def parse_deployment_options(ovf_dict: dict, ovf_strings: dict) -> list[dict]:
     """Parse OVF deployment options section for configuration parameters.
 
     Extracts deployment configuration options from the
@@ -317,7 +318,7 @@ def parse_deployment_options(ovf_dict: Dict, ovf_strings: Dict) -> List[Dict]:
     return dparams
 
 
-def _extract_property_description(prop: Dict) -> Optional[str]:
+def _extract_property_description(prop: dict) -> str | None:
     """Extract description from a property element.
 
     Checks multiple possible sources for the description value:
@@ -336,7 +337,7 @@ def _extract_property_description(prop: Dict) -> Optional[str]:
     return get_namespaced_value(prop, 'Label')
 
 
-def _parse_user_configurable_properties(properties: List[Dict]) -> List[Dict]:
+def _parse_user_configurable_properties(properties: list[dict]) -> list[dict]:
     """Parse user-configurable properties from a list of property elements.
 
     Filters properties to only those with @ovf:userConfigurable == 'true'
@@ -366,8 +367,8 @@ def _parse_user_configurable_properties(properties: List[Dict]) -> List[Dict]:
 
 
 def _extract_properties_from_product_section(
-    prod_sect: Any, prod_props: List[Dict]
-) -> List[Dict]:
+    prod_sect: Any, prod_props: list[dict]
+) -> list[dict]:
     """Extract properties from ProductSection, handling list or dict format.
 
     Args:
@@ -390,7 +391,7 @@ def _extract_properties_from_product_section(
     return []
 
 
-def parse_virtual_system(value: Dict, ovf_strings: Dict) -> Dict:
+def parse_virtual_system(value: dict, ovf_strings: dict) -> dict:
     """Parse OVF VirtualSystem section for VM metadata and properties.
 
     Extracts virtual system information including name, product info,
@@ -439,8 +440,8 @@ def parse_virtual_system(value: Dict, ovf_strings: Dict) -> Dict:
 
 
 def _parse_product_section_list(
-    prod_sect: List[Dict], prod_props: List[Dict]
-) -> Dict:
+    prod_sect: list[dict], prod_props: list[dict]
+) -> dict:
     """Parse ProductSection when it is a list of items.
 
     Args:
@@ -466,7 +467,7 @@ def _parse_product_section_list(
     return result
 
 
-def _parse_product_section_dict(prod_sect: Dict) -> Dict:
+def _parse_product_section_dict(prod_sect: dict) -> dict:
     """Parse ProductSection when it is a dictionary.
 
     Args:
@@ -487,7 +488,7 @@ def _parse_product_section_dict(prod_sect: Dict) -> Dict:
     return result
 
 
-def parse_ovf(file_path: Union[Path, str]) -> Dict:
+def parse_ovf(file_path: Path | str) -> dict:
     """Parse OVA or OVF file and extract VM deployment information.
 
     This is the main orchestrator function that coordinates the parsing
