@@ -2,44 +2,25 @@
 =============================================================================
 SYNC IMPACT REPORT
 =============================================================================
-Version change: 1.0.0 → 1.1.0 (MINOR: materially expanded guidance from
-  _docs/ directory — IaC/YAML spec capability added to Principle II, MCP
-  added to Principle II and Technology Standards, Google-style docstrings
-  and single-quote preference codified in Principle V and Technology
-  Standards, bump2version added to Principle V workflow and Technology
-  Standards, CSV output format corrected in Principle II, requests.Session
-  requirement added to Principle III, sub-plugin entry-point rule added to
-  Principle I, WorkerQueue concurrency rule added to Principle IV, Roadmap
-  alignment note added to Governance, Mission section added as preamble.)
+Version change: 1.1.0 → 1.1.1 (PATCH: updated pyvss minimum version in
+  Technology Standards to reflect current pinned dependency)
 
-Modified principles:
-  - I. Plugin-First Architecture → I. Plugin-First Architecture
-    (added sub-plugin entry-point registration rule)
-  - II. CLI Interface Contract → II. CLI Interface Contract
-    (added IaC YAML specifications, CSV output format, MCP surface)
-  - III. Security & Credential Integrity → III. Security & Credential Integrity
-    (added requests.Session/header-level auth rule, explicit precedence order)
-  - IV. Observability & Request Transparency → IV. Observability & Request
-    Transparency (added WorkerQueue bounded-concurrency rule)
-  - V. Simplicity & Calendar Versioning → V. Simplicity & Calendar Versioning
-    (added bump2version mandate, single-quote preference, Google docstrings,
-    optional extras gate for new dependencies)
+Modified principles: none
 
-Added sections:
-  - Mission (new preamble section capturing project purpose and users)
+Added sections: none
 
 Removed sections: none
 
+Technology Standards updates:
+  - pyvss minimum version: >=2025.2.1 → >=2026.4.0 (aligned with
+    pyproject.toml pin after #813 upgrade)
+
 Templates reviewed & updated:
-  ✅ .specify/templates/plan-template.md — Constitution Check table version
-       reference updated to v1.1.0; IaC/MCP gate question added to row II;
-       bump2version noted in Technical Context; no structural changes
-  ✅ .specify/templates/spec-template.md — no structural changes required;
-       existing mandatory sections align with updated principles
-  ✅ .specify/templates/tasks-template.md — path conventions already match;
-       no changes required
-  ✅ .specify/templates/agent-file-template.md — generic template; no
-       outdated references
+  ✅ .specify/templates/plan-template.md — Constitution Check version
+       reference updated to v1.1.1; no structural changes
+  ✅ .specify/templates/spec-template.md — no changes required
+  ✅ .specify/templates/tasks-template.md — no changes required
+  ✅ .specify/templates/commands/ — directory does not exist; N/A
 
 Follow-up TODOs:
   - None. All placeholders resolved.
@@ -184,7 +165,7 @@ maintainers across Python versions.
 
 **Runtime**: Python >=3.10 (CPython; 3.10, 3.11, 3.12, 3.13 tested)
 **CLI Framework**: Click 8.x — groups, commands, options, decorators
-**API Client**: pyvss >=2025.2.1 — inherits `VssManager` in `config.py`
+**API Client**: pyvss >=2026.4.0 — inherits `VssManager` in `config.py`
 **Package Manager**: uv (development); pip-compatible via `pyproject.toml`
 **Output Formatting**: tabulate, rich (progress/spinners), jsonpath-ng
 **Configuration**: ruamel.yaml — YAML files under `~/.vss-cli/`
@@ -248,4 +229,4 @@ compliance or documenting justified exceptions.
   system, and product mission details; this constitution for governance
   authority
 
-**Version**: 1.1.0 | **Ratified**: 2026-04-06 | **Last Amended**: 2026-04-06
+**Version**: 1.1.1 | **Ratified**: 2026-04-06 | **Last Amended**: 2026-04-15

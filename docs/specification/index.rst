@@ -8,5 +8,7 @@ ITS Private Cloud CLI Specification
 
 
    content-library
-   shell
+   template
    clone
+   image
+   shell

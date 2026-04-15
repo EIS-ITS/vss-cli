@@ -18,7 +18,7 @@
 -->
 
 **Language/Version**: Python >=3.10 (3.10 / 3.11 / 3.12 / 3.13 supported)
-**Primary Dependencies**: Click 8.x, pyvss >=2025.2.1, tabulate, ruamel.yaml,
+**Primary Dependencies**: Click 8.x, pyvss >=2026.4.0, tabulate, ruamel.yaml,
   rich, jsonpath-ng — add others only with constitution amendment justification
 **Storage**: N/A (stateless CLI; config in `~/.vss-cli/config.yaml`)
 **Testing**: nose (primary), pytest (secondary); mock pyvss via `unittest.mock`
@@ -34,7 +34,7 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Verify compliance with `.specify/memory/constitution.md` v1.1.0:
+Verify compliance with `.specify/memory/constitution.md` v1.1.1:
 
 | # | Principle | Gate Question | Pass? |
 |---|-----------|---------------|-------|

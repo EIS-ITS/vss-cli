@@ -1,33 +1,32 @@
-.. _Clone:
+.. _Template:
 
-ITS Private Cloud CLI Clone specification for VM deployment
-============================================================
+ITS Private Cloud CLI Template specification for VM deployment
+================================================================
 
 To launch your text editor with the specification template pre-loaded, run the
 following command:
 
 .. code-block:: bash
 
-   vss-cli compute vm mk from-file --edit --save --spec-template clone
+   vss-cli compute vm mk from-file --edit --save --spec-template template
 
-The following is the YAML definition of valid VM Clone CLI specification:
+The following is the YAML definition of valid VM Template CLI specification:
 
 .. code-block:: yaml
 
-   built: clone              # Required: Do not remove.
+   built: template           # Required: Do not remove.
    machine:
-     source: SourceVM        # Required: Can be a vm name or a vm id.
+     source: NixSource                # Required: Can be a vm name or a vm id.
      name: &name Vm-Name     # Required: Target virtual machine name
+     folder: MyFolder       # Optional: Folder name, path or ID (Default: source vm folder)
      disks:                  # Optional: Disks (Default: source vm disk layout)
        - capacity_gb: 40     # Optional: Disk capacity in GB (Default: source vm disk capacity)
    # Additional (Uncomment to enable)
-   #  source_snapshot:       # Optional: Snapshot name, id or description source to clone from
-   #  folder: MyFolder       # Optional: Folder name, path or ID (Default: source vm folder)
-   #  firmware: efi         # Optional: Firmware to use: Either bios or efi (Default: source vm firmware).
-   #  storage-type: hdd      # Optional: Storage Type to use for this VM. ssd or hdd
-   #  os:                    # Optional: Guest Operating System name or Id (Default: source vm)
-   #  cpu:                   # Optional: CPU count (Default: source vm cpu count)
-   #  memory:                # Optional: Memory in GB (Default: source vm memory size)
+   #  firmware: efi          # Optional: Firmware to use: Either bios or efi (Default: source vm firmware).
+   #  storage-type: hdd     # Optional: Storage Type to use for this VM. ssd or hdd
+   #  os:                   # Optional: Guest Operating System name or Id (Default: source vm)
+   #  cpu:                  # Optional: CPU count (Default: source vm cpu count)
+   #  memory:               # Optional: Memory in GB (Default: source vm memory size)
    #  domain:                # Optional: Domain name or ID to deploy (Default: provided by API).
    #  power_on: true         # Optional: Power on after successful deployment.
    #  template: false        # Optional: Mark resulting vm as template.
@@ -51,7 +50,7 @@ The following is the YAML definition of valid VM Clone CLI specification:
    #  dns_servers:
    #    - 128.100.100.128     # Required (if dhcp:false): Remove if using VSS-PUBLIC or any other DHCP based network
      interfaces:
-       - dhcp: true          # Required: Whether to use DHCP for interface configuration (default: no)
+       - dhcp: true         # Required: Whether to use DHCP for interface configuration (default: no)
    #      ip: 10.6.0.2/24     # Required (if dhcp:false): CIDR format. Remove if using VSS-PUBLIC or any other DHCP based network
    #      gateway:            # Required (if dhcp:false): Remove if using VSS-PUBLIC or any other DHCP based network
    #      - 10.6.0.1

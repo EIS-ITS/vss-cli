@@ -1,5 +1,5 @@
 ####################################################
-#     VSS-CLI Spec from Clone 2026.4.0-dev1             #
+#     VSS-CLI Spec from Clone 2026.4.0             #
 ####################################################
 built: clone              # Required: Do not remove.
 machine:
